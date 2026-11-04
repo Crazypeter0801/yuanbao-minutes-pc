@@ -12,6 +12,8 @@ $duration: 380ms;
   z-index: 2;
   flex: 0 0 auto;
   height: 36px;
+  /* slot 只是占位：不接收点击，右侧「元宝文件夹」入口才不会被这层整行拦掉 */
+  pointer-events: none;
 
   /* 展开时卡片上缘外加 24px 白色渐隐，把身后的消息流压下去（Figma 318:6575 底栏渐变） */
   &::before {
@@ -50,12 +52,19 @@ $duration: 380ms;
   border-radius: 18px;
   background-color: var(--wm-color-background-bubble);
   box-shadow: inset 0 0 0 0.5px var(--wm-color-line), var(--wm-shadow-float);
+  pointer-events: auto;
   cursor: pointer;
   transition:
     width $duration $ease-out,
     height $duration $ease-out,
     padding $duration $ease-out,
-    border-radius $duration $ease-out;
+    border-radius $duration $ease-out,
+    box-shadow 160ms ease-out;
+}
+
+/* 收起态 hover 只比静止态略微收紧投影（与右侧「元宝文件夹」胶囊一致）；展开成面板后不再响应 */
+.card:not(.cardExpanded):hover {
+  box-shadow: inset 0 0 0 0.5px var(--wm-color-line), var(--wm-shadow-hover);
 }
 
 /* 展开：撑满底栏宽度、高 400、padding 12 8 16 12、圆角 12（Figma 318:6576） */

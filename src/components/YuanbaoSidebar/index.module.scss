@@ -14,3 +14,13 @@
     margin-top: 10px;
   }
 }
+
+/*
+ * 记笔记状态条与元宝文件夹同一行：36 高，右侧入口绝对定位贴右，
+ * 两个展开面板都以这一行为基线向上浮出（Figma 320:7814）。
+ */
+.statusRow {
+  position: relative;
+  height: 36px;
+}
+

@@ -8,6 +8,8 @@
   --wm-color-text-primary: #000000;
   --wm-color-text-secondary: #4e5461;
   --wm-color-text-tertiary: #7b818f;
+  /* 附件 / 产物列表的次级信息（类型、体积），Figma 附件组件 text_tertiary = 40% 黑 */
+  --wm-color-text-quaternary: rgba(0, 0, 0, 0.4);
   --wm-color-text-disabled: #b0b6c3;
   --wm-color-text-senary: #ffffff;
   --wm-color-text-septenary: #0066ff;
@@ -84,6 +86,8 @@
 
   /* 阴影 */
   --wm-shadow-float: 0 4px 24px rgba(0, 0, 0, 0.06);
+  /* 胶囊 hover：只比静止态略微收紧、抬起一点点，不抢视觉 */
+  --wm-shadow-hover: 0 2px 8px rgba(0, 0, 0, 0.08);
   --wm-shadow-segment: 0 2px 8px rgba(0, 0, 0, 0.06);
   --wm-shadow-popup: 0 8px 24px rgba(0, 0, 0, 0.12);
   --wm-shadow-sheet: 0 12px 32px rgba(0, 0, 0, 0.1);

@@ -1,0 +1,285 @@
+/*
+ * 产物入口「输出 · N」：收起胶囊 ↔ 展开的产物面板
+ * slot 绝对定位铺满底栏那一行（36 高），只让胶囊和面板接收点击，不挡住左侧记笔记状态条。
+ * 面板贴同一基线向上长，最高 400，超出后列表滚动，浮在消息流之上。
+ */
+
+/* 与记笔记面板共用同一条展开曲线 */
+$ease-out: cubic-bezier(0.32, 0.72, 0, 1);
+
+/* 展开后卡片的上下限：条数少时随内容收短但不到 200 就停住，超过 400 则滚动（400 取自 Figma 320:8185） */
+$panel-max-height: 400px;
+$panel-min-height: 200px;
+
+.slot {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 36px;
+  /* 默认穿透，避免盖住左侧胶囊的点击 */
+  pointer-events: none;
+}
+
+/* 展开时面板上缘外加 24px 白色渐隐，把身后的消息流压下去（与其他面板保持一致） */
+.slot::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(var(--artifact-panel-height, #{$panel-max-height}) + 24px);
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0) 0,
+    var(--wm-color-background-quaternary) 24px
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease-out;
+}
+
+.slotExpanded::before {
+  opacity: 1;
+}
+
+/* ---------- 收起入口胶囊（Figma 320:7815，104×36） ---------- */
+
+.trigger {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 18px;
+  background-color: var(--wm-color-background-bubble);
+  box-shadow: inset 0 0 0 0.5px var(--wm-color-line), var(--wm-shadow-float);
+  pointer-events: auto;
+  cursor: pointer;
+  outline: none;
+  transition: box-shadow 160ms ease-out;
+
+  & > * + * {
+    margin-left: 4px;
+  }
+
+  &:hover {
+    box-shadow: inset 0 0 0 0.5px var(--wm-color-line), var(--wm-shadow-hover);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 0.5px var(--wm-color-line), var(--wm-shadow-hover);
+  }
+
+  /* 面板展开后胶囊完全让位（面板本身也把它盖住了），同时移出 tab 顺序 */
+  .slotExpanded & {
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+
+/* 12/18 400 secondary（Figma 320:7835） */
+.triggerText {
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--wm-color-text-secondary);
+  white-space: nowrap;
+}
+
+/* ---------- 展开面板（Figma 320:8185） ---------- */
+
+.panel {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: $panel-min-height;
+  max-height: $panel-max-height;
+  /* 左右各 12，右侧留白与左侧对称（Figma 320:8185 已调整右侧间距）；底部留白交给列表，
+     这样滚动裁切边正好落在卡片下缘，渐隐不会被一段白边打断 */
+  padding: 12px 12px 0;
+  overflow: hidden;
+  border-radius: 12px;
+  background-color: var(--wm-color-background-bubble);
+  box-shadow: inset 0 0 0 0.5px var(--wm-color-line), var(--wm-shadow-float);
+  opacity: 0;
+  transform: translateY(8px);
+  visibility: hidden;
+  pointer-events: none;
+  /* 收起：先淡出，再藏起来 */
+  transition:
+    opacity 120ms ease-out,
+    transform 160ms ease-out,
+    visibility 0s linear 160ms;
+}
+
+.panelExpanded {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+  pointer-events: auto;
+  transition:
+    opacity 200ms ease-out,
+    transform 320ms $ease-out,
+    visibility 0s linear 0s;
+}
+
+/* 标题行：左「输出 · N」，右折叠图标（Figma 320:8186） */
+.panelHeader {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 24px;
+}
+
+.panelTitle {
+  display: flex;
+  align-items: center;
+  outline: none;
+
+  & > * + * {
+    margin-left: 4px;
+  }
+}
+
+.panelTitleText {
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--wm-color-text-secondary);
+}
+
+/* 20×20 折叠按钮，圆角 6 */
+.fold {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease-out;
+
+  &:hover {
+    background-color: var(--wm-color-background-septenary);
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px var(--wm-color-line);
+  }
+}
+
+/* 文件列表：占满面板剩余高度，滚动条隐藏（Figma 320:8202） */
+.list {
+  flex: 1 1 auto;
+  min-height: 0;
+  /* 用 padding 而不是 margin：顶部 12px 留给滚动渐隐，静止时不会把第一条压暗 */
+  padding-top: 12px;
+  padding-bottom: 16px;
+  /* 滚动时顶部 12px 渐隐，内容不会被标题行生硬切断 */
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 1) 12px);
+}
+
+/* 内容超过 400 时，底部同样渐隐：被截断的那条是「还有更多」的提示，而不是看起来被硬切 */
+.listOverflowing {
+  mask-image: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0) 0,
+    rgba(0, 0, 0, 1) 12px,
+    rgba(0, 0, 0, 1) calc(100% - 24px),
+    rgba(0, 0, 0, 0) 100%
+  );
+}
+
+/* 单条产物：padding 8、圆角 8，图标 32 + 文案（Figma 320:8670） */
+.file {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease-out;
+
+  & > * + * {
+    margin-left: 8px;
+  }
+
+  &:hover {
+    background-color: var(--wm-color-background-septenary);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 1.5px var(--wm-color-line);
+  }
+}
+
+.fileIcon {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+}
+
+.fileBody {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-width: 0;
+
+  & > * + * {
+    margin-top: 2px;
+  }
+}
+
+/* 12/18 400 primary，单行截断 */
+.fileName {
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--wm-color-text-primary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 类型 ｜ 体积：11/16，40% 黑；中间 0.5×10 竖线 */
+.fileMeta {
+  display: flex;
+  align-items: center;
+
+  & > * + * {
+    margin-left: 4px;
+  }
+}
+
+.fileType,
+.fileSize {
+  font-size: 11px;
+  line-height: 16px;
+  color: var(--wm-color-text-quaternary);
+  white-space: nowrap;
+}
+
+/* 类型与体积之间的竖分隔线，0.5×10 */
+.fileSep {
+  flex: 0 0 auto;
+  width: 0.5px;
+  height: 10px;
+  background-color: var(--wm-color-line);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slot::before,
+  .trigger,
+  .panel,
+  .panelExpanded {
+    transition: none;
+  }
+}

@@ -1,13 +1,16 @@
 import { useMemo, type FC } from 'react';
 import type { PopMenuItem } from '@/components/common/PopMenu';
+import type { ArtifactItem } from '@/types/artifact';
 import type { AssistantMessage } from '@/types/chat';
 import { AiDisclaimer } from '@/components/sidebar/AiDisclaimer';
+import { ArtifactEntry } from '@/components/sidebar/ArtifactEntry';
 import { ChatInput } from '@/components/sidebar/ChatInput';
 import { ChatList } from '@/components/sidebar/ChatList';
 import { MessageStream } from '@/components/sidebar/MessageStream';
 import { NotePill } from '@/components/sidebar/NotePill';
 import { SidebarHeader } from '@/components/sidebar/SidebarHeader';
 import { SidebarShell } from '@/components/sidebar/SidebarShell';
+import { initialArtifacts } from '@/data/artifacts';
 import { meetingSession } from '@/data/meetingSession';
 import { buildScreenshotNote, initialMessages } from '@/data/yuanbaoContent';
 import { useListening } from '@/hooks/useListening';
@@ -49,6 +52,8 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ onClose }) => {
 
   const openSource = () => showToast('已定位到原文（演示）');
 
+  const openArtifact = (item: ArtifactItem) => showToast(`打开「${item.name}」（演示）`);
+
   const saveScreenshot = () => {
     chat.push(buildScreenshotNote(meetingSession.duration));
     showToast('截图已保存');
@@ -77,13 +82,17 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ onClose }) => {
       </MessageStream>
 
       <div className={styles.footer}>
-        <NotePill
-          isListening={isListening}
-          notes={notes}
-          onScreenshot={saveScreenshot}
-          onToggleListening={toggleListening}
-          onOpenSource={openSource}
-        />
+        {/* 同一行：左侧记笔记状态条、右侧元宝文件夹入口；两者的展开面板都以这一行为基线向上浮出 */}
+        <div className={styles.statusRow}>
+          <NotePill
+            isListening={isListening}
+            notes={notes}
+            onScreenshot={saveScreenshot}
+            onToggleListening={toggleListening}
+            onOpenSource={openSource}
+          />
+          <ArtifactEntry artifacts={initialArtifacts} onOpen={openArtifact} />
+        </div>
         <ChatInput placeholder="提问或创建任务" onSubmit={chat.ask} />
       </div>
     </SidebarShell>
