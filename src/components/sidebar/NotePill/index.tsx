@@ -32,7 +32,7 @@ const PANEL_HEIGHT = 400;
  * 「元宝正在记笔记」状态条（收起 Figma 317:6060 / 318:6099，展开 Figma 318:6576）
  * - 收起：196×36 胶囊，星标 + 状态文案 + 截图 / 暂停两个圆形图标按钮；
  * - 点击整条（除两个按钮外）展开成 400 高的卡片，列出元宝主动记下的内容；
- * - 展开时胶囊从左下角向右、向上生长，内容在尺寸到位前淡入；点右上角 ×、再点标题行或按 Esc 收起。
+ * - 展开时胶囊从左下角向右、向上生长，内容在尺寸到位前淡入；点右上角「收起」、再点标题行或按 Esc 收起。
  * 面板贴底向上展开，浮在消息流之上，不挤压输入框和对话。
  */
 export const NotePill: FC<NotePillProps> = ({
@@ -126,13 +126,14 @@ export const NotePill: FC<NotePillProps> = ({
               {isListening ? <IconNotePause /> : <IconNotePlay />}
             </Pressable>
           </div>
+          {/* 右上角是「收起」（Figma 320:7230 Minimize 2），不是关闭：收起后纪要与侧栏都还在 */}
           <Pressable
             className={styles.collapse}
             onClick={collapse}
             stopPropagation
             disabled={!expanded}
             title="收起"
-            ariaLabel="收起元宝笔记"
+            ariaLabel="收起笔记面板"
           >
             <IconNoteCollapse />
           </Pressable>

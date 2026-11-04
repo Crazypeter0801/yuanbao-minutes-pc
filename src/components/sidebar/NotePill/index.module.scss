@@ -131,11 +131,12 @@ $duration: 380ms;
   }
 }
 
-/* 收起 ×：12×12 图标、24×24 热区，贴卡片右侧；收起态隐藏（Figma 318:7196） */
+/* 收起：20×20 图标（Figma 320:7230 Minimize 2）、24×24 热区，贴卡片右侧；收起态隐藏
+   热区比图标各多 2px，所以 right 取 -2 才能让图标右缘落在标题行内容右缘上 */
 .collapse {
   position: absolute;
   top: 0;
-  right: -6px;
+  right: -2px;
   display: flex;
   align-items: center;
   justify-content: center;
