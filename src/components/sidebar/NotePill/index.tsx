@@ -64,12 +64,23 @@ export const NotePill: FC<NotePillProps> = ({
     return () => observer.disconnect();
   }, []);
 
-  // 展开时定位到最新一条；展开期间有新笔记也跟到底部
+  // 滚动定位：
+  // - 刚展开时从第一条开始读（Figma 318:6576 就是这个状态：首条署名完整可见、末尾自然裁切），
+  //   滚到底会露出半截气泡、也看不到最新一条的署名，反而更难读；
+  // - 展开期间又有新笔记（立即总结、保存截图）才跟到底部，免得用户看不到刚记下的内容。
+  const prevExpanded = useRef(expanded);
+  const prevNotesCount = useRef(notes.length);
   useLayoutEffect(() => {
     const body = bodyRef.current;
-    if (expanded && body) {
-      body.scrollTop = body.scrollHeight;
+    if (body) {
+      if (expanded && !prevExpanded.current) {
+        body.scrollTop = 0;
+      } else if (expanded && notes.length !== prevNotesCount.current) {
+        body.scrollTop = body.scrollHeight;
+      }
     }
+    prevExpanded.current = expanded;
+    prevNotesCount.current = notes.length;
   }, [expanded, notes.length]);
 
   useEffect(() => {
