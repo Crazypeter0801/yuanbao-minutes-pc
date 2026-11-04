@@ -1,0 +1,32 @@
+.row {
+  display: flex;
+  justify-content: flex-end;
+  padding-left: 48px;
+}
+
+.bubble {
+  margin: 0;
+  padding: 10px 12px;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--wm-color-text-primary);
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+.round {
+  border-radius: 16px 1px 16px 16px;
+  background-color: var(--wm-color-background-user-bubble);
+}
+
+.compact {
+  border-radius: 8px 1px 8px 8px;
+  background-color: var(--wm-color-background-user-bubble);
+}
+
+.plain {
+  padding: 8px 14px;
+  border-radius: 14px;
+  background-color: var(--wm-color-background-septenary);
+  font-size: 13px;
+}

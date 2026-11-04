@@ -1,0 +1,64 @@
+@charset "UTF-8";
+/* 376 宽居中，padding 0 12（Figma layout_1NB1TS） */
+.header {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 376px;
+  height: 40px;
+  margin: 0 auto;
+  padding: 0 12px;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+}
+.title > * + * {
+  margin-left: 4px;
+}
+
+/* 16px 元宝图形放在 20×20 位置中心 */
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  color: var(--wm-color-text-secondary);
+}
+
+.titleText {
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 500;
+  color: var(--wm-color-text-primary);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+}
+.actions > * + * {
+  margin-left: 4px;
+}
+
+.iconButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 120ms ease-in-out;
+}
+.iconButton:hover {
+  background-color: var(--wm-color-control-fill);
+}
+
+.moreWrap {
+  position: relative;
+  display: flex;
+}
