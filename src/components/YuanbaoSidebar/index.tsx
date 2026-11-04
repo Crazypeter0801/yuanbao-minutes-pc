@@ -8,9 +8,11 @@ import { ChatInput } from '@/components/sidebar/ChatInput';
 import { ChatList } from '@/components/sidebar/ChatList';
 import { MessageStream } from '@/components/sidebar/MessageStream';
 import { NotePill } from '@/components/sidebar/NotePill';
+import { ScenarioTriggers } from '@/components/sidebar/ScenarioTriggers';
 import { SidebarHeader } from '@/components/sidebar/SidebarHeader';
 import { SidebarShell } from '@/components/sidebar/SidebarShell';
 import { initialArtifacts } from '@/data/artifacts';
+import { proactiveScenarios } from '@/data/proactiveScenarios';
 import { meetingSession } from '@/data/meetingSession';
 import { buildScreenshotNote, initialMessages } from '@/data/yuanbaoContent';
 import { useListening } from '@/hooks/useListening';
@@ -76,6 +78,12 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ onClose }) => {
         onPip={() => showToast('已在独立窗口打开（演示）')}
         menuItems={menuItems}
         onClose={onClose}
+      />
+
+      {/* 演示用：让元宝在「刚入会」「别人提到某事」两个时机主动开口 */}
+      <ScenarioTriggers
+        scenarios={proactiveScenarios}
+        onTrigger={(scenario) => chat.push(scenario.build())}
       />
 
       <MessageStream
