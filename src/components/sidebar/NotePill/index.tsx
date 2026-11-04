@@ -12,6 +12,9 @@ import styles from './index.module.scss';
 interface NotePillProps {
   /** 是否正在记笔记 */
   isListening: boolean;
+  /** 展开态由父级控制：提问时要先收起面板，否则回答会被面板挡住 */
+  expanded: boolean;
+  onExpandedChange: (expanded: boolean) => void;
   /** 元宝主动记下的笔记，展开后按时间顺序列出 */
   notes: AssistantMessage[];
   /** 保存截图 */
@@ -34,18 +37,19 @@ const PANEL_HEIGHT = 400;
  */
 export const NotePill: FC<NotePillProps> = ({
   isListening,
+  expanded,
+  onExpandedChange,
   notes,
   onScreenshot,
   onToggleListening,
   onOpenSource,
 }) => {
-  const [expanded, setExpanded] = useState(false);
   const [panelWidth, setPanelWidth] = useState(0);
   const slotRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
 
-  const toggle = useCallback(() => setExpanded((open) => !open), []);
-  const collapse = useCallback(() => setExpanded(false), []);
+  const toggle = useCallback(() => onExpandedChange(!expanded), [expanded, onExpandedChange]);
+  const collapse = useCallback(() => onExpandedChange(false), [onExpandedChange]);
 
   // 展开宽度 = 底栏内容宽度；量成 px 才能和收起的 196px 平滑过渡，内容区也按最终宽度排版，动画中不重排
   useLayoutEffect(() => {
@@ -99,7 +103,7 @@ export const NotePill: FC<NotePillProps> = ({
             ariaLabel={expanded ? '收起元宝笔记' : '展开元宝笔记'}
           >
             <NoteStar playing={isListening} />
-            <span className={styles.text}>{isListening ? '元宝正在记笔记... ' : '元宝休息中'}</span>
+            <span className={styles.text}>{isListening ? '元宝正在记笔记...' : '已暂停记笔记'}</span>
           </Pressable>
           <div className={styles.actions}>
             <Pressable

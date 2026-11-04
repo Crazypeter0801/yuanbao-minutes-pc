@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { answerQuestion, buildStageSummary, createId } from '@/data/yuanbaoContent';
+import { answerQuestion, buildStageSummary, createId, type ReplyTopic } from '@/data/yuanbaoContent';
 import type { AssistantMessage, ChatMessage } from '@/types/chat';
 
 /** 模拟元宝思考耗时（ms） */
@@ -7,7 +7,7 @@ const ANSWER_DELAY = 900;
 
 export interface YuanbaoChat {
   messages: ChatMessage[];
-  /** 正在等待元宝回答 */
+  /** 正在等待元宝回答（多条并发提问时，全部回答落地才结束） */
   isThinking: boolean;
   /** 提问：先追加用户消息，再异步追加回答 */
   ask: (question: string) => void;
@@ -24,7 +24,10 @@ export interface YuanbaoChat {
  */
 export function useYuanbaoChat(initial: ChatMessage[]): YuanbaoChat {
   const [messages, setMessages] = useState<ChatMessage[]>(initial);
-  const [isThinking, setIsThinking] = useState(false);
+  /** 待回答数量：用计数而非布尔，否则并发提问时第一条回答落地就提前结束思考态 */
+  const [pending, setPending] = useState(0);
+  /** 上一条回答的主题，供问答规则处理「语气再正式一点」这类依赖上下文的追问 */
+  const lastTopic = useRef<ReplyTopic | undefined>(undefined);
   const timers = useRef<number[]>([]);
 
   // 卸载时清理未完成的回答，避免对已卸载组件 setState
@@ -45,11 +48,15 @@ export function useYuanbaoChat(initial: ChatMessage[]): YuanbaoChat {
       if (!text) {
         return;
       }
+      // 回答在提问瞬间就定型（含上下文），避免连续提问时按落地顺序读取到别人的上下文
+      const answer = answerQuestion(text, { lastTopic: lastTopic.current });
+      lastTopic.current = answer.topic;
+
       setMessages((previous) => [...previous, { id: createId('q'), role: 'user', text }]);
-      setIsThinking(true);
+      setPending((count) => count + 1);
       const timer = window.setTimeout(() => {
-        push(answerQuestion(text));
-        setIsThinking(false);
+        push(answer.message);
+        setPending((count) => count - 1);
       }, ANSWER_DELAY);
       timers.current.push(timer);
     },
@@ -60,5 +67,5 @@ export function useYuanbaoChat(initial: ChatMessage[]): YuanbaoChat {
     push(buildStageSummary());
   }, [push]);
 
-  return { messages, isThinking, ask, push, summarizeNow };
+  return { messages, isThinking: pending > 0, ask, push, summarizeNow };
 }
