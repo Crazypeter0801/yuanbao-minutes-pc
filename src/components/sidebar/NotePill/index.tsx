@@ -1,37 +1,148 @@
-import type { FC } from 'react';
-import IconSidePause from '@/assets/d2c/icons/v1/icon-side-pause';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type FC } from 'react';
+import IconNoteCollapse from '@/assets/d2c/icons/v1/icon-note-collapse';
+import IconNotePause from '@/assets/d2c/icons/v1/icon-note-pause';
+import IconNotePlay from '@/assets/d2c/icons/v1/icon-note-play';
+import IconNoteScreenshot from '@/assets/d2c/icons/v1/icon-note-screenshot';
 import { Pressable } from '@/components/common/Pressable';
+import { AssistantMessageView } from '@/components/sidebar/AssistantMessageView';
 import { NoteStar } from '@/components/sidebar/NoteStar';
+import type { AssistantMessage } from '@/types/chat';
 import styles from './index.module.scss';
 
 interface NotePillProps {
   /** 是否正在记笔记 */
   isListening: boolean;
+  /** 元宝主动记下的笔记，展开后按时间顺序列出 */
+  notes: AssistantMessage[];
   /** 保存截图 */
   onScreenshot: () => void;
   /** 暂停 / 继续 */
   onToggleListening: () => void;
+  /** 点击笔记里的「查看原文」 */
+  onOpenSource?: () => void;
 }
 
+/** 展开后的面板高度（Figma 318:6576） */
+const PANEL_HEIGHT = 400;
+
 /**
- * 「元宝正在记笔记」状态胶囊（Figma 316:2705）
- * 动态星标 + 状态文案 + 「保存截图」+ 暂停；宽度随内容，左对齐悬浮在输入框上方。
- * 星标记笔记时循环变形（圆点 → 方块 → 四芒星），暂停后停在四芒星。
+ * 「元宝正在记笔记」状态条（收起 Figma 317:6060 / 318:6099，展开 Figma 318:6576）
+ * - 收起：196×36 胶囊，星标 + 状态文案 + 截图 / 暂停两个圆形图标按钮；
+ * - 点击整条（除两个按钮外）展开成 400 高的卡片，列出元宝主动记下的内容；
+ * - 展开时胶囊从左下角向右、向上生长，内容在尺寸到位前淡入；点右上角 ×、再点标题行或按 Esc 收起。
+ * 面板贴底向上展开，浮在消息流之上，不挤压输入框和对话。
  */
-export const NotePill: FC<NotePillProps> = ({ isListening, onScreenshot, onToggleListening }) => (
-  <div className={styles.pill}>
-    <NoteStar playing={isListening} />
-    <span className={styles.text}>{isListening ? '元宝正在记笔记... ' : '元宝已暂停记笔记'}</span>
-    <Pressable className={styles.chip} onClick={onScreenshot} title="把当前画面存进纪要">
-      保存截图
-    </Pressable>
-    <Pressable
-      className={`${styles.toggle} ${isListening ? '' : styles.togglePaused}`}
-      onClick={onToggleListening}
-      title={isListening ? '暂停记笔记' : '继续记笔记'}
-      ariaLabel={isListening ? '暂停记录' : '继续记录'}
-    >
-      {isListening ? <IconSidePause /> : <span className={styles.play} />}
-    </Pressable>
-  </div>
-);
+export const NotePill: FC<NotePillProps> = ({
+  isListening,
+  notes,
+  onScreenshot,
+  onToggleListening,
+  onOpenSource,
+}) => {
+  const [expanded, setExpanded] = useState(false);
+  const [panelWidth, setPanelWidth] = useState(0);
+  const slotRef = useRef<HTMLDivElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
+
+  const toggle = useCallback(() => setExpanded((open) => !open), []);
+  const collapse = useCallback(() => setExpanded(false), []);
+
+  // 展开宽度 = 底栏内容宽度；量成 px 才能和收起的 196px 平滑过渡，内容区也按最终宽度排版，动画中不重排
+  useLayoutEffect(() => {
+    const slot = slotRef.current;
+    if (!slot) {
+      return undefined;
+    }
+    const measure = () => setPanelWidth(slot.clientWidth);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(slot);
+    return () => observer.disconnect();
+  }, []);
+
+  // 展开时定位到最新一条；展开期间有新笔记也跟到底部
+  useLayoutEffect(() => {
+    const body = bodyRef.current;
+    if (expanded && body) {
+      body.scrollTop = body.scrollHeight;
+    }
+  }, [expanded, notes.length]);
+
+  useEffect(() => {
+    if (!expanded) {
+      return undefined;
+    }
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        collapse();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [expanded, collapse]);
+
+  const vars = {
+    '--note-panel-width': `${panelWidth}px`,
+    '--note-panel-height': `${PANEL_HEIGHT}px`,
+  } as CSSProperties;
+
+  return (
+    <div className={`${styles.slot} ${expanded ? styles.slotExpanded : ''}`} ref={slotRef} style={vars}>
+      <div className={`${styles.card} ${expanded ? styles.cardExpanded : ''}`}>
+        {/* 标题行：整行都是展开 / 收起的热区（键盘焦点落在左侧文案上） */}
+        <div className={styles.header} onClick={toggle} role="presentation">
+          <Pressable
+            className={styles.summary}
+            onClick={toggle}
+            stopPropagation
+            ariaExpanded={expanded}
+            ariaLabel={expanded ? '收起元宝笔记' : '展开元宝笔记'}
+          >
+            <NoteStar playing={isListening} />
+            <span className={styles.text}>{isListening ? '元宝正在记笔记... ' : '元宝休息中'}</span>
+          </Pressable>
+          <div className={styles.actions}>
+            <Pressable
+              className={styles.iconButton}
+              onClick={onScreenshot}
+              stopPropagation
+              title="保存截图"
+              ariaLabel="保存截图"
+            >
+              <IconNoteScreenshot />
+            </Pressable>
+            <Pressable
+              className={styles.iconButton}
+              onClick={onToggleListening}
+              stopPropagation
+              title={isListening ? '暂停记笔记' : '继续记笔记'}
+              ariaLabel={isListening ? '暂停记录' : '继续记录'}
+            >
+              {isListening ? <IconNotePause /> : <IconNotePlay />}
+            </Pressable>
+          </div>
+          <Pressable
+            className={styles.collapse}
+            onClick={collapse}
+            stopPropagation
+            disabled={!expanded}
+            title="收起"
+            ariaLabel="收起元宝笔记"
+          >
+            <IconNoteCollapse />
+          </Pressable>
+        </div>
+
+        <div className={`${styles.body} wm-scroll-hidden`} ref={bodyRef} aria-hidden={!expanded}>
+          {notes.length > 0 ? (
+            notes.map((note) => (
+              <AssistantMessageView key={note.id} message={note} shape="round" onOpenSource={onOpenSource} />
+            ))
+          ) : (
+            <p className={styles.empty}>元宝还没有记下内容，会议中的要点会自动出现在这里。</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};

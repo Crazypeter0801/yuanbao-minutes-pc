@@ -35,6 +35,8 @@ export interface AssistantMessage {
   source?: string;
   /** 追问建议 */
   followUps?: string[];
+  /** 元宝主动记下的笔记（实时纪要、阶段小结、截图记录）；回答用户提问的消息不算 */
+  isNote?: boolean;
 }
 
 /** 用户提问 */

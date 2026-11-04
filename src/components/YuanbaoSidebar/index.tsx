@@ -1,5 +1,6 @@
 import { useMemo, type FC } from 'react';
 import type { PopMenuItem } from '@/components/common/PopMenu';
+import type { AssistantMessage } from '@/types/chat';
 import { AiDisclaimer } from '@/components/sidebar/AiDisclaimer';
 import { ChatInput } from '@/components/sidebar/ChatInput';
 import { ChatList } from '@/components/sidebar/ChatList';
@@ -22,7 +23,7 @@ interface YuanbaoSidebarProps {
 /**
  * 元宝 Agent 对话区 · V1（Figma 257:1540 右侧）
  * - 元宝的实时纪要与用户的提问 / 回答在同一条时间流里；
- * - 底部：「元宝正在记笔记」状态胶囊（保存截图 / 暂停）+ 单行输入框。
+ * - 底部：「元宝正在记笔记」状态条（保存截图 / 暂停，点击展开查看元宝主动记下的内容）+ 输入框。
  */
 export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ onClose }) => {
   const { toast, showToast } = useToast();
@@ -39,6 +40,14 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ onClose }) => {
     ],
     [chat.summarizeNow, showToast],
   );
+
+  // 展开面板只列元宝主动记的笔记，不含回答提问的消息
+  const notes = useMemo(
+    () => chat.messages.filter((m): m is AssistantMessage => m.role === 'assistant' && Boolean(m.isNote)),
+    [chat.messages],
+  );
+
+  const openSource = () => showToast('已定位到原文（演示）');
 
   const saveScreenshot = () => {
     chat.push(buildScreenshotNote(meetingSession.duration));
@@ -63,15 +72,17 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ onClose }) => {
           shape="round"
           isThinking={chat.isThinking}
           onFollowUp={chat.ask}
-          onOpenSource={() => showToast('已定位到原文（演示）')}
+          onOpenSource={openSource}
         />
       </MessageStream>
 
       <div className={styles.footer}>
         <NotePill
           isListening={isListening}
+          notes={notes}
           onScreenshot={saveScreenshot}
           onToggleListening={toggleListening}
+          onOpenSource={openSource}
         />
         <ChatInput placeholder="提问或创建任务" onSubmit={chat.ask} />
       </div>

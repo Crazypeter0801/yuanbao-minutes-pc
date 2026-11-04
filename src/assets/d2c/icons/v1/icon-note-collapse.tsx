@@ -1,6 +1,6 @@
 import React from 'react';
 
-interface IconSidePauseProps {
+interface IconNoteCollapseProps {
   /** 图标宽度，默认与 Figma 设计稿一致 */
   width?: number;
   /** 图标高度，默认与 Figma 设计稿一致 */
@@ -12,10 +12,10 @@ interface IconSidePauseProps {
   [key: string]: unknown;
 }
 
-/** IconSidePause - Figma nodeId: 316:3461 */
-const IconSidePause: React.FC<IconSidePauseProps> = React.memo(({
-  width = 24,
-  height = 24,
+/** IconNoteCollapse - Figma nodeId: 318:7196 */
+const IconNoteCollapse: React.FC<IconNoteCollapseProps> = React.memo(({
+  width = 12,
+  height = 12,
   color = 'currentColor',
   className,
   ...props
@@ -23,17 +23,15 @@ const IconSidePause: React.FC<IconSidePauseProps> = React.memo(({
   <svg
     width={width}
     height={height}
-    viewBox="0 0 24 24"
+    viewBox="0 0 12 12"
     fill="none"
     className={className}
     {...props}
   >
-    <rect width="24" height="24" rx="12" fill="#F3F3F4"/>
-    <rect x="7.5" y="8" width="2.5" height="8" rx="1.25" fill="#4E5461"/>
-    <rect x="14" y="8" width="2.5" height="8" rx="1.25" fill="#4E5461"/>
+    <path d="M2.25 2.25L6 6M6 6L9.75 9.75M6 6L2.25 9.75M6 6L9.75 2.25" strokeLinecap="round" strokeLinejoin="round" stroke="#4E5461"/>
   </svg>
 ));
 
-IconSidePause.displayName = 'IconSidePause';
+IconNoteCollapse.displayName = 'IconNoteCollapse';
 
-export default IconSidePause;
+export default IconNoteCollapse;

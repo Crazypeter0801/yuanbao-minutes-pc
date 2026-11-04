@@ -22,8 +22,15 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
 const FRAMES = 45;
 const DURATION_MS = FRAMES * 40;
-const VIEWBOX = 36;
-const CENTER = 18;
+/**
+ * 输出画布 16×16，与 Figma 星星图标（317:6078）同尺寸：
+ * 设计稿四芒星宽 10.46、中心 (8, 8.67)，所以把 GIF 的 36 坐标系按「峰值尖角半径 15.42 → 5.23」缩放，
+ * 圆点静止时直径约 5.8px，完整四芒星与设计稿静态图标等大。
+ */
+const VIEWBOX = 16;
+const CENTER_X = 8;
+const CENTER_Y = 8.67;
+const SCALE = 5.23 / 15.42;
 const COLOR = '#7B818F';
 /** 每 22.5° 一段贝塞尔（4 段 / 象限）：最大误差 0.07 viewBox 单位（16px 显示时 ≈ 0.03px），体积约 15KB */
 const SEGMENTS = 16;
@@ -43,10 +50,10 @@ const ROT = smooth(ROT_RAW);
 
 /** 轮廓系数（由 GIF 峰值帧 a4=3.42 / a8=0.88 / a12=0.19、R0 8.56→10.71 拟合） */
 const coeffs = (p) => ({
-  r0: 8.56 + 2.15 * p,
-  a4: 3.42 * p,
-  a8: 0.88 * p ** 1.6,
-  a12: 0.19 * p ** 2,
+  r0: (8.56 + 2.15 * p) * SCALE,
+  a4: 3.42 * p * SCALE,
+  a8: 0.88 * p ** 1.6 * SCALE,
+  a12: 0.19 * p ** 2 * SCALE,
 });
 
 const radius = (c, t) => c.r0 + c.a4 * Math.cos(4 * t) + c.a8 * Math.cos(8 * t) + c.a12 * Math.cos(12 * t);
@@ -70,8 +77,8 @@ const pathFor = (p) => {
     const cos = Math.cos(t);
     const sin = Math.sin(t);
     return {
-      x: CENTER + r * cos,
-      y: CENTER + r * sin,
+      x: CENTER_X + r * cos,
+      y: CENTER_Y + r * sin,
       dx: dr * cos - r * sin,
       dy: dr * sin + r * cos,
     };
@@ -111,7 +118,7 @@ const restTime = REST_FRAME / FRAMES;
 const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${VIEWBOX}" height="${VIEWBOX}" viewBox="0 0 ${VIEWBOX} ${VIEWBOX}">
   <!-- 元宝正在记笔记：圆点 → 圆角方块 → 四芒星 → 圆点，边变形边转一圈，循环 ${DURATION_MS / 1000}s。由 scripts/gen-note-star.mjs 生成 -->
   <g>
-    <animateTransform attributeName="transform" type="rotate" dur="${DURATION_MS}ms" repeatCount="indefinite" keyTimes="${rotTimes.join(';')}" values="${rotValues.map((v) => `${fmt(v)} ${CENTER} ${CENTER}`).join(';')}"/>
+    <animateTransform attributeName="transform" type="rotate" dur="${DURATION_MS}ms" repeatCount="indefinite" keyTimes="${rotTimes.join(';')}" values="${rotValues.map((v) => `${fmt(v)} ${CENTER_X} ${CENTER_Y}`).join(';')}"/>
     <path fill="${COLOR}" d="${shapeValues[0]}">
       <animate attributeName="d" dur="${DURATION_MS}ms" repeatCount="indefinite" keyTimes="${shapeTimes.join(';')}" values="${shapeValues.join(';')}"/>
     </path>
@@ -122,12 +129,11 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${VIEWBOX}" height="
 // ---- React 关键帧数据 ----
 const ts = `// 由 scripts/gen-note-star.mjs 生成，请勿手改
 export const NOTE_STAR_VIEWBOX = ${VIEWBOX};
-export const NOTE_STAR_CENTER = ${CENTER};
 export const NOTE_STAR_DURATION_MS = ${DURATION_MS};
 export const NOTE_STAR_SHAPE_KEY_TIMES = ${JSON.stringify(shapeTimes.join(';'))};
 export const NOTE_STAR_SHAPE_VALUES = ${JSON.stringify(shapeValues.join(';'))};
 export const NOTE_STAR_ROTATE_KEY_TIMES = ${JSON.stringify(rotTimes.join(';'))};
-export const NOTE_STAR_ROTATE_VALUES = ${JSON.stringify(rotValues.map((v) => `${fmt(v)} ${CENTER} ${CENTER}`).join(';'))};
+export const NOTE_STAR_ROTATE_VALUES = ${JSON.stringify(rotValues.map((v) => `${fmt(v)} ${CENTER_X} ${CENTER_Y}`).join(';'))};
 /** 暂停时停留的完整四芒星 */
 export const NOTE_STAR_REST_PATH = ${JSON.stringify(restPath)};
 export const NOTE_STAR_REST_ROTATE = ${fmt(restRotate)};

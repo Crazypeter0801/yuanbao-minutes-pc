@@ -35,6 +35,7 @@ export const initialMessages: ChatMessage[] = [
     id: 'a-1',
     role: 'assistant',
     time: '2分钟前',
+    isNote: true,
     bubbles: [
       {
         id: 'a-1-1',
@@ -55,6 +56,7 @@ export const initialMessages: ChatMessage[] = [
     id: 'a-2',
     role: 'assistant',
     time: '刚刚',
+    isNote: true,
     bubbles: [
       {
         id: 'a-2-1',
@@ -95,6 +97,11 @@ function reply(blocks: RichBlock[], extra?: Partial<AssistantMessage>): Assistan
     bubbles: [{ id: createId('bubble'), blocks }],
     ...extra,
   };
+}
+
+/** 组装一条元宝主动记下的笔记（会出现在「记笔记」展开面板里） */
+function note(blocks: RichBlock[]): AssistantMessage {
+  return { ...reply(blocks), id: createId('note'), isNote: true };
 }
 
 /**
@@ -173,7 +180,7 @@ export function answerQuestion(question: string): AssistantMessage {
 
 /** 「立即总结」生成的阶段小结 */
 export function buildStageSummary(): AssistantMessage {
-  return reply([
+  return note([
     p('截至目前（01:31）的阶段小结：'),
     list(
       '视觉方向分两版并行探索：线条／卡片版、少色大灰版。',
@@ -188,5 +195,5 @@ export function buildStageSummary(): AssistantMessage {
  * @param time 会议进行时长，如 01:31:09
  */
 export function buildScreenshotNote(time: string): AssistantMessage {
-  return reply([p(`已保存 ${time} 的会议画面，会附在本场纪要对应的段落里。`)]);
+  return note([p(`已保存 ${time} 的会议画面，会附在本场纪要对应的段落里。`)]);
 }

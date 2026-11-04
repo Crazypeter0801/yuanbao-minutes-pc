@@ -1,74 +1,216 @@
-/* 高 36、padding 0 8 0 12、间距 4、圆角 18、0.5px 内描边 + 浮层阴影（Figma 316:2705） */
-.pill {
-  align-self: flex-start;
-  display: flex;
-  align-items: center;
+/*
+ * 记笔记状态条：收起胶囊 ↔ 展开卡片
+ * 外层 slot 在底栏里只占 36px 高；卡片绝对定位贴住 slot 左下角，展开时向右、向上生长，浮在消息流之上。
+ */
+
+/* 收起 → 展开 的主曲线：前快后慢、无回弹，接近系统面板展开的手感 */
+$ease-out: cubic-bezier(0.32, 0.72, 0, 1);
+$duration: 380ms;
+
+.slot {
+  position: relative;
+  z-index: 2;
+  flex: 0 0 auto;
   height: 36px;
-  padding: 0 8px 0 12px;
+
+  /* 展开时卡片上缘外加 24px 白色渐隐，把身后的消息流压下去（Figma 318:6575 底栏渐变） */
+  &::before {
+    content: '';
+    position: absolute;
+    left: -16px;
+    right: -16px;
+    bottom: 0;
+    height: calc(var(--note-panel-height) + 24px);
+    background-image: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0) 0,
+      var(--wm-color-background-quaternary) 24px
+    );
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 200ms ease-out;
+  }
+}
+
+.slotExpanded::before {
+  opacity: 1;
+}
+
+/* 收起：196×36、padding 0 8 0 12、圆角 18，白底 + 0.5px 内描边 + 浮层阴影（Figma 317:6060） */
+.card {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  width: 196px;
+  height: 36px;
+  padding: 6px 8px 6px 12px;
+  overflow: hidden;
   border-radius: 18px;
   background-color: var(--wm-color-background-bubble);
   box-shadow: inset 0 0 0 0.5px var(--wm-color-line), var(--wm-shadow-float);
+  cursor: pointer;
+  transition:
+    width $duration $ease-out,
+    height $duration $ease-out,
+    padding $duration $ease-out,
+    border-radius $duration $ease-out;
+}
+
+/* 展开：撑满底栏宽度、高 400、padding 12 8 16 12、圆角 12（Figma 318:6576） */
+.cardExpanded {
+  width: var(--note-panel-width);
+  height: var(--note-panel-height);
+  padding: 12px 8px 16px 12px;
+  border-radius: 12px;
+  cursor: default;
+}
+
+/* ---------- 标题行（Figma 318:7032） ---------- */
+
+.header {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  height: 24px;
+  cursor: pointer;
 
   & > * + * {
     margin-left: 4px;
   }
 }
 
-/* 12/18 500（Figma style_W6I5Z1） */
-.text {
-  font-size: 12px;
-  line-height: 18px;
-  font-weight: 500;
-  color: var(--wm-color-text-primary);
-  white-space: pre;
-}
-
-/* 「保存截图」：高 24、padding 0 8、圆角 12、灰底（Figma 316:3457） */
-.chip {
+.summary {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
-  height: 24px;
-  padding: 0 8px;
-  border-radius: 12px;
-  background-color: var(--wm-color-background-septenary);
-  font-size: 12px;
-  line-height: 18px;
-  color: var(--wm-color-text-secondary);
-  white-space: nowrap;
-  cursor: pointer;
-  transition: background-color 120ms ease-in-out;
+  outline: none;
 
-  &:hover {
-    background-color: var(--wm-color-control-fill);
+  & > * + * {
+    margin-left: 4px;
   }
 }
 
-.toggle {
+/* 12/18 400，宽 100 固定，两种状态胶囊等宽（Figma 317:6080） */
+.text {
+  width: 100px;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--wm-color-text-secondary);
+  white-space: pre;
+}
+
+.actions {
   flex: 0 0 auto;
+  display: flex;
+
+  & > * + * {
+    margin-left: 4px;
+  }
+}
+
+/* 24×24 圆形图标按钮，灰底已包含在导出的图标里（Figma 317:6081 / 317:6085 / 318:6124） */
+.iconButton {
+  flex: 0 0 auto;
+  display: flex;
+  width: 24px;
+  height: 24px;
+  border-radius: 12px;
+  cursor: pointer;
+  outline: none;
+  transition: opacity 120ms ease-in-out;
+
+  &:hover {
+    opacity: 0.72;
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px var(--wm-color-line);
+  }
+}
+
+/* 收起 ×：12×12 图标、24×24 热区，贴卡片右侧；收起态隐藏（Figma 318:7196） */
+.collapse {
+  position: absolute;
+  top: 0;
+  right: -6px;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 24px;
   height: 24px;
-  border-radius: 12px;
+  border-radius: 6px;
+  opacity: 0;
+  pointer-events: none;
   cursor: pointer;
+  transition: opacity 120ms ease-out;
 
   &:hover {
-    opacity: 0.8;
+    background-color: var(--wm-color-background-septenary);
+  }
+
+  .cardExpanded & {
+    opacity: 1;
+    pointer-events: auto;
+    transition: opacity 200ms ease-out 160ms;
   }
 }
 
-/* 暂停态：同款灰圆底 + 三角，表示「继续」 */
-.togglePaused {
-  background-color: var(--wm-color-background-septenary);
+/* ---------- 笔记列表（Figma 318:7087，元宝消息组间距 12） ---------- */
+
+/* 按展开后的最终宽度排版：卡片变宽的过程中文字不重新折行 */
+.body {
+  flex: 0 0 auto;
+  width: calc(var(--note-panel-width) - 20px);
+  height: calc(var(--note-panel-height) - 52px);
+  padding-top: 12px;
+  overflow-y: auto;
+  /* 滚动时顶部 12px 渐隐，内容不会被标题行生硬切断 */
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 1) 12px);
+  opacity: 0;
+  transform: translateY(8px);
+  visibility: hidden;
+  cursor: auto;
+  /* 收起：先快速淡出，再收尺寸 */
+  transition:
+    opacity 120ms ease-out,
+    transform 120ms ease-out,
+    visibility 0s linear 120ms;
+
+  & > * + * {
+    margin-top: 12px;
+  }
+
+  .cardExpanded & {
+    opacity: 1;
+    transform: translateY(0);
+    visibility: visible;
+    /* 展开：等卡片长到七八成再淡入，避免内容挤在小胶囊里闪现 */
+    transition:
+      opacity 220ms ease-out 140ms,
+      transform 320ms $ease-out 140ms,
+      visibility 0s linear 0s;
+  }
 }
 
-.play {
-  width: 0;
-  height: 0;
-  margin-left: 2px;
-  border-top: 4px solid rgba(0, 0, 0, 0);
-  border-bottom: 4px solid rgba(0, 0, 0, 0);
-  border-left: 7px solid var(--wm-color-text-secondary);
+.empty {
+  margin: 0;
+  padding: 24px 0;
+  font-size: 12px;
+  line-height: 20px;
+  text-align: center;
+  color: var(--wm-color-text-tertiary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slot::before,
+  .card,
+  .collapse,
+  .body,
+  .cardExpanded .collapse,
+  .cardExpanded .body {
+    transition: none;
+  }
 }
