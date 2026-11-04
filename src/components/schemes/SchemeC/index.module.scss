@@ -1,0 +1,105 @@
+.main {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.peekWrap {
+  position: relative;
+  z-index: 3;
+  flex: 0 0 auto;
+  padding: 8px 16px 0;
+}
+
+/* 抽屉打开时把对话压暗一层，点击即收起 */
+.mask {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background-color: var(--wm-color-background-sheet-mask);
+  backdrop-filter: blur(2px);
+  animation: fade-in 160ms ease-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.stream {
+  padding: 16px 16px 12px;
+
+  /* 问答之间多留一点间距，读起来像段落而不是聊天（双类名提高优先级，覆盖 MessageStream 默认 12） */
+  &#{&} > * + * {
+    margin-top: 16px;
+  }
+}
+
+.footer {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  padding: 4px 16px 16px;
+  background-image: var(--wm-gradient-fade-bottom);
+
+  & > * + * {
+    margin-top: 8px;
+  }
+}
+
+/* 快捷技能：单行横向排布，超出可横向滚动 */
+.recipes {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  & > * + * {
+    margin-left: 6px;
+  }
+}
+
+.recipe {
+  flex: 0 0 auto;
+  padding: 3px 10px;
+  border: 0.5px solid var(--wm-color-line);
+  border-radius: 13px;
+  background-color: var(--wm-color-background-bubble);
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--wm-color-text-secondary);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 120ms ease-in-out;
+
+  &:hover {
+    background-color: var(--wm-color-background-septenary);
+    color: var(--wm-color-text-primary);
+  }
+}
+
+.recipeMore {
+  margin-left: auto;
+  border-color: rgba(0, 0, 0, 0);
+  color: var(--wm-color-text-tertiary);
+}
+
+/* 变体：方案 B 底栏一行排布，间距 10（Figma 248:13460） */
+.pillRow {
+  display: flex;
+  align-items: center;
+
+  & > * + * {
+    margin-left: 10px;
+  }
+}

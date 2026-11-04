@@ -1,0 +1,23 @@
+.send {
+  flex: 0 0 auto;
+  display: flex;
+  width: 28px;
+  height: 28px;
+  border-radius: 14px;
+  color: var(--wm-color-text-senary);
+  cursor: not-allowed;
+}
+
+/* 可发送：覆盖 SVG 圆底的填充色（CSS 优先级高于 SVG 展示属性） */
+.enabled {
+  cursor: pointer;
+
+  svg path:first-child {
+    fill: var(--wm-color-text-extra-primary);
+    fill-opacity: 1;
+  }
+
+  &:hover {
+    opacity: 0.85;
+  }
+}

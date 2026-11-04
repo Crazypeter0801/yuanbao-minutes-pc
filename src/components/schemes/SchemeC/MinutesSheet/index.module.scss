@@ -1,0 +1,247 @@
+/* 接在预览条下沿，左右与预览条对齐（父容器 padding 0 16） */
+.sheet {
+  position: absolute;
+  top: 100%;
+  left: 16px;
+  right: 16px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  max-height: 404px;
+  border: 0.5px solid var(--wm-color-line);
+  border-top: 0;
+  border-radius: 0 0 16px 16px;
+  background-color: var(--wm-color-background-bubble);
+  box-shadow: var(--wm-shadow-sheet);
+  transform-origin: top center;
+  animation: sheet-in 200ms cubic-bezier(0.3, 0.7, 0.2, 1);
+}
+
+@keyframes sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scaleY(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.body {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 12px 14px 4px;
+}
+
+.title {
+  margin: 0;
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 500;
+  color: var(--wm-color-text-primary);
+}
+
+.section {
+  margin-top: 12px;
+}
+
+.label {
+  margin: 0 0 4px;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 500;
+  color: var(--wm-color-text-tertiary);
+}
+
+.text {
+  margin: 0;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--wm-color-text-primary);
+  word-break: break-word;
+}
+
+.bold {
+  font-weight: 600;
+}
+
+/* ---------- 结论 ---------- */
+.conclusions {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.conclusion {
+  display: flex;
+  align-items: flex-start;
+
+  & + & {
+    margin-top: 8px;
+  }
+}
+
+.index {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  border-radius: 8px;
+  background-color: var(--wm-color-background-septenary);
+  font-size: 10px;
+  line-height: 16px;
+  font-weight: 500;
+  text-align: center;
+  color: var(--wm-color-text-secondary);
+}
+
+.conclusionBody {
+  flex: 1;
+  min-width: 0;
+  margin-left: 8px;
+}
+
+/* 悬停整条结论时才出现「追问」，跟在句末不额外占行，平时保持版面干净 */
+.askLink {
+  margin-left: 6px;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--wm-color-text-septenary);
+  white-space: nowrap;
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity 120ms ease-in-out;
+
+  .conclusion:hover &,
+  &:focus-visible {
+    opacity: 1;
+  }
+}
+
+/* ---------- 待办 ---------- */
+.todos {
+  display: flex;
+  flex-direction: column;
+}
+
+.todo {
+  display: flex;
+  align-items: flex-start;
+  margin: 0 -6px;
+  padding: 3px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--wm-color-background-septenary);
+  }
+}
+
+.checkbox {
+  position: relative;
+  flex: 0 0 auto;
+  width: 14px;
+  height: 14px;
+  margin-top: 3px;
+  border: 1px solid var(--wm-color-outline-secondary);
+  border-radius: 4px;
+  background-color: var(--wm-color-background-bubble);
+}
+
+.todoText {
+  flex: 1;
+  min-width: 0;
+  margin: 0 0 0 8px;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--wm-color-text-primary);
+}
+
+/* 负责人胶囊沿用 @人名的视觉 */
+.owner {
+  display: inline-block;
+  height: 18px;
+  margin: 1px 4px 0 0;
+  padding: 0 4px;
+  border-radius: 9px;
+  background-color: var(--wm-color-background-twenty-third);
+  line-height: 18px;
+  vertical-align: top;
+}
+
+.todoDone {
+  .checkbox {
+    border-color: var(--wm-color-text-septenary);
+    background-color: var(--wm-color-text-septenary);
+
+    /* 用旋转的 L 形边框画对勾 */
+    &::after {
+      content: '';
+      position: absolute;
+      top: 1px;
+      left: 4px;
+      width: 4px;
+      height: 7px;
+      border: solid var(--wm-color-text-senary);
+      border-width: 0 1.5px 1.5px 0;
+      transform: rotate(45deg);
+    }
+  }
+
+  .todoText {
+    color: var(--wm-color-text-tertiary);
+    text-decoration: line-through;
+  }
+
+  .owner {
+    background-color: var(--wm-color-background-septenary);
+  }
+}
+
+/* ---------- 待定 ---------- */
+.pending {
+  margin: 0;
+  padding-left: 18px;
+
+  li {
+    list-style: disc;
+  }
+}
+
+/* ---------- 底部操作 ---------- */
+.actions {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 10px 10px;
+  border-top: 0.5px solid var(--wm-color-outline-tertiary);
+
+  & > * + * {
+    margin-left: 6px;
+  }
+}
+
+.action {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--wm-color-text-secondary);
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--wm-color-background-septenary);
+  }
+}
+
+.actionPrimary {
+  background-color: var(--wm-color-background-twenty-third);
+  color: var(--wm-color-text-septenary);
+
+  &:hover {
+    background-color: var(--wm-color-background-twenty-third);
+    opacity: 0.85;
+  }
+}

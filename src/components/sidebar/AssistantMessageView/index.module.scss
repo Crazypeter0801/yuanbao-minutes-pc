@@ -1,0 +1,137 @@
+/* 消息组：署名行 + 气泡，间距 4（Figma layout_NEIQTT） */
+.group {
+  display: flex;
+  flex-direction: column;
+
+  & > * + * {
+    margin-top: 4px;
+  }
+}
+
+/* 方案 C：无署名，正文与追问之间留更多呼吸 */
+.groupPlain > * + * {
+  margin-top: 10px;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+
+  & > * + * {
+    margin-left: 6px;
+  }
+}
+
+.name {
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--wm-color-text-secondary);
+}
+
+.time {
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--wm-color-text-disabled);
+}
+
+.bubbles {
+  display: flex;
+  flex-direction: column;
+
+  & > * + * {
+    margin-top: 4px;
+  }
+}
+
+/* 气泡 padding 10 12，底 #F3F3F4 */
+.bubble {
+  padding: 10px 12px;
+  background-color: var(--wm-color-background-septenary);
+}
+
+/* 方案 A：1 16 16 16（Figma 248:14881） */
+.round {
+  border-radius: 1px 16px 16px 16px;
+}
+
+/* 方案 B：1 8 8 8；组内非末条 1 8 8 1（Figma 248:13424） */
+.compact {
+  border-radius: 1px 8px 8px 8px;
+}
+
+.compactJoined {
+  border-radius: 1px 8px 8px 1px;
+}
+
+.plain {
+  padding: 0 2px;
+}
+
+/* 18×18 链接徽标，跟在最后一行文字后（Figma 248:14898） */
+.linkBadge {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+  margin: 1px 0 0 2px;
+  border-radius: 9px;
+  vertical-align: top;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+/* 引用来源 */
+.source {
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  max-width: 100%;
+  padding: 2px 8px 2px 6px;
+  border-radius: 10px;
+  background-color: var(--wm-color-background-septenary);
+  color: var(--wm-color-text-tertiary);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--wm-color-text-secondary);
+  }
+}
+
+.sourceText {
+  min-width: 0;
+  margin-left: 4px;
+  overflow: hidden;
+  font-size: 10px;
+  line-height: 16px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* 追问建议：白底细描边胶囊（参考 Granola 的 Say more） */
+.followUps {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 2px 0 -6px;
+
+  & > * {
+    margin: 0 6px 6px 0;
+  }
+}
+
+.followUp {
+  padding: 4px 12px;
+  border: 0.5px solid var(--wm-color-line);
+  border-radius: 14px;
+  background-color: var(--wm-color-background-bubble);
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--wm-color-text-primary);
+  cursor: pointer;
+  transition: background-color 120ms ease-in-out;
+
+  &:hover {
+    background-color: var(--wm-color-background-septenary);
+  }
+}

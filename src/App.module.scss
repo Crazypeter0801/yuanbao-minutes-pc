@@ -1,0 +1,25 @@
+.page {
+  position: relative;
+  min-height: 100vh;
+  padding: 40px 32px 64px;
+}
+
+/* 固定壁纸：滚动方案时背景不动 */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-color: var(--wm-color-stage-background);
+  background-image: url('./assets/background/tahoe-light.jpg');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+.list {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}

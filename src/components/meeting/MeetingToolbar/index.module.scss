@@ -1,0 +1,63 @@
+/* padding 0 16 16，三段 space-between（Figma layout_KKXALN） */
+.toolbar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 52px;
+  padding: 0 16px 16px;
+}
+
+.interact {
+  display: flex;
+  align-items: center;
+
+  & > * + * {
+    margin-left: 8px;
+  }
+}
+
+.input {
+  display: flex;
+  align-items: center;
+  width: 120px;
+  height: 36px;
+  padding: 6px 16px 6px 8px;
+  border-radius: 8px;
+  background-color: var(--wm-color-control-fill);
+}
+
+.inputText {
+  flex: 1;
+  min-width: 0;
+  margin-left: 4px;
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--wm-color-text-tertiary);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+
+  & > * + * {
+    margin-left: 4px;
+  }
+}
+
+.control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 36px;
+  border-radius: 8px;
+  background-color: var(--wm-color-control-fill);
+
+  & > * + * {
+    margin-left: 4px;
+  }
+}
