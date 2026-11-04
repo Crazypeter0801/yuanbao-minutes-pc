@@ -50,6 +50,18 @@
   width: 56px;
 }
 
+/* 可点击的按钮（元宝）：hover 叠一层浅灰，圆角 6 与设计稿 hover 态一致 */
+.slotAction {
+  border-radius: 6px;
+  cursor: pointer;
+  outline: none;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--wm-color-control-hover);
+  }
+}
+
 /* ---------- 成员按钮：图标含数字，需拆开实现（Figma 316:2088） ---------- */
 .invite {
   position: absolute;

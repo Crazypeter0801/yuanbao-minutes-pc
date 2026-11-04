@@ -11,17 +11,25 @@ import IconTbMore from '@/assets/d2c/icons/v1/icon-tb-more';
 import IconTbRecord from '@/assets/d2c/icons/v1/icon-tb-record';
 import IconTbShare from '@/assets/d2c/icons/v1/icon-tb-share';
 import IconTbYuanbao from '@/assets/d2c/icons/v1/icon-tb-yuanbao';
+import { Pressable } from '@/components/common/Pressable';
 import styles from './index.module.scss';
 
 /** 参会人数（成员按钮右上角的数字） */
 const MEMBER_COUNT = 8;
 
+interface MeetingToolbarProps {
+  /** 元宝侧栏当前是否展开 */
+  yuanbaoOpen: boolean;
+  /** 点击胶囊里的元宝按钮：收起时打开侧栏，展开时收起 */
+  onToggleYuanbao: () => void;
+}
+
 /**
  * 会议底部工具栏（Figma 257:1968）
  * 左：表情 / 聊天；中：灰底胶囊（麦克风 / 摄像头 / 共享 / 成员 / 录制 / 元宝 / 更多）；右：离开会议。
- * 说明：本期仅做视觉还原，不挂交互。
+ * 说明：仅「元宝」按钮可点（开关右侧元宝侧栏），其余按钮只做视觉还原。
  */
-export const MeetingToolbar: FC = () => (
+export const MeetingToolbar: FC<MeetingToolbarProps> = ({ yuanbaoOpen, onToggleYuanbao }) => (
   <div className={styles.toolbar}>
     <div className={styles.side}>
       <IconTbEmoji />
@@ -57,9 +65,15 @@ export const MeetingToolbar: FC = () => (
       <span className={`${styles.slot} ${styles.slotNarrow}`}>
         <IconTbRecord />
       </span>
-      <span className={`${styles.slot} ${styles.slotNarrow}`}>
+      <Pressable
+        as="span"
+        className={`${styles.slot} ${styles.slotNarrow} ${styles.slotAction}`}
+        onClick={onToggleYuanbao}
+        ariaLabel={yuanbaoOpen ? '收起元宝' : '打开元宝'}
+        title={yuanbaoOpen ? '收起元宝' : '打开元宝'}
+      >
         <IconTbYuanbao />
-      </span>
+      </Pressable>
       <span className={`${styles.slot} ${styles.slotNarrow}`}>
         <IconTbMore />
       </span>

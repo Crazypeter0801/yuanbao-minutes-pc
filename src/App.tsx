@@ -1,13 +1,12 @@
 import { useState } from 'react';
-import IconSideLogo from '@/assets/d2c/icons/v1/icon-side-logo';
-import { Pressable } from '@/components/common/Pressable';
 import { MeetingWindow } from '@/components/meeting/MeetingWindow';
 import { YuanbaoSidebar } from '@/components/YuanbaoSidebar';
 import styles from './App.module.scss';
 
 /**
  * V1 · 腾讯会议 PC + 元宝 Agent 对话区（Figma 257:1540）
- * 窗口 1440×720：左侧会议区为静态还原，右侧元宝对话区可交互。
+ * 窗口 1440×760：左侧会议区为静态还原，右侧元宝对话区可交互。
+ * 侧栏右上角 × 关闭后，通过底部工具栏胶囊里的「元宝」按钮重新打开（不再另设悬浮入口）。
  * 壁纸固定铺满视口，窗口居中。
  */
 export default function App() {
@@ -19,20 +18,8 @@ export default function App() {
 
       <main className={styles.stage}>
         <div className={styles.window}>
-          <MeetingWindow />
-          {sidebarOpen ? (
-            <YuanbaoSidebar onClose={() => setSidebarOpen(false)} />
-          ) : (
-            <Pressable
-              className={styles.reopen}
-              onClick={() => setSidebarOpen(true)}
-              ariaLabel="打开元宝"
-              title="打开元宝"
-            >
-              <IconSideLogo />
-              <span className={styles.reopenText}>元宝</span>
-            </Pressable>
-          )}
+          <MeetingWindow yuanbaoOpen={sidebarOpen} onToggleYuanbao={() => setSidebarOpen((open) => !open)} />
+          {sidebarOpen && <YuanbaoSidebar onClose={() => setSidebarOpen(false)} />}
         </div>
       </main>
     </div>

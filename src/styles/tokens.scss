@@ -44,6 +44,13 @@
   --wm-color-window-background: #f0f2f7;
   --wm-color-video-placeholder: #d9d9d9;
   --wm-color-name-tag: rgba(0, 0, 0, 0.4);
+  /* 顶部参会人条（Figma 317:5308） */
+  --wm-color-participant-tile: #e2e3e8;
+  --wm-color-participant-name-tag: rgba(255, 255, 255, 0.8);
+  --wm-color-participant-name: #303440;
+  --wm-color-speaking: #16d968;
+  /* 胶囊按钮 hover（仅元宝按钮可点） */
+  --wm-color-control-hover: rgba(0, 0, 0, 0.06);
   --wm-color-stage-background: #eef1f6;
   --wm-color-control-fill: rgba(0, 0, 0, 0.06);
   --wm-color-icon-strong: #373c48;

@@ -1,0 +1,174 @@
+/* 画面区：纵向，间距 10，padding 0 16 16（Figma 257:1966） */
+.stage {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 0 16px 16px;
+
+  & > * + * {
+    margin-top: 10px;
+  }
+}
+
+/* ---------- 参会人头像条（Figma 317:5308，1002×118） ---------- */
+
+/* 右侧 92.7% → 100% 渐隐（设计稿用渐变矩形做蒙版） */
+.strip {
+  flex: 0 0 auto;
+  height: 118px;
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, rgba(0, 0, 0, 1) 92.73%, rgba(0, 0, 0, 0) 100%);
+}
+
+/* 轨道整体左移（Figma Group 1312317933 x ≈ -0.5，实测 2x 稿各块左缘均比整数位左偏 1 物理像素） */
+.stripTrack {
+  display: flex;
+  margin-left: -0.5px;
+
+  & > * + * {
+    margin-left: 12px;
+  }
+}
+
+.tile {
+  position: relative;
+  flex: 0 0 auto;
+  width: 210px;
+  height: 118px;
+  overflow: hidden;
+  border-radius: 16px;
+  background-color: var(--wm-color-participant-tile);
+}
+
+.avatar,
+.avatarGlow {
+  position: absolute;
+  left: 69px;
+  display: block;
+  width: 72px;
+  height: 72px;
+  user-select: none;
+}
+
+.avatar {
+  top: 23px;
+}
+
+.avatarGlow {
+  top: 33px;
+  opacity: 0.35;
+  filter: blur(20px);
+}
+
+.avatarGlowStrong {
+  opacity: 0.5;
+}
+
+/* 说话中：80 / 88 / 100 三圈，线宽 1 / 0.75 / 0.5（Figma 317:5335-5337） */
+.rings {
+  position: absolute;
+  top: 9px;
+  left: 55px;
+  width: 100px;
+  height: 100px;
+}
+
+.ring {
+  position: absolute;
+  border-radius: 50%;
+}
+
+.ringInner {
+  top: 10px;
+  left: 10px;
+  width: 80px;
+  height: 80px;
+  box-shadow: inset 0 0 0 1px var(--wm-color-speaking);
+}
+
+.ringMiddle {
+  top: 6px;
+  left: 6px;
+  width: 88px;
+  height: 88px;
+  opacity: 0.6;
+  box-shadow: inset 0 0 0 0.75px var(--wm-color-speaking);
+}
+
+.ringOuter {
+  top: 0;
+  left: 0;
+  width: 100px;
+  height: 100px;
+  opacity: 0.3;
+  box-shadow: inset 0 0 0 0.5px var(--wm-color-speaking);
+}
+
+/* 名字：白 80% + 毛玻璃，圆角 4 4 4 10，距左 4、距底 4（Figma 317:5321） */
+.tileName {
+  position: absolute;
+  left: 4px;
+  bottom: 4px;
+  padding: 3px 4px;
+  border-radius: 4px 4px 4px 10px;
+  background-color: var(--wm-color-participant-name-tag);
+  backdrop-filter: blur(20px);
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 500;
+  color: var(--wm-color-participant-name);
+  white-space: nowrap;
+}
+
+/* ---------- 主讲人大画面（Figma 316:2002） ---------- */
+
+.speaker {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: var(--wm-color-video-placeholder);
+}
+
+/* 原图节点宽度撑满、高 794，从顶部开始、超出裁掉（Figma 144:17630） */
+.speakerVideo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+  height: 794px;
+  max-width: none;
+  object-fit: cover;
+  object-position: center top;
+  user-select: none;
+}
+
+/* 名字水牌：宽 102、padding 4、黑 40% + 毛玻璃，距左 6、距底 6（Figma 144:17631） */
+.nameTag {
+  position: absolute;
+  left: 6px;
+  bottom: 6px;
+  display: flex;
+  align-items: flex-end;
+  width: 102px;
+  padding: 4px;
+  border-radius: 6px;
+  background-color: var(--wm-color-name-tag);
+  backdrop-filter: blur(10px);
+
+  & > * + * {
+    margin-left: 2px;
+  }
+}
+
+.name {
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--wm-color-text-senary);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
