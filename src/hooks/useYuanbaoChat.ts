@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { answerQuestion, buildStageSummary, createId } from '@/data/schemeContent';
+import { answerQuestion, buildStageSummary, createId } from '@/data/yuanbaoContent';
 import type { AssistantMessage, ChatMessage } from '@/types/chat';
 
 /** 模拟元宝思考耗时（ms） */

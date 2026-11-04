@@ -1,63 +1,103 @@
-/* padding 0 16 16，三段 space-between（Figma layout_KKXALN） */
+/* padding 0 16 16，三段 space-between（Figma layout_712GEB） */
 .toolbar {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 52px;
+  height: 64px;
   padding: 0 16px 16px;
 }
 
-.interact {
+/* 左右两侧各 120 宽，保证中间胶囊居中（Figma 316:2596 / 316:2616） */
+.side {
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
+  width: 120px;
+
+  & > * + * {
+    margin-left: 12px;
+  }
+}
+
+.sideRight {
+  justify-content: flex-end;
+}
+
+/* 中间灰底胶囊：高 48、圆角 12、子项间距 8（Figma 316:2048） */
+.controls {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  border-radius: 12px;
+  background-color: var(--wm-color-control-fill);
 
   & > * + * {
     margin-left: 8px;
   }
 }
 
-.input {
-  display: flex;
-  align-items: center;
-  width: 120px;
-  height: 36px;
-  padding: 6px 16px 6px 8px;
-  border-radius: 8px;
-  background-color: var(--wm-color-control-fill);
-}
-
-.inputText {
-  flex: 1;
-  min-width: 0;
-  margin-left: 4px;
+.slot {
+  position: relative;
+  flex: 0 0 auto;
+  display: block;
+  width: 64px;
+  height: 30px;
   overflow: hidden;
-  font-size: 12px;
-  line-height: 16px;
-  color: var(--wm-color-text-tertiary);
-  white-space: nowrap;
-  text-overflow: ellipsis;
 }
 
-.controls {
-  display: flex;
-  align-items: center;
-
-  & > * + * {
-    margin-left: 4px;
-  }
+.slotNarrow {
+  width: 56px;
 }
 
-.control {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 54px;
-  height: 36px;
-  border-radius: 8px;
-  background-color: var(--wm-color-control-fill);
+/* ---------- 成员按钮：图标含数字，需拆开实现（Figma 316:2088） ---------- */
+.invite {
+  position: absolute;
+  top: 3px;
+  left: 20px;
+  width: 24px;
+  height: 24px;
+}
 
-  & > * + * {
-    margin-left: 4px;
-  }
+.inviteHead {
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background-color: var(--wm-color-icon-strong);
+}
+
+.inviteFriendHead {
+  position: absolute;
+  top: 13px;
+  left: 13px;
+  display: flex;
+}
+
+.inviteBody {
+  position: absolute;
+  top: 14px;
+  left: 2px;
+  display: flex;
+}
+
+.inviteCount {
+  position: absolute;
+  top: 1px;
+  left: 18px;
+  width: 6px;
+  font-size: 10px;
+  line-height: 12px;
+  font-weight: 500;
+  text-align: center;
+  color: var(--wm-color-icon-strong);
+}
+
+.arrow {
+  position: absolute;
+  top: 3px;
+  left: 48px;
+  display: flex;
 }

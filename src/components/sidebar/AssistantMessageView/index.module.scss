@@ -54,6 +54,11 @@
   border-radius: 1px 16px 16px 16px;
 }
 
+/* 句首带 @人名胶囊的气泡，左上角放大到 4，给胶囊留圆角（Figma 316:2659） */
+.roundMention {
+  border-top-left-radius: 4px;
+}
+
 /* 方案 B：1 8 8 8；组内非末条 1 8 8 1（Figma 248:13424） */
 .compact {
   border-radius: 1px 8px 8px 8px;

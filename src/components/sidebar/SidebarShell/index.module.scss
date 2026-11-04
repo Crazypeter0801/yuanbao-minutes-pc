@@ -4,7 +4,9 @@
   display: flex;
   flex-direction: column;
   width: 400px;
-  height: 674px;
+  /* 白色卡片悬浮在窗口底色上：上右下各留 6（Figma 316:2624） */
+  margin: 6px 6px 6px 0;
   overflow: hidden;
+  border-radius: 12px;
   background-color: var(--wm-color-background-quaternary);
 }

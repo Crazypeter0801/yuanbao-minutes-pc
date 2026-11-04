@@ -1,8 +1,8 @@
 import { useState, type FC } from 'react';
-import IconSideClose from '@/assets/d2c/icons/schemes/icon-side-close';
-import IconSideLogo from '@/assets/d2c/icons/schemes/icon-side-logo';
-import IconSideMore from '@/assets/d2c/icons/schemes/icon-side-more';
-import IconSidePip from '@/assets/d2c/icons/schemes/icon-side-pip';
+import IconSideClose from '@/assets/d2c/icons/v1/icon-side-close';
+import IconSideLogo from '@/assets/d2c/icons/v1/icon-side-logo';
+import IconSideMore from '@/assets/d2c/icons/v1/icon-side-more';
+import IconSidePip from '@/assets/d2c/icons/v1/icon-side-pip';
 import { PopMenu, type PopMenuItem } from '@/components/common/PopMenu';
 import { Pressable } from '@/components/common/Pressable';
 import styles from './index.module.scss';

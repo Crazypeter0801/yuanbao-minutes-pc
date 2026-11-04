@@ -40,6 +40,10 @@
 
   /* 画布 / 控件（设计稿未给 token，按原值补充） */
   --wm-color-page-background: #f5f7fc;
+  /* V1 窗口底色（Figma 257:1540 fill） */
+  --wm-color-window-background: #f0f2f7;
+  --wm-color-video-placeholder: #d9d9d9;
+  --wm-color-name-tag: rgba(0, 0, 0, 0.4);
   --wm-color-stage-background: #eef1f6;
   --wm-color-control-fill: rgba(0, 0, 0, 0.06);
   --wm-color-icon-strong: #373c48;

@@ -1,12 +1,10 @@
-/* 376 宽居中，padding 0 12（Figma layout_1NB1TS） */
+/* 撑满侧栏宽度，padding 0 12（Figma 316:2625） */
 .header {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 376px;
   height: 40px;
-  margin: 0 auto;
   padding: 0 12px;
 }
 

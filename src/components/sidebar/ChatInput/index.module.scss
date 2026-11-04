@@ -1,0 +1,41 @@
+/* padding 10、间距 16、圆角 24、0.5px 内描边 + 浮层阴影（Figma 316:2725）
+   描边用 inset box-shadow：与 Figma 内侧描边一致，不占布局，单行高度稳定为 48 */
+.input {
+  display: flex;
+  align-items: flex-end;
+  padding: 10px;
+  border-radius: 24px;
+  background-color: var(--wm-color-background-bubble);
+  box-shadow: inset 0 0 0 0.5px var(--wm-color-line), var(--wm-shadow-float);
+  transition: box-shadow 150ms ease-in-out;
+
+  &:focus-within {
+    box-shadow: inset 0 0 0 0.5px var(--wm-color-background-twenty-third), var(--wm-shadow-float);
+  }
+
+  & > * + * {
+    margin-left: 16px;
+  }
+}
+
+/* 文字 14/20、左右 6；单行时上下各留 4 与 28 的按钮居中对齐 */
+.textarea {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: block;
+  min-height: 20px;
+  margin: 4px 0;
+  padding: 0 6px;
+  border: 0;
+  outline: 0;
+  resize: none;
+  background: none;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--wm-color-text-extra-primary);
+
+  &::placeholder {
+    color: var(--wm-color-text-extra-quinary);
+  }
+}

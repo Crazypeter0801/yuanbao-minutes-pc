@@ -30,9 +30,15 @@
 - 禁止使用原生 `<button>`（默认样式难清除），统一用 `components/common/Pressable`。
 - 图片一律 `import` 后使用，禁止字符串相对路径；SVG 图标用 SVGR 组件（`src/assets/d2c/icons`）。
 - 纯图标按钮必须提供 `ariaLabel`；装饰性元素加 `aria-hidden`。
-- 交互状态不放组件内，统一由 `useMinutesPanel` 管理；组件只渲染 props。
+- 交互状态放在 hooks（`useYuanbaoChat` / `useListening` / `useToast`）并由 `YuanbaoSidebar` 组合，展示组件只渲染 props。
 
 ## 资源
 
 - `src/assets/d2c/` 由 D2C 脚本生成，不手工编辑；需要调整请改设计稿后重新导出。
 - 该目录不参与 ESLint（`.eslintrc.cjs` 已忽略）。
+
+## 分支
+
+- `v1`：当前开发分支，对应 Figma `257:1540`。
+- `main`：三方案对比页的最后状态（只读）。
+- `archive/*` 分支与 `archive/*` 标签：历史版本归档，不在上面开发。归档说明见 `../_archive/2026-11-04_元宝侧栏历史版本/README.md`。

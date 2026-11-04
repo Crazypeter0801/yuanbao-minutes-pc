@@ -1,6 +1,6 @@
 import type { FC } from 'react';
-import IconSideLink from '@/assets/d2c/icons/schemes/icon-side-link';
-import IconSideStar from '@/assets/d2c/icons/schemes/icon-side-star';
+import IconSideLink from '@/assets/d2c/icons/v1/icon-side-link';
+import IconSideStar from '@/assets/d2c/icons/v1/icon-side-star';
 import { Pressable } from '@/components/common/Pressable';
 import { RichText } from '@/components/sidebar/RichText';
 import type { AssistantMessage } from '@/types/chat';
@@ -44,9 +44,14 @@ export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
         {message.bubbles.map((bubble, index) => {
           const shapeClass = isPlain
             ? styles.plain
-            : `${styles.bubble} ${shape === 'round' ? styles.round : styles.compact} ${
-                shape === 'compact' && index !== lastIndex ? styles.compactJoined : ''
-              }`;
+            : [
+                styles.bubble,
+                shape === 'round' ? styles.round : styles.compact,
+                shape === 'compact' && index !== lastIndex ? styles.compactJoined : '',
+                shape === 'round' && bubble.mention ? styles.roundMention : '',
+              ]
+                .filter(Boolean)
+                .join(' ');
 
           return (
             <div className={shapeClass} key={bubble.id}>

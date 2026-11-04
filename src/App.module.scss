@@ -1,10 +1,9 @@
 .page {
   position: relative;
   min-height: 100vh;
-  padding: 40px 32px 64px;
 }
 
-/* 固定壁纸：滚动方案时背景不动 */
+/* 固定壁纸：滚动时背景不动 */
 .backdrop {
   position: fixed;
   inset: 0;
@@ -16,10 +15,51 @@
   background-size: cover;
 }
 
-.list {
+.stage {
   position: relative;
   z-index: 1;
   display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 32px;
+}
+
+/* V1 窗口 1440×720、圆角 12、底色 #F0F2F7（Figma 257:1540） */
+.window {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  width: 1440px;
+  height: 720px;
+  overflow: hidden;
+  border-radius: 12px;
+  background-color: var(--wm-color-window-background);
+  box-shadow: var(--wm-shadow-canvas);
+}
+
+.reopen {
+  position: absolute;
+  top: 48px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  padding: 6px 12px 6px 10px;
+  border-radius: 16px;
+  background-color: var(--wm-color-background-senary);
+  box-shadow: var(--wm-shadow-popup);
+  color: var(--wm-color-text-secondary);
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--wm-color-background-septenary);
+  }
+}
+
+.reopenText {
+  margin-left: 6px;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--wm-color-text-primary);
+  white-space: nowrap;
 }

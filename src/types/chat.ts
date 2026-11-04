@@ -1,5 +1,5 @@
 /**
- * 元宝侧栏的数据结构（三个方案共用）
+ * 元宝侧栏的数据结构
  * 说明：当前为前端 mock，接入真实接口时保持这套结构即可，视图无需改动。
  */
 
@@ -45,21 +45,3 @@ export interface UserMessage {
 }
 
 export type ChatMessage = AssistantMessage | UserMessage;
-
-/** 纪要中的待办 */
-export interface MinutesTodo {
-  id: string;
-  owner: string;
-  content: string;
-  done: boolean;
-}
-
-/** 方案 C 抽屉里的结构化纪要 */
-export interface MeetingMinutes {
-  title: string;
-  overview: string;
-  conclusions: { id: string; title: string; detail: string }[];
-  todos: MinutesTodo[];
-  /** 待定事项 */
-  pending: string[];
-}
