@@ -1,9 +1,18 @@
-/* 正文 12/20（Figma style_W1CWAP） */
+/*
+ * 元宝消息富文本
+ * 正文 13/21：无气泡排版下 12/20 偏细弱，往上提一档，行距同步放宽；
+ * 段落、列表、小标题之间给 8px 间距，块与块才分得开。
+ */
+
 .rich {
-  font-size: 12px;
-  line-height: 20px;
+  font-size: 13px;
+  line-height: 21px;
   color: var(--wm-color-text-primary);
   word-break: break-word;
+
+  & > * + * {
+    margin-top: 8px;
+  }
 }
 
 .paragraph,
@@ -11,22 +20,36 @@
   margin: 0;
 }
 
-/* 小标题 / 加粗片段 600（Figma style_NY5RUW） */
-.heading,
+/* 小标题：与正文同字号但加粗，靠字重和间距立层级，不靠字号跳变 */
+.heading {
+  font-weight: 600;
+}
+
+/* 小标题下面紧跟的内容收一点，让标题和内容成组 */
+.heading + * {
+  margin-top: 4px;
+}
+
+/* 加粗片段 600 */
 .bold {
   font-weight: 600;
 }
 
 .list {
   margin: 0;
-  padding-left: 18px;
+  padding-left: 16px;
+
+  & > * + * {
+    margin-top: 4px;
+  }
 }
 
 .item {
   list-style: disc;
 
+  /* 圆点用更浅的颜色，不跟正文抢注意力 */
   &::marker {
-    font-size: 10px;
+    color: var(--wm-color-text-disabled);
   }
 }
 
@@ -34,7 +57,7 @@
 .mention {
   display: inline-block;
   height: 18px;
-  margin: 1px 4px 0 0;
+  margin: 2px 4px 0 0;
   padding: 0 4px;
   border-radius: 9px;
   background-color: var(--wm-color-background-twenty-third);

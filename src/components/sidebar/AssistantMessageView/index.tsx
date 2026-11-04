@@ -1,6 +1,5 @@
 import type { FC } from 'react';
 import IconSideLink from '@/assets/d2c/icons/v1/icon-side-link';
-import IconSideStar from '@/assets/d2c/icons/v1/icon-side-star';
 import { Pressable } from '@/components/common/Pressable';
 import { RichText } from '@/components/sidebar/RichText';
 import type { AssistantMessage } from '@/types/chat';
@@ -82,13 +81,6 @@ export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
           );
         })}
       </div>
-
-      {message.source && (
-        <Pressable className={styles.source} onClick={onOpenSource} ariaLabel={message.source}>
-          <IconSideStar width={12} height={12} />
-          <span className={styles.sourceText}>{message.source}</span>
-        </Pressable>
-      )}
 
       {showFollowUps && message.followUps && message.followUps.length > 0 && (
         <div className={styles.followUps}>
