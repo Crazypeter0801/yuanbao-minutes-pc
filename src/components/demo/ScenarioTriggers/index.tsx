@@ -10,9 +10,9 @@ interface ScenarioTriggersProps {
 }
 
 /**
- * 主动触发场景条（演示用，非产品功能）
- * 贴在侧栏头部下方、消息流之上，不参与滚动：演示时随手一点就能让元宝在该时机主动开口。
- * 上线前整块删掉即可，不牵连其它组件。
+ * 主动触发场景切换条（演示用，非产品功能）
+ * 浮在会议窗口上方的壁纸上，不属于窗口内部：演示时随手一点，就能让元宝在该时机开口，
+ * 或模拟用户自己发一条任务。上线前整块删掉即可，不牵连其它组件。
  */
 export const ScenarioTriggers: FC<ScenarioTriggersProps> = ({ scenarios, onTrigger }) => (
   <div className={styles.bar} aria-label="主动触发场景">

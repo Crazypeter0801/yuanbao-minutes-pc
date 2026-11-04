@@ -94,8 +94,11 @@
   /* 壁纸底上托起窗口的落影 */
   --wm-shadow-canvas: 0 18px 48px rgba(2, 26, 58, 0.28), 0 2px 8px rgba(2, 26, 58, 0.12);
 
-  /* 壁纸上的浮层（方案标签） */
+  /* 壁纸上的浮层（方案标签 / 演示用场景切换条） */
   --wm-color-overlay-chip: rgba(8, 22, 44, 0.42);
+  --wm-color-overlay-chip-hover: rgba(8, 22, 44, 0.6);
+  --wm-color-overlay-chip-line: rgba(255, 255, 255, 0.16);
+  --wm-color-overlay-label: rgba(255, 255, 255, 0.72);
 
   /* 字体 */
   --wm-font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial,

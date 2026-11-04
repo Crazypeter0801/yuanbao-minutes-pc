@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState, type FC } from 'react';
+import { useMemo, type FC } from 'react';
 import type { PopMenuItem } from '@/components/common/PopMenu';
 import type { ArtifactItem } from '@/types/artifact';
 import type { AssistantMessage } from '@/types/chat';
@@ -8,19 +8,20 @@ import { ChatInput } from '@/components/sidebar/ChatInput';
 import { ChatList } from '@/components/sidebar/ChatList';
 import { MessageStream } from '@/components/sidebar/MessageStream';
 import { NotePill } from '@/components/sidebar/NotePill';
-import { ScenarioTriggers } from '@/components/sidebar/ScenarioTriggers';
 import { SidebarHeader } from '@/components/sidebar/SidebarHeader';
 import { SidebarShell } from '@/components/sidebar/SidebarShell';
-import { initialArtifacts } from '@/data/artifacts';
-import { proactiveScenarios } from '@/data/proactiveScenarios';
 import { meetingSession } from '@/data/meetingSession';
-import { buildScreenshotNote, initialMessages } from '@/data/yuanbaoContent';
+import { buildScreenshotNote } from '@/data/yuanbaoContent';
 import { useListening } from '@/hooks/useListening';
 import { useToast } from '@/hooks/useToast';
-import { useYuanbaoChat } from '@/hooks/useYuanbaoChat';
+import type { YuanbaoSession } from '@/hooks/useYuanbaoSession';
 import styles from './index.module.scss';
 
 interface YuanbaoSidebarProps {
+  /** 元宝会话（消息流 + 笔记面板状态），由 App 持有，窗口外的演示条共用同一份 */
+  chat: YuanbaoSession;
+  /** 元宝本轮产出的文件 */
+  artifacts: ArtifactItem[];
   /** 关闭侧栏 */
   onClose: () => void;
 }
@@ -30,22 +31,10 @@ interface YuanbaoSidebarProps {
  * - 元宝的实时纪要与用户的提问 / 回答在同一条时间流里；
  * - 底部：「元宝正在记笔记」状态条（保存截图 / 暂停，点击展开查看元宝主动记下的内容）+ 输入框。
  */
-export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ onClose }) => {
+export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ chat, artifacts, onClose }) => {
   const { toast, showToast } = useToast();
-  const chat = useYuanbaoChat(initialMessages);
-  const [notePanelOpen, setNotePanelOpen] = useState(false);
   const { isListening, toggleListening } = useListening((listening) =>
     showToast(listening ? '元宝继续记笔记' : '已暂停记笔记'),
-  );
-
-  // 提问前先收起笔记面板：展开态是 400 高的浮层，会整块盖住刚出现的回答
-  const askChat = chat.ask;
-  const ask = useCallback(
-    (text: string) => {
-      setNotePanelOpen(false);
-      askChat(text);
-    },
-    [askChat],
   );
 
   const menuItems = useMemo<PopMenuItem[]>(
@@ -80,19 +69,6 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ onClose }) => {
         onClose={onClose}
       />
 
-      {/* 演示用：元宝主动开口的三个时机 + 用户自己发任务的一条 */}
-      <ScenarioTriggers
-        scenarios={proactiveScenarios}
-        onTrigger={(scenario) => {
-          // ask 走正常问答流程（先出用户气泡）；nudge 是元宝主动推一条消息
-          if (scenario.kind === 'ask') {
-            ask(scenario.userText);
-          } else {
-            chat.push(scenario.build());
-          }
-        }}
-      />
-
       <MessageStream
         className={styles.stream}
         scrollKey={`${chat.messages.length}-${chat.isThinking}`}
@@ -102,7 +78,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ onClose }) => {
           messages={chat.messages}
           shape="round"
           isThinking={chat.isThinking}
-          onFollowUp={ask}
+          onFollowUp={chat.ask}
           onOpenSource={openSource}
         />
       </MessageStream>
@@ -112,16 +88,16 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ onClose }) => {
         <div className={styles.statusRow}>
           <NotePill
             isListening={isListening}
-            expanded={notePanelOpen}
-            onExpandedChange={setNotePanelOpen}
+            expanded={chat.notePanelOpen}
+            onExpandedChange={chat.setNotePanelOpen}
             notes={notes}
             onScreenshot={saveScreenshot}
             onToggleListening={toggleListening}
             onOpenSource={openSource}
           />
-          <ArtifactEntry artifacts={initialArtifacts} onOpen={openArtifact} />
+          <ArtifactEntry artifacts={artifacts} onOpen={openArtifact} />
         </div>
-        <ChatInput placeholder="提问或创建任务" onSubmit={ask} />
+        <ChatInput placeholder="提问或创建任务" onSubmit={chat.ask} />
       </div>
     </SidebarShell>
   );

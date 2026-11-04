@@ -25,6 +25,24 @@
   padding: 32px;
 }
 
+/* 窗口容器：场景切换条绝对定位在窗口上方，不参与排版，窗口位置与居中都保持不变 */
+.frame {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+/* 浮在窗口上方的壁纸上，水平居中 */
+.scenarioBar {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
 /* V1 窗口 1440×760、圆角 12、底色 #F0F2F7（Figma 257:1540） */
 .window {
   position: relative;
