@@ -1,0 +1,128 @@
+@charset "UTF-8";
+/**
+ * 设计 Token（来自 Figma 全局色板）
+ * 业务样式一律引用 CSS 变量，禁止在组件里写死 HEX。
+ * 命名沿用设计侧 met(--wm-color-xxx) 的 token 名，便于后续与主工程对齐。
+ */
+:root {
+  /* 文本 */
+  --wm-color-text-primary: #000000;
+  --wm-color-text-secondary: #4e5461;
+  --wm-color-text-tertiary: #7b818f;
+  --wm-color-text-disabled: #b0b6c3;
+  --wm-color-text-senary: #ffffff;
+  --wm-color-text-septenary: #0066ff;
+  /* 输入框体系（设计稿 New text&icon_extra_*） */
+  --wm-color-text-extra-primary: #0d0d0d;
+  --wm-color-text-extra-quinary: #a6a6a6;
+  --wm-color-icon-ink: #1a1a1a;
+  /* 背景 */
+  --wm-color-background-quaternary: #ffffff;
+  --wm-color-background-senary: #ffffff;
+  --wm-color-background-twenty-first: #ffffff;
+  --wm-color-background-twenty-second: rgba(224, 235, 255, 0.9);
+  --wm-color-background-twenty-third: rgba(0, 102, 255, 0.15);
+  --wm-color-background-septenary: #f3f3f4;
+  --wm-color-background-bubble: #ffffff;
+  /* 用户提问气泡（设计稿未给，取品牌蓝 8% 与助手灰泡区分） */
+  --wm-color-background-user-bubble: rgba(0, 102, 255, 0.08);
+  --wm-color-background-link-badge: #e6e8eb;
+  --wm-color-background-sheet-mask: rgba(255, 255, 255, 0.72);
+  /* 描边 */
+  --wm-color-outline-secondary: #d3d6db;
+  --wm-color-outline-tertiary: #ebedf2;
+  --wm-color-line: rgba(0, 0, 0, 0.08);
+  /* 语义色 */
+  --wm-color-error-primary: #fa4e32;
+  --wm-color-success-primary: #27d08e;
+  /* 画布 / 控件（设计稿未给 token，按原值补充） */
+  --wm-color-page-background: #f5f7fc;
+  --wm-color-stage-background: #eef1f6;
+  --wm-color-control-fill: rgba(0, 0, 0, 0.06);
+  --wm-color-icon-strong: #373c48;
+  --wm-color-brand-yuanbao: #00cc70;
+  /* 渐隐：消息流顶部 / 底部输入区 */
+  --wm-gradient-fade-top: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #ffffff 25.13%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  --wm-gradient-fade-bottom: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0) 16.67%,
+    #ffffff 50%
+  );
+  /* macOS 窗口控制按钮：上深下浅的竖向渐变 = 果冻质感（取色自设计稿 4x 导出） */
+  --wm-gradient-traffic-close: linear-gradient(180deg, #ff6d62 0%, #fa9088 100%);
+  --wm-gradient-traffic-minimize: linear-gradient(180deg, #ffbb0c 0%, #ffd558 100%);
+  --wm-gradient-traffic-zoom: linear-gradient(180deg, #6acf37 0%, #a3df84 100%);
+  /* 细描边 + 同色系外晕，让 12px 的圆点有体积又不发灰 */
+  --wm-shadow-traffic-close: inset 0 0 0 0.5px rgba(183, 45, 37, 0.28),
+    0 1px 2px rgba(224, 72, 60, 0.3);
+  --wm-shadow-traffic-minimize: inset 0 0 0 0.5px rgba(163, 108, 0, 0.26),
+    0 1px 2px rgba(201, 142, 0, 0.28);
+  --wm-shadow-traffic-zoom: inset 0 0 0 0.5px rgba(43, 128, 22, 0.26),
+    0 1px 2px rgba(74, 168, 46, 0.28);
+  /* 阴影 */
+  --wm-shadow-float: 0 4px 24px rgba(0, 0, 0, 0.06);
+  --wm-shadow-segment: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --wm-shadow-popup: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --wm-shadow-sheet: 0 12px 32px rgba(0, 0, 0, 0.1);
+  /* 壁纸底上托起窗口的落影 */
+  --wm-shadow-canvas: 0 18px 48px rgba(2, 26, 58, 0.28), 0 2px 8px rgba(2, 26, 58, 0.12);
+  /* 壁纸上的浮层（方案标签） */
+  --wm-color-overlay-chip: rgba(8, 22, 44, 0.42);
+  /* 字体
+   * 中文字体优先，且不夹拉丁字体：原栈里的 Helvetica Neue / Helvetica / Arial 没有中文字形，
+   * 在拿不到 PingFang 的渲染环境（如 Figma code layer 的容器化 Chromium）会先命中它们，
+   * 导致中文落到末位回退字体 —— 字重变细、字距变松、换行位置与设计稿不一致。
+   * macOS 上行为与改动前一致（PingFang SC 仍然第一），仅补全非 macOS 环境的兜底。 */
+  --wm-font-family: "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Source Han Sans SC",
+    "Microsoft YaHei", system-ui, -apple-system, "BlinkMacSystemFont", sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--wm-font-family);
+  color: var(--wm-color-text-primary);
+  background-color: var(--wm-color-stage-background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+p,
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+svg {
+  display: block;
+}
+
+/* 设计稿中侧边栏不出现滚动条，滚动能力保留 */
+.wm-scroll-hidden {
+  overflow: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.wm-scroll-hidden::-webkit-scrollbar {
+  display: none;
+}

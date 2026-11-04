@@ -1,0 +1,167 @@
+@charset "UTF-8";
+/* 标题栏：padding 10 8，左右两组 space-between（Figma layout_9JE0FQ） */
+.titleBar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 40px;
+  padding: 0 8px;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  padding-left: 4px;
+}
+.left > * + * {
+  margin-left: 8px;
+}
+
+/* macOS 窗口控制按钮 */
+.traffic {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  padding: 5px 4px;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 6px;
+}
+.dot + .dot {
+  margin-left: 8px;
+}
+
+/* 渐变 + 描边 + 色晕都来自设计稿，缺一层就会发灰、失去「果冻」立体感 */
+.dotClose {
+  background-image: var(--wm-gradient-traffic-close);
+  box-shadow: var(--wm-shadow-traffic-close);
+}
+
+.dotMinimize {
+  background-image: var(--wm-gradient-traffic-minimize);
+  box-shadow: var(--wm-shadow-traffic-minimize);
+}
+
+.dotZoom {
+  background-image: var(--wm-gradient-traffic-zoom);
+  box-shadow: var(--wm-shadow-traffic-zoom);
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+}
+.meta > * + * {
+  margin-left: 8px;
+}
+
+.metaMain {
+  display: flex;
+  align-items: center;
+}
+.metaMain > * + * {
+  margin-left: 4px;
+}
+
+.appTitle {
+  display: flex;
+  align-items: center;
+  padding: 2px 4px;
+  border-radius: 6px;
+}
+.appTitle > * + * {
+  margin-left: 4px;
+}
+
+.text {
+  font-size: 12px;
+  line-height: 17px;
+  color: var(--wm-color-text-primary);
+  white-space: nowrap;
+}
+
+/* 网络 / 分享两个 28px 图标，间距 2（Figma layout_J5YLR5） */
+.metaIcons {
+  display: flex;
+  align-items: center;
+}
+.metaIcons > * + * {
+  margin-left: 2px;
+}
+
+.divider {
+  flex: 0 0 auto;
+  width: 1px;
+  height: 14px;
+  border-radius: 0.5px;
+  background-color: var(--wm-color-outline-secondary);
+}
+
+/* 状态图标外留 4px 热区 → 28×28 */
+.status {
+  flex: 0 0 auto;
+  display: flex;
+  padding: 4px;
+  border-radius: 6px;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+}
+.right > * + * {
+  margin-left: 8px;
+}
+
+.tools {
+  display: flex;
+  align-items: center;
+}
+.tools > * + * {
+  margin-left: 4px;
+}
+
+.tool {
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  border-radius: 6px;
+}
+.tool > * + * {
+  margin-left: 4px;
+}
+
+/* 设置按钮 padding 4 6（Figma layout_YDU650） */
+.toolLoose {
+  padding: 4px 6px;
+}
+
+.toolLabel {
+  display: flex;
+  align-items: center;
+}
+.toolLabel > * + * {
+  margin-left: 2px;
+}
+
+.toolText {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--wm-color-text-primary);
+  white-space: nowrap;
+}
+
+/* 设置图标导出为 16×16，放进 20×20 位置居中 */
+.settingsIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+}
