@@ -12,6 +12,9 @@ import styles from './index.module.scss';
 interface NotePillProps {
   /** 是否正在记笔记 */
   isListening: boolean;
+  /** 展开态由父级控制：提问时要先收起面板，否则回答会被面板挡住 */
+  expanded: boolean;
+  onExpandedChange: (expanded: boolean) => void;
   /** 元宝主动记下的笔记，展开后按时间顺序列出 */
   notes: AssistantMessage[];
   /** 保存截图 */
@@ -29,23 +32,24 @@ const PANEL_HEIGHT = 400;
  * 「元宝正在记笔记」状态条（收起 Figma 317:6060 / 318:6099，展开 Figma 318:6576）
  * - 收起：196×36 胶囊，星标 + 状态文案 + 截图 / 暂停两个圆形图标按钮；
  * - 点击整条（除两个按钮外）展开成 400 高的卡片，列出元宝主动记下的内容；
- * - 展开时胶囊从左下角向右、向上生长，内容在尺寸到位前淡入；点右上角 ×、再点标题行或按 Esc 收起。
+ * - 展开时胶囊从左下角向右、向上生长，内容在尺寸到位前淡入；点右上角「收起」、再点标题行或按 Esc 收起。
  * 面板贴底向上展开，浮在消息流之上，不挤压输入框和对话。
  */
 export const NotePill: FC<NotePillProps> = ({
   isListening,
+  expanded,
+  onExpandedChange,
   notes,
   onScreenshot,
   onToggleListening,
   onOpenSource,
 }) => {
-  const [expanded, setExpanded] = useState(false);
   const [panelWidth, setPanelWidth] = useState(0);
   const slotRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
 
-  const toggle = useCallback(() => setExpanded((open) => !open), []);
-  const collapse = useCallback(() => setExpanded(false), []);
+  const toggle = useCallback(() => onExpandedChange(!expanded), [expanded, onExpandedChange]);
+  const collapse = useCallback(() => onExpandedChange(false), [onExpandedChange]);
 
   // 展开宽度 = 底栏内容宽度；量成 px 才能和收起的 196px 平滑过渡，内容区也按最终宽度排版，动画中不重排
   useLayoutEffect(() => {
@@ -60,12 +64,23 @@ export const NotePill: FC<NotePillProps> = ({
     return () => observer.disconnect();
   }, []);
 
-  // 展开时定位到最新一条；展开期间有新笔记也跟到底部
+  // 滚动定位：
+  // - 刚展开时从第一条开始读（Figma 318:6576 就是这个状态：首条署名完整可见、末尾自然裁切），
+  //   滚到底会露出半截气泡、也看不到最新一条的署名，反而更难读；
+  // - 展开期间又有新笔记（立即总结、保存截图）才跟到底部，免得用户看不到刚记下的内容。
+  const prevExpanded = useRef(expanded);
+  const prevNotesCount = useRef(notes.length);
   useLayoutEffect(() => {
     const body = bodyRef.current;
-    if (expanded && body) {
-      body.scrollTop = body.scrollHeight;
+    if (body) {
+      if (expanded && !prevExpanded.current) {
+        body.scrollTop = 0;
+      } else if (expanded && notes.length !== prevNotesCount.current) {
+        body.scrollTop = body.scrollHeight;
+      }
     }
+    prevExpanded.current = expanded;
+    prevNotesCount.current = notes.length;
   }, [expanded, notes.length]);
 
   useEffect(() => {
@@ -99,6 +114,7 @@ export const NotePill: FC<NotePillProps> = ({
             ariaLabel={expanded ? '收起元宝笔记' : '展开元宝笔记'}
           >
             <NoteStar playing={isListening} />
+            {/* 暂停文案沿用 Figma 318:7200 原文，不要改成「已暂停记笔记」 */}
             <span className={styles.text}>{isListening ? '元宝正在记笔记... ' : '元宝休息中'}</span>
           </Pressable>
           <div className={styles.actions}>
@@ -121,13 +137,14 @@ export const NotePill: FC<NotePillProps> = ({
               {isListening ? <IconNotePause /> : <IconNotePlay />}
             </Pressable>
           </div>
+          {/* 右上角是「收起」（Figma 320:7230 Minimize 2），不是关闭：收起后纪要与侧栏都还在 */}
           <Pressable
             className={styles.collapse}
             onClick={collapse}
             stopPropagation
             disabled={!expanded}
             title="收起"
-            ariaLabel="收起元宝笔记"
+            ariaLabel="收起笔记面板"
           >
             <IconNoteCollapse />
           </Pressable>

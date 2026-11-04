@@ -1,4 +1,4 @@
-import { useMemo, type FC } from 'react';
+import { useCallback, useMemo, useState, type FC } from 'react';
 import type { PopMenuItem } from '@/components/common/PopMenu';
 import type { ArtifactItem } from '@/types/artifact';
 import type { AssistantMessage } from '@/types/chat';
@@ -31,8 +31,19 @@ interface YuanbaoSidebarProps {
 export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ onClose }) => {
   const { toast, showToast } = useToast();
   const chat = useYuanbaoChat(initialMessages);
+  const [notePanelOpen, setNotePanelOpen] = useState(false);
   const { isListening, toggleListening } = useListening((listening) =>
     showToast(listening ? '元宝继续记笔记' : '已暂停记笔记'),
+  );
+
+  // 提问前先收起笔记面板：展开态是 400 高的浮层，会整块盖住刚出现的回答
+  const askChat = chat.ask;
+  const ask = useCallback(
+    (text: string) => {
+      setNotePanelOpen(false);
+      askChat(text);
+    },
+    [askChat],
   );
 
   const menuItems = useMemo<PopMenuItem[]>(
@@ -76,16 +87,18 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ onClose }) => {
           messages={chat.messages}
           shape="round"
           isThinking={chat.isThinking}
-          onFollowUp={chat.ask}
+          onFollowUp={ask}
           onOpenSource={openSource}
         />
       </MessageStream>
 
       <div className={styles.footer}>
-        {/* 同一行：左侧记笔记状态条、右侧元宝文件夹入口；两者的展开面板都以这一行为基线向上浮出 */}
+        {/* 同一行：左侧记笔记状态条、右侧产物入口；两者的展开面板都以这一行为基线向上浮出 */}
         <div className={styles.statusRow}>
           <NotePill
             isListening={isListening}
+            expanded={notePanelOpen}
+            onExpandedChange={setNotePanelOpen}
             notes={notes}
             onScreenshot={saveScreenshot}
             onToggleListening={toggleListening}
@@ -93,7 +106,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ onClose }) => {
           />
           <ArtifactEntry artifacts={initialArtifacts} onOpen={openArtifact} />
         </div>
-        <ChatInput placeholder="提问或创建任务" onSubmit={chat.ask} />
+        <ChatInput placeholder="提问或创建任务" onSubmit={ask} />
       </div>
     </SidebarShell>
   );
