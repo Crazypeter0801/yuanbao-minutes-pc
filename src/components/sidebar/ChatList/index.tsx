@@ -6,7 +6,7 @@ import type { ChatMessage } from '@/types/chat';
 
 interface ChatListProps {
   messages: ChatMessage[];
-  /** 气泡形态，见 AssistantMessageView */
+  /** 元宝消息的排版形态，见 AssistantMessageView；用户气泡本版固定 round，不跟随 */
   shape: 'round' | 'compact' | 'plain';
   isThinking?: boolean;
   onFollowUp?: (text: string) => void;
@@ -27,7 +27,7 @@ export const ChatList: FC<ChatListProps> = ({
   <>
     {messages.map((message) =>
       message.role === 'user' ? (
-        <UserMessageView key={message.id} message={message} shape={shape} />
+        <UserMessageView key={message.id} message={message} shape="round" />
       ) : (
         <AssistantMessageView
           key={message.id}

@@ -76,7 +76,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ chat, artifacts, onClo
         <AiDisclaimer />
         <ChatList
           messages={chat.messages}
-          shape="round"
+          shape="plain"
           isThinking={chat.isThinking}
           onFollowUp={chat.ask}
           onOpenSource={openSource}
