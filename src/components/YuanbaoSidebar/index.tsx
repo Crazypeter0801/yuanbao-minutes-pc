@@ -12,6 +12,7 @@ import { SidebarHeader } from '@/components/sidebar/SidebarHeader';
 import { SidebarShell } from '@/components/sidebar/SidebarShell';
 import { meetingSession } from '@/data/meetingSession';
 import { buildScreenshotNote } from '@/data/yuanbaoContent';
+import { useAutoNotes } from '@/hooks/useAutoNotes';
 import { useListening } from '@/hooks/useListening';
 import { useToast } from '@/hooks/useToast';
 import type { YuanbaoSession } from '@/hooks/useYuanbaoSession';
@@ -37,6 +38,9 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ chat, artifacts, onClo
     showToast(listening ? '元宝继续记笔记' : '已暂停记笔记'),
   );
 
+  // 会中实时记录：每 10–15 秒自动记下一条，模拟有人一直在说话；暂停后停住
+  useAutoNotes(chat.push, isListening);
+
   const menuItems = useMemo<PopMenuItem[]>(
     () => [
       { key: 'summary', label: '立即总结', onClick: chat.summarizeNow },
@@ -46,7 +50,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ chat, artifacts, onClo
     [chat.summarizeNow, showToast],
   );
 
-  // 展开面板只列元宝主动记的笔记，不含回答提问的消息
+  // 展开面板只列元宝主动记下的内容（isNote），用户的提问和追问都不会进来
   const notes = useMemo(
     () => chat.messages.filter((m): m is AssistantMessage => m.role === 'assistant' && Boolean(m.isNote)),
     [chat.messages],
