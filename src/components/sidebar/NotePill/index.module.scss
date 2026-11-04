@@ -67,11 +67,12 @@ $duration: 380ms;
   box-shadow: inset 0 0 0 0.5px var(--wm-color-line), var(--wm-shadow-hover);
 }
 
-/* 展开：撑满底栏宽度、高 400、padding 12（四边统一）、圆角 12（Figma 318:6576） */
+/* 展开：撑满底栏宽度、高 400、左右上 padding 12、圆角 12（Figma 318:6576）；
+   底部留白交给滚动区，滚动的裁切边正好落在卡片下缘，渐隐不会被一段白边打断 */
 .cardExpanded {
   width: var(--note-panel-width);
   height: var(--note-panel-height);
-  padding: 12px;
+  padding: 12px 12px 0;
   border-radius: 12px;
   cursor: default;
 }
@@ -171,13 +172,14 @@ $duration: 380ms;
 /* ---------- 笔记列表（Figma 318:7087，元宝消息组间距 12） ---------- */
 
 /* 按展开后的最终宽度排版：卡片变宽的过程中文字不重新折行
-   高度 = 400 − 上下 padding 24 − 标题行 24 = 352；内部 padding-top 12 就是设计稿标题行与列表的间距，
-   展开时从顶部开始读，这个间距不会被滚动吃掉 */
+   高度 = 400 − 上 padding 12 − 标题行 24 = 364；内部 padding-top 12 就是设计稿标题行与列表的间距，
+   padding-bottom 12 是滚到底时的收尾留白（展开时从顶部开始读，这个间距不会被滚动吃掉） */
 .body {
   flex: 0 0 auto;
   width: calc(var(--note-panel-width) - 24px);
-  height: calc(var(--note-panel-height) - 48px);
+  height: calc(var(--note-panel-height) - 36px);
   padding-top: 12px;
+  padding-bottom: 12px;
   overflow-y: auto;
   /* 滚动时顶部 12px 渐隐，内容不会被标题行生硬切断 */
   mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 1) 12px);
@@ -205,6 +207,18 @@ $duration: 380ms;
       transform 320ms $ease-out 140ms,
       visibility 0s linear 0s;
   }
+}
+
+/* 内容还没到底时底部渐隐（与产物面板同一处理）：
+   被截断的那段淡出，读起来是「下面还有」，而不是像被硬切；滚到底后撤掉，最后一条恢复清晰 */
+.bodyOverflowing {
+  mask-image: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0) 0,
+    rgba(0, 0, 0, 1) 12px,
+    rgba(0, 0, 0, 1) calc(100% - 24px),
+    rgba(0, 0, 0, 0) 100%
+  );
 }
 
 .empty {

@@ -45,6 +45,8 @@ export const NotePill: FC<NotePillProps> = ({
   onOpenSource,
 }) => {
   const [panelWidth, setPanelWidth] = useState(0);
+  /** 是否还能往下滚：能滚且没到底时，底部加渐隐提示「下面还有」 */
+  const [showBottomFade, setShowBottomFade] = useState(false);
   const slotRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
 
@@ -95,6 +97,28 @@ export const NotePill: FC<NotePillProps> = ({
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [expanded, collapse]);
+
+  // 底部渐隐只在「能滚且没滚到底」时出现：
+  // 内容不够长时不加，免得把最后一条压暗；滚到底后也撤掉，末条才清晰
+  useLayoutEffect(() => {
+    const body = bodyRef.current;
+    if (!body) {
+      return undefined;
+    }
+    const check = () => {
+      const scrollable = body.scrollHeight > body.clientHeight + 1;
+      const atBottom = body.scrollTop + body.clientHeight >= body.scrollHeight - 1;
+      setShowBottomFade(scrollable && !atBottom);
+    };
+    check();
+    body.addEventListener('scroll', check);
+    const observer = new ResizeObserver(check);
+    observer.observe(body);
+    return () => {
+      body.removeEventListener('scroll', check);
+      observer.disconnect();
+    };
+  }, [expanded, notes.length]);
 
   const vars = {
     '--note-panel-width': `${panelWidth}px`,
@@ -150,7 +174,11 @@ export const NotePill: FC<NotePillProps> = ({
           </Pressable>
         </div>
 
-        <div className={`${styles.body} wm-scroll-hidden`} ref={bodyRef} aria-hidden={!expanded}>
+        <div
+          className={`${styles.body} ${showBottomFade ? styles.bodyOverflowing : ''} wm-scroll-hidden`}
+          ref={bodyRef}
+          aria-hidden={!expanded}
+        >
           {notes.length > 0 ? (
             notes.map((note) => (
               <AssistantMessageView key={note.id} message={note} shape="round" onOpenSource={onOpenSource} />
