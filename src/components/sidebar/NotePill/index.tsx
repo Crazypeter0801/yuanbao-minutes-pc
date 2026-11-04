@@ -103,7 +103,8 @@ export const NotePill: FC<NotePillProps> = ({
             ariaLabel={expanded ? '收起元宝笔记' : '展开元宝笔记'}
           >
             <NoteStar playing={isListening} />
-            <span className={styles.text}>{isListening ? '元宝正在记笔记...' : '已暂停记笔记'}</span>
+            {/* 暂停文案沿用 Figma 318:7200 原文，不要改成「已暂停记笔记」 */}
+            <span className={styles.text}>{isListening ? '元宝正在记笔记... ' : '元宝休息中'}</span>
           </Pressable>
           <div className={styles.actions}>
             <Pressable
