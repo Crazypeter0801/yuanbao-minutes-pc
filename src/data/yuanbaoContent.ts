@@ -122,6 +122,9 @@ export type ReplyTopic =
   | 'competitor'
   | 'color'
   | 'noted'
+  | 'meetingSchedule'
+  | 'timer'
+  | 'timerCancel'
   | 'fallback';
 
 export interface AnswerContext {
@@ -153,7 +156,8 @@ function note(blocks: RichBlock[]): AssistantMessage {
 interface Rule {
   topic: ReplyTopic;
   test: (q: string, ctx: AnswerContext) => boolean;
-  build: () => AssistantMessage;
+  /** 传入原问题：倒计时的分钟数、预约到周几都要从问句里取，不能写死 */
+  build: (q: string) => AssistantMessage;
 }
 
 /**
@@ -356,6 +360,50 @@ const RULES: Rule[] = [
       ], { followUps: ['刚才讨论了哪些结论？', '我有哪些待办？'] }),
   },
 
+  /* ---------- 会后安排 / 会中任务（主动场景与「创建任务」都落在这里） ---------- */
+  {
+    topic: 'timerCancel',
+    test: (q) => /(取消|关掉|停掉|不用了).*(倒计时|计时|定时)/.test(q),
+    build: () =>
+      reply([p('已取消刚才那个倒计时。'), p('需要的话再说一声，我随时重开一个。')], {
+        followUps: ['再建一个 5 分钟', '我有哪些待办'],
+      }),
+  },
+  {
+    topic: 'timer',
+    test: (q) => /倒计时|计时器|定时|提醒我|\d+\s*分钟/.test(q),
+    build: (q) => {
+      const minutes = /(\d+)\s*分钟/.exec(q)?.[1] ?? '10';
+      const isChange = /改|换成|重新/.test(q);
+      return reply(
+        [
+          p(`${isChange ? '已改成' : '已创建'}：${minutes} 分钟倒计时。`),
+          p('到点我会在侧栏提醒你，中途也可以随时让我取消。'),
+        ],
+        { followUps: ['改成 5 分钟', '取消倒计时'] },
+      );
+    },
+  },
+  {
+    topic: 'meetingSchedule',
+    test: (q) => /预约|下一次会|下次会|改到|下(周|星期)|每周/.test(q),
+    build: (q) => {
+      if (/每周|重复/.test(q)) {
+        return reply([p('已改成每周重复：同一时间自动建会，直到你取消。'), p('本场参会人会默认带上。')], {
+          followUps: ['发封邮件通知大家', '我有哪些待办'],
+        });
+      }
+      const day = /(?:周|星期)([一二三四五六日天])/.exec(q)?.[1] ?? '三';
+      return reply(
+        [
+          p(`已按本场的参会人和时长发起预约：下周${day === '天' ? '日' : day} 15:00–16:00。`),
+          p('确认后我会把邀请发给全部 8 位参会人。'),
+        ],
+        { followUps: ['改成每周重复', '发封邮件通知大家'] },
+      );
+    },
+  },
+
   /* ---------- 兜底 ---------- */
   {
     topic: 'fallback',
@@ -384,7 +432,7 @@ const RULES: Rule[] = [
 export function answerQuestion(question: string, ctx: AnswerContext = {}): Answer {
   const q = question.trim();
   const rule = RULES.find((item) => item.test(q, ctx)) ?? RULES[RULES.length - 1];
-  return { message: rule.build(), topic: rule.topic };
+  return { message: rule.build(q), topic: rule.topic };
 }
 
 /** 「立即总结」生成的阶段小结 */

@@ -80,10 +80,17 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ onClose }) => {
         onClose={onClose}
       />
 
-      {/* 演示用：让元宝在「刚入会」「别人提到某事」两个时机主动开口 */}
+      {/* 演示用：元宝主动开口的三个时机 + 用户自己发任务的一条 */}
       <ScenarioTriggers
         scenarios={proactiveScenarios}
-        onTrigger={(scenario) => chat.push(scenario.build())}
+        onTrigger={(scenario) => {
+          // ask 走正常问答流程（先出用户气泡）；nudge 是元宝主动推一条消息
+          if (scenario.kind === 'ask') {
+            ask(scenario.userText);
+          } else {
+            chat.push(scenario.build());
+          }
+        }}
       />
 
       <MessageStream
