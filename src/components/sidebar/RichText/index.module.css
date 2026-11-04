@@ -1,0 +1,44 @@
+@charset "UTF-8";
+/* 正文 12/20（Figma style_W1CWAP） */
+.rich {
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--wm-color-text-primary);
+  word-break: break-word;
+}
+
+.paragraph,
+.heading {
+  margin: 0;
+}
+
+/* 小标题 / 加粗片段 600（Figma style_NY5RUW） */
+.heading,
+.bold {
+  font-weight: 600;
+}
+
+.list {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.item {
+  list-style: disc;
+}
+.item::marker {
+  font-size: 10px;
+}
+
+/* @人名胶囊：高 18、圆角 9、蓝 15%（Figma 248:14883） */
+.mention {
+  display: inline-block;
+  height: 18px;
+  margin: 1px 4px 0 0;
+  padding: 0 4px;
+  border-radius: 9px;
+  background-color: var(--wm-color-background-twenty-third);
+  font-size: 12px;
+  line-height: 18px;
+  vertical-align: top;
+}

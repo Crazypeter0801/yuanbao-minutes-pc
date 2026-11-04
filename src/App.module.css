@@ -1,0 +1,46 @@
+/* code layer 尺寸 ≥ 1398×674 时居中；正好等于时铺满 */
+.stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: var(--wm-color-stage-background);
+}
+
+/* 会议窗口 998 + 侧栏 400 无缝拼接，整体圆角 10（Figma 245:5577） */
+.window {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  width: 1398px;
+  height: 674px;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: var(--wm-color-page-background);
+}
+
+.reopen {
+  position: absolute;
+  top: 48px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  padding: 6px 12px 6px 10px;
+  border-radius: 16px;
+  background-color: var(--wm-color-background-senary);
+  box-shadow: var(--wm-shadow-popup);
+  color: var(--wm-color-text-secondary);
+  cursor: pointer;
+}
+
+.reopen:hover {
+  background-color: var(--wm-color-background-septenary);
+}
+
+.reopenText {
+  margin-left: 6px;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--wm-color-text-primary);
+  white-space: nowrap;
+}

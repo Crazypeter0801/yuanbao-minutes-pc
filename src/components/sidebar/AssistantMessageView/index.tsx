@@ -1,0 +1,93 @@
+import type { FC } from 'react';
+import IconSideLink from '@/assets/icons/icon-side-link';
+import IconSideStar from '@/assets/icons/icon-side-star';
+import { Pressable } from '@/components/common/Pressable';
+import { RichText } from '@/components/sidebar/RichText';
+import type { AssistantMessage } from '@/types/chat';
+import styles from './index.module.css';
+
+interface AssistantMessageViewProps {
+  message: AssistantMessage;
+  /**
+   * 气泡形态
+   * - round：圆角 16，组内气泡各自独立（方案 A）
+   * - compact：圆角 8，组内非末条左下直角相连（方案 B）
+   * - plain：无气泡、无署名，像文档一样直接排版（方案 C，参考 Granola）
+   */
+  shape: 'round' | 'compact' | 'plain';
+  /** 点击追问建议 */
+  onFollowUp?: (text: string) => void;
+  /** 点击链接徽标 / 引用来源 */
+  onOpenSource?: () => void;
+}
+
+/** 元宝消息组：署名 + 时间 + 若干气泡 + 引用来源 + 追问建议 */
+export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
+  message,
+  shape,
+  onFollowUp,
+  onOpenSource,
+}) => {
+  const isPlain = shape === 'plain';
+  const lastIndex = message.bubbles.length - 1;
+
+  return (
+    <div className={`${styles.group} ${isPlain ? styles.groupPlain : ''}`}>
+      {!isPlain && (
+        <div className={styles.meta}>
+          <span className={styles.name}>元宝</span>
+          <span className={styles.time}>{message.time}</span>
+        </div>
+      )}
+
+      <div className={styles.bubbles}>
+        {message.bubbles.map((bubble, index) => {
+          const shapeClass = isPlain
+            ? styles.plain
+            : `${styles.bubble} ${shape === 'round' ? styles.round : styles.compact} ${
+                shape === 'compact' && index !== lastIndex ? styles.compactJoined : ''
+              }`;
+
+          return (
+            <div className={shapeClass} key={bubble.id}>
+              <RichText
+                blocks={bubble.blocks}
+                mention={bubble.mention}
+                trailing={
+                  bubble.withLink ? (
+                    <Pressable
+                      as="span"
+                      className={styles.linkBadge}
+                      onClick={onOpenSource}
+                      title="查看原文"
+                      ariaLabel="查看原文"
+                    >
+                      <IconSideLink />
+                    </Pressable>
+                  ) : undefined
+                }
+              />
+            </div>
+          );
+        })}
+      </div>
+
+      {message.source && (
+        <Pressable className={styles.source} onClick={onOpenSource} ariaLabel={message.source}>
+          <IconSideStar width={12} height={12} />
+          <span className={styles.sourceText}>{message.source}</span>
+        </Pressable>
+      )}
+
+      {message.followUps && message.followUps.length > 0 && (
+        <div className={styles.followUps}>
+          {message.followUps.map((text) => (
+            <Pressable className={styles.followUp} key={text} onClick={() => onFollowUp?.(text)}>
+              {text}
+            </Pressable>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
