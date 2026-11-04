@@ -19,6 +19,11 @@ interface AssistantMessageViewProps {
   onFollowUp?: (text: string) => void;
   /** 点击链接徽标 / 引用来源 */
   onOpenSource?: () => void;
+  /**
+   * 是否展示追问建议
+   * 只在最新一条消息上展示：元宝说了下一句之后，上一句后面的提问就收起来，避免满屏都是旧按钮
+   */
+  showFollowUps?: boolean;
 }
 
 /** 元宝消息组：署名 + 时间 + 若干气泡 + 引用来源 + 追问建议 */
@@ -27,6 +32,7 @@ export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
   shape,
   onFollowUp,
   onOpenSource,
+  showFollowUps = true,
 }) => {
   const isPlain = shape === 'plain';
   const lastIndex = message.bubbles.length - 1;
@@ -84,11 +90,15 @@ export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
         </Pressable>
       )}
 
-      {message.followUps && message.followUps.length > 0 && (
+      {showFollowUps && message.followUps && message.followUps.length > 0 && (
         <div className={styles.followUps}>
           {message.followUps.map((text) => (
             <Pressable className={styles.followUp} key={text} onClick={() => onFollowUp?.(text)}>
-              {text}
+              <span className={styles.followUpText}>{text}</span>
+              {/* 箭头沿用文字符号：12px 下比导出的 16 图标更轻，也不会抢正文 */}
+              <span className={styles.followUpArrow} aria-hidden="true">
+                ↗
+              </span>
             </Pressable>
           ))}
         </div>

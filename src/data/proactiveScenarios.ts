@@ -38,7 +38,12 @@ export type ProactiveScenario =
       /** 每次点击都要生成新消息，id 重新取，否则重复触发时 React key 会撞 */
       build: () => AssistantMessage;
     })
-  | (ScenarioBase & { kind: 'ask'; userText: string });
+  | (ScenarioBase & {
+      kind: 'ask';
+      userText: string;
+      /** 这类任务除了对话还会弹出对应的操作界面 */
+      opens?: 'poll';
+    });
 
 export const proactiveScenarios: ProactiveScenario[] = [
   {
@@ -107,10 +112,11 @@ export const proactiveScenarios: ProactiveScenario[] = [
     }),
   },
   {
-    id: 'create-timer',
+    id: 'create-poll',
     kind: 'ask',
-    label: '建个倒计时',
-    hint: '模拟用户主动发任务：「给我创建一个 10 分钟的倒计时」',
-    userText: '给我创建一个 10 分钟的倒计时',
+    label: '建个投票',
+    hint: '模拟用户主动发任务：「帮我创建一个投票，团建去哪玩」，元宝回话的同时弹出投票确认',
+    userText: '帮我创建一个投票，团建去哪玩',
+    opens: 'poll',
   },
 ];

@@ -115,28 +115,58 @@
 }
 
 /* 追问建议：白底细描边胶囊（参考 Granola 的 Say more） */
+/* 追问建议：竖排、每个胶囊宽度跟着文案走，右端带 ↗ */
 .followUps {
   display: flex;
-  flex-wrap: wrap;
-  margin: 2px 0 -6px;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 100%;
 
-  & > * {
-    margin: 0 6px 6px 0;
+  & > * + * {
+    margin-top: 8px;
   }
 }
 
 .followUp {
-  padding: 4px 12px;
+  display: flex;
+  align-items: center;
+  max-width: 100%;
+  padding: 8px 14px;
   border: 0.5px solid var(--wm-color-line);
-  border-radius: 14px;
+  border-radius: 18px;
   background-color: var(--wm-color-background-bubble);
-  font-size: 12px;
-  line-height: 18px;
-  color: var(--wm-color-text-primary);
   cursor: pointer;
-  transition: background-color 120ms ease-in-out;
+  outline: none;
+  transition:
+    background-color 120ms ease-in-out,
+    border-color 120ms ease-in-out;
+
+  & > * + * {
+    margin-left: 8px;
+  }
 
   &:hover {
     background-color: var(--wm-color-background-septenary);
   }
+
+  &:focus-visible {
+    border-color: var(--wm-color-text-disabled);
+  }
+}
+
+.followUpText {
+  min-width: 0;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--wm-color-text-primary);
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+/* 12px 的 ↗：用文字符号，避免为一个小箭头再引一份图标资源 */
+.followUpArrow {
+  flex: 0 0 auto;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--wm-color-text-tertiary);
 }

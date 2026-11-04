@@ -77,6 +77,7 @@ export type ReplyTopic =
   | 'meetingSchedule'
   | 'timer'
   | 'timerCancel'
+  | 'poll'
   | 'fallback';
 
 export interface AnswerContext {
@@ -352,6 +353,36 @@ const RULES: Rule[] = [
           p('确认后我会把邀请发给全部 8 位参会人。'),
         ],
         { followUps: ['改成每周重复', '发封邮件通知大家'] },
+      );
+    },
+  },
+
+  {
+    topic: 'poll',
+    test: (q) => /投票|选项|多选|单选|发出去|就这样发|发起/.test(q),
+    build: (q) => {
+      if (/发出去|就这样发|发起/.test(q)) {
+        return reply([p('投票已发到会议里，8 位参会人都能看到，结果我会实时更新。')], {
+          followUps: ['改成多选', '加一个选项'],
+        });
+      }
+      if (/多选/.test(q)) {
+        return reply([p('已改成多选：同一个人可以投多个选项。'), p('其余设置不变。')], {
+          followUps: ['发出去', '加一个选项'],
+        });
+      }
+      if (/加一个选项|加选项|添加选项/.test(q)) {
+        return reply([p('已加上第 5 个选项：桌游。'), p('现在是 5 选 1。')], {
+          followUps: ['改成多选', '发出去'],
+        });
+      }
+      return reply(
+        [
+          p('已经生成投票草稿，确认后就能发到会议里：'),
+          p(b('主题：'), '团建去哪玩？'),
+          p('单选 · 匿名 · 4 个选项：环球影城、密室逃脱、城郊露营、剧本杀。'),
+        ],
+        { followUps: ['改成多选', '加一个选项'] },
       );
     },
   },

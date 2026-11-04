@@ -43,6 +43,14 @@
   white-space: nowrap;
 }
 
+/* 会议区容器：投票弹窗以它为定位基准，只覆盖左侧，不盖住元宝侧栏 */
+.meetingArea {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+}
+
 /* V1 窗口 1440×760、圆角 12、底色 #F0F2F7（Figma 257:1540） */
 .window {
   position: relative;

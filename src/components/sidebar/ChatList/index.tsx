@@ -25,7 +25,7 @@ export const ChatList: FC<ChatListProps> = ({
   onOpenSource,
 }) => (
   <>
-    {messages.map((message) =>
+    {messages.map((message, index) =>
       message.role === 'user' ? (
         <UserMessageView key={message.id} message={message} shape="round" />
       ) : (
@@ -35,6 +35,8 @@ export const ChatList: FC<ChatListProps> = ({
           shape={shape}
           onFollowUp={onFollowUp}
           onOpenSource={onOpenSource}
+          // 只留最后一轮的追问：元宝说了下一句，旧提问就收起
+          showFollowUps={index === messages.length - 1}
         />
       ),
     )}

@@ -57,6 +57,12 @@
   --wm-color-control-fill: rgba(0, 0, 0, 0.06);
   --wm-color-icon-strong: #373c48;
   --wm-color-brand-yuanbao: #00cc70;
+  /* 主操作蓝（发起投票等主按钮） */
+  --wm-color-brand-primary: #0066ff;
+  --wm-color-brand-primary-hover: #0052cc;
+  --wm-color-brand-primary-soft: rgba(0, 102, 255, 0.08);
+  /* 模态遮罩 */
+  --wm-color-scrim: rgba(8, 22, 44, 0.32);
 
   /* 渐隐：消息流顶部 / 底部输入区 */
   --wm-gradient-fade-top: linear-gradient(

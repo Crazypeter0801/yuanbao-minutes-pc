@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { ScenarioTriggers } from '@/components/demo/ScenarioTriggers';
 import { MeetingWindow } from '@/components/meeting/MeetingWindow';
+import { PollComposer } from '@/components/poll/PollComposer';
 import { YuanbaoSidebar } from '@/components/YuanbaoSidebar';
 import { initialArtifacts } from '@/data/artifacts';
+import { buildPollPostedMessage, teamBuildingPoll } from '@/data/polls';
 import { proactiveScenarios } from '@/data/proactiveScenarios';
 import { useYuanbaoSession } from '@/hooks/useYuanbaoSession';
 import styles from './App.module.scss';
@@ -18,6 +20,7 @@ import styles from './App.module.scss';
  */
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [pollOpen, setPollOpen] = useState(false);
   const chat = useYuanbaoSession();
 
   return (
@@ -33,6 +36,10 @@ export default function App() {
               onTrigger={(scenario) => {
                 if (scenario.kind === 'ask') {
                   chat.ask(scenario.userText);
+                  // 投票这类任务，元宝回话的同时直接把确认弹窗摊开
+                  if (scenario.opens === 'poll') {
+                    setPollOpen(true);
+                  }
                 } else {
                   chat.push(scenario.build());
                 }
@@ -41,7 +48,20 @@ export default function App() {
           </div>
 
           <div className={styles.window}>
-            <MeetingWindow yuanbaoOpen={sidebarOpen} onToggleYuanbao={() => setSidebarOpen((open) => !open)} />
+            {/* 投票弹窗只盖会议区，元宝说的话仍然看得见 */}
+            <div className={styles.meetingArea}>
+              <MeetingWindow yuanbaoOpen={sidebarOpen} onToggleYuanbao={() => setSidebarOpen((open) => !open)} />
+              {pollOpen && (
+                <PollComposer
+                  draft={teamBuildingPoll}
+                  onClose={() => setPollOpen(false)}
+                  onSubmit={() => {
+                    setPollOpen(false);
+                    chat.push(buildPollPostedMessage(teamBuildingPoll.title));
+                  }}
+                />
+              )}
+            </div>
             {sidebarOpen && (
               <YuanbaoSidebar chat={chat} artifacts={initialArtifacts} onClose={() => setSidebarOpen(false)} />
             )}

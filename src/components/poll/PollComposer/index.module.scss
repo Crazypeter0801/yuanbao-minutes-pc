@@ -1,0 +1,307 @@
+/*
+ * 发起投票弹窗
+ * 覆盖左侧会议区（不含元宝侧栏）：白卡 400 宽、圆角 16、浮层阴影，遮罩压暗会场画面。
+ * 风格与侧栏一致：12/14 号字、0.5px 描边、蓝只用在主操作和已选项上。
+ */
+
+.layer {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.scrim {
+  position: absolute;
+  inset: 0;
+  background-color: var(--wm-color-scrim);
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 400px;
+  max-width: 100%;
+  padding: 20px;
+  border-radius: 16px;
+  background-color: var(--wm-color-background-quaternary);
+  box-shadow: var(--wm-shadow-sheet);
+  animation: poll-in 180ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@keyframes poll-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ---------- 标题行 ---------- */
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 24px;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 22px;
+  color: var(--wm-color-text-primary);
+}
+
+.close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  color: var(--wm-color-text-secondary);
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease-out;
+
+  &:hover {
+    background-color: var(--wm-color-background-septenary);
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px var(--wm-color-line);
+  }
+}
+
+/* ---------- 主题区 ---------- */
+
+.subject {
+  display: flex;
+  flex-direction: column;
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background-color: var(--wm-color-background-septenary);
+
+  & > * + * {
+    margin-top: 4px;
+  }
+}
+
+.subjectLabel {
+  font-size: 11px;
+  line-height: 16px;
+  color: var(--wm-color-text-tertiary);
+}
+
+/* 投票主题是这张卡的主角 */
+.subjectText {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  color: var(--wm-color-text-primary);
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--wm-color-text-tertiary);
+
+  & > * + * {
+    margin-left: 6px;
+  }
+}
+
+/* 元信息之间的分隔点 */
+.dot {
+  width: 2px;
+  height: 2px;
+  border-radius: 1px;
+  background-color: var(--wm-color-text-disabled);
+}
+
+/* ---------- 单选 / 多选 ---------- */
+
+.modes {
+  display: flex;
+  align-self: flex-start;
+  margin-top: 12px;
+  padding: 2px;
+  border-radius: 10px;
+  background-color: var(--wm-color-background-septenary);
+
+  & > * + * {
+    margin-left: 2px;
+  }
+}
+
+.mode {
+  height: 24px;
+  padding: 0 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 24px;
+  color: var(--wm-color-text-secondary);
+  cursor: pointer;
+  outline: none;
+  transition:
+    background-color 120ms ease-out,
+    color 120ms ease-out;
+}
+
+.modeOn {
+  background-color: var(--wm-color-background-quaternary);
+  box-shadow: var(--wm-shadow-segment);
+  color: var(--wm-color-text-primary);
+}
+
+/* ---------- 选项 ---------- */
+
+.options {
+  display: flex;
+  flex-direction: column;
+  margin-top: 12px;
+
+  & > * + * {
+    margin-top: 4px;
+  }
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  height: 44px;
+  padding: 0 12px;
+  border: 0.5px solid var(--wm-color-line);
+  border-radius: 10px;
+  cursor: pointer;
+  outline: none;
+  transition:
+    background-color 120ms ease-out,
+    border-color 120ms ease-out;
+
+  & > * + * {
+    margin-left: 10px;
+  }
+
+  &:hover {
+    background-color: var(--wm-color-background-septenary);
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px var(--wm-color-line);
+  }
+}
+
+.optionOn {
+  border-color: var(--wm-color-brand-primary);
+  background-color: var(--wm-color-brand-primary-soft);
+
+  &:hover {
+    background-color: var(--wm-color-brand-primary-soft);
+  }
+}
+
+/* 16 圆形单选：未选描边，选中实心圆点 */
+.radio {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--wm-color-outline-secondary);
+  border-radius: 8px;
+  background-color: var(--wm-color-background-quaternary);
+  box-shadow: inset 0 0 0 3.5px var(--wm-color-background-quaternary);
+  transition:
+    border-color 120ms ease-out,
+    background-color 120ms ease-out;
+}
+
+.radioOn {
+  border-color: var(--wm-color-brand-primary);
+  background-color: var(--wm-color-brand-primary);
+}
+
+.optionText {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--wm-color-text-primary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 自己那一票的标记 */
+.myPick {
+  flex: 0 0 auto;
+  font-size: 11px;
+  line-height: 16px;
+  color: var(--wm-color-brand-primary);
+}
+
+/* ---------- 底部操作 ---------- */
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+
+  & > * + * {
+    margin-left: 8px;
+  }
+}
+
+.ghost,
+.primary {
+  height: 32px;
+  padding: 0 16px;
+  border-radius: 16px;
+  font-size: 12px;
+  line-height: 32px;
+  cursor: pointer;
+  outline: none;
+  transition:
+    background-color 120ms ease-out,
+    opacity 120ms ease-out;
+}
+
+.ghost {
+  background-color: var(--wm-color-background-septenary);
+  color: var(--wm-color-text-secondary);
+
+  &:hover {
+    background-color: var(--wm-color-line);
+  }
+}
+
+.primary {
+  background-color: var(--wm-color-brand-primary);
+  color: var(--wm-color-text-senary);
+
+  &:hover {
+    background-color: var(--wm-color-brand-primary-hover);
+  }
+}
+
+.ghost:focus-visible,
+.primary:focus-visible {
+  box-shadow: 0 0 0 2px var(--wm-color-line);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    animation: none;
+  }
+}
