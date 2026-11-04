@@ -14,27 +14,6 @@
   }
 }
 
-.star {
-  flex: 0 0 auto;
-  display: flex;
-}
-
-/* 记笔记时星标轻微呼吸，表达「正在进行」 */
-.starLive {
-  animation: breathe 2.4s ease-in-out infinite;
-}
-
-@keyframes breathe {
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.4;
-  }
-}
-
 /* 12/18 500（Figma style_W6I5Z1） */
 .text {
   font-size: 12px;
