@@ -2,7 +2,7 @@ import type { FC } from 'react';
 import { AssistantMessageView } from '@/components/sidebar/AssistantMessageView';
 import { ThinkingIndicator } from '@/components/sidebar/ThinkingIndicator';
 import { UserMessageView } from '@/components/sidebar/UserMessageView';
-import type { ChatMessage } from '@/types/chat';
+import type { BubbleCard, ChatMessage } from '@/types/chat';
 
 interface ChatListProps {
   messages: ChatMessage[];
@@ -11,6 +11,8 @@ interface ChatListProps {
   isThinking?: boolean;
   onFollowUp?: (text: string) => void;
   onOpenSource?: () => void;
+  /** 交互卡片提交 */
+  onCardSubmit?: (cardId: BubbleCard['id'], values: string[]) => void;
 }
 
 /**
@@ -27,6 +29,7 @@ export const ChatList: FC<ChatListProps> = ({
   isThinking = false,
   onFollowUp,
   onOpenSource,
+  onCardSubmit,
 }) => (
   <>
     {messages.map((message, index) =>
@@ -40,6 +43,7 @@ export const ChatList: FC<ChatListProps> = ({
           showMeta
           onFollowUp={onFollowUp}
           onOpenSource={onOpenSource}
+          onCardSubmit={onCardSubmit}
           // 只留最后一轮的追问：元宝说了下一句，旧提问就收起
           showFollowUps={index === messages.length - 1}
         />

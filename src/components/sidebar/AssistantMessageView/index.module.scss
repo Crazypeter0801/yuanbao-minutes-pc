@@ -102,46 +102,50 @@
 }
 
 
-/* 追问建议：白底细描边胶囊（参考 Granola 的 Say more） */
-/* 追问建议：竖排、每个胶囊宽度跟着文案走，右端带 ↗
-   胶囊之间与「正文→首胶囊」同为 12，上下节奏一致 */
+/* 追问建议：白底细描边胶囊（Figma 8:593 / 8:594）
+   气泡下沿到首个胶囊 8，胶囊之间也是 8；宽度跟着文案走，不铺满整行 */
 .followUps {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   max-width: 100%;
+  /* 覆盖消息组里统一的 4px，设计稿这里要 8 */
+  margin-top: 8px;
 
   & > * + * {
-    margin-top: 12px;
+    margin-top: 8px;
   }
 }
 
+/* padding 8 14、圆角 17.5、白底 + 0.5px 内描边 #EBEDF2（Figma 8:594） */
 .followUp {
   display: flex;
   align-items: center;
   max-width: 100%;
   padding: 8px 14px;
-  border-radius: 18px;
-  background-color: var(--wm-color-background-septenary);
+  border-radius: 17.5px;
+  background-color: var(--wm-color-background-quaternary);
+  box-shadow: inset 0 0 0 0.5px var(--wm-color-outline-tertiary);
   cursor: pointer;
   outline: none;
   transition:
     background-color 120ms ease-in-out,
-    border-color 120ms ease-in-out;
+    box-shadow 120ms ease-in-out;
 
   & > * + * {
     margin-left: 8px;
   }
 
   &:hover {
-    background-color: var(--wm-color-line);
+    background-color: var(--wm-color-background-septenary);
   }
 
   &:focus-visible {
-    box-shadow: 0 0 0 2px var(--wm-color-line);
+    box-shadow: inset 0 0 0 0.5px var(--wm-color-outline-secondary);
   }
 }
 
+/* 12/18 400 primary（Figma 8:596） */
 .followUpText {
   min-width: 0;
   font-size: 12px;
@@ -151,7 +155,7 @@
   overflow-wrap: anywhere;
 }
 
-/* 12px 的 ↗：用文字符号，避免为一个小箭头再引一份图标资源 */
+/* ↗ 12/18，tertiary，与文案间距 8（Figma 8:599） */
 .followUpArrow {
   flex: 0 0 auto;
   font-size: 12px;

@@ -26,6 +26,28 @@ export interface BubbleImage {
   height?: number;
 }
 
+/**
+ * 对话里的交互卡片（Figma 元宝Agent · Component Gallery 4:351）
+ * - single：单选，选完提交；
+ * - multi：多选，选完提交；
+ * - confirm：只做确认，展示 summary 后按主按钮执行。
+ */
+export interface BubbleCard {
+  /** 卡片类型标识，决定提交后元宝回什么 */
+  id: 'summary-mode' | 'extract' | 'task-confirm';
+  kind: 'single' | 'multi' | 'confirm';
+  title: string;
+  description: string;
+  /** single / multi 的选项文案 */
+  options?: string[];
+  /** confirm 的摘要行 */
+  summary?: { label: string; value: string }[];
+  /** 主按钮文案 */
+  primaryLabel: string;
+  /** 次按钮文案（如「返回修改」） */
+  secondaryLabel?: string;
+}
+
 /** 一个气泡 */
 export interface Bubble {
   id: string;
@@ -34,6 +56,8 @@ export interface Bubble {
   withLink?: boolean;
   /** 附在文字下方的图片 */
   image?: BubbleImage;
+  /** 附在文字下方的交互卡片 */
+  card?: BubbleCard;
 }
 
 /** 元宝发出的一组消息（同一时间点的连续气泡） */

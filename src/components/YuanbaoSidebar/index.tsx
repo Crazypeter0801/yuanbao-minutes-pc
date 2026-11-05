@@ -1,7 +1,7 @@
-import { useMemo, type FC } from 'react';
+import { useCallback, useMemo, type FC } from 'react';
 import type { PopMenuItem } from '@/components/common/PopMenu';
 import type { ArtifactItem } from '@/types/artifact';
-import type { AssistantMessage } from '@/types/chat';
+import type { AssistantMessage, BubbleCard } from '@/types/chat';
 import { AiDisclaimer } from '@/components/sidebar/AiDisclaimer';
 import { ArtifactEntry } from '@/components/sidebar/ArtifactEntry';
 import { ChatInput } from '@/components/sidebar/ChatInput';
@@ -11,6 +11,7 @@ import { NotePill } from '@/components/sidebar/NotePill';
 import { SidebarHeader } from '@/components/sidebar/SidebarHeader';
 import { SidebarShell } from '@/components/sidebar/SidebarShell';
 import { buildRecordingStateNote, buildScreenshotNote } from '@/data/yuanbaoContent';
+import { buildCardResult } from '@/data/interactiveCards';
 import { useAutoNotes } from '@/hooks/useAutoNotes';
 import { useListening } from '@/hooks/useListening';
 import { useToast } from '@/hooks/useToast';
@@ -59,13 +60,20 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ chat, artifacts, onClo
   );
 
   const openSource = () => showToast('已定位到原文（演示）');
-
   const openArtifact = (item: ArtifactItem) => showToast(`打开「${item.name}」（演示）`);
 
   // 截图只推一条带缩略图的记录，不弹 Toast
   const saveScreenshot = () => {
     chat.push(buildScreenshotNote());
   };
+
+  // 交互卡片提交：元宝紧接着回一条按所选结构组织的结果
+  const submitCard = useCallback(
+    (cardId: BubbleCard['id'], values: string[]) => {
+      chat.push(buildCardResult(cardId, values));
+    },
+    [chat],
+  );
 
   return (
     <SidebarShell toast={toast}>
@@ -86,6 +94,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ chat, artifacts, onClo
           isThinking={chat.isThinking}
           onFollowUp={chat.ask}
           onOpenSource={openSource}
+          onCardSubmit={submitCard}
         />
       </MessageStream>
 

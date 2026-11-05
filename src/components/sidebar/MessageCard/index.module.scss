@@ -1,0 +1,208 @@
+/*
+ * 对话里的交互卡片（Figma 元宝Agent · Component Gallery 4:351）
+ *
+ * 设计稿卡片固定 440 宽、padding 20；侧栏气泡里只有 344 可用，
+ * 所以宽度改成撑满气泡、padding 收到 16，其余（圆角 16、1px 描边、字号层级）照设计稿。
+ */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 16px;
+  border-radius: 16px;
+  background-color: var(--wm-color-card-background);
+  box-shadow: inset 0 0 0 1px var(--wm-color-card-border);
+
+  & > * + * {
+    margin-top: 12px;
+  }
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+
+  & > * + * {
+    margin-top: 4px;
+  }
+}
+
+/* 16/24 500（Figma style_SVQLS1） */
+.title {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 500;
+  color: var(--wm-color-card-title);
+}
+
+/* 13/20 400，中灰（Figma style_TQPXE0 / fill_OJZHOP） */
+.description {
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--wm-color-card-text-secondary);
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 选项行：padding 7 0、控件与文案间距 12（Figma layout_PRHUB1） */
+.option {
+  display: flex;
+  align-items: center;
+  padding: 7px 0;
+  cursor: pointer;
+  outline: none;
+  border-radius: 6px;
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px var(--wm-color-card-border);
+  }
+}
+
+/* 16×16 控件：未选中白底浅灰描边，选中近黑实底（Figma layout_OKNU3G） */
+.control {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  background-color: var(--wm-color-card-background);
+  box-shadow: inset 0 0 0 1px var(--wm-color-card-control-border);
+}
+
+.radio {
+  border-radius: 8px;
+}
+
+.checkbox {
+  border-radius: 4px;
+}
+
+.controlActive {
+  background-color: var(--wm-color-card-control-active);
+  box-shadow: inset 0 0 0 1px var(--wm-color-card-control-active);
+}
+
+/* 单选选中：中间 6px 白点 */
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  background-color: var(--wm-color-card-text-on-active);
+}
+
+/* 多选选中：白色 ✓ */
+.check {
+  font-size: 11px;
+  line-height: 14px;
+  color: var(--wm-color-card-text-on-active);
+}
+
+/* 14/21，选中加粗（Figma style_QC5UZG / style_O3LWWJ） */
+.optionText {
+  margin-left: 12px;
+  font-size: 14px;
+  line-height: 21px;
+  color: var(--wm-color-card-title);
+}
+
+.optionTextActive {
+  font-weight: 500;
+}
+
+/* 摘要块：#F5F5F5、圆角 10、padding 12、行间 8（Figma layout_8RPS7C） */
+.summary {
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  border-radius: 10px;
+  background-color: var(--wm-color-card-subtle);
+
+  & > * + * {
+    margin-top: 8px;
+  }
+}
+
+.summaryRow {
+  display: flex;
+  align-items: flex-start;
+}
+
+/* 标签列固定宽，多行时正文才能对齐（设计稿是两个字的标签 + 空格） */
+.summaryLabel {
+  flex: 0 0 auto;
+  width: 32px;
+  margin-right: 8px;
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--wm-color-card-title);
+}
+
+.summaryValue {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--wm-color-card-text-secondary);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+
+  & > * + * {
+    margin-left: 8px;
+  }
+}
+
+/* 按钮：padding 7 16、圆角 17、13/20 500（Figma layout_5X0XZR） */
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 16px;
+  border-radius: 17px;
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  transition:
+    opacity 120ms ease-in-out,
+    background-color 120ms ease-in-out;
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px var(--wm-color-card-border);
+  }
+}
+
+.primary {
+  background-color: var(--wm-color-card-control-active);
+  color: var(--wm-color-card-text-on-active);
+
+  &:hover {
+    opacity: 0.88;
+  }
+}
+
+.ghost {
+  background-color: var(--wm-color-card-background);
+  box-shadow: inset 0 0 0 1px var(--wm-color-card-border);
+  color: var(--wm-color-card-title);
+
+  &:hover {
+    background-color: var(--wm-color-card-subtle);
+  }
+}
+
+/* 未选够 / 已提交：按钮置灰且不可点 */
+.disabled {
+  opacity: 0.4;
+  cursor: default;
+  pointer-events: none;
+}

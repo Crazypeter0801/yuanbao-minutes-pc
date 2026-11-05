@@ -1,8 +1,9 @@
 import type { FC } from 'react';
 import IconSideLink from '@/assets/d2c/icons/v1/icon-side-link';
 import { Pressable } from '@/components/common/Pressable';
+import { MessageCard } from '@/components/sidebar/MessageCard';
 import { RichText } from '@/components/sidebar/RichText';
-import type { AssistantMessage } from '@/types/chat';
+import type { AssistantMessage, BubbleCard } from '@/types/chat';
 import { formatMessageTime } from './formatTime';
 import styles from './index.module.scss';
 
@@ -24,6 +25,8 @@ interface AssistantMessageViewProps {
   onFollowUp?: (text: string) => void;
   /** 点击链接徽标 / 引用来源 */
   onOpenSource?: () => void;
+  /** 交互卡片提交：把选中的值交给上层生成后续回复 */
+  onCardSubmit?: (cardId: BubbleCard['id'], values: string[]) => void;
   /**
    * 是否展示追问建议
    * 只在最新一条消息上展示：元宝说了下一句之后，上一句后面的提问就收起来，避免满屏都是旧按钮
@@ -38,6 +41,7 @@ export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
   showMeta = true,
   onFollowUp,
   onOpenSource,
+  onCardSubmit,
   showFollowUps = true,
 }) => {
   const isPlain = shape === 'plain';
@@ -82,6 +86,12 @@ export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
                   ) : undefined
                 }
               />
+              {bubble.card && (
+                <MessageCard
+                  card={bubble.card}
+                  onSubmit={(values) => onCardSubmit?.(bubble.card!.id, values)}
+                />
+              )}
               {bubble.image && (
                 <img
                   className={styles.image}
