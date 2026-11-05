@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { MeetingWindow } from '@/components/meeting/MeetingWindow';
 import { PollComposer } from '@/components/poll/PollComposer';
+import { WINDOW_TOAST_ROOT_ID } from '@/components/common/Toast';
 import { YuanbaoSidebar } from '@/components/YuanbaoSidebar';
 import {
   buildArtifact,
@@ -74,7 +75,7 @@ export default function App() {
 
   return (
     <div className={styles.page}>
-      <div className={styles.window}>
+      <div className={styles.window} id={WINDOW_TOAST_ROOT_ID}>
         {/* 投票弹窗只盖会议区，元宝说的话仍然看得见 */}
         <div className={styles.meetingArea}>
           <MeetingWindow yuanbaoOpen={sidebarOpen} onToggleYuanbao={() => setSidebarOpen((open) => !open)} />
