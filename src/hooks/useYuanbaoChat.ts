@@ -52,7 +52,7 @@ export function useYuanbaoChat(initial: ChatMessage[]): YuanbaoChat {
       const answer = answerQuestion(text, { lastTopic: lastTopic.current });
       lastTopic.current = answer.topic;
 
-      setMessages((previous) => [...previous, { id: createId('q'), role: 'user', text }]);
+      setMessages((previous) => [...previous, { id: createId('q'), role: 'user', text, createdAt: Date.now() }]);
       setPending((count) => count + 1);
       const timer = window.setTimeout(() => {
         push(answer.message);

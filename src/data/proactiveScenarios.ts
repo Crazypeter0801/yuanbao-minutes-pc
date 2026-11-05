@@ -1,3 +1,4 @@
+import { parseMarkedText } from '@/data/richText';
 import { createId } from '@/data/yuanbaoContent';
 import type { AssistantMessage, RichBlock } from '@/types/chat';
 
@@ -7,24 +8,26 @@ import type { AssistantMessage, RichBlock } from '@/types/chat';
  * 外加一条「用户自己发任务」的入口，点一下就能演示，不用等真实触发条件。
  */
 
-/** 纯文本段落 */
+/** 纯文本段落（支持 **加粗** 与 [[人名]] 标记） */
 const paragraph = (...texts: string[]): RichBlock => ({
   type: 'paragraph',
-  runs: texts.map((text) => ({ text })),
+  runs: texts.flatMap((text) => parseMarkedText(text)),
 });
 
 /** 无序列表 */
 const list = (...items: string[]): RichBlock => ({
   type: 'list',
-  items: items.map((item) => [{ text: item }]),
+  items: items.map((item) => parseMarkedText(item)),
 });
 
 interface ScenarioBase {
   id: string;
-  /** 触发按钮上的文案 */
+  /** 场景名，也是输入框里最直接的触发词 */
   label: string;
-  /** 按钮的悬浮说明：这次触发对应什么时机 */
+  /** 场景说明：这次触发对应什么时机 */
   hint: string;
+  /** 输入框里包含任一词即命中本场景（导入 Figma 的版本没有演示条，只能靠打字触发） */
+  keywords: string[];
 }
 
 /**
@@ -51,10 +54,11 @@ export const proactiveScenarios: ProactiveScenario[] = [
     kind: 'nudge',
     label: '刚入会',
     hint: '模拟中途入会：元宝主动问要不要补前 5 分钟的内容',
+    keywords: ['刚入会', '中途入会', '入会'],
     build: () => ({
       id: createId('nudge-join'),
       role: 'assistant',
-      time: '刚刚',
+      createdAt: Date.now(),
       bubbles: [
         {
           id: createId('nudge-join-bubble'),
@@ -70,16 +74,16 @@ export const proactiveScenarios: ProactiveScenario[] = [
     kind: 'nudge',
     label: '别人提到',
     hint: '模拟会中有人提到某事：元宝主动把相关结论找出来',
+    keywords: ['别人提到', '有人提到', '提到我', '提到'],
     build: () => ({
       id: createId('nudge-mention'),
       role: 'assistant',
-      time: '刚刚',
+      createdAt: Date.now(),
       bubbles: [
         {
           id: createId('nudge-mention-bubble'),
-          mention: '黄婷婷',
           blocks: [
-            paragraph('提到的「两版视觉探索」，我顺手把会上的结论找出来了：'),
+            paragraph('会上 [[黄婷婷]] 提到的**两版视觉探索**，我把结论找出来了：'),
             list(
               '线条／卡片版：重点验证内容分组和层级是否清晰。',
               '少色大灰版：重点验证简洁感，以及少量强调色能否突出重点。',
@@ -97,10 +101,11 @@ export const proactiveScenarios: ProactiveScenario[] = [
     kind: 'nudge',
     label: '会议将结束',
     hint: '模拟会议收尾：元宝主动问要不要预约下一次会议',
+    keywords: ['会议将结束', '快结束', '要结束', '将结束', '结束'],
     build: () => ({
       id: createId('nudge-wrap'),
       role: 'assistant',
-      time: '刚刚',
+      createdAt: Date.now(),
       bubbles: [
         {
           id: createId('nudge-wrap-bubble'),
@@ -116,7 +121,21 @@ export const proactiveScenarios: ProactiveScenario[] = [
     kind: 'ask',
     label: '建个投票',
     hint: '模拟用户主动发任务：「帮我创建一个投票，团建去哪玩」，元宝回话的同时弹出投票确认',
+    keywords: ['建个投票', '创建投票', '发起投票', '投票'],
     userText: '帮我创建一个投票，团建去哪玩',
     opens: 'poll',
   },
 ];
+
+/**
+ * 按输入框内容匹配演示场景
+ * 导入 Figma 的版本没有场景切换条，演示时直接打「刚入会」「建个投票」这类词即可命中；
+ * 命中不了就当作普通提问，不影响正常问答。
+ */
+export function matchScenario(text: string): ProactiveScenario | undefined {
+  const input = text.trim();
+  if (!input) {
+    return undefined;
+  }
+  return proactiveScenarios.find((scenario) => scenario.keywords.some((keyword) => input.includes(keyword)));
+}

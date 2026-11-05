@@ -1,73 +1,74 @@
 import { useState } from 'react';
-import { ScenarioTriggers } from '@/components/demo/ScenarioTriggers';
 import { MeetingWindow } from '@/components/meeting/MeetingWindow';
 import { PollComposer } from '@/components/poll/PollComposer';
 import { YuanbaoSidebar } from '@/components/YuanbaoSidebar';
 import { initialArtifacts } from '@/data/artifacts';
 import { buildPollPostedMessage, teamBuildingPoll } from '@/data/polls';
-import { proactiveScenarios } from '@/data/proactiveScenarios';
+import { matchScenario } from '@/data/proactiveScenarios';
 import { useYuanbaoSession } from '@/hooks/useYuanbaoSession';
 import styles from './App.module.scss';
 
 /**
- * V1 · 腾讯会议 PC + 元宝 Agent 对话区（Figma 257:1540）
- * 窗口 1440×760：左侧会议区为静态还原，右侧元宝对话区可交互。
- * 侧栏右上角 × 关闭后，通过底部工具栏胶囊里的「元宝」按钮重新打开（不再另设悬浮入口）。
- * 壁纸固定铺满视口，窗口居中。
+ * 腾讯会议 PC + 元宝 Agent 对话区（Figma 257:1540）· Figma 导入版
  *
- * 元宝的对话状态提到这一层：演示用的场景切换条浮在窗口之外，
- * 要和侧栏共用同一份消息数据，按钮点了才真的能推动对话。
+ * 相比演示版做了四件事：
+ * 1. 去掉壁纸，页面底色为纯白，画布就是窗口本身；
+ * 2. 去掉窗口外的场景切换条；
+ * 3. 只留一个 1440×760 的主窗口（会议区 + 元宝侧栏）；
+ * 4. 演示场景改用输入框触发——打「刚入会」「别人提到」「会议将结束」「建个投票」即可。
  */
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [pollOpen, setPollOpen] = useState(false);
   const chat = useYuanbaoSession();
 
+  /**
+   * 输入框提交：先过一遍演示场景，命中就按场景走，没命中才当普通提问。
+   * 主动开口的场景（刚入会 / 别人提到 / 会议将结束）只追加元宝消息，不出现用户气泡；
+   * 投票这类任务场景用场景自带的 userText 提问，同时把确认弹窗摊开。
+   */
+  const handleSubmit = (text: string) => {
+    const scenario = matchScenario(text);
+    if (!scenario) {
+      chat.ask(text);
+      return;
+    }
+    if (scenario.kind === 'ask') {
+      chat.ask(scenario.userText);
+      if (scenario.opens === 'poll') {
+        setPollOpen(true);
+      }
+      return;
+    }
+    chat.push(scenario.build());
+  };
+
   return (
     <div className={styles.page}>
-      <div className={styles.backdrop} aria-hidden="true" />
-
-      <main className={styles.stage}>
-        <div className={styles.frame}>
-          {/* 演示用场景切换：浮在窗口上方的壁纸上，不属于窗口内部 */}
-          <div className={styles.scenarioBar}>
-            <ScenarioTriggers
-              scenarios={proactiveScenarios}
-              onTrigger={(scenario) => {
-                if (scenario.kind === 'ask') {
-                  chat.ask(scenario.userText);
-                  // 投票这类任务，元宝回话的同时直接把确认弹窗摊开
-                  if (scenario.opens === 'poll') {
-                    setPollOpen(true);
-                  }
-                } else {
-                  chat.push(scenario.build());
-                }
+      <div className={styles.window}>
+        {/* 投票弹窗只盖会议区，元宝说的话仍然看得见 */}
+        <div className={styles.meetingArea}>
+          <MeetingWindow yuanbaoOpen={sidebarOpen} onToggleYuanbao={() => setSidebarOpen((open) => !open)} />
+          {pollOpen && (
+            <PollComposer
+              draft={teamBuildingPoll}
+              onClose={() => setPollOpen(false)}
+              onSubmit={() => {
+                setPollOpen(false);
+                chat.push(buildPollPostedMessage(teamBuildingPoll.title));
               }}
             />
-          </div>
-
-          <div className={styles.window}>
-            {/* 投票弹窗只盖会议区，元宝说的话仍然看得见 */}
-            <div className={styles.meetingArea}>
-              <MeetingWindow yuanbaoOpen={sidebarOpen} onToggleYuanbao={() => setSidebarOpen((open) => !open)} />
-              {pollOpen && (
-                <PollComposer
-                  draft={teamBuildingPoll}
-                  onClose={() => setPollOpen(false)}
-                  onSubmit={() => {
-                    setPollOpen(false);
-                    chat.push(buildPollPostedMessage(teamBuildingPoll.title));
-                  }}
-                />
-              )}
-            </div>
-            {sidebarOpen && (
-              <YuanbaoSidebar chat={chat} artifacts={initialArtifacts} onClose={() => setSidebarOpen(false)} />
-            )}
-          </div>
+          )}
         </div>
-      </main>
+        {sidebarOpen && (
+          <YuanbaoSidebar
+            chat={chat}
+            artifacts={initialArtifacts}
+            onClose={() => setSidebarOpen(false)}
+            onSubmit={handleSubmit}
+          />
+        )}
+      </div>
     </div>
   );
 }

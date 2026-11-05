@@ -10,8 +10,7 @@ import { MessageStream } from '@/components/sidebar/MessageStream';
 import { NotePill } from '@/components/sidebar/NotePill';
 import { SidebarHeader } from '@/components/sidebar/SidebarHeader';
 import { SidebarShell } from '@/components/sidebar/SidebarShell';
-import { meetingSession } from '@/data/meetingSession';
-import { buildScreenshotNote } from '@/data/yuanbaoContent';
+import { buildRecordingStateNote, buildScreenshotNote } from '@/data/yuanbaoContent';
 import { useAutoNotes } from '@/hooks/useAutoNotes';
 import { useListening } from '@/hooks/useListening';
 import { useToast } from '@/hooks/useToast';
@@ -19,12 +18,14 @@ import type { YuanbaoSession } from '@/hooks/useYuanbaoSession';
 import styles from './index.module.scss';
 
 interface YuanbaoSidebarProps {
-  /** 元宝会话（消息流 + 笔记面板状态），由 App 持有，窗口外的演示条共用同一份 */
+  /** 元宝会话（消息流 + 笔记面板状态），由 App 持有 */
   chat: YuanbaoSession;
   /** 元宝本轮产出的文件 */
   artifacts: ArtifactItem[];
   /** 关闭侧栏 */
   onClose: () => void;
+  /** 输入框提交：App 层会先匹配演示场景，未命中才走普通提问；不传则直接提问 */
+  onSubmit?: (text: string) => void;
 }
 
 /**
@@ -32,11 +33,12 @@ interface YuanbaoSidebarProps {
  * - 元宝的实时纪要与用户的提问 / 回答在同一条时间流里；
  * - 底部：「元宝正在记笔记」状态条（保存截图 / 暂停，点击展开查看元宝主动记下的内容）+ 输入框。
  */
-export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ chat, artifacts, onClose }) => {
+export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ chat, artifacts, onClose, onSubmit }) => {
   const { toast, showToast } = useToast();
-  const { isListening, toggleListening } = useListening((listening) =>
-    showToast(listening ? '元宝继续记笔记' : '已暂停记笔记'),
-  );
+  // 暂停 / 继续只在对话里留一条消息，不再弹 Toast：反馈集中在一处
+  const { isListening, toggleListening } = useListening((listening) => {
+    chat.push(buildRecordingStateNote(listening));
+  });
 
   // 会中实时记录：每 10–15 秒自动记下一条，模拟有人一直在说话；暂停后停住
   useAutoNotes(chat.push, isListening);
@@ -60,9 +62,9 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ chat, artifacts, onClo
 
   const openArtifact = (item: ArtifactItem) => showToast(`打开「${item.name}」（演示）`);
 
+  // 截图只推一条带缩略图的记录，不弹 Toast
   const saveScreenshot = () => {
-    chat.push(buildScreenshotNote(meetingSession.duration));
-    showToast('截图已保存');
+    chat.push(buildScreenshotNote());
   };
 
   return (
@@ -80,7 +82,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ chat, artifacts, onClo
         <AiDisclaimer />
         <ChatList
           messages={chat.messages}
-          shape="plain"
+          shape="round"
           isThinking={chat.isThinking}
           onFollowUp={chat.ask}
           onOpenSource={openSource}
@@ -101,7 +103,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ chat, artifacts, onClo
           />
           <ArtifactEntry artifacts={artifacts} onOpen={openArtifact} />
         </div>
-        <ChatInput placeholder="提问或创建任务" onSubmit={chat.ask} />
+        <ChatInput placeholder="提问或创建任务，如「刚入会」" onSubmit={onSubmit ?? chat.ask} />
       </div>
     </SidebarShell>
   );

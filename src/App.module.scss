@@ -1,46 +1,9 @@
+/* Figma 导入版：页面尺寸就是窗口尺寸，没有壁纸，也没有窗口外的演示条 */
 .page {
-  position: relative;
-  min-height: 100vh;
-}
-
-/* 固定壁纸：滚动时背景不动 */
-.backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  background-color: var(--wm-color-stage-background);
-  background-image: url('./assets/background/tahoe-light.jpg');
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
-}
-
-.stage {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  padding: 32px;
-}
-
-/* 窗口容器：场景切换条绝对定位在窗口上方，不参与排版，窗口位置与居中都保持不变 */
-.frame {
-  position: relative;
-  flex: 0 0 auto;
-}
-
-/* 浮在窗口上方的壁纸上，水平居中 */
-.scenarioBar {
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  display: flex;
-  justify-content: center;
-  margin-bottom: 12px;
-  transform: translateX(-50%);
-  white-space: nowrap;
+  width: 1440px;
+  height: 760px;
+  margin: 0 auto;
+  overflow: hidden;
 }
 
 /* 会议区容器：投票弹窗以它为定位基准，只覆盖左侧，不盖住元宝侧栏 */
@@ -54,12 +17,10 @@
 /* V1 窗口 1440×760、圆角 12、底色 #F0F2F7（Figma 257:1540） */
 .window {
   position: relative;
-  flex: 0 0 auto;
   display: flex;
-  width: 1440px;
-  height: 760px;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   border-radius: 12px;
   background-color: var(--wm-color-window-background);
-  box-shadow: var(--wm-shadow-canvas);
 }

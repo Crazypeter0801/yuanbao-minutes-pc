@@ -10,7 +10,7 @@
 
 /* 方案 C：无署名，正文与追问之间留更多呼吸 */
 .groupPlain > * + * {
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
 .meta {
@@ -37,14 +37,17 @@
 .bubbles {
   display: flex;
   flex-direction: column;
+  /* 气泡宽度跟着内容走：短句不会被拉成一整行 */
+  align-items: flex-start;
 
   & > * + * {
     margin-top: 4px;
   }
 }
 
-/* 气泡 padding 10 12，底 #F3F3F4 */
+/* 气泡 padding 10 12，底 #F3F3F4；max-width 兜住长内容，不撑破侧栏 */
 .bubble {
+  max-width: 100%;
   padding: 10px 12px;
   background-color: var(--wm-color-background-septenary);
 }
@@ -54,9 +57,20 @@
   border-radius: 1px 16px 16px 16px;
 }
 
-/* 句首带 @人名胶囊的气泡，左上角放大到 4，给胶囊留圆角（Figma 316:2659） */
-.roundMention {
-  border-top-left-radius: 4px;
+/*
+ * 截图记录里的小图
+ * 比例严格跟着左侧演讲者画面的可见区域走（1002×512 ≈ 1.96:1，从顶部开始裁）：
+ * 用户看到的是哪一块，小图就只放哪一块，不露出被容器裁掉的下半部分。
+ */
+.image {
+  display: block;
+  width: 176px;
+  height: 90px;
+  margin-top: 8px;
+  border-radius: 8px;
+  object-fit: cover;
+  object-position: center top;
+  user-select: none;
 }
 
 /* 方案 B：1 8 8 8；组内非末条 1 8 8 1（Figma 248:13424） */
@@ -89,7 +103,8 @@
 
 
 /* 追问建议：白底细描边胶囊（参考 Granola 的 Say more） */
-/* 追问建议：竖排、每个胶囊宽度跟着文案走，右端带 ↗ */
+/* 追问建议：竖排、每个胶囊宽度跟着文案走，右端带 ↗
+   胶囊之间与「正文→首胶囊」同为 12，上下节奏一致 */
 .followUps {
   display: flex;
   flex-direction: column;
@@ -97,7 +112,7 @@
   max-width: 100%;
 
   & > * + * {
-    margin-top: 8px;
+    margin-top: 12px;
   }
 }
 

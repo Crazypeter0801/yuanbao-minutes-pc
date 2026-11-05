@@ -3,6 +3,7 @@ import IconSideLink from '@/assets/d2c/icons/v1/icon-side-link';
 import { Pressable } from '@/components/common/Pressable';
 import { RichText } from '@/components/sidebar/RichText';
 import type { AssistantMessage } from '@/types/chat';
+import { formatMessageTime } from './formatTime';
 import styles from './index.module.scss';
 
 interface AssistantMessageViewProps {
@@ -14,6 +15,11 @@ interface AssistantMessageViewProps {
    * - plain：无气泡、无署名，像文档一样直接排版（方案 C，参考 Granola）
    */
   shape: 'round' | 'compact' | 'plain';
+  /**
+   * 是否显示「元宝 + 时间」
+   * 元宝会连着发几条，间隔短时只在组头标一次；只有距上一条足够久才重新标。
+   */
+  showMeta?: boolean;
   /** 点击追问建议 */
   onFollowUp?: (text: string) => void;
   /** 点击链接徽标 / 引用来源 */
@@ -29,6 +35,7 @@ interface AssistantMessageViewProps {
 export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
   message,
   shape,
+  showMeta = true,
   onFollowUp,
   onOpenSource,
   showFollowUps = true,
@@ -38,10 +45,10 @@ export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
 
   return (
     <div className={`${styles.group} ${isPlain ? styles.groupPlain : ''}`}>
-      {!isPlain && (
+      {!isPlain && showMeta && (
         <div className={styles.meta}>
           <span className={styles.name}>元宝</span>
-          <span className={styles.time}>{message.time}</span>
+          <span className={styles.time}>{formatMessageTime(message.createdAt)}</span>
         </div>
       )}
 
@@ -53,7 +60,6 @@ export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
                 styles.bubble,
                 shape === 'round' ? styles.round : styles.compact,
                 shape === 'compact' && index !== lastIndex ? styles.compactJoined : '',
-                shape === 'round' && bubble.mention ? styles.roundMention : '',
               ]
                 .filter(Boolean)
                 .join(' ');
@@ -62,7 +68,6 @@ export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
             <div className={shapeClass} key={bubble.id}>
               <RichText
                 blocks={bubble.blocks}
-                mention={bubble.mention}
                 trailing={
                   bubble.withLink ? (
                     <Pressable
@@ -77,6 +82,16 @@ export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
                   ) : undefined
                 }
               />
+              {bubble.image && (
+                <img
+                  className={styles.image}
+                  src={bubble.image.src}
+                  alt={bubble.image.alt}
+                  width={bubble.image.width}
+                  height={bubble.image.height}
+                  draggable={false}
+                />
+              )}
             </div>
           );
         })}

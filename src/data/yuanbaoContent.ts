@@ -1,3 +1,4 @@
+import videoSpeaker from '@/assets/d2c/images/v1/video-speaker@2x.png';
 import type { AssistantMessage, ChatMessage, RichBlock, TextRun } from '@/types/chat';
 
 /**
@@ -95,7 +96,7 @@ function reply(blocks: RichBlock[], extra?: Partial<AssistantMessage>): Assistan
   return {
     id: createId('ans'),
     role: 'assistant',
-    time: '刚刚',
+    createdAt: Date.now(),
     bubbles: [{ id: createId('bubble'), blocks }],
     ...extra,
   };
@@ -431,9 +432,42 @@ export function buildStageSummary(): AssistantMessage {
 }
 
 /**
- * 「保存截图」后的确认消息
- * @param time 会议进行时长，如 01:31:09
+ * 暂停 / 继续记笔记时的对话反馈
+ * 之前用 Toast 提示，现在统一改成一条对话消息：用户只在一个地方看反馈，也能回溯操作。
+ * 不算会议记录内容，所以不带 isNote，不会出现在「记笔记」展开面板里。
  */
-export function buildScreenshotNote(time: string): AssistantMessage {
-  return note([p(`已保存 ${time} 的会议画面，会附在本场纪要对应的段落里。`)]);
+export function buildRecordingStateNote(listening: boolean): AssistantMessage {
+  return {
+    id: createId('note-state'),
+    role: 'assistant',
+    createdAt: Date.now(),
+    bubbles: [
+      {
+        id: createId('note-state-bubble'),
+        blocks: [p(listening ? '元宝继续记录会议内容。' : '元宝已暂停记笔记，需要时再叫我继续。')],
+      },
+    ],
+  };
+}
+
+/**
+ * 「保存截图」后的确认消息
+ * 文案只说结果，图直接把当前演讲者画面缩小放进来，看起来就像这一帧真的存进了纪要。
+ */
+export function buildScreenshotNote(): AssistantMessage {
+  return {
+    id: createId('note'),
+    role: 'assistant',
+    createdAt: Date.now(),
+    // 归入笔记：展开「元宝正在记笔记」时也能看到这次截图
+    isNote: true,
+    bubbles: [
+      {
+        id: createId('shot-bubble'),
+        blocks: [p('元宝已记录当前会议画面')],
+        // 176×90 对齐左侧演讲者画面的可见比例（1002×512），小图里不会多出被裁掉的部分
+        image: { src: videoSpeaker, alt: '当前会议画面', width: 176, height: 90 },
+      },
+    ],
+  };
 }

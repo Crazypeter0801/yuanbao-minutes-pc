@@ -28,6 +28,8 @@
   --wm-color-background-bubble: #ffffff;
   /* 用户提问气泡（设计稿未给，取品牌蓝 8% 与助手灰泡区分） */
   --wm-color-background-user-bubble: rgba(0, 102, 255, 0.08);
+  /* 人名胶囊底：正文中间出现，比 @ 胶囊淡一档，避免抢读 */
+  --wm-color-background-mention: rgba(0, 102, 255, 0.08);
   --wm-color-background-link-badge: #e6e8eb;
   --wm-color-background-sheet-mask: rgba(255, 255, 255, 0.72);
 

@@ -28,34 +28,52 @@ const FILE_ICONS: Record<ArtifactIcon, string> = {
   slide: iconFileSlide,
 };
 
+/** 展开后面板的上下限：条数少时收短但不低于 200，超过 400 则列表滚动（Figma 320:8185） */
+const PANEL_MAX_HEIGHT = 400;
+const PANEL_MIN_HEIGHT = 200;
+
+/** 卡片内固定占位：上 padding 12 + 标题行 24 */
+const PANEL_CHROME = 36;
+
 /**
  * 「输出 · N」产物入口（收起 Figma 320:7815，展开 Figma 320:8185）
- * - 收起：底栏右侧 36 高胶囊（文件夹图标 + 输出 · N，N 是产物条数、随条数变化），与左侧记笔记状态条同一行；
- * - 点击展开成全宽的面板，列出元宝本轮产出的文件，向上浮在消息流之上，不挤压输入框；
- * - 面板高度跟着产物条数走、最高 400（Figma 320:8185）：条数少时卡片收短，超过 400 时列表滚动，
- *   并在底部渐隐，表示下面还有内容；
+ * - 收起：底栏右侧 36 高胶囊（文件夹图标 + 输出 · N），与左侧记笔记状态条同一行；
+ * - 展开：同一个卡片向右上长成全宽面板，宽度、高度、圆角一起过渡，
+ *   动画曲线与时长跟记笔记面板完全一致（380ms cubic-bezier(0.32, 0.72, 0, 1)），
+ *   内容等卡片长到七八成再淡入——所以不是「另一块面板淡出来」，而是胶囊自己变成了面板；
+ * - 面板高度跟着产物条数走、最高 400：条数少时收短，超过 400 时列表滚动并在底部渐隐；
  * - 面板内的折叠图标或 Esc 收起。
- * 面板与记笔记面板共用底栏同一条基线，两者不会同时出现：任一面板展开时都会盖住对方。
  */
 export const ArtifactEntry: FC<ArtifactEntryProps> = ({ artifacts, onOpen }) => {
   const [expanded, setExpanded] = useState(false);
-  const [panelHeight, setPanelHeight] = useState(0);
+  const [panelWidth, setPanelWidth] = useState(0);
+  const [panelHeight, setPanelHeight] = useState(PANEL_MIN_HEIGHT);
   const [showBottomFade, setShowBottomFade] = useState(false);
-  const panelRef = useRef<HTMLDivElement>(null);
+  const slotRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
-  // 面板高度随内容变化，量出来给外层的渐隐层用，渐隐才不会比面板高一截
+  // 展开宽度 = 底栏内容宽度；量成 px 才能和收起时的 104px 胶囊平滑过渡
   useLayoutEffect(() => {
-    const node = panelRef.current;
-    if (!node) {
+    const slot = slotRef.current;
+    if (!slot) {
       return undefined;
     }
-    const measure = () => setPanelHeight(node.offsetHeight);
+    const measure = () => setPanelWidth(slot.clientWidth);
     measure();
     const observer = new ResizeObserver(measure);
-    observer.observe(node);
+    observer.observe(slot);
     return () => observer.disconnect();
-  }, [artifacts.length]);
+  }, []);
+
+  // 展开高度 = 标题行 + 列表实际内容，夹在 200–400 之间；列表此刻被收起态压扁，scrollHeight 仍是内容全高
+  useLayoutEffect(() => {
+    const list = listRef.current;
+    if (!list) {
+      return;
+    }
+    const content = PANEL_CHROME + list.scrollHeight;
+    setPanelHeight(Math.min(PANEL_MAX_HEIGHT, Math.max(PANEL_MIN_HEIGHT, content)));
+  }, [artifacts.length, panelWidth]);
 
   // 底部渐隐只在「确实还能往下滚」时出现：
   // 条数不多时不加，免得压暗最后一条；滚到底后也撤掉，否则最后一条会一直发灰
@@ -77,7 +95,7 @@ export const ArtifactEntry: FC<ArtifactEntryProps> = ({ artifacts, onOpen }) => 
       node.removeEventListener('scroll', check);
       observer.disconnect();
     };
-  }, [artifacts.length]);
+  }, [artifacts.length, expanded]);
 
   // 每次展开都从头看，沿用上次滚到的位置会让人以为列表是空的
   useEffect(() => {
@@ -106,24 +124,42 @@ export const ArtifactEntry: FC<ArtifactEntryProps> = ({ artifacts, onOpen }) => 
   }, [expanded, collapse]);
 
   const vars = {
+    '--artifact-panel-width': `${panelWidth}px`,
     '--artifact-panel-height': `${panelHeight}px`,
   } as CSSProperties;
 
   return (
-    <div className={`${styles.slot} ${expanded ? styles.slotExpanded : ''}`} style={vars}>
+    <div className={`${styles.slot} ${expanded ? styles.slotExpanded : ''}`} ref={slotRef} style={vars}>
       <div
-        className={`${styles.panel} ${expanded ? styles.panelExpanded : ''}`}
-        ref={panelRef}
-        aria-hidden={!expanded}
+        className={`${styles.card} ${expanded ? styles.cardExpanded : ''}`}
+        // 收起态整块都能点开；展开后交给标题行与列表项，避免误触
+        onClick={expanded ? undefined : toggle}
+        role={expanded ? undefined : 'button'}
+        tabIndex={expanded ? undefined : 0}
+        aria-label={expanded ? undefined : `展开${entryTitle}`}
+        aria-expanded={expanded}
+        onKeyDown={(event) => {
+          if (!expanded && (event.key === 'Enter' || event.key === ' ')) {
+            event.preventDefault();
+            toggle();
+          }
+        }}
       >
-        <div className={styles.panelHeader}>
-          <span className={styles.panelTitle}>
+        <div className={styles.header}>
+          <Pressable
+            className={styles.summary}
+            onClick={toggle}
+            stopPropagation
+            ariaExpanded={expanded}
+            ariaLabel={expanded ? `收起${entryTitle}` : `展开${entryTitle}`}
+          >
             <IconArtifactFolder />
-            <span className={styles.panelTitleText}>{entryTitle}</span>
-          </span>
+            <span className={styles.titleText}>{entryTitle}</span>
+          </Pressable>
           <Pressable
             className={styles.fold}
             onClick={collapse}
+            stopPropagation
             disabled={!expanded}
             title="收起"
             ariaLabel={`收起${entryTitle}`}
@@ -135,6 +171,7 @@ export const ArtifactEntry: FC<ArtifactEntryProps> = ({ artifacts, onOpen }) => 
         <div
           className={`${styles.list} ${showBottomFade ? styles.listOverflowing : ''} wm-scroll-hidden`}
           ref={listRef}
+          aria-hidden={!expanded}
         >
           {artifacts.map((item) => (
             <Pressable key={item.id} className={styles.file} onClick={() => onOpen(item)}>
@@ -153,17 +190,6 @@ export const ArtifactEntry: FC<ArtifactEntryProps> = ({ artifacts, onOpen }) => 
           ))}
         </div>
       </div>
-
-      <Pressable
-        className={styles.trigger}
-        onClick={toggle}
-        ariaExpanded={expanded}
-        title={entryTitle}
-        ariaLabel={entryTitle}
-      >
-        <IconArtifactFolder />
-        <span className={styles.triggerText}>{entryTitle}</span>
-      </Pressable>
     </div>
   );
 };

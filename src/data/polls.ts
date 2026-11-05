@@ -22,7 +22,7 @@ export function buildPollPostedMessage(title: string): AssistantMessage {
   return {
     id: createId('poll-posted'),
     role: 'assistant',
-    time: '刚刚',
+    createdAt: Date.now(),
     bubbles: [
       {
         id: createId('poll-posted-bubble'),
