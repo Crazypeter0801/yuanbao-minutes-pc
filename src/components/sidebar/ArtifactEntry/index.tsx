@@ -16,6 +16,8 @@ interface ArtifactEntryProps {
   artifacts: ArtifactItem[];
   /** 点击某个产物 */
   onOpen: (item: ArtifactItem) => void;
+  /** 记笔记面板展开时把入口藏起来：那一行已经被更宽的面板占满，胶囊露在上面会打架 */
+  hidden?: boolean;
 }
 
 /** 文件类型徽标：Figma 导出的矢量图，按 URL 引入后由 img 渲染，避免位图缩放发虚 */
@@ -44,7 +46,7 @@ const PANEL_CHROME = 36;
  * - 面板高度跟着产物条数走、最高 400：条数少时收短，超过 400 时列表滚动并在底部渐隐；
  * - 面板内的折叠图标或 Esc 收起。
  */
-export const ArtifactEntry: FC<ArtifactEntryProps> = ({ artifacts, onOpen }) => {
+export const ArtifactEntry: FC<ArtifactEntryProps> = ({ artifacts, onOpen, hidden = false }) => {
   const [expanded, setExpanded] = useState(false);
   const [panelWidth, setPanelWidth] = useState(0);
   const [panelHeight, setPanelHeight] = useState(PANEL_MIN_HEIGHT);
@@ -129,7 +131,11 @@ export const ArtifactEntry: FC<ArtifactEntryProps> = ({ artifacts, onOpen }) => 
   } as CSSProperties;
 
   return (
-    <div className={`${styles.slot} ${expanded ? styles.slotExpanded : ''}`} ref={slotRef} style={vars}>
+    <div
+      className={`${styles.slot} ${expanded ? styles.slotExpanded : ''} ${hidden ? styles.slotHidden : ''}`}
+      ref={slotRef}
+      style={vars}
+    >
       <div
         className={`${styles.card} ${expanded ? styles.cardExpanded : ''}`}
         // 收起态整块都能点开；展开后交给标题行与列表项，避免误触

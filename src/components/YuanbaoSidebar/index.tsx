@@ -110,7 +110,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ chat, artifacts, onClo
             onToggleListening={toggleListening}
             onOpenSource={openSource}
           />
-          <ArtifactEntry artifacts={artifacts} onOpen={openArtifact} />
+          <ArtifactEntry artifacts={artifacts} onOpen={openArtifact} hidden={chat.notePanelOpen} />
         </div>
         <ChatInput placeholder="提问或创建任务，如「刚入会」" onSubmit={onSubmit ?? chat.ask} />
       </div>

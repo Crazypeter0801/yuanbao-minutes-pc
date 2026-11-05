@@ -52,6 +52,14 @@ $panel-min-height: 200px;
   opacity: 1;
 }
 
+/* 记笔记面板展开时整块让位：它已经铺满这一行，入口再露出来会和面板标题挤在一起 */
+.slotHidden .card {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 120ms ease-out, visibility 0s linear 120ms;
+}
+
 /* ---------- 卡片：收起是胶囊，展开是面板（同一元素，靠尺寸过渡） ---------- */
 
 .card {
