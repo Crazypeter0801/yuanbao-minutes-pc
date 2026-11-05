@@ -42,7 +42,7 @@ export default function App() {
   const createArtifact = (kind: ArtifactKind, title: string) => {
     const created = buildArtifact(kind, title);
     setArtifacts((previous) => (previous.length === 0 ? [created, ...companionArtifacts] : [created, ...previous]));
-    chat.push(buildArtifactCreatedMessage(kind, title));
+    chat.push(buildArtifactCreatedMessage(created));
   };
 
   /**

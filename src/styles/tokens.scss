@@ -119,6 +119,14 @@
   --wm-color-card-control-active: #202123;
   --wm-color-card-text-on-active: #ffffff;
 
+  /* 气泡下方的产物卡片（Figma 14330:23470）：文件名 90% 黑；封面配色取自设计稿示例封面 */
+  --wm-color-text-artifact-name: rgba(0, 0, 0, 0.9);
+  --wm-color-artifact-cover-paper: #f0ece5;
+  --wm-color-artifact-cover-ink: #4a2f1a;
+  --wm-color-artifact-cover-accent: #8c4f10;
+  --wm-color-artifact-cover-soft: #c9a77f;
+  --wm-color-artifact-cover-line: rgba(0, 0, 0, 0.05);
+
   /* 输入框左侧添加按钮底（Figma 36:10814，#6666661F） */
   --wm-color-input-add-fill: rgba(102, 102, 102, 0.12);
 

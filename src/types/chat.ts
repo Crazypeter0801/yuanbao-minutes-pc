@@ -1,3 +1,5 @@
+import type { ArtifactItem } from '@/types/artifact';
+
 /**
  * 元宝侧栏的数据结构
  * 说明：当前为前端 mock，接入真实接口时保持这套结构即可，视图无需改动。
@@ -73,6 +75,8 @@ export interface AssistantMessage {
   bubbles: Bubble[];
   /** 回答依据，例如「引用 · 2分钟前 黄婷婷」 */
   source?: string;
+  /** 这条回答生成的文件：在气泡下方显示可点击的产物卡片 */
+  artifact?: ArtifactItem;
   /** 追问建议 */
   followUps?: string[];
   /** 元宝主动记下的笔记（实时纪要、阶段小结、截图记录）；回答用户提问的消息不算 */

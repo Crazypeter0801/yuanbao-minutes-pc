@@ -1,8 +1,10 @@
 import type { FC } from 'react';
 import IconSideLink from '@/assets/d2c/icons/v1/icon-side-link';
 import { Pressable } from '@/components/common/Pressable';
+import { ArtifactCard } from '@/components/sidebar/ArtifactCard';
 import { MessageCard } from '@/components/sidebar/MessageCard';
 import { RichText } from '@/components/sidebar/RichText';
+import type { ArtifactItem } from '@/types/artifact';
 import type { AssistantMessage, BubbleCard } from '@/types/chat';
 import { formatMessageTime } from './formatTime';
 import styles from './index.module.scss';
@@ -25,6 +27,8 @@ interface AssistantMessageViewProps {
   onFollowUp?: (text: string) => void;
   /** 点击链接徽标 / 引用来源 */
   onOpenSource?: () => void;
+  /** 点击气泡下方的产物卡片 */
+  onOpenArtifact?: (artifact: ArtifactItem) => void;
   /** 交互卡片提交：把选中的值交给上层生成后续回复 */
   onCardSubmit?: (cardId: BubbleCard['id'], values: string[]) => void;
   /**
@@ -41,6 +45,7 @@ export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
   showMeta = true,
   onFollowUp,
   onOpenSource,
+  onOpenArtifact,
   onCardSubmit,
   showFollowUps = true,
 }) => {
@@ -106,6 +111,12 @@ export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
       {activeCard && (
         <div className={styles.cardSlot}>
           <MessageCard card={activeCard} onSubmit={(values) => onCardSubmit?.(activeCard.id, values)} />
+        </div>
+      )}
+
+      {message.artifact && (
+        <div className={styles.cardSlot}>
+          <ArtifactCard artifact={message.artifact} onOpen={onOpenArtifact} />
         </div>
       )}
 

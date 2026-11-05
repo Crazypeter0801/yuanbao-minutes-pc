@@ -40,7 +40,7 @@ export function buildArtifact(kind: ArtifactKind, title: string): ArtifactItem {
 }
 
 /** 创建产物后元宝的回复 */
-export function buildArtifactCreatedMessage(kind: ArtifactKind, title: string): AssistantMessage {
+export function buildArtifactCreatedMessage(artifact: ArtifactItem): AssistantMessage {
   return {
     id: createId('artifact-created'),
     role: 'assistant',
@@ -53,13 +53,14 @@ export function buildArtifactCreatedMessage(kind: ArtifactKind, title: string): 
             type: 'paragraph',
             runs: [
               { text: '已经按今天的讨论生成了' },
-              { text: `「${title}」（${kind === 'pdf' ? 'PDF' : 'PPT'}）`, bold: true },
-              { text: '，放在输入框上方的文件夹里，随时可以打开或导出。' },
+              { text: `「${artifact.name}」`, bold: true },
+              { text: '，点下方卡片可以打开，之后也能在输入框上方的文件夹里找到。' },
             ],
           },
         ],
       },
     ],
-    followUps: ['导出为文档', '我有哪些待办'],
+    artifact,
+    followUps: ['发到群里', '我有哪些待办'],
   };
 }

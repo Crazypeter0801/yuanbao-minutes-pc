@@ -114,6 +114,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ chat, artifacts, onClo
           isThinking={chat.isThinking}
           onFollowUp={chat.ask}
           onOpenSource={openSource}
+          onOpenArtifact={openArtifact}
           onCardSubmit={submitCard}
         />
       </MessageStream>

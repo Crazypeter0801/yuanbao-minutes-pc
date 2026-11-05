@@ -2,6 +2,7 @@ import type { FC } from 'react';
 import { AssistantMessageView } from '@/components/sidebar/AssistantMessageView';
 import { ThinkingIndicator } from '@/components/sidebar/ThinkingIndicator';
 import { UserMessageView } from '@/components/sidebar/UserMessageView';
+import type { ArtifactItem } from '@/types/artifact';
 import type { BubbleCard, ChatMessage } from '@/types/chat';
 
 interface ChatListProps {
@@ -11,6 +12,8 @@ interface ChatListProps {
   isThinking?: boolean;
   onFollowUp?: (text: string) => void;
   onOpenSource?: () => void;
+  /** 点击气泡下方的产物卡片 */
+  onOpenArtifact?: (artifact: ArtifactItem) => void;
   /** 交互卡片提交 */
   onCardSubmit?: (cardId: BubbleCard['id'], values: string[]) => void;
 }
@@ -29,6 +32,7 @@ export const ChatList: FC<ChatListProps> = ({
   isThinking = false,
   onFollowUp,
   onOpenSource,
+  onOpenArtifact,
   onCardSubmit,
 }) => (
   <>
@@ -43,6 +47,7 @@ export const ChatList: FC<ChatListProps> = ({
           showMeta
           onFollowUp={onFollowUp}
           onOpenSource={onOpenSource}
+          onOpenArtifact={onOpenArtifact}
           onCardSubmit={onCardSubmit}
           // 只留最后一轮的追问：元宝说了下一句，旧提问就收起
           showFollowUps={index === messages.length - 1}
