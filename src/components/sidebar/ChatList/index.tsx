@@ -14,6 +14,10 @@ interface ChatListProps {
   onOpenSource?: () => void;
   /** 点击气泡下方的产物卡片 */
   onOpenArtifact?: (artifact: ArtifactItem) => void;
+  /** 点击气泡下方的云笔记卡片 */
+  onOpenNote?: () => void;
+  /** 点击云笔记卡片上的播放按钮 */
+  onPlayNote?: () => void;
   /** 交互卡片提交 */
   onCardSubmit?: (cardId: BubbleCard['id'], values: string[]) => void;
 }
@@ -33,6 +37,8 @@ export const ChatList: FC<ChatListProps> = ({
   onFollowUp,
   onOpenSource,
   onOpenArtifact,
+  onOpenNote,
+  onPlayNote,
   onCardSubmit,
 }) => (
   <>
@@ -48,6 +54,8 @@ export const ChatList: FC<ChatListProps> = ({
           onFollowUp={onFollowUp}
           onOpenSource={onOpenSource}
           onOpenArtifact={onOpenArtifact}
+          onOpenNote={onOpenNote}
+          onPlayNote={onPlayNote}
           onCardSubmit={onCardSubmit}
           // 只留最后一轮的追问：元宝说了下一句，旧提问就收起
           showFollowUps={index === messages.length - 1}

@@ -39,8 +39,8 @@ interface ScenarioBase {
 export type ProactiveScenario =
   | (ScenarioBase & {
       kind: 'nudge';
-      /** 每次点击都要生成新消息，id 重新取，否则重复触发时 React key 会撞 */
-      build: () => AssistantMessage;
+      /** 每次点击都要生成新消息，id 重新取，否则重复触发时 React key 会撞；可连发多条 */
+      build: () => AssistantMessage | AssistantMessage[];
     })
   | (ScenarioBase & {
       kind: 'ask';
@@ -54,21 +54,35 @@ export const proactiveScenarios: ProactiveScenario[] = [
     id: 'mid-join',
     kind: 'nudge',
     label: '刚入会',
-    hint: '模拟中途入会：元宝主动问要不要补前 5 分钟的内容',
+    hint: '模拟开启云笔记后中途入会：元宝先发云笔记文件，再问要不要补前 5 分钟的内容',
     keywords: ['刚入会', '中途入会', '入会'],
-    build: () => ({
-      id: createId('nudge-join'),
-      role: 'assistant',
-      createdAt: Date.now(),
-      bubbles: [
-        {
-          id: createId('nudge-join-bubble'),
-          blocks: [paragraph('你刚进会。要不要我把前 5 分钟讨论的内容总结一下？')],
-        },
-      ],
-      // 两条快捷提问都要能落到问答规则表里，不能出现点了没回应
-      followUps: ['帮我快速回顾', '我有哪些待办'],
-    }),
+    build: () => [
+      {
+        id: createId('nudge-join-note'),
+        role: 'assistant',
+        createdAt: Date.now(),
+        bubbles: [
+          {
+            id: createId('nudge-join-note-bubble'),
+            blocks: [paragraph('云笔记已开启，点击可查看实时转写文本与AI总结等内容，还可针对录音内容提问哦～')],
+          },
+        ],
+        noteFile: { title: '元宝会中交互设计讨论', duration: '05:12' },
+      },
+      {
+        id: createId('nudge-join'),
+        role: 'assistant',
+        createdAt: Date.now(),
+        bubbles: [
+          {
+            id: createId('nudge-join-bubble'),
+            blocks: [paragraph('你刚进会。要不要我把前 5 分钟讨论的内容总结一下？')],
+          },
+        ],
+        // 两条快捷提问都要能落到问答规则表里，不能出现点了没回应
+        followUps: ['帮我快速回顾', '我有哪些待办'],
+      },
+    ],
   },
   {
     id: 'mentioned',

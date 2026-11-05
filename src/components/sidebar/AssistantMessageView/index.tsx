@@ -3,6 +3,7 @@ import IconSideLink from '@/assets/d2c/icons/v1/icon-side-link';
 import { Pressable } from '@/components/common/Pressable';
 import { ArtifactCard } from '@/components/sidebar/ArtifactCard';
 import { MessageCard } from '@/components/sidebar/MessageCard';
+import { NoteFileCard } from '@/components/sidebar/NoteFileCard';
 import { RichText } from '@/components/sidebar/RichText';
 import type { ArtifactItem } from '@/types/artifact';
 import type { AssistantMessage, BubbleCard } from '@/types/chat';
@@ -29,6 +30,10 @@ interface AssistantMessageViewProps {
   onOpenSource?: () => void;
   /** 点击气泡下方的产物卡片 */
   onOpenArtifact?: (artifact: ArtifactItem) => void;
+  /** 点击气泡下方的云笔记卡片 */
+  onOpenNote?: () => void;
+  /** 点击云笔记卡片上的播放按钮 */
+  onPlayNote?: () => void;
   /** 交互卡片提交：把选中的值交给上层生成后续回复 */
   onCardSubmit?: (cardId: BubbleCard['id'], values: string[]) => void;
   /**
@@ -46,6 +51,8 @@ export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
   onFollowUp,
   onOpenSource,
   onOpenArtifact,
+  onOpenNote,
+  onPlayNote,
   onCardSubmit,
   showFollowUps = true,
 }) => {
@@ -117,6 +124,12 @@ export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
       {message.artifact && (
         <div className={styles.cardSlot}>
           <ArtifactCard artifact={message.artifact} onOpen={onOpenArtifact} />
+        </div>
+      )}
+
+      {message.noteFile && (
+        <div className={styles.cardSlot}>
+          <NoteFileCard note={message.noteFile} onOpen={onOpenNote} onPlay={onPlayNote} />
         </div>
       )}
 

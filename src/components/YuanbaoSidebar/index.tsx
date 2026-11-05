@@ -64,6 +64,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ chat, artifacts, onClo
 
   const openSource = () => showToast('已定位到原文（演示）');
   const openArtifact = (item: ArtifactItem) => showToast(`打开「${item.name}」（演示）`);
+  const openNote = () => showToast('已在浏览器打开元宝笔记（演示）');
 
   // 交互卡片提交：元宝紧接着回一条按所选结构组织的结果
   const submitCard = useCallback(
@@ -115,6 +116,8 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ chat, artifacts, onClo
           onFollowUp={chat.ask}
           onOpenSource={openSource}
           onOpenArtifact={openArtifact}
+          onOpenNote={openNote}
+          onPlayNote={() => showToast('播放录音（演示）')}
           onCardSubmit={submitCard}
         />
       </MessageStream>
@@ -150,7 +153,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ chat, artifacts, onClo
           <NotePill
             isListening={isListening}
             hidden={commandsOpen || artifactsOpen}
-            onOpen={() => showToast('已在浏览器打开元宝笔记（演示）')}
+            onOpen={openNote}
             onToggleListening={toggleListening}
           />
         </div>

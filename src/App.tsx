@@ -70,7 +70,7 @@ export default function App() {
       }
       return;
     }
-    chat.push(scenario.build());
+    [scenario.build()].flat().forEach(chat.push);
   };
 
   return (

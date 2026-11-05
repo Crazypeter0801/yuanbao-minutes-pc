@@ -50,6 +50,13 @@ export interface BubbleCard {
   secondaryLabel?: string;
 }
 
+/** 云笔记文件：刚入会且开启了云笔记时，元宝随消息发出 */
+export interface NoteFile {
+  title: string;
+  /** 录音时长，如「05:12」 */
+  duration: string;
+}
+
 /** 一个气泡 */
 export interface Bubble {
   id: string;
@@ -77,6 +84,8 @@ export interface AssistantMessage {
   source?: string;
   /** 这条回答生成的文件：在气泡下方显示可点击的产物卡片 */
   artifact?: ArtifactItem;
+  /** 云笔记文件：在气泡下方显示笔记卡片 */
+  noteFile?: NoteFile;
   /** 追问建议 */
   followUps?: string[];
   /** 元宝主动记下的笔记（实时纪要、阶段小结、截图记录）；回答用户提问的消息不算 */
