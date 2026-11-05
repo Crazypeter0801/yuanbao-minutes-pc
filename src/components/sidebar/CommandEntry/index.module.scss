@@ -47,13 +47,13 @@
   }
 }
 
-/* 12/18，单行截断 */
+/* 14/20，与输入框加号菜单的文字一致（Figma 36:10715）；单行截断 */
 .commandText {
   min-width: 0;
   overflow: hidden;
-  font-size: 12px;
-  line-height: 18px;
-  color: var(--wm-color-text-primary);
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--wm-color-text-extra-primary);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
