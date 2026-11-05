@@ -1,215 +1,16 @@
-/*
- * 产物入口「输出 · N」：收起胶囊 ↔ 展开的产物面板
- *
- * 动作和记笔记面板完全一致：不是「胶囊消失 + 另一块面板淡入」，而是同一个卡片
- * 由 104×36 的胶囊长成整行面板——宽、高、内边距、圆角一起过渡，内容延后淡入。
- * 曲线、时长、内容延迟都跟 NotePill 对齐，两块面板的手感才是同一个。
- *
- * slot 绝对定位铺满底栏那一行（36 高），只让卡片接收点击，不挡住左侧记笔记状态条。
- */
-
-/* 与记笔记面板共用同一条展开曲线与时长 */
-$ease-out: cubic-bezier(0.32, 0.72, 0, 1);
-$duration: 380ms;
-
-/* 收起态胶囊宽度（Figma 320:7815） */
-$trigger-width: 104px;
-
-/* 展开后卡片的上下限：条数少时随内容收短但不到 200 就停住，超过 400 则滚动（400 取自 Figma 320:8185） */
-$panel-max-height: 400px;
-$panel-min-height: 200px;
-
-.slot {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  height: 36px;
-  /* 默认穿透，避免盖住左侧胶囊的点击 */
-  pointer-events: none;
-}
-
-/* 展开时面板上缘外加 24px 白色渐隐，把身后的消息流压下去（与其他面板保持一致） */
-.slot::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: calc(var(--artifact-panel-height, #{$panel-max-height}) + 24px);
-  background-image: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0) 0,
-    var(--wm-color-background-quaternary) 24px
-  );
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 200ms ease-out;
-}
-
-.slotExpanded::before {
-  opacity: 1;
-}
-
-/* 记笔记面板展开时整块让位：它已经铺满这一行，入口再露出来会和面板标题挤在一起 */
-.slotHidden .card {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity 120ms ease-out, visibility 0s linear 120ms;
-}
-
-/* ---------- 卡片：收起是胶囊，展开是面板（同一元素，靠尺寸过渡） ---------- */
-
-.card {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  width: $trigger-width;
-  height: 36px;
-  /* 收起态上下各 6，正好把 24 高的标题行居中在 36 的胶囊里 */
-  padding: 6px 12px;
-  overflow: hidden;
-  border-radius: 18px;
-  background-color: var(--wm-color-background-bubble);
-  box-shadow: inset 0 0 0 0.5px var(--wm-color-line), var(--wm-shadow-float);
-  pointer-events: auto;
-  cursor: pointer;
-  outline: none;
-  transition:
-    width $duration $ease-out,
-    height $duration $ease-out,
-    padding $duration $ease-out,
-    border-radius $duration $ease-out,
-    box-shadow 160ms ease-out;
-}
-
-.card:not(.cardExpanded):hover {
-  box-shadow: inset 0 0 0 0.5px var(--wm-color-line), var(--wm-shadow-hover);
-}
-
-.card:not(.cardExpanded):focus-visible {
-  box-shadow: inset 0 0 0 0.5px var(--wm-color-line), var(--wm-shadow-hover);
-}
-
-/* 展开：撑满底栏宽度、高度跟着条数、圆角 12（Figma 320:8185）；底部留白交给列表 */
-.cardExpanded {
-  width: var(--artifact-panel-width);
-  height: var(--artifact-panel-height);
-  padding: 12px 12px 0;
-  border-radius: 12px;
-  cursor: default;
-}
-
-/* ---------- 标题行：左「输出 · N」，右折叠图标（Figma 320:8186） ---------- */
-
-.header {
-  position: relative;
+/* 16×16 文件夹图标 */
+.icon {
   flex: 0 0 auto;
   display: flex;
-  align-items: center;
-  height: 24px;
+  width: 16px;
+  height: 16px;
 }
 
-.summary {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  outline: none;
-
-  & > * + * {
-    margin-left: 4px;
-  }
-}
-
-/* 12/18 400 secondary（Figma 320:7835） */
-.titleText {
+/* 条数：12/18 secondary（Figma 36:2286） */
+.count {
   font-size: 12px;
   line-height: 18px;
   color: var(--wm-color-text-secondary);
-  white-space: nowrap;
-}
-
-/* 20×20 折叠按钮，圆角 6；收起态隐藏，展开时延后出现 */
-.fold {
-  position: absolute;
-  top: 0;
-  right: -2px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  border-radius: 6px;
-  opacity: 0;
-  pointer-events: none;
-  cursor: pointer;
-  outline: none;
-  transition: opacity 120ms ease-out, background-color 120ms ease-out;
-
-  &:hover {
-    background-color: var(--wm-color-background-septenary);
-  }
-
-  &:focus-visible {
-    box-shadow: 0 0 0 2px var(--wm-color-line);
-  }
-
-  .cardExpanded & {
-    opacity: 1;
-    pointer-events: auto;
-    transition: opacity 200ms ease-out 160ms, background-color 120ms ease-out;
-  }
-}
-
-/* ---------- 文件列表（Figma 320:8202） ---------- */
-
-/* 按展开后的最终宽度排版：卡片变宽的过程中文字不重新折行，右侧逐渐露出；
-   高度由卡片剩余空间决定，超出的部分滚动 */
-.list {
-  flex: 0 1 auto;
-  width: calc(var(--artifact-panel-width) - 24px);
-  min-height: 0;
-  /* 用 padding 而不是 margin：顶部 12px 留给滚动渐隐，静止时不会把第一条压暗 */
-  padding-top: 12px;
-  padding-bottom: 16px;
-  overflow-y: auto;
-  /* 滚动时顶部 12px 渐隐，内容不会被标题行生硬切断 */
-  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 1) 12px);
-  opacity: 0;
-  transform: translateY(8px);
-  visibility: hidden;
-  /* 收起：先快速淡出，再收尺寸 */
-  transition:
-    opacity 120ms ease-out,
-    transform 120ms ease-out,
-    visibility 0s linear 120ms;
-
-  .cardExpanded & {
-    opacity: 1;
-    transform: translateY(0);
-    visibility: visible;
-    /* 展开：等卡片长到七八成再淡入，避免内容挤在小胶囊里闪现 */
-    transition:
-      opacity 220ms ease-out 140ms,
-      transform 320ms $ease-out 140ms,
-      visibility 0s linear 0s;
-  }
-}
-
-/* 内容超过 400 时，底部同样渐隐：被截断的那条是「还有更多」的提示，而不是看起来被硬切 */
-.listOverflowing {
-  mask-image: linear-gradient(
-    180deg,
-    rgba(0, 0, 0, 0) 0,
-    rgba(0, 0, 0, 1) 12px,
-    rgba(0, 0, 0, 1) calc(100% - 24px),
-    rgba(0, 0, 0, 0) 100%
-  );
 }
 
 /* 单条产物：padding 8、圆角 8，图标 32 + 文案（Figma 320:8670） */
@@ -280,20 +81,9 @@ $panel-min-height: 200px;
   white-space: nowrap;
 }
 
-/* 类型与体积之间的竖分隔线，0.5×10 */
 .fileSep {
   flex: 0 0 auto;
   width: 0.5px;
   height: 10px;
   background-color: var(--wm-color-line);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .slot::before,
-  .card,
-  .cardExpanded,
-  .fold,
-  .list {
-    transition: none;
-  }
 }

@@ -50,7 +50,8 @@ export default function App() {
    */
   const handleSubmit = (text: string) => {
     if (CREATE_FILE_PATTERN.test(text) && FILE_KIND_PATTERN.test(text)) {
-      createArtifact(/ppt|幻灯片/i.test(text) ? 'pptx' : 'pdf');
+      // 和普通提问一样先出用户气泡、元宝想一下再回，文件随回答一起落进「输出」
+      chat.runTask(text, () => createArtifact(/ppt|幻灯片/i.test(text) ? 'pptx' : 'pdf'));
       return;
     }
 
@@ -92,7 +93,6 @@ export default function App() {
             artifacts={artifacts}
             onClose={() => setSidebarOpen(false)}
             onSubmit={handleSubmit}
-            onCreateArtifact={createArtifact}
           />
         )}
       </div>

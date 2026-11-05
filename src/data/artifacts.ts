@@ -39,7 +39,7 @@ export function buildArtifactCreatedMessage(kind: 'pdf' | 'pptx'): AssistantMess
             runs: [
               { text: '已经按今天的讨论生成了一份' },
               { text: kind === 'pdf' ? ' PDF 纪要' : ' PPT 汇报草稿', bold: true },
-              { text: '，放在右下角的「输出」里，随时可以打开或导出。' },
+              { text: '，放在输入框上方的文件夹里，随时可以打开或导出。' },
             ],
           },
         ],

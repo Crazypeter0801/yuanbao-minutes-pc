@@ -13,6 +13,11 @@ export interface YuanbaoChat {
   ask: (question: string) => void;
   /** 追加一条元宝消息（如立即总结） */
   push: (message: AssistantMessage) => void;
+  /**
+   * 先出用户气泡，思考片刻后再执行 respond
+   * 给「生成文件」这类不走问答规则、但仍要像一次正常对话的任务用
+   */
+  runTask: (question: string, respond: () => void) => void;
   /** 立即生成阶段小结 */
   summarizeNow: () => void;
 }
@@ -67,5 +72,19 @@ export function useYuanbaoChat(initial: ChatMessage[]): YuanbaoChat {
     push(buildStageSummary());
   }, [push]);
 
-  return { messages, isThinking: pending > 0, ask, push, summarizeNow };
+  const runTask = useCallback((question: string, respond: () => void) => {
+    const text = question.trim();
+    if (!text) {
+      return;
+    }
+    setMessages((previous) => [...previous, { id: createId('q'), role: 'user', text, createdAt: Date.now() }]);
+    setPending((count) => count + 1);
+    const timer = window.setTimeout(() => {
+      respond();
+      setPending((count) => count - 1);
+    }, ANSWER_DELAY);
+    timers.current.push(timer);
+  }, []);
+
+  return { messages, isThinking: pending > 0, ask, push, runTask, summarizeNow };
 }

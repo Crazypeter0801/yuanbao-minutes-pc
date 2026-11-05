@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, useLayoutEffect, type KeyboardEvent, type FC } from 'react';
-import IconInputAdd from '@/assets/d2c/icons/input/icon-input-add';
+import IconInputPlus from '@/assets/d2c/icons/input/icon-input-plus';
 import IconToolDoc from '@/assets/d2c/icons/input/icon-tool-doc';
 import IconToolFile from '@/assets/d2c/icons/input/icon-tool-file';
 import IconToolImage from '@/assets/d2c/icons/input/icon-tool-image';
@@ -29,7 +29,7 @@ interface ChatInputProps {
 /**
  * 输入框（Figma 36:10521）
  *
- * 一行三段：左侧 28×26 的添加按钮（内含 16 的加号）、中间的输入区、右侧发送按钮。
+ * 一行三段：左侧 28×28 的添加按钮（只有加号，默认无底色，hover 才出浅灰圆底）、中间的输入区、右侧发送按钮。
  * 点添加按钮向上弹出工具浮层（164 宽、圆角 16），四项：上传图片 / 本地文件 / 腾讯文档 / 截图提问。
  * 单行高 48：padding 10、按钮 28；多行时向上撑高，发送按钮贴底。
  * Enter 发送、Shift+Enter 换行；中文输入法组词期间不触发发送。
@@ -125,7 +125,7 @@ export const ChatInput: FC<ChatInputProps> = ({ placeholder, onSubmit, onToolAct
             ariaLabel="添加"
             ariaExpanded={menuOpen}
           >
-            <IconInputAdd />
+            <IconInputPlus />
           </Pressable>
           <textarea
             ref={textareaRef}

@@ -34,23 +34,20 @@
   }
 }
 
-/* 添加按钮：28 高、26 宽、圆角 14、底 rgba(102,102,102,0.12)（Figma 36:10814） */
+/* 添加按钮：28×28、只有加号（Figma 36:2325）
+   默认不带底色；hover / 浮层打开时才出 rgba(102,102,102,0.12) 的圆底，只有一层 */
 .add {
   flex: 0 0 auto;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
+  width: 28px;
   height: 28px;
   border-radius: 14px;
-  color: var(--wm-color-text-secondary);
-  background-color: var(--wm-color-input-add-fill);
   cursor: pointer;
   outline: none;
   transition: background-color 120ms ease-in-out;
 
   &:hover {
-    background-color: var(--wm-color-control-hover);
+    background-color: var(--wm-color-input-add-fill);
   }
 
   &:focus-visible {
@@ -60,7 +57,7 @@
 
 /* 浮层打开时按钮保持按下感 */
 .addActive {
-  background-color: var(--wm-color-control-hover);
+  background-color: var(--wm-color-input-add-fill);
 }
 
 /* 文字 14/20；单行时上下各留 4 与 28 的按钮对齐 */

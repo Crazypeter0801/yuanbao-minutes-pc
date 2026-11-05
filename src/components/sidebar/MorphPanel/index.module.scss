@@ -1,0 +1,219 @@
+/*
+ * 底栏胶囊 ↔ 浮层面板
+ * 收起：36 高胶囊，宽度由 ghost 按内容撑开；展开：同一张卡片向左对齐到行首、向上长成面板。
+ */
+
+/* 与最早的记笔记面板同一条曲线与时长 */
+$ease-out: cubic-bezier(0.32, 0.72, 0, 1);
+$duration: 380ms;
+
+.slot {
+  position: relative;
+  z-index: 2;
+  flex: 0 0 auto;
+  height: 36px;
+  transition: opacity 120ms ease-out;
+}
+
+.slotExpanded {
+  z-index: 3;
+}
+
+/* 别的面板展开时让位 */
+.slotHidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 120ms ease-out,
+    visibility 0s linear 120ms;
+}
+
+/* 占位：与收起态卡片同样的左右内边距与子元素间距，只负责撑宽度 */
+.ghost {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 var(--morph-collapsed-padding-x);
+  visibility: hidden;
+  pointer-events: none;
+
+  & > * + * {
+    margin-left: 4px;
+  }
+}
+
+/* 展开时面板上缘外加 24px 白色渐隐，把身后的消息流压下去 */
+.fade {
+  position: absolute;
+  left: calc(var(--morph-expanded-left) - 16px);
+  bottom: 0;
+  width: calc(var(--morph-expanded-width) + 32px);
+  height: calc(var(--morph-panel-height) + 24px);
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0) 0,
+    var(--wm-color-background-quaternary) 24px
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease-out;
+
+  .slotExpanded & {
+    opacity: 1;
+  }
+}
+
+/* 收起：白底、0.5px 内描边 + 浮层阴影、圆角 18（Figma 36:2475 / 36:2280） */
+.card {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  width: var(--morph-collapsed-width);
+  height: 36px;
+  padding: 6px var(--morph-collapsed-padding-x);
+  overflow: hidden;
+  border-radius: 18px;
+  background-color: var(--wm-color-background-bubble);
+  box-shadow: inset 0 0 0 0.5px var(--wm-color-line), var(--wm-shadow-float);
+  cursor: pointer;
+  transition:
+    left $duration $ease-out,
+    width $duration $ease-out,
+    height $duration $ease-out,
+    padding $duration $ease-out,
+    border-radius $duration $ease-out,
+    box-shadow 160ms ease-out;
+}
+
+.card:not(.cardExpanded):hover {
+  box-shadow: inset 0 0 0 0.5px var(--wm-color-line), var(--wm-shadow-hover);
+}
+
+/* 展开：对齐到行首、圆角 12、上左右 padding 12；底部留白交给滚动区 */
+.cardExpanded {
+  left: var(--morph-expanded-left);
+  width: var(--morph-expanded-width);
+  height: var(--morph-panel-height);
+  padding: 12px 12px 0;
+  border-radius: 12px;
+  cursor: default;
+}
+
+/* ---------- 标题行 ---------- */
+
+.header {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  height: 24px;
+  cursor: pointer;
+}
+
+.summary {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  outline: none;
+  white-space: nowrap;
+
+  & > * + * {
+    margin-left: 4px;
+  }
+}
+
+/* 展开后才出现的说明文字：收起时透明，避免从胶囊边缘漏出半截 */
+.label {
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--wm-color-text-secondary);
+  opacity: 0;
+  transition: opacity 100ms ease-out;
+
+  .cardExpanded & {
+    opacity: 1;
+    transition: opacity 200ms ease-out 160ms;
+  }
+}
+
+/* 右上角收起：收起态隐藏，展开后延迟出现 */
+.collapse {
+  position: absolute;
+  top: 0;
+  right: -2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  opacity: 0;
+  pointer-events: none;
+  cursor: pointer;
+  outline: none;
+  transition: opacity 120ms ease-out;
+
+  &:hover {
+    background-color: var(--wm-color-background-septenary);
+  }
+
+  .cardExpanded & {
+    opacity: 1;
+    pointer-events: auto;
+    transition: opacity 200ms ease-out 160ms;
+  }
+}
+
+/* ---------- 内容区：按展开后的最终宽度排版，变宽过程中文字不重新折行 ---------- */
+
+.body {
+  flex: 0 0 auto;
+  width: calc(var(--morph-expanded-width) - 24px);
+  height: calc(var(--morph-panel-height) - 36px);
+  padding-top: 12px;
+  padding-bottom: 12px;
+  overflow-y: auto;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 1) 12px);
+  opacity: 0;
+  transform: translateY(8px);
+  visibility: hidden;
+  cursor: auto;
+  transition:
+    opacity 120ms ease-out,
+    transform 120ms ease-out,
+    visibility 0s linear 120ms;
+
+  .cardExpanded & {
+    opacity: 1;
+    transform: translateY(0);
+    visibility: visible;
+    transition:
+      opacity 220ms ease-out 140ms,
+      transform 320ms $ease-out 140ms,
+      visibility 0s linear 0s;
+  }
+}
+
+.bodyOverflowing {
+  mask-image: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0) 0,
+    rgba(0, 0, 0, 1) 12px,
+    rgba(0, 0, 0, 1) calc(100% - 24px),
+    rgba(0, 0, 0, 0) 100%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slot,
+  .fade,
+  .card,
+  .label,
+  .collapse,
+  .body {
+    transition: none;
+  }
+}
