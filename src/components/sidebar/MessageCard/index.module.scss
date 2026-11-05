@@ -1,8 +1,11 @@
 /*
  * 对话里的交互卡片（Figma 元宝Agent · Component Gallery 4:351）
  *
- * 设计稿卡片固定 440 宽、padding 20；侧栏气泡里只有 344 可用，
- * 所以宽度改成撑满气泡、padding 收到 16，其余（圆角 16、1px 描边、字号层级）照设计稿。
+ * 位置：独立在气泡外（不再塞进灰气泡里），和追问胶囊共用同一套「白底 + 0.5px 细边框」，
+ * 所以在侧栏里看着像一组同源的控件，而不是一块贴在灰色气泡上的白卡。
+ *
+ * 尺寸：设计稿固定 440 宽、padding 20；侧栏可用 368，改成撑满 + padding 16，
+ * 圆角 16、字号层级照设计稿。
  */
 
 .card {
@@ -12,7 +15,8 @@
   padding: 16px;
   border-radius: 16px;
   background-color: var(--wm-color-card-background);
-  box-shadow: inset 0 0 0 1px var(--wm-color-card-border);
+  /* 描边颜色沿用追问胶囊（#EBEDF2），但卡片面积大，0.5px 在侧栏底上看不出边界，加到 1px */
+  box-shadow: inset 0 0 0 1px var(--wm-color-outline-tertiary);
 
   & > * + * {
     margin-top: 12px;
@@ -58,7 +62,7 @@
   border-radius: 6px;
 
   &:focus-visible {
-    box-shadow: 0 0 0 2px var(--wm-color-card-border);
+    box-shadow: 0 0 0 2px var(--wm-color-outline-secondary);
   }
 }
 
@@ -177,7 +181,7 @@
     background-color 120ms ease-in-out;
 
   &:focus-visible {
-    box-shadow: 0 0 0 2px var(--wm-color-card-border);
+    box-shadow: 0 0 0 2px var(--wm-color-outline-secondary);
   }
 }
 
@@ -192,7 +196,7 @@
 
 .ghost {
   background-color: var(--wm-color-card-background);
-  box-shadow: inset 0 0 0 1px var(--wm-color-card-border);
+  box-shadow: inset 0 0 0 0.5px var(--wm-color-outline-tertiary);
   color: var(--wm-color-card-title);
 
   &:hover {

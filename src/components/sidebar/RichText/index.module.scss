@@ -53,10 +53,17 @@
   }
 }
 
-/* 人名胶囊：行内出现、可落在句中，圆角 4，不改变行高 */
+/* 人名胶囊（Figma 8:1904 light 稳态）：高 18、圆角 9、padding 0 4、底 蓝 15%
+   行内出现，可落在句中；用 inline-block 才能吃到固定高度，基线贴正文底部 */
 .mention {
-  padding: 1px 4px;
-  border-radius: 4px;
-  background-color: var(--wm-color-background-mention);
+  display: inline-block;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 9px;
+  background-color: var(--wm-color-background-twenty-third);
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--wm-color-text-primary);
+  vertical-align: text-bottom;
   white-space: nowrap;
 }

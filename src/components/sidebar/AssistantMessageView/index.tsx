@@ -46,6 +46,8 @@ export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
 }) => {
   const isPlain = shape === 'plain';
   const lastIndex = message.bubbles.length - 1;
+  // 交互卡片独立在气泡外，一条消息最多一张
+  const activeCard = message.bubbles.find((bubble) => bubble.card)?.card;
 
   return (
     <div className={`${styles.group} ${isPlain ? styles.groupPlain : ''}`}>
@@ -86,12 +88,6 @@ export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
                   ) : undefined
                 }
               />
-              {bubble.card && (
-                <MessageCard
-                  card={bubble.card}
-                  onSubmit={(values) => onCardSubmit?.(bubble.card!.id, values)}
-                />
-              )}
               {bubble.image && (
                 <img
                   className={styles.image}
@@ -106,6 +102,12 @@ export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
           );
         })}
       </div>
+
+      {activeCard && (
+        <div className={styles.cardSlot}>
+          <MessageCard card={activeCard} onSubmit={(values) => onCardSubmit?.(activeCard.id, values)} />
+        </div>
+      )}
 
       {showFollowUps && message.followUps && message.followUps.length > 0 && (
         <div className={styles.followUps}>
