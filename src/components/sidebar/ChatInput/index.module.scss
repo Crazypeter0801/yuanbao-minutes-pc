@@ -1,5 +1,9 @@
-/* padding 10、间距 16、圆角 24、0.5px 内描边 + 浮层阴影（Figma 316:2725）
+/* padding 10、间距 16、圆角 24、0.5px 内描边 + 浮层阴影（Figma 36:10521）
    描边用 inset box-shadow：与 Figma 内侧描边一致，不占布局，单行高度稳定为 48 */
+.wrap {
+  position: relative;
+}
+
 .input {
   display: flex;
   align-items: flex-end;
@@ -18,14 +22,55 @@
   }
 }
 
-/* 文字 14/20、左右 6；单行时上下各留 4 与 28 的按钮居中对齐 */
+/* 左侧按钮 + 输入区：两者间距 2（Figma layout_BGYE5K） */
+.field {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: flex-end;
+  min-width: 0;
+
+  & > * + * {
+    margin-left: 2px;
+  }
+}
+
+/* 添加按钮：28 高、26 宽、圆角 14、底 rgba(102,102,102,0.12)（Figma 36:10814） */
+.add {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 28px;
+  border-radius: 14px;
+  color: var(--wm-color-text-secondary);
+  background-color: var(--wm-color-input-add-fill);
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease-in-out;
+
+  &:hover {
+    background-color: var(--wm-color-control-hover);
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px var(--wm-color-line);
+  }
+}
+
+/* 浮层打开时按钮保持按下感 */
+.addActive {
+  background-color: var(--wm-color-control-hover);
+}
+
+/* 文字 14/20；单行时上下各留 4 与 28 的按钮对齐 */
 .textarea {
   flex: 1 1 auto;
   min-width: 0;
   display: block;
   min-height: 20px;
   margin: 4px 0;
-  padding: 0 6px;
+  padding: 0;
   border: 0;
   outline: 0;
   resize: none;
@@ -38,4 +83,60 @@
   &::placeholder {
     color: var(--wm-color-text-extra-quinary);
   }
+}
+
+/* ---------- 工具浮层（Figma 36:10684）：164 宽、圆角 16、padding 6 ---------- */
+
+.menu {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  width: 164px;
+  padding: 6px;
+  border-radius: 16px;
+  background-color: var(--wm-color-card-background);
+  box-shadow: inset 0 0 0 0.5px var(--wm-color-line), var(--wm-shadow-popup);
+
+  & > * + * {
+    margin-top: 2px;
+  }
+}
+
+/* 单条入口：padding 6 8、圆角 8、图标 18 + 文字 14/20（Figma layout_1DUQ1D） */
+.menuItem {
+  display: flex;
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease-in-out;
+
+  &:hover {
+    background-color: var(--wm-color-background-septenary);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 1.5px var(--wm-color-line);
+  }
+}
+
+.menuIcon {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  color: var(--wm-color-text-secondary);
+}
+
+.menuLabel {
+  margin-left: 8px;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--wm-color-text-extra-primary);
 }

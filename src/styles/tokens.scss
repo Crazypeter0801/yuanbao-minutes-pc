@@ -119,6 +119,9 @@
   --wm-color-card-control-active: #202123;
   --wm-color-card-text-on-active: #ffffff;
 
+  /* 输入框左侧添加按钮底（Figma 36:10814，#6666661F） */
+  --wm-color-input-add-fill: rgba(102, 102, 102, 0.12);
+
   /* 字体 */
   --wm-font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial,
     system-ui, -apple-system, 'BlinkMacSystemFont', sans-serif;

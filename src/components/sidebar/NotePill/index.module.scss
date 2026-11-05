@@ -15,13 +15,14 @@ $duration: 380ms;
   /* slot 只是占位：不接收点击，右侧「元宝文件夹」入口才不会被这层整行拦掉 */
   pointer-events: none;
 
-  /* 展开时卡片上缘外加 24px 白色渐隐，把身后的消息流压下去（Figma 318:6575 底栏渐变） */
+  /* 展开时卡片上缘外加 24px 白色渐隐，把身后的消息流压下去（Figma 318:6575 底栏渐变）
+     只铺到卡片宽度，窄面板不再整行压白 */
   &::before {
     content: '';
     position: absolute;
     left: -16px;
-    right: -16px;
     bottom: 0;
+    width: calc(var(--note-panel-width) + 16px);
     height: calc(var(--note-panel-height) + 24px);
     background-image: linear-gradient(
       180deg,
@@ -228,6 +229,56 @@ $duration: 380ms;
   line-height: 20px;
   text-align: center;
   color: var(--wm-color-text-tertiary);
+}
+
+/* ---------- 展开后的指令集合 ---------- */
+
+/* 分组标题：11/16 tertiary，左边与指令文案对齐（指令 padding 8） */
+.groupTitle {
+  margin: 0 0 4px;
+  padding: 0 8px;
+  font-size: 11px;
+  line-height: 16px;
+  color: var(--wm-color-text-tertiary);
+}
+
+.commandList {
+  display: flex;
+  flex-direction: column;
+
+  & > * + * {
+    margin-top: 2px;
+  }
+}
+
+/* 单条指令：padding 6 8、圆角 8，hover 浅灰 */
+.command {
+  display: flex;
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease-in-out;
+
+  &:hover {
+    background-color: var(--wm-color-background-septenary);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 1.5px var(--wm-color-line);
+  }
+}
+
+/* 12/18，单行截断 */
+.commandText {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--wm-color-text-primary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 @media (prefers-reduced-motion: reduce) {
