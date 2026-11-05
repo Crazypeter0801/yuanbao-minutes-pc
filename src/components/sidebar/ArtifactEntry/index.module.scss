@@ -13,6 +13,25 @@
   color: var(--wm-color-text-secondary);
 }
 
+/* 「在侧边打开」：24 热区，hover 浅灰底（与头部图标按钮一致） */
+.sideOpen {
+  display: flex;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease-out;
+
+  &:hover {
+    background-color: var(--wm-color-background-septenary);
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px var(--wm-color-line);
+  }
+}
+
 /* 单条产物：padding 8、圆角 8，图标 32 + 文案（Figma 320:8670） */
 .file {
   display: flex;

@@ -139,26 +139,16 @@ $duration: 380ms;
   }
 }
 
-/* 右上角收起：收起态隐藏，展开后延迟出现 */
-.collapse {
+/* 标题行右侧操作位（如「在侧边打开」）：收起态隐藏，展开后延迟出现 */
+.headerAction {
   position: absolute;
   top: 0;
   right: -2px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
   opacity: 0;
   pointer-events: none;
-  cursor: pointer;
-  outline: none;
   transition: opacity 120ms ease-out;
-
-  &:hover {
-    background-color: var(--wm-color-background-septenary);
-  }
 
   .cardExpanded & {
     opacity: 1;
@@ -212,7 +202,7 @@ $duration: 380ms;
   .fade,
   .card,
   .label,
-  .collapse,
+  .headerAction,
   .body {
     transition: none;
   }

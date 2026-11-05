@@ -140,6 +140,10 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ chat, artifacts, onClo
               }}
               hidden={commandsOpen}
               onOpen={openArtifact}
+              onOpenSide={() => {
+                setArtifactsOpen(false);
+                showToast('已在侧边打开文件列表（演示）');
+              }}
             />
           )}
           <NotePill

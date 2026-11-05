@@ -8,7 +8,6 @@ import {
   type FC,
   type ReactNode,
 } from 'react';
-import IconNoteCollapse from '@/assets/d2c/icons/v1/icon-note-collapse';
 import { Pressable } from '@/components/common/Pressable';
 import styles from './index.module.scss';
 
@@ -34,6 +33,8 @@ interface MorphPanelProps {
   name: string;
   /** 内容变化时重新量高度（如产物条数） */
   contentKey?: string | number;
+  /** 展开后标题行右侧的操作（如「在侧边打开」）；不传就什么都不放 */
+  headerAction?: ReactNode;
   children: ReactNode;
 }
 
@@ -56,6 +57,7 @@ export const MorphPanel: FC<MorphPanelProps> = ({
   panelWidth,
   name,
   contentKey,
+  headerAction,
   children,
 }) => {
   const slotRef = useRef<HTMLDivElement>(null);
@@ -119,6 +121,7 @@ export const MorphPanel: FC<MorphPanelProps> = ({
     }
   }, [expanded]);
 
+  // 右上角不再放收起按钮：Esc、点标题行、点面板外任意处都能收起
   useEffect(() => {
     if (!expanded) {
       return undefined;
@@ -128,8 +131,17 @@ export const MorphPanel: FC<MorphPanelProps> = ({
         collapse();
       }
     };
+    const onPointerDown = (event: MouseEvent) => {
+      if (slotRef.current && !slotRef.current.contains(event.target as Node)) {
+        collapse();
+      }
+    };
     window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
+    document.addEventListener('mousedown', onPointerDown);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('mousedown', onPointerDown);
+    };
   }, [expanded, collapse]);
 
   // 底部渐隐只在「能滚且没滚到底」时出现
@@ -189,16 +201,7 @@ export const MorphPanel: FC<MorphPanelProps> = ({
             {summary}
             {expandedLabel && <span className={styles.label}>{expandedLabel}</span>}
           </Pressable>
-          <Pressable
-            className={styles.collapse}
-            onClick={collapse}
-            stopPropagation
-            disabled={!expanded}
-            title="收起"
-            ariaLabel={`收起${name}面板`}
-          >
-            <IconNoteCollapse />
-          </Pressable>
+          {headerAction && <div className={styles.headerAction}>{headerAction}</div>}
         </div>
 
         <div
