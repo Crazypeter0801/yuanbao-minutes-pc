@@ -3,9 +3,11 @@ import { MeetingWindow } from '@/components/meeting/MeetingWindow';
 import { PollComposer } from '@/components/poll/PollComposer';
 import { YuanbaoSidebar } from '@/components/YuanbaoSidebar';
 import {
+  buildArtifact,
   buildArtifactCreatedMessage,
-  buildExtraArtifact,
-  firstCreatedArtifacts,
+  companionArtifacts,
+  resolveArtifactTitle,
+  type ArtifactKind,
 } from '@/data/artifacts';
 import { buildPollPostedMessage, teamBuildingPoll } from '@/data/polls';
 import { matchScenario } from '@/data/proactiveScenarios';
@@ -33,14 +35,13 @@ export default function App() {
   const chat = useYuanbaoSession();
 
   /**
-   * 创建产物：第一次一次性给一组文件，之后每次追加一条。
-   * 只有创建过才会出现「输出 · N」入口，这样第一步是从零开始的。
+   * 创建产物：本次生成的文件排最前；第一次额外附带一组会中已有文件。
+   * 只有创建过才会出现文件入口，这样第一步是从零开始的。
    */
-  const createArtifact = (kind: 'pdf' | 'pptx') => {
-    setArtifacts((previous) =>
-      previous.length === 0 ? firstCreatedArtifacts : [...previous, buildExtraArtifact(kind)],
-    );
-    chat.push(buildArtifactCreatedMessage(kind));
+  const createArtifact = (kind: ArtifactKind, title: string) => {
+    const created = buildArtifact(kind, title);
+    setArtifacts((previous) => (previous.length === 0 ? [created, ...companionArtifacts] : [created, ...previous]));
+    chat.push(buildArtifactCreatedMessage(kind, title));
   };
 
   /**
@@ -51,7 +52,8 @@ export default function App() {
   const handleSubmit = (text: string) => {
     if (CREATE_FILE_PATTERN.test(text) && FILE_KIND_PATTERN.test(text)) {
       // 和普通提问一样先出用户气泡、元宝想一下再回，文件随回答一起落进「输出」
-      chat.runTask(text, () => createArtifact(/ppt|幻灯片/i.test(text) ? 'pptx' : 'pdf'));
+      const kind: ArtifactKind = /ppt|幻灯片/i.test(text) ? 'pptx' : 'pdf';
+      chat.runTask(text, () => createArtifact(kind, resolveArtifactTitle(text, kind)));
       return;
     }
 

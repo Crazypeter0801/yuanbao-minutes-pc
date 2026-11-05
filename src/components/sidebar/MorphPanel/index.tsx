@@ -33,6 +33,8 @@ interface MorphPanelProps {
   name: string;
   /** 内容变化时重新量高度（如产物条数） */
   contentKey?: string | number;
+  /** 展开后的最大高度，默认 400；超出部分滚动 */
+  maxHeight?: number;
   /** 展开后标题行右侧的操作（如「在侧边打开」）；不传就什么都不放 */
   headerAction?: ReactNode;
   children: ReactNode;
@@ -58,6 +60,7 @@ export const MorphPanel: FC<MorphPanelProps> = ({
   name,
   contentKey,
   headerAction,
+  maxHeight = PANEL_MAX_HEIGHT,
   children,
 }) => {
   const slotRef = useRef<HTMLDivElement>(null);
@@ -111,8 +114,8 @@ export const MorphPanel: FC<MorphPanelProps> = ({
       return;
     }
     const content = PANEL_CHROME + body.scrollHeight;
-    setPanelHeight(Math.min(PANEL_MAX_HEIGHT, Math.max(PANEL_MIN_HEIGHT, content)));
-  }, [contentKey, expandedWidth]);
+    setPanelHeight(Math.min(maxHeight, Math.max(PANEL_MIN_HEIGHT, content)));
+  }, [contentKey, expandedWidth, maxHeight]);
 
   // 每次展开都从第一条读起
   useEffect(() => {
