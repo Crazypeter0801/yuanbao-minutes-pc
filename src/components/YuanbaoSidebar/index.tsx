@@ -157,7 +157,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ chat, artifacts, onClo
         <ChatInput
           placeholder="提问或创建任务"
           onSubmit={send}
-          onToolAction={(label) => showToast(`打开${label}（演示）`)}
+          onToolAction={(label) => showToast(`${label}（演示）`)}
         />
       </div>
     </SidebarShell>

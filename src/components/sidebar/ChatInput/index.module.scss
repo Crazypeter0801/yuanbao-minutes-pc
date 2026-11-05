@@ -82,7 +82,7 @@
   }
 }
 
-/* ---------- 工具浮层（Figma 36:10684）：164 宽、圆角 16、padding 6 ---------- */
+/* ---------- 工具浮层（Figma AI 搜索 727:60493）：160 宽、圆角 12、padding 6、无描边 ---------- */
 
 .menu {
   position: absolute;
@@ -91,29 +91,26 @@
   z-index: 20;
   display: flex;
   flex-direction: column;
-  width: 164px;
+  width: 160px;
   padding: 6px;
-  border-radius: 16px;
+  border-radius: 12px;
   background-color: var(--wm-color-card-background);
-  box-shadow: inset 0 0 0 0.5px var(--wm-color-line), var(--wm-shadow-popup);
-
-  & > * + * {
-    margin-top: 2px;
-  }
+  box-shadow: var(--wm-shadow-input-menu);
 }
 
-/* 单条入口：padding 6 8、圆角 8、图标 18 + 文字 14/20（Figma layout_1DUQ1D） */
+/* 单条入口：高 36、左右 padding 12、圆角 6，条目之间无间距；hover 出 6% 黑底 */
 .menuItem {
   display: flex;
   align-items: center;
-  padding: 6px 8px;
-  border-radius: 8px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 6px;
   cursor: pointer;
   outline: none;
   transition: background-color 120ms ease-in-out;
 
   &:hover {
-    background-color: var(--wm-color-background-septenary);
+    background-color: var(--wm-color-input-menu-hover);
   }
 
   &:focus-visible {
@@ -121,19 +118,21 @@
   }
 }
 
+/* 图标 20 + 间距 8 + 文字 14/20 */
 .menuIcon {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 18px;
-  height: 18px;
-  color: var(--wm-color-text-secondary);
+  width: 20px;
+  height: 20px;
+  color: var(--wm-color-text-primary);
 }
 
 .menuLabel {
+  flex: 1 1 auto;
   margin-left: 8px;
   font-size: 14px;
   line-height: 20px;
-  color: var(--wm-color-text-extra-primary);
+  color: var(--wm-color-text-primary);
 }

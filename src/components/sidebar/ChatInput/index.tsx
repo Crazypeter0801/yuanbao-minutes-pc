@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useRef, useState, useLayoutEffect, type KeyboardEvent, type FC } from 'react';
 import IconInputPlus from '@/assets/d2c/icons/input/icon-input-plus';
-import IconToolDoc from '@/assets/d2c/icons/input/icon-tool-doc';
-import IconToolFile from '@/assets/d2c/icons/input/icon-tool-file';
-import IconToolImage from '@/assets/d2c/icons/input/icon-tool-image';
-import IconToolShot from '@/assets/d2c/icons/input/icon-tool-shot';
+import IconMenuFile from '@/assets/d2c/icons/input/icon-menu-file';
+import IconMenuImage from '@/assets/d2c/icons/input/icon-menu-image';
+import IconMenuMeeting from '@/assets/d2c/icons/input/icon-menu-meeting';
 import { Pressable } from '@/components/common/Pressable';
 import { SendButton } from '@/components/sidebar/SendButton';
 import styles from './index.module.scss';
@@ -11,18 +10,17 @@ import styles from './index.module.scss';
 /** 最多自动撑高到 4 行（14/20） */
 const MAX_TEXTAREA_HEIGHT = 80;
 
-/** 添加按钮后的四个入口（Figma 36:10684） */
+/** 添加按钮后的三个入口（Figma AI 搜索 727:60493） */
 const TOOLS = [
-  { key: 'image', label: '上传图片', Icon: IconToolImage },
-  { key: 'file', label: '本地文件', Icon: IconToolFile },
-  { key: 'doc', label: '腾讯文档', Icon: IconToolDoc },
-  { key: 'shot', label: '截图提问', Icon: IconToolShot },
+  { key: 'meeting', label: '选择会议', Icon: IconMenuMeeting },
+  { key: 'image', label: '上传图片', Icon: IconMenuImage },
+  { key: 'file', label: '本地文件', Icon: IconMenuFile },
 ] as const;
 
 interface ChatInputProps {
   placeholder: string;
   onSubmit: (text: string) => void;
-  /** 点工具入口（上传图片 / 本地文件 / 腾讯文档 / 截图提问），演示里只给 Toast */
+  /** 点工具入口（选择会议 / 上传图片 / 本地文件），演示里只给 Toast */
   onToolAction?: (label: string) => void;
 }
 
@@ -30,7 +28,7 @@ interface ChatInputProps {
  * 输入框（Figma 36:10521）
  *
  * 一行三段：左侧 28×28 的添加按钮（只有加号，默认无底色，hover 才出浅灰圆底）、中间的输入区、右侧发送按钮。
- * 点添加按钮向上弹出工具浮层（164 宽、圆角 16），四项：上传图片 / 本地文件 / 腾讯文档 / 截图提问。
+ * 点添加按钮向上弹出工具浮层（160 宽、圆角 12），三项：选择会议 / 上传图片 / 本地文件。
  * 单行高 48：padding 10、按钮 28；多行时向上撑高，发送按钮贴底。
  * Enter 发送、Shift+Enter 换行；中文输入法组词期间不触发发送。
  */
