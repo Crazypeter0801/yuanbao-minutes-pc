@@ -21,9 +21,9 @@ interface RecordingCardProps {
  * 「正在帮你记」卡片（Figma 元宝Agent 入会 46:7827 / 46:7838）
  *
  * 识别中：灰条 36 高，阶段文案每 4 秒换一句，字上一道亮光扫过；走完一遍停在「识别到话题后会自动更新」。
- * 有话题后（参考飞书 AI 视图）：灰底区展开，「当前正在聊」单独一行，下面按时间一条条排话题；
- * 新话题换行追加在最下面，最新一条蓝点 + 黑字，旧的灰点 + 灰字，左侧一根竖线串起来。
- * 卡片最高 186（与产物卡片同高），超出后在话题区里上下滚动，新话题出现时自动滚到底。
+ * 有话题后（Figma 91:15376）：灰底区展开，「当前正在聊」灰字单独一行，下面一行一条短话题；
+ * 新话题追加在最下面，当前话题蓝点、之前的灰点，文字都是黑色，左侧一根竖线串起来。
+ * 卡片最高 186（与产物卡片同高），放得下 3 条，再多在话题区里上下滚动，新话题出现时自动滚到底。
  */
 export const RecordingCard: FC<RecordingCardProps> = ({ title = '元宝笔记', topics = [], onOpen }) => {
   // 0..n-1 = 第几句阶段文案；n = 停住的说明
@@ -64,7 +64,7 @@ export const RecordingCard: FC<RecordingCardProps> = ({ title = '元宝笔记', 
         </span>
       </span>
 
-      <span className={styles.slot}>
+      <span className={`${styles.slot} ${hasTopics ? styles.slotTopics : ''}`}>
         {hasTopics ? (
           <span className={styles.topicPanel}>
             <span className={styles.topicLabel}>当前正在聊</span>
@@ -78,7 +78,9 @@ export const RecordingCard: FC<RecordingCardProps> = ({ title = '元宝笔记', 
                 return (
                   <span className={`${styles.topicItem} ${current ? styles.topicCurrent : ''}`} key={topic}>
                     <span className={styles.topicDot} aria-hidden="true" />
-                    <span className={styles.topicText}>{topic}</span>
+                    <span className={styles.topicText} title={topic}>
+                      {topic}
+                    </span>
                   </span>
                 );
               })}

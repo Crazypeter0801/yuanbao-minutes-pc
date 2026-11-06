@@ -118,16 +118,20 @@
 }
 
 /*
- * 有话题（参考飞书 AI 视图）：同一块灰底展开
- * 卡片最高 186 = 标题行 49 + 本区 124 + 底部 13，与产物卡片同高；本区 padding 10 12，
- * 「当前正在聊」20 + 间距 6，剩下 78 给话题列表，约三行半，超出滚动。
+ * 有话题（Figma 91:15376，尺寸按 2x 导出图量出）：灰底区 220 宽，距卡片左右下各 14
+ * 灰底 padding 10 12；「当前正在聊」13/20 灰字，话题 13/20 黑字一行一条，行距 6。
+ * 卡片最高 186（与产物卡片同高）= 标题行 49 + 本区 123 + 底部 14，放得下 3 条，再多在列表里滚动。
  */
+.slotTopics {
+  padding: 0 14px 14px;
+}
+
 .topicPanel {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   min-width: 0;
-  max-height: 124px;
+  max-height: 123px;
   padding: 10px 12px;
   border-radius: 8px;
   background-color: var(--wm-color-background-septenary);
@@ -137,8 +141,7 @@
   flex: 0 0 auto;
   font-size: 13px;
   line-height: 20px;
-  font-weight: 600;
-  color: var(--wm-color-text-primary);
+  color: var(--wm-color-text-tertiary);
 }
 
 /* 话题列表：可滚动，滚动条隐藏；往下滚过后顶部渐隐，提示上面还有 */
@@ -155,11 +158,12 @@
   mask-image: linear-gradient(to bottom, transparent 0, #000 12px);
 }
 
-/* 单条话题：左侧 12 宽的时间线列（圆点 + 竖线），文字 13/20，最多不限行 */
+/* 单条话题：左 16 留给圆点和竖线，文字压成一行 */
 .topicItem {
   position: relative;
   flex: 0 0 auto;
   display: flex;
+  min-width: 0;
   padding-left: 16px;
   animation: note-text-in 240ms ease-out both;
 
@@ -167,18 +171,19 @@
     margin-top: 6px;
   }
 
-  /* 竖线：从本条圆点往下连到下一条，最后一条没有 */
+  /* 竖线 1px #DFE1E6：圆点下方 1px 起，到下一个圆点上方 1px 止 */
   &:not(:last-child)::after {
     position: absolute;
     top: 14px;
     bottom: -12px;
-    left: 2.5px;
+    left: 3px;
     width: 1px;
     content: '';
     background-color: var(--wm-color-note-topic-line);
   }
 }
 
+/* 圆点 6×6：之前的话题 #C3C7CF */
 .topicDot {
   position: absolute;
   top: 7px;
@@ -189,23 +194,20 @@
   background-color: var(--wm-color-note-topic-dot);
 }
 
+/* 话题都是黑字，只靠圆点区分当前；超长截断，保持一行 */
 .topicText {
   min-width: 0;
+  overflow: hidden;
   font-size: 13px;
   line-height: 20px;
-  color: var(--wm-color-text-tertiary);
-  overflow-wrap: anywhere;
+  color: var(--wm-color-text-primary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* 最新一条：蓝点 + 黑字 */
-.topicCurrent {
-  .topicDot {
-    background-color: var(--wm-color-brand-primary);
-  }
-
-  .topicText {
-    color: var(--wm-color-text-primary);
-  }
+/* 当前话题：蓝点 #0066FF */
+.topicCurrent .topicDot {
+  background-color: var(--wm-color-brand-primary);
 }
 
 /* 换字：淡入 + 上移 3px，不硬切 */
