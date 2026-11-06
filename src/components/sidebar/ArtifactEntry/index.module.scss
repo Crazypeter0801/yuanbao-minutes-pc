@@ -32,19 +32,32 @@
   }
 }
 
-/* 单条产物：padding 8、圆角 8，图标 32 + 文案（Figma 320:8670） */
+/* 分组：两组之间一条 0.5px 分隔线，上下各留 6（参考 Codex 输出 / 来源） */
+.group + .group {
+  margin-top: 6px;
+  padding-top: 6px;
+  box-shadow: inset 0 0.5px 0 var(--wm-color-line);
+}
+
+/* 分组标题：12/18 tertiary，与文件图标左对齐 */
+.groupTitle {
+  margin: 0;
+  padding: 4px 8px 2px;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--wm-color-text-tertiary);
+}
+
+/* 单条文件：一行，高 36、padding 0 8、圆角 8；图标 → 文件名 10，文件名 → 类型 12 */
 .file {
   display: flex;
   align-items: center;
-  padding: 8px;
+  height: 36px;
+  padding: 0 8px;
   border-radius: 8px;
   cursor: pointer;
   outline: none;
   transition: background-color 120ms ease-out;
-
-  & > * + * {
-    margin-left: 8px;
-  }
 
   &:hover {
     background-color: var(--wm-color-background-septenary);
@@ -55,54 +68,43 @@
   }
 }
 
+/* 徽标 SVG 画布 32、主体约 22：放进 24 的位子，视觉上和 20 的缩略图一样大 */
 .fileIcon {
   flex: 0 0 auto;
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
+  margin: 0 -2px;
 }
 
-.fileBody {
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  min-width: 0;
-
-  & > * + * {
-    margin-top: 2px;
-  }
+/* 图片：20×20 圆角 4 缩略图 */
+.fileThumb {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  object-fit: cover;
+  box-shadow: 0 0 0 0.5px var(--wm-color-line);
 }
 
-/* 12/18 400 primary，单行截断 */
+/* 文件名 14/20 primary，单行截断 */
 .fileName {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-left: 10px;
   overflow: hidden;
-  font-size: 12px;
-  line-height: 18px;
+  font-size: 14px;
+  line-height: 20px;
   color: var(--wm-color-text-primary);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* 类型 ｜ 体积：11/16，40% 黑；中间 0.5×10 竖线 */
-.fileMeta {
-  display: flex;
-  align-items: center;
-
-  & > * + * {
-    margin-left: 4px;
-  }
-}
-
-.fileType,
-.fileSize {
-  font-size: 11px;
-  line-height: 16px;
+/* 右侧类型：12/18 quaternary，不截断 */
+.fileType {
+  flex: 0 0 auto;
+  margin-left: 12px;
+  font-size: 12px;
+  line-height: 18px;
   color: var(--wm-color-text-quaternary);
   white-space: nowrap;
-}
-
-.fileSep {
-  flex: 0 0 auto;
-  width: 0.5px;
-  height: 10px;
-  background-color: var(--wm-color-line);
 }

@@ -7,6 +7,7 @@ import { YuanbaoSidebar } from "@/components/YuanbaoSidebar";
 import {
   buildArtifact,
   buildArtifactCreatedMessage,
+  buildScreenshotArtifact,
   companionArtifacts,
   resolveArtifactTitle,
   type ArtifactKind,
@@ -16,7 +17,7 @@ import type { CommandItem } from "@/data/commands";
 import { buildPollPostedMessage, teamBuildingPoll } from "@/data/polls";
 import { topicAt } from "@/data/meetingTopics";
 import { matchScenario } from "@/data/proactiveScenarios";
-import { buildScreenshotNote } from "@/data/yuanbaoContent";
+import { buildScreenshotNote, meetingShotSrc } from "@/data/yuanbaoContent";
 import { useYuanbaoSession } from "@/hooks/useYuanbaoSession";
 import type { ArtifactItem } from "@/types/artifact";
 import styles from "./App.module.scss";
@@ -50,10 +51,11 @@ export default function App() {
    */
   const createArtifact = (kind: ArtifactKind, title: string) => {
     const created = buildArtifact(kind, title);
+    // 第一次生成时带上会中已有的文件；之后只把新文件插到最前（截图先到的话也不会挡住附带文件）
     setArtifacts((previous) =>
-      previous.length === 0
-        ? [created, ...companionArtifacts]
-        : [created, ...previous],
+      previous.some((item) => item.group === "output")
+        ? [created, ...previous]
+        : [created, ...companionArtifacts, ...previous],
     );
     chat.push(buildArtifactCreatedMessage(created));
   };
@@ -107,7 +109,10 @@ export default function App() {
       return;
     }
     if (item.effect === "screenshot") {
-      chat.push(buildScreenshotNote());
+      // 对话里出现的截图同步进文件夹的「来源」
+      const note = buildScreenshotNote();
+      chat.push(note);
+      setArtifacts((previous) => [buildScreenshotArtifact(meetingShotSrc, note.createdAt), ...previous]);
       return;
     }
     handleSubmit(item.prompt ?? item.label);

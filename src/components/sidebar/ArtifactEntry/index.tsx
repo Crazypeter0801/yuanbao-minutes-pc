@@ -9,11 +9,11 @@ import IconStatusFolder from '@/assets/d2c/icons/input/icon-status-folder';
 import IconMeetSidebar from '@/assets/d2c/icons/v1/icon-meet-sidebar';
 import { Pressable } from '@/components/common/Pressable';
 import { MorphPanel } from '@/components/sidebar/MorphPanel';
-import type { ArtifactIcon, ArtifactItem } from '@/types/artifact';
+import type { ArtifactGroup, ArtifactIcon, ArtifactItem } from '@/types/artifact';
 import styles from './index.module.scss';
 
 interface ArtifactEntryProps {
-  /** 元宝生成并归到本场会议的产物 */
+  /** 本场会议对话里出现过的全部文件（元宝的输出 + 对话里的来源） */
   artifacts: ArtifactItem[];
   expanded: boolean;
   onExpandedChange: (expanded: boolean) => void;
@@ -25,8 +25,8 @@ interface ArtifactEntryProps {
   onOpenSide: () => void;
 }
 
-/** 文件类型徽标：Figma 导出的矢量图，按 URL 引入后由 img 渲染，避免位图缩放发虚 */
-const FILE_ICONS: Record<ArtifactIcon, string> = {
+/** 文件类型徽标：Figma 导出的矢量图，按 URL 引入后由 img 渲染，避免位图缩放发虚；图片类改用缩略图 */
+const FILE_ICONS: Record<Exclude<ArtifactIcon, 'image'>, string> = {
   yuanbao: iconFileYuanbao,
   pdf: iconFilePdf,
   sheet: iconFileSheet,
@@ -35,9 +35,16 @@ const FILE_ICONS: Record<ArtifactIcon, string> = {
   slide: iconFileSlide,
 };
 
+/** 分组顺序与标题（参考 Codex：输出在上、来源在下） */
+const GROUPS: { key: ArtifactGroup; title: string }[] = [
+  { key: 'output', title: '输出' },
+  { key: 'source', title: '来源' },
+];
+
 /**
- * 产物入口（Figma 36:2280：文件夹图标 + 条数）
- * 只有生成过文件才出现；展开后撑满底栏这一行，列出本轮产出的文件。
+ * 文件入口（Figma 36:2280：文件夹图标 + 条数）
+ * 文件夹装的是对话里出现过的全部内容，所以展开后按「输出 / 来源」分两组，空组不显示。
+ * 每条压成一行（参考 Codex）：20 图标 + 文件名 + 右侧类型，行高 36，比两行版省一半高度。
  * 标题行右侧不是「收起」，而是「在侧边打开」；收起靠点标题行、点面板外或 Esc。
  */
 export const ArtifactEntry: FC<ArtifactEntryProps> = ({
@@ -47,44 +54,61 @@ export const ArtifactEntry: FC<ArtifactEntryProps> = ({
   hidden,
   onOpen,
   onOpenSide,
-}) => (
-  <MorphPanel
-    expanded={expanded}
-    onExpandedChange={onExpandedChange}
-    hidden={hidden}
-    summary={
-      <>
-        <span className={styles.icon}>
-          <IconStatusFolder />
-        </span>
-        <span className={styles.count}>{artifacts.length}</span>
-      </>
-    }
-    expandedLabel="个文件"
-    collapsedPaddingX={12}
-    panelWidth="full"
-    name="产出文件"
-    contentKey={artifacts.length}
-    headerAction={
-      <Pressable className={styles.sideOpen} onClick={onOpenSide} stopPropagation title="在侧边打开" ariaLabel="在侧边打开">
-        <IconMeetSidebar width={24} height={24} />
-      </Pressable>
-    }
-  >
-    {artifacts.map((item) => (
-      <Pressable key={item.id} className={styles.file} onClick={() => onOpen(item)}>
-        <img className={styles.fileIcon} src={FILE_ICONS[item.icon]} alt="" aria-hidden="true" />
-        <span className={styles.fileBody}>
-          <span className={styles.fileName} title={item.name}>
-            {item.name}
+}) => {
+  const groups = GROUPS.map((group) => ({ ...group, items: artifacts.filter((item) => item.group === group.key) })).filter(
+    (group) => group.items.length > 0,
+  );
+
+  return (
+    <MorphPanel
+      expanded={expanded}
+      onExpandedChange={onExpandedChange}
+      hidden={hidden}
+      summary={
+        <>
+          <span className={styles.icon}>
+            <IconStatusFolder />
           </span>
-          <span className={styles.fileMeta}>
-            <span className={styles.fileType}>{item.type}</span>
-            <span className={styles.fileSep} aria-hidden="true" />
-            <span className={styles.fileSize}>{item.size}</span>
-          </span>
-        </span>
-      </Pressable>
-    ))}
-  </MorphPanel>
-);
+          <span className={styles.count}>{artifacts.length}</span>
+        </>
+      }
+      expandedLabel="个文件"
+      collapsedPaddingX={12}
+      panelWidth="full"
+      name="会中文件"
+      contentKey={artifacts.length}
+      headerAction={
+        <Pressable
+          className={styles.sideOpen}
+          onClick={onOpenSide}
+          stopPropagation
+          title="在侧边打开"
+          ariaLabel="在侧边打开"
+        >
+          <IconMeetSidebar width={24} height={24} />
+        </Pressable>
+      }
+    >
+      {groups.map((group) => (
+        <div className={styles.group} key={group.key}>
+          <p className={styles.groupTitle}>{group.title}</p>
+          {group.items.map((item) => (
+            <Pressable key={item.id} className={styles.file} onClick={() => onOpen(item)} ariaLabel={`打开${item.name}`}>
+              {item.icon === 'image' ? (
+                <img className={styles.fileThumb} src={item.thumb} alt="" aria-hidden="true" />
+              ) : (
+                <img className={styles.fileIcon} src={FILE_ICONS[item.icon]} alt="" aria-hidden="true" />
+              )}
+              <span className={styles.fileName} title={item.name}>
+                {item.name}
+              </span>
+              <span className={styles.fileType} title={item.size}>
+                {item.type}
+              </span>
+            </Pressable>
+          ))}
+        </div>
+      ))}
+    </MorphPanel>
+  );
+};

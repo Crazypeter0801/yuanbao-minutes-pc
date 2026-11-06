@@ -1,4 +1,7 @@
 import videoSpeaker from '@/assets/d2c/images/v1/video-speaker@2x.png';
+
+/** 会议画面截图的图片源：对话里的小图和文件夹「来源」里的缩略图共用 */
+export const meetingShotSrc = videoSpeaker;
 import type { AssistantMessage, ChatMessage, RichBlock, TextRun } from '@/types/chat';
 
 /**

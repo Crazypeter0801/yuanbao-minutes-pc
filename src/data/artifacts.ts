@@ -3,18 +3,35 @@ import type { ArtifactItem } from '@/types/artifact';
 import type { AssistantMessage } from '@/types/chat';
 
 /**
- * 产物列表（演示数据）
+ * 会中文件（演示数据）
  *
- * 一开始是空的：没有产物时底栏不出现文件入口。
+ * 文件夹装的是对话里出现过的全部内容，分两类：元宝生成的「输出」和对话里的「来源」。
+ * 一开始是空的：没有任何文件时底栏不出现文件入口。
  * 用户说「生成一份竞品分析的 PDF」之后才会有文件：本次生成的那份排最前，
- * 首次再附带一组会中已有的文件，方便演示面板里多条文件的排版与滚动。
+ * 首次再附带一组会中已有的文件，方便演示分类、排版与滚动；记录会议画面会往「来源」里加一张截图。
  */
 export const companionArtifacts: ArtifactItem[] = [
-  { id: 'artifact-sheet', name: '待办与排期', type: 'XLSX', size: '256KB', icon: 'sheet' },
-  { id: 'artifact-word', name: '视觉方向说明', type: 'DOCX', size: '640KB', icon: 'word' },
-  { id: 'artifact-slide', name: '汇报材料初稿', type: 'PPTX', size: '24MB', icon: 'slide' },
-  { id: 'artifact-transcript', name: '会议逐字稿', type: 'TXT', size: '84KB', icon: 'transcript' },
+  { id: 'artifact-sheet', name: '待办与排期', type: 'XLSX', size: '256KB', icon: 'sheet', group: 'output' },
+  { id: 'artifact-word', name: '视觉方向说明', type: 'DOCX', size: '640KB', icon: 'word', group: 'output' },
+  { id: 'artifact-slide', name: '汇报材料初稿', type: 'PPTX', size: '24MB', icon: 'slide', group: 'output' },
+  { id: 'artifact-transcript', name: '会议逐字稿', type: 'TXT', size: '84KB', icon: 'transcript', group: 'source' },
+  { id: 'artifact-brief', name: '两版视觉稿对比', type: 'PDF', size: '5.8MB', icon: 'pdf', group: 'source' },
 ];
+
+/** 记录会议画面时同步进「来源」的截图 */
+export function buildScreenshotArtifact(thumb: string, createdAt: number = Date.now()): ArtifactItem {
+  const date = new Date(createdAt);
+  const pad = (value: number) => String(value).padStart(2, '0');
+  return {
+    id: createId('artifact-shot'),
+    name: `会议画面 ${pad(date.getHours())}:${pad(date.getMinutes())}`,
+    type: '图片',
+    size: '1.2MB',
+    icon: 'image',
+    group: 'source',
+    thumb,
+  };
+}
 
 export type ArtifactKind = 'pdf' | 'pptx';
 
@@ -35,8 +52,8 @@ export function resolveArtifactTitle(text: string, kind: ArtifactKind): string {
 /** 本次生成的那份文件，排在列表最前 */
 export function buildArtifact(kind: ArtifactKind, title: string): ArtifactItem {
   return kind === 'pdf'
-    ? { id: createId('artifact'), name: title, type: 'PDF', size: '2.1MB', icon: 'pdf' }
-    : { id: createId('artifact'), name: title, type: 'PPTX', size: '6.4MB', icon: 'slide' };
+    ? { id: createId('artifact'), name: title, type: 'PDF', size: '2.1MB', icon: 'pdf', group: 'output' }
+    : { id: createId('artifact'), name: title, type: 'PPTX', size: '6.4MB', icon: 'slide', group: 'output' };
 }
 
 /** 创建产物后元宝的回复 */
