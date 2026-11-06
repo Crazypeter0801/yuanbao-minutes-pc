@@ -1,6 +1,8 @@
+/* 宽度跟内容走：外层不一定是 flex 容器（ChatList 用普通 div 包一层控间距），align-self 管不住，所以显式 fit-content */
 .wrap {
   align-self: flex-start;
   display: flex;
+  width: fit-content;
   align-items: center;
   height: 40px;
   padding: 0 14px;
