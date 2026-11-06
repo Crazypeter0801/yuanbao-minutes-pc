@@ -1,4 +1,5 @@
 import videoSpeaker from '@/assets/d2c/images/v1/video-speaker@2x.png';
+import { meetingSession } from '@/data/meetingSession';
 
 /** 会议画面截图的图片源：对话里的小图和文件夹「来源」里的缩略图共用 */
 export const meetingShotSrc = videoSpeaker;
@@ -199,7 +200,7 @@ const RULES: Rule[] = [
     test: (q) => /发到群|群里|群消息|发群里|同步到群/.test(q),
     build: () =>
       reply([
-        p('群消息草稿：'),
+        p(`群消息草稿（发到「${meetingSession.groupName}」会议群）：`),
         p(
           '“今天定了视觉方向分两版并行——线条／卡片版、少色大灰版，登录页要更亲和。待办已经分到人，主题色和竖向布局下次评审继续。”',
         ),

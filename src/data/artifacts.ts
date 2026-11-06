@@ -1,3 +1,4 @@
+import { meetingSession, SHARE_TO_GROUP_LABEL } from '@/data/meetingSession';
 import { createId } from '@/data/yuanbaoContent';
 import type { ArtifactItem } from '@/types/artifact';
 import type { AssistantMessage } from '@/types/chat';
@@ -93,6 +94,37 @@ export function buildArtifactCreatedMessage(artifact: ArtifactItem): AssistantMe
       },
     ],
     artifact,
-    followUps: ['发到群里', '我有哪些待办'],
+    followUps: [SHARE_TO_GROUP_LABEL, '我有哪些待办'],
+  };
+}
+
+/**
+ * 发到会议群之后的确认
+ * 只回一句结果，不再重复附卡片：文件就在上一条消息里，也在文件夹「输出」里。
+ */
+export function buildArtifactSharedMessage(artifact: ArtifactItem): AssistantMessage {
+  const fileName = `${artifact.name}.${artifact.type.toLowerCase()}`;
+  return {
+    id: createId('artifact-shared'),
+    role: 'assistant',
+    createdAt: Date.now(),
+    bubbles: [
+      {
+        id: createId('artifact-shared-bubble'),
+        blocks: [
+          {
+            type: 'paragraph',
+            runs: [
+              { text: '已把' },
+              { text: `「${fileName}」`, bold: true },
+              { text: '发到' },
+              { text: `「${meetingSession.groupName}」`, bold: true },
+              { text: `会议群，群里 ${meetingSession.groupMembers} 位成员会后也能直接打开。` },
+            ],
+          },
+        ],
+      },
+    ],
+    followUps: ['我有哪些待办', '下一步该做什么？'],
   };
 }

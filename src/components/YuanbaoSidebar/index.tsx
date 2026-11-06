@@ -90,7 +90,8 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ chat, artifacts, onClo
           messages={chat.messages}
           shape="round"
           isThinking={chat.isThinking}
-          onFollowUp={chat.ask}
+          // 追问和输入框走同一条链路：「发送到会议群」这类需要上下文的追问由 App 接住
+          onFollowUp={send}
           onOpenSource={openSource}
           onOpenArtifact={openArtifact}
           onOpenNote={openNote}

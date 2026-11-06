@@ -7,6 +7,7 @@ import { YuanbaoSidebar } from "@/components/YuanbaoSidebar";
 import {
   buildArtifact,
   buildArtifactCreatedMessage,
+  buildArtifactSharedMessage,
   buildScreenshotArtifact,
   companionArtifacts,
   noteArtifact,
@@ -16,6 +17,7 @@ import {
 import { buildAutoNote } from "@/data/autoNotes";
 import type { CommandItem } from "@/data/commands";
 import { buildPollPostedMessage, teamBuildingPoll } from "@/data/polls";
+import { SHARE_TO_GROUP_LABEL } from "@/data/meetingSession";
 import { topicAt } from "@/data/meetingTopics";
 import { matchScenario } from "@/data/proactiveScenarios";
 import { buildScreenshotNote, meetingShotSrc } from "@/data/yuanbaoContent";
@@ -42,6 +44,8 @@ export default function App() {
   const chat = useYuanbaoSession();
   /** 会中记录素材的游标：每次手动记一条往后走一格，不重复 */
   const noteIndex = useRef(0);
+  /** 最近生成的文件：「发送到某某会议群」的追问发的就是它 */
+  const lastArtifact = useRef<ArtifactItem | null>(null);
   /** 会中已识别出的话题数：0 时「正在帮你记」卡片显示识别中，之后逐条出现在「当前正在聊」下 */
   const [topicCount, setTopicCount] = useState(0);
   const noteTopics = Array.from({ length: topicCount }, (_, index) => topicAt(index));
@@ -58,6 +62,7 @@ export default function App() {
         ? [created, ...previous]
         : [created, ...companionArtifacts, ...previous],
     );
+    lastArtifact.current = created;
     chat.push(buildArtifactCreatedMessage(created));
   };
 
@@ -67,6 +72,12 @@ export default function App() {
    * 投票这类任务场景用场景自带的 userText 提问，同时把确认弹窗摊开。
    */
   const handleSubmit = (text: string) => {
+    const shared = lastArtifact.current;
+    if (text === SHARE_TO_GROUP_LABEL && shared) {
+      chat.runTask(text, () => chat.push(buildArtifactSharedMessage(shared)));
+      return;
+    }
+
     if (CREATE_FILE_PATTERN.test(text) && FILE_KIND_PATTERN.test(text)) {
       // 和普通提问一样先出用户气泡、元宝想一下再回，文件随回答一起落进「输出」
       const kind: ArtifactKind = /ppt|幻灯片/i.test(text) ? "pptx" : "pdf";
