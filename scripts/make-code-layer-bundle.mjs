@@ -30,7 +30,7 @@ const bundlePkg = {
   private: true,
   version: pkg.version,
   type: 'module',
-  description: '腾讯会议 PC · 元宝对话区（Figma Code Layers 导入包，1440×760）',
+  description: '腾讯会议 PC · 元宝对话区（Figma Code Layers 导入包，1600×920）',
   scripts: {
     dev: 'vite',
     start: 'vite',
@@ -63,12 +63,12 @@ writeFileSync(
   `# 元宝对话区 · Figma Code Layers 导入包
 
 ## 怎么导入
-1. Figma Design 文件里按 \`B\`（或工具栏选 Code）画一个 **1440 × 760** 的 code layer
+1. Figma Design 文件里按 \`B\`（或工具栏选 Code）画一个 **1600 × 920** 的 code layer
 2. 在弹出的面板里选 **Upload a local folder**，选中本目录
 3. 等它安装依赖并构建完成，即可 Play
 
 ## 尺寸
-页面固定 1440×760，画 code layer 时按这个尺寸，内容不会被裁切。
+页面最小 1600×920：Tahoe 壁纸铺满，1440×760 窗口居中，演示按钮浮在窗口下方。画 code layer 时不小于这个尺寸，内容不会被裁切。
 
 ## 演示触发词（在输入框里打字）
 | 输入 | 效果 |

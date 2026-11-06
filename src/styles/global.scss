@@ -16,8 +16,8 @@ body {
   margin: 0;
   font-family: var(--wm-font-family);
   color: var(--wm-color-text-primary);
-  /* 导入 Figma 的版本不留壁纸，画布用纯白，导入后窗口外不产生多余色块 */
-  background-color: var(--wm-color-background-quaternary);
+  /* 壁纸画在 App 的 .page 上，这里只给加载前的兜底底色 */
+  background-color: var(--wm-color-stage-background);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

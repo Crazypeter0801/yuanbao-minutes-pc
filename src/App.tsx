@@ -1,24 +1,24 @@
-import { useRef, useState } from 'react';
-import { MeetingWindow } from '@/components/meeting/MeetingWindow';
-import { PollComposer } from '@/components/poll/PollComposer';
-import { WINDOW_TOAST_ROOT_ID } from '@/components/common/Toast';
-import { DemoToolbar } from '@/components/demo/DemoToolbar';
-import { YuanbaoSidebar } from '@/components/YuanbaoSidebar';
+import { useRef, useState } from "react";
+import { MeetingWindow } from "@/components/meeting/MeetingWindow";
+import { PollComposer } from "@/components/poll/PollComposer";
+import { WINDOW_TOAST_ROOT_ID } from "@/components/common/Toast";
+import { DemoToolbar } from "@/components/demo/DemoToolbar";
+import { YuanbaoSidebar } from "@/components/YuanbaoSidebar";
 import {
   buildArtifact,
   buildArtifactCreatedMessage,
   companionArtifacts,
   resolveArtifactTitle,
   type ArtifactKind,
-} from '@/data/artifacts';
-import { buildAutoNote } from '@/data/autoNotes';
-import type { CommandItem } from '@/data/commands';
-import { buildPollPostedMessage, teamBuildingPoll } from '@/data/polls';
-import { matchScenario } from '@/data/proactiveScenarios';
-import { buildScreenshotNote } from '@/data/yuanbaoContent';
-import { useYuanbaoSession } from '@/hooks/useYuanbaoSession';
-import type { ArtifactItem } from '@/types/artifact';
-import styles from './App.module.scss';
+} from "@/data/artifacts";
+import { buildAutoNote } from "@/data/autoNotes";
+import type { CommandItem } from "@/data/commands";
+import { buildPollPostedMessage, teamBuildingPoll } from "@/data/polls";
+import { matchScenario } from "@/data/proactiveScenarios";
+import { buildScreenshotNote } from "@/data/yuanbaoContent";
+import { useYuanbaoSession } from "@/hooks/useYuanbaoSession";
+import type { ArtifactItem } from "@/types/artifact";
+import styles from "./App.module.scss";
 
 /** 「建一个 PDF / PPT / 文件」这类说法都算要生成产物 */
 const CREATE_FILE_PATTERN = /创建|建个|生成|做一?份|出一份/;
@@ -27,10 +27,9 @@ const FILE_KIND_PATTERN = /pdf|ppt|幻灯片|文件|纪要文档/i;
 /**
  * 腾讯会议 PC + 元宝 Agent 对话区（Figma 257:1540）· Figma 导入版
  *
- * 1. 去掉壁纸，页面底色为纯白；
- * 2. 只留一个 1440×760 的主窗口（会议区 + 元宝侧栏），窗口内不放任何演示入口；
- * 3. 窗口下方是三个演示按钮：模拟元宝发言 / 模拟用户发言 / 模拟交互功能；
- * 4. 输入框里直接打「刚入会」「建个投票」这类词也能触发演示场景。
+ * 1. Tahoe 壁纸铺满页面，1440×760 主窗口（会议区 + 元宝侧栏）居中，窗口内不放任何演示入口；
+ * 2. 窗口下方的壁纸上浮着三个演示按钮：模拟元宝发言 / 模拟用户发言 / 模拟交互功能；
+ * 3. 输入框里直接打「刚入会」「建个投票」这类词也能触发演示场景。
  */
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -47,7 +46,11 @@ export default function App() {
    */
   const createArtifact = (kind: ArtifactKind, title: string) => {
     const created = buildArtifact(kind, title);
-    setArtifacts((previous) => (previous.length === 0 ? [created, ...companionArtifacts] : [created, ...previous]));
+    setArtifacts((previous) =>
+      previous.length === 0
+        ? [created, ...companionArtifacts]
+        : [created, ...previous],
+    );
     chat.push(buildArtifactCreatedMessage(created));
   };
 
@@ -59,8 +62,10 @@ export default function App() {
   const handleSubmit = (text: string) => {
     if (CREATE_FILE_PATTERN.test(text) && FILE_KIND_PATTERN.test(text)) {
       // 和普通提问一样先出用户气泡、元宝想一下再回，文件随回答一起落进「输出」
-      const kind: ArtifactKind = /ppt|幻灯片/i.test(text) ? 'pptx' : 'pdf';
-      chat.runTask(text, () => createArtifact(kind, resolveArtifactTitle(text, kind)));
+      const kind: ArtifactKind = /ppt|幻灯片/i.test(text) ? "pptx" : "pdf";
+      chat.runTask(text, () =>
+        createArtifact(kind, resolveArtifactTitle(text, kind)),
+      );
       return;
     }
 
@@ -69,9 +74,9 @@ export default function App() {
       chat.ask(text);
       return;
     }
-    if (scenario.kind === 'ask') {
+    if (scenario.kind === "ask") {
       chat.ask(scenario.userText);
-      if (scenario.opens === 'poll') {
+      if (scenario.opens === "poll") {
         setPollOpen(true);
       }
       return;
@@ -86,12 +91,12 @@ export default function App() {
    */
   const runCommand = (item: CommandItem) => {
     setSidebarOpen(true);
-    if (item.effect === 'auto-note') {
+    if (item.effect === "auto-note") {
       chat.push(buildAutoNote(noteIndex.current));
       noteIndex.current += 1;
       return;
     }
-    if (item.effect === 'screenshot') {
+    if (item.effect === "screenshot") {
       chat.push(buildScreenshotNote());
       return;
     }
@@ -100,32 +105,39 @@ export default function App() {
 
   return (
     <div className={styles.page}>
-      <div className={styles.window} id={WINDOW_TOAST_ROOT_ID}>
-        {/* 投票弹窗只盖会议区，元宝说的话仍然看得见 */}
-        <div className={styles.meetingArea}>
-          <MeetingWindow yuanbaoOpen={sidebarOpen} onToggleYuanbao={() => setSidebarOpen((open) => !open)} />
-          {pollOpen && (
-            <PollComposer
-              draft={teamBuildingPoll}
-              onClose={() => setPollOpen(false)}
-              onSubmit={() => {
-                setPollOpen(false);
-                chat.push(buildPollPostedMessage(teamBuildingPoll.title));
-              }}
+      <div className={styles.frame}>
+        <div className={styles.window} id={WINDOW_TOAST_ROOT_ID}>
+          {/* 投票弹窗只盖会议区，元宝说的话仍然看得见 */}
+          <div className={styles.meetingArea}>
+            <MeetingWindow
+              yuanbaoOpen={sidebarOpen}
+              onToggleYuanbao={() => setSidebarOpen((open) => !open)}
+            />
+            {pollOpen && (
+              <PollComposer
+                draft={teamBuildingPoll}
+                onClose={() => setPollOpen(false)}
+                onSubmit={() => {
+                  setPollOpen(false);
+                  chat.push(buildPollPostedMessage(teamBuildingPoll.title));
+                }}
+              />
+            )}
+          </div>
+          {sidebarOpen && (
+            <YuanbaoSidebar
+              chat={chat}
+              artifacts={artifacts}
+              onClose={() => setSidebarOpen(false)}
+              onSubmit={handleSubmit}
             />
           )}
         </div>
-        {sidebarOpen && (
-          <YuanbaoSidebar
-            chat={chat}
-            artifacts={artifacts}
-            onClose={() => setSidebarOpen(false)}
-            onSubmit={handleSubmit}
-          />
-        )}
+        {/* 窗口外：演示按钮，浮在窗口下方的壁纸上 */}
+        <div className={styles.demoBar}>
+          <DemoToolbar onCommand={runCommand} />
+        </div>
       </div>
-      {/* 窗口外：演示按钮 */}
-      <DemoToolbar onCommand={runCommand} />
     </div>
   );
 }

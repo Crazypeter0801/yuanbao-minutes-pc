@@ -1,9 +1,8 @@
-/* 窗口外的演示按钮条：窗口下方居中，三个按钮间距 12 */
+/* 窗口外的演示按钮条：三个按钮间距 12，位置由 App 决定 */
 .bar {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 64px;
 
   & > * + * {
     margin-left: 12px;
