@@ -45,7 +45,8 @@ const GROUPS: { key: ArtifactGroup; title: string }[] = [
 /**
  * 文件入口（Figma 36:2280：文件夹图标 + 条数）
  * 文件夹装的是对话里出现过的全部内容，所以展开后按「输出 / 来源」分两组，空组不显示。
- * 元宝笔记也算一个文件，固定在「来源」第一条，所以入会后这个入口就一直在。
+ * 元宝笔记也算一个文件（元宝产出），固定在「输出」第一条，所以入会后这个入口就一直在。
+ * 对齐（参考 Codex）：标题行图标、分组标题、文件图标同一条左边线；「在侧边打开」、文件类型同一条右边线，分隔线也在两线之间。
  * 每条压成一行（参考 Codex）：20 图标 + 文件名 + 右侧类型，行高 36，比两行版省一半高度。
  * 标题行右侧不是「收起」，而是「在侧边打开」；收起靠点标题行、点面板外或 Esc。
  */
@@ -57,7 +58,7 @@ export const ArtifactEntry: FC<ArtifactEntryProps> = ({
   onOpen,
   onOpenSide,
 }) => {
-  // 元宝笔记固定在「来源」第一条，其余按加入顺序（新的在前）
+  // 元宝笔记固定在「输出」第一条，其余按加入顺序（新的在前）
   const groups = GROUPS.map((group) => ({
     ...group,
     items: artifacts
@@ -83,6 +84,7 @@ export const ArtifactEntry: FC<ArtifactEntryProps> = ({
       panelWidth="full"
       name="会中文件"
       contentKey={artifacts.length}
+      alignHeaderToContent
       headerAction={
         <Pressable
           className={styles.sideOpen}

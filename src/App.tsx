@@ -52,9 +52,9 @@ export default function App() {
    */
   const createArtifact = (kind: ArtifactKind, title: string) => {
     const created = buildArtifact(kind, title);
-    // 第一次生成时带上会中已有的文件；之后只把新文件插到最前（截图先到的话也不会挡住附带文件）
+    // 第一次生成时带上会中已有的文件（判断依据：附带文件还没进来）；之后只把新文件插到最前
     setArtifacts((previous) =>
-      previous.some((item) => item.group === "output")
+      previous.some((item) => item.id === companionArtifacts[0].id)
         ? [created, ...previous]
         : [created, ...companionArtifacts, ...previous],
     );

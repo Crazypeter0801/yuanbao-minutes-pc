@@ -157,6 +157,23 @@ $duration: 380ms;
   }
 }
 
+/*
+ * 标题行与列表对齐：列表内容距卡片边 20（卡片 padding 12 + 行内 8）
+ * - 文件夹图标画布 16、字形左侧留白约 1.7：标题行左缩 6，字形落在 20 上；
+ * - 「在侧边打开」画布 24、字形右侧留白约 6：操作位 right 2，字形右缘落在 20 上。
+ */
+.header {
+  transition: padding $duration $ease-out;
+}
+
+.cardAligned.cardExpanded .header {
+  padding-left: 6px;
+}
+
+.cardAligned.cardExpanded .headerAction {
+  right: 2px;
+}
+
 /* ---------- 内容区：按展开后的最终宽度排版，变宽过程中文字不重新折行 ---------- */
 
 .body {

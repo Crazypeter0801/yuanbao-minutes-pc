@@ -32,11 +32,28 @@
   }
 }
 
-/* 分组：两组之间一条 0.5px 分隔线，上下各留 6（参考 Codex 输出 / 来源） */
+/*
+ * 左右对齐线：面板内容区两侧各缩 8（距卡片边 20）——
+ * 分组标题、文件图标、文件类型、分隔线都对齐到这两条线上，标题行由 MorphPanel 的 headerInset 对齐。
+ */
+.group {
+  position: relative;
+}
+
+/* 分组：两组之间一条 0.5px 分隔线，上下各留 6，左右与内容对齐线齐平（参考 Codex 输出 / 来源） */
 .group + .group {
   margin-top: 6px;
   padding-top: 6px;
-  box-shadow: inset 0 0.5px 0 var(--wm-color-line);
+
+  &::before {
+    position: absolute;
+    top: 0;
+    left: 8px;
+    right: 8px;
+    height: 0.5px;
+    content: '';
+    background-color: var(--wm-color-line);
+  }
 }
 
 /* 分组标题：12/18 tertiary，与文件图标左对齐 */

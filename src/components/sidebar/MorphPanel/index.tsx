@@ -37,6 +37,11 @@ interface MorphPanelProps {
   maxHeight?: number;
   /** 展开后标题行右侧的操作（如「在侧边打开」）；不传就什么都不放 */
   headerAction?: ReactNode;
+  /**
+   * 展开后标题行左右再缩进多少，让标题与列表内容对齐到同一条线（产物面板为 true：左 6、操作位右移到对齐线）
+   * 收起态不受影响
+   */
+  alignHeaderToContent?: boolean;
   children: ReactNode;
 }
 
@@ -60,6 +65,7 @@ export const MorphPanel: FC<MorphPanelProps> = ({
   name,
   contentKey,
   headerAction,
+  alignHeaderToContent = false,
   maxHeight = PANEL_MAX_HEIGHT,
   children,
 }) => {
@@ -191,7 +197,11 @@ export const MorphPanel: FC<MorphPanelProps> = ({
 
       <div className={styles.fade} aria-hidden="true" />
 
-      <div className={`${styles.card} ${expanded ? styles.cardExpanded : ''}`}>
+      <div
+        className={[styles.card, expanded ? styles.cardExpanded : '', alignHeaderToContent ? styles.cardAligned : '']
+          .filter(Boolean)
+          .join(' ')}
+      >
         <div className={styles.header} onClick={toggle} role="presentation">
           <Pressable
             className={styles.summary}

@@ -5,7 +5,7 @@ import type { AssistantMessage } from '@/types/chat';
 /**
  * 会中文件（演示数据）
  *
- * 文件夹装的是对话里出现过的全部内容，分两类：元宝生成的「输出」和对话里的「来源」。
+ * 文件夹装的是对话里出现过的全部内容，分两类：元宝产出的「输出」和用户发进来的「来源」。
  * 一开始是空的：没有任何文件时底栏不出现文件入口。
  * 用户说「生成一份竞品分析的 PDF」之后才会有文件：本次生成的那份排最前，
  * 首次再附带一组会中已有的文件，方便演示分类、排版与滚动；记录会议画面会往「来源」里加一张截图。
@@ -14,13 +14,14 @@ export const companionArtifacts: ArtifactItem[] = [
   { id: 'artifact-sheet', name: '待办与排期', type: 'XLSX', size: '256KB', icon: 'sheet', group: 'output' },
   { id: 'artifact-word', name: '视觉方向说明', type: 'DOCX', size: '640KB', icon: 'word', group: 'output' },
   { id: 'artifact-slide', name: '汇报材料初稿', type: 'PPTX', size: '24MB', icon: 'slide', group: 'output' },
-  { id: 'artifact-transcript', name: '会议逐字稿', type: 'TXT', size: '84KB', icon: 'transcript', group: 'source' },
+  { id: 'artifact-transcript', name: '会议逐字稿', type: 'TXT', size: '84KB', icon: 'transcript', group: 'output' },
+  // 用户会前上传的对比稿：来源只放用户发的东西
   { id: 'artifact-brief', name: '两版视觉稿对比', type: 'PDF', size: '5.8MB', icon: 'pdf', group: 'source' },
 ];
 
 /**
- * 元宝笔记：开启云笔记后从第一刻起就在，算「来源」里的一个文件，始终排在来源第一条
- * 所以文件夹入口一入会就会出现（至少 1 个文件）。
+ * 元宝笔记：元宝产出的，算「输出」里的一个文件，始终排在输出第一条
+ * 开启云笔记后从第一刻起就在，所以文件夹入口一入会就会出现（至少 1 个文件）。
  */
 export const NOTE_ARTIFACT_ID = 'artifact-yuanbao-note';
 export const noteArtifact: ArtifactItem = {
@@ -29,10 +30,10 @@ export const noteArtifact: ArtifactItem = {
   type: '笔记',
   size: '实时更新',
   icon: 'yuanbao',
-  group: 'source',
+  group: 'output',
 };
 
-/** 记录会议画面时同步进「来源」的截图 */
+/** 用户截下的会议画面：用户发进对话的，进「来源」 */
 export function buildScreenshotArtifact(thumb: string, createdAt: number = Date.now()): ArtifactItem {
   const date = new Date(createdAt);
   const pad = (value: number) => String(value).padStart(2, '0');

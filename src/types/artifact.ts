@@ -8,8 +8,8 @@ export type ArtifactIcon = 'yuanbao' | 'pdf' | 'sheet' | 'transcript' | 'word' |
 
 /**
  * 分类（参考 Codex 的「输出 / 来源」）
- * - output：元宝生成的产物（报告、PPT、表格…）
- * - source：对话里出现过的原始材料（会议截图、逐字稿、上传的文件…）
+ * - output：元宝产出的（元宝笔记、逐字稿、报告、PPT、表格…）
+ * - source：用户发进对话的（上传的文件、截下的会议画面…）
  */
 export type ArtifactGroup = 'output' | 'source';
 

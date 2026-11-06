@@ -16,17 +16,31 @@
 }
 
 /*
- * 输入框上方一行（Figma 36:2250）：产物 → 元宝正在记笔记，靠左排、间距 8，
- * 每个胶囊宽度随内容；产物的展开面板以这一行为基线、对齐行首向上浮出。
+ * 输入框上方一行（Figma 36:2250）：左边长程任务从左往右排，右边固定是文件夹。
+ * 文件夹展开时以这一行为基线、向左长成整行面板（MorphPanel 量的是这一行的宽度和自己的偏移）。
  */
 .statusRow {
   position: relative;
   display: flex;
   align-items: flex-end;
+  justify-content: space-between;
   height: 36px;
+}
+
+/* 长程任务区：占满左侧剩余宽度，任务之间间距 8，放不下时横向截在这一区里 */
+.tasks {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: flex-end;
+  min-width: 0;
+  margin-right: 8px;
 
   & > * + * {
     margin-left: 8px;
   }
 }
 
+/* 文件夹面板展开时整块让位（胶囊自己也会淡出，这里只防止误点） */
+.tasksHidden {
+  pointer-events: none;
+}

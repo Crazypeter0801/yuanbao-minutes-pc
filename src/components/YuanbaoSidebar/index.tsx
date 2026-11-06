@@ -34,8 +34,8 @@ interface YuanbaoSidebarProps {
 /**
  * 元宝 Agent 对话区 · V1（Figma 257:1540 右侧，底栏按 Figma 36:2249）
  *
- * 底栏一行从左到右：产物（有文件才出现）→「元宝正在记笔记」，按内容自适应宽度、间距 8。
- * 产物可展开成浮层，展开时笔记胶囊让位。
+ * 输入框上方一行：左边是长程任务（「元宝正在记笔记」，多个时从左往右排），右边固定是文件夹。
+ * 文件夹可展开成整行浮层，展开时左边的任务胶囊让位。
  *
  * 快捷指令已移出窗口：元宝发言、用户发言、交互功能都从窗口外的三个演示按钮触发。
  */
@@ -100,7 +100,19 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ chat, artifacts, onClo
       </MessageStream>
 
       <div className={styles.footer}>
+        {/*
+          输入框上方一行：左边是长程任务（元宝正在记笔记…），多个时从左往右排；
+          右边固定是文件夹，展开时向左长成整行面板
+        */}
         <div className={styles.statusRow}>
+          <div className={`${styles.tasks} ${artifactsOpen ? styles.tasksHidden : ''}`}>
+            <NotePill
+              isListening={isListening}
+              hidden={artifactsOpen}
+              onOpen={openNote}
+              onToggleListening={toggleListening}
+            />
+          </div>
           {/* 元宝笔记本身就是一个文件，开启云笔记后这个入口一直都在 */}
           {artifacts.length > 0 && (
             <ArtifactEntry
@@ -114,12 +126,6 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ chat, artifacts, onClo
               }}
             />
           )}
-          <NotePill
-            isListening={isListening}
-            hidden={artifactsOpen}
-            onOpen={openNote}
-            onToggleListening={toggleListening}
-          />
         </div>
         <ChatInput
           placeholder="提问或创建任务"
