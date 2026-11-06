@@ -1,10 +1,13 @@
-/* 卡片：248 宽、圆角 20、白底 1px 内描边、顶部 8（Figma 46:7838） */
+/*
+ * 卡片：248×98、圆角 20、白底 1px 内描边（Figma 46:7838）
+ * 尺寸按设计稿 2x 导出图逐像素量出：标题行中线在 y=25，灰条 y=49–85、左右各留 13、底部留 13。
+ * （节点数据里的 padding-top 8 与导出图对不上，以导出图为准）
+ */
 .card {
   display: flex;
   flex-direction: column;
   width: 248px;
   max-width: 100%;
-  padding-top: 8px;
   border-radius: 20px;
   background-color: var(--wm-color-background-quaternary);
   box-shadow: inset 0 0 0 1px var(--wm-color-outline-tertiary);
@@ -18,11 +21,11 @@
   }
 }
 
-/* 标题行：padding 14 16、图标 18 → 标题间距 6 → 右箭头靠右（Figma 46:7839） */
+/* 标题行：高 49，padding 15 17 14 18；图标 18 → 标题间距 7 → 右箭头靠右（按导出图量出） */
 .header {
   display: flex;
   align-items: center;
-  padding: 14px 16px;
+  padding: 15px 17px 14px 18px;
 }
 
 .icon {
@@ -36,7 +39,7 @@
 .title {
   flex: 1 1 auto;
   min-width: 0;
-  margin-left: 6px;
+  margin-left: 7px;
   overflow: hidden;
   font-size: 14px;
   line-height: 20px;
@@ -54,10 +57,10 @@
   margin-left: 12px;
 }
 
-/* 占位区：左右下各 12，高 36（与产物卡片封面 224 对齐） */
+/* 占位区：左右下各 13，灰条 222×36（Figma 46:7858） */
 .slot {
   display: flex;
-  padding: 0 12px 12px;
+  padding: 0 13px 13px;
 }
 
 /*
