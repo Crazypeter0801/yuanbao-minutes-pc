@@ -27,6 +27,8 @@ interface AssistantMessageViewProps {
   onOpenArtifact?: (artifact: ArtifactItem) => void;
   /** 点击气泡下方的「正在帮你记」卡片 */
   onOpenNote?: () => void;
+  /** 「正在帮你记」卡片上显示的当前话题 */
+  noteTopic?: string;
   /** 交互卡片提交：把选中的值交给上层生成后续回复 */
   onCardSubmit?: (cardId: BubbleCard['id'], values: string[]) => void;
   /**
@@ -47,6 +49,7 @@ export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
   onOpenSource,
   onOpenArtifact,
   onOpenNote,
+  noteTopic,
   onCardSubmit,
   showFollowUps = true,
 }) => {
@@ -116,7 +119,7 @@ export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
 
       {message.recordingCard && (
         <div className={styles.cardSlot}>
-          <RecordingCard summary={message.recordingCard.summary} onOpen={onOpenNote} />
+          <RecordingCard topic={noteTopic} onOpen={onOpenNote} />
         </div>
       )}
 

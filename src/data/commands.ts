@@ -13,7 +13,7 @@
 export type CommandKind = 'ask' | 'card' | 'yuanbao';
 
 /** 有副作用、不能单靠一句话表达的动作 */
-export type CommandEffect = 'auto-note' | 'screenshot';
+export type CommandEffect = 'auto-note' | 'screenshot' | 'next-topic';
 
 export interface CommandItem {
   label: string;
@@ -46,6 +46,7 @@ export const demoMenus: DemoMenu[] = [
         items: [
           { label: '记下一条会议要点', kind: 'yuanbao', effect: 'auto-note' },
           { label: '刚入会（正在帮你记）', kind: 'yuanbao', prompt: '刚入会' },
+          { label: '识别到新话题', kind: 'yuanbao', effect: 'next-topic' },
           { label: '有人提到相关内容', kind: 'yuanbao', prompt: '别人提到' },
           { label: '会议快结束，约下次', kind: 'yuanbao', prompt: '会议将结束' },
           { label: '记录当前会议画面', kind: 'yuanbao', effect: 'screenshot' },

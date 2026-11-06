@@ -21,6 +21,8 @@ interface ChatListProps {
   onOpenArtifact?: (artifact: ArtifactItem) => void;
   /** 点击气泡下方的「正在帮你记」卡片 */
   onOpenNote?: () => void;
+  /** 「正在帮你记」卡片上显示的当前话题 */
+  noteTopic?: string;
   /** 交互卡片提交 */
   onCardSubmit?: (cardId: BubbleCard['id'], values: string[]) => void;
 }
@@ -41,6 +43,7 @@ export const ChatList: FC<ChatListProps> = ({
   onOpenSource,
   onOpenArtifact,
   onOpenNote,
+  noteTopic,
   onCardSubmit,
 }) => {
   const lastRole = messages[messages.length - 1]?.role;
@@ -71,6 +74,7 @@ export const ChatList: FC<ChatListProps> = ({
                   onOpenSource={onOpenSource}
                   onOpenArtifact={onOpenArtifact}
                   onOpenNote={onOpenNote}
+                  noteTopic={noteTopic}
                   onCardSubmit={onCardSubmit}
                   // 只留最后一轮的追问：元宝说了下一句，旧提问就收起
                   showFollowUps={index === messages.length - 1}

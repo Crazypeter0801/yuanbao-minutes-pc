@@ -107,22 +107,66 @@
   }
 }
 
-/* 有内容之后：同一块区域显示文字，单行截断，高度仍是 36 */
-.summary {
+/* 阶段文案：13/20 tertiary，左右 12；光带从文字上扫过，形成飞书那种一明一暗的读感 */
+.hint {
+  position: absolute;
+  top: 0;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  height: 36px;
+  overflow: hidden;
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--wm-color-text-tertiary);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  animation: note-text-in 240ms ease-out both;
+}
+
+/* 有话题：同一块灰条，停掉闪光；「当前正在聊」灰字 + 话题黑字，话题过长截断 */
+.topicBar {
   flex: 1 1 auto;
   display: flex;
   align-items: center;
   min-width: 0;
   height: 36px;
   padding: 0 12px;
-  overflow: hidden;
   border-radius: 8px;
   background-color: var(--wm-color-background-septenary);
   font-size: 13px;
   line-height: 20px;
-  color: var(--wm-color-text-secondary);
-  text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.topicLabel {
+  flex: 0 0 auto;
+  color: var(--wm-color-text-tertiary);
+}
+
+.topic {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-left: 6px;
+  overflow: hidden;
+  font-weight: 500;
+  color: var(--wm-color-text-primary);
+  text-overflow: ellipsis;
+  animation: note-text-in 240ms ease-out both;
+}
+
+/* 换字：淡入 + 上移 3px，不硬切 */
+@keyframes note-text-in {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -134,5 +178,10 @@
 
   .card {
     transition: none;
+  }
+
+  .hint,
+  .topic {
+    animation: none;
   }
 }

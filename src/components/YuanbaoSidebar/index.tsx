@@ -26,6 +26,8 @@ interface YuanbaoSidebarProps {
   onClose: () => void;
   /** 输入框提交：App 层会先匹配生成文件与演示场景，未命中才走普通提问 */
   onSubmit?: (text: string) => void;
+  /** 会中当前正在聊的话题，显示在「正在帮你记」卡片上 */
+  noteTopic?: string;
 }
 
 /**
@@ -36,7 +38,7 @@ interface YuanbaoSidebarProps {
  *
  * 快捷指令已移出窗口：元宝发言、用户发言、交互功能都从窗口外的三个演示按钮触发。
  */
-export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ chat, artifacts, onClose, onSubmit }) => {
+export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ chat, artifacts, onClose, onSubmit, noteTopic }) => {
   const { toast, showToast } = useToast();
   const [artifactsOpen, setArtifactsOpen] = useState(false);
 
@@ -89,6 +91,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ chat, artifacts, onClo
           onOpenSource={openSource}
           onOpenArtifact={openArtifact}
           onOpenNote={openNote}
+          noteTopic={noteTopic}
           onCardSubmit={submitCard}
         />
       </MessageStream>

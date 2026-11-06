@@ -67,7 +67,7 @@ export const proactiveScenarios: ProactiveScenario[] = [
             blocks: [paragraph('我已经开始记录啦～ 你专心开会就好。')],
           },
         ],
-        recordingCard: {},
+        recordingCard: true,
       },
       {
         id: createId('nudge-join'),
