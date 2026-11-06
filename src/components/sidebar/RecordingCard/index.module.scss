@@ -60,35 +60,46 @@
   padding: 0 12px 12px;
 }
 
-/* 闪光骨架：灰底 + 一道斜向高光从左扫到右 */
+/*
+ * 闪光骨架（Figma 46:7858）：#F3F3F4 底，上面压一道从右下往左上的深色光带。
+ * 渐变角度与色标照抄设计稿（288°，10% 不透明的 #262626 为最深处）；
+ * 光带两端是全透明的，平移时不会出现硬边。
+ * 动画只移动 ::after：一次 1.6s 从左扫到右，再停 0.8s，节奏不催人；静止帧（50%）正好是设计稿的位置。
+ */
 .shimmer {
   position: relative;
   flex: 1 1 auto;
   height: 36px;
   overflow: hidden;
   border-radius: 8px;
-  background-color: var(--wm-color-note-shimmer-base);
+  background-color: var(--wm-color-background-septenary);
 
   &::after {
     position: absolute;
     inset: 0;
     content: '';
     background-image: linear-gradient(
-      105deg,
-      var(--wm-color-note-shimmer-edge) 0%,
-      var(--wm-color-note-shimmer-soft) 24%,
-      var(--wm-color-note-shimmer-highlight) 48%,
-      var(--wm-color-note-shimmer-highlight) 56%,
-      var(--wm-color-note-shimmer-soft) 76%,
-      var(--wm-color-note-shimmer-edge) 100%
+      288deg,
+      var(--wm-color-note-shimmer-clear) 0%,
+      var(--wm-color-note-shimmer-1) 19.4%,
+      var(--wm-color-note-shimmer-2) 34.6%,
+      var(--wm-color-note-shimmer-3) 42.6%,
+      var(--wm-color-note-shimmer-4) 57.6%,
+      var(--wm-color-note-shimmer-clear) 100%
     );
     transform: translateX(-100%);
-    animation: note-shimmer-sweep 1.9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    animation: note-shimmer-sweep 2.4s cubic-bezier(0.45, 0, 0.25, 1) infinite;
+    will-change: transform;
   }
 }
 
 @keyframes note-shimmer-sweep {
-  to {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  66.7%,
+  100% {
     transform: translateX(100%);
   }
 }
@@ -112,6 +123,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  /* 不播动画时停在设计稿的位置 */
   .shimmer::after {
     animation: none;
     transform: none;

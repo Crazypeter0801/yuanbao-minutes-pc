@@ -122,13 +122,16 @@
   }
 }
 
-/* padding 8 14、圆角 17.5、白底 + 0.5px 内描边 #EBEDF2（Figma 8:594） */
+/*
+ * 白底 + 0.5px 内描边 #EBEDF2（Figma 8:594）；正文放大到 14/20 后高 36、圆角 18。
+ * 图标在左，左侧留白比右侧少 2（与 Figma 14355:74961 的 16 / 20 同比例）。
+ */
 .followUp {
   display: flex;
   align-items: center;
   max-width: 100%;
-  padding: 8px 14px;
-  border-radius: 17.5px;
+  padding: 8px 14px 8px 12px;
+  border-radius: 18px;
   background-color: var(--wm-color-background-quaternary);
   box-shadow: inset 0 0 0 0.5px var(--wm-color-outline-tertiary);
   cursor: pointer;
@@ -138,7 +141,7 @@
     box-shadow 120ms ease-in-out;
 
   & > * + * {
-    margin-left: 8px;
+    margin-left: 6px;
   }
 
   &:hover {
@@ -150,20 +153,22 @@
   }
 }
 
-/* 12/18 400 primary（Figma 8:596） */
+/* 20×20 回车箭头，描边 #525252（Figma 14355:75191） */
+.followUpIcon {
+  flex: 0 0 auto;
+  display: flex;
+  width: 20px;
+  height: 20px;
+  color: var(--wm-color-follow-up-icon);
+}
+
+/* 14/20 400 primary，与会中对话正文同字号 */
 .followUpText {
   min-width: 0;
-  font-size: 12px;
-  line-height: 18px;
+  font-size: 14px;
+  line-height: 20px;
   color: var(--wm-color-text-primary);
   text-align: left;
   overflow-wrap: anywhere;
 }
 
-/* ↗ 12/18，tertiary，与文案间距 8（Figma 8:599） */
-.followUpArrow {
-  flex: 0 0 auto;
-  font-size: 12px;
-  line-height: 18px;
-  color: var(--wm-color-text-tertiary);
-}

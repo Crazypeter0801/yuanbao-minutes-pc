@@ -131,10 +131,13 @@
   /* 输入框左侧添加按钮底（Figma 36:10814，#6666661F） */
   --wm-color-input-add-fill: rgba(102, 102, 102, 0.12);
   --wm-color-input-menu-hover: rgba(0, 0, 0, 0.06);
-  --wm-color-note-shimmer-base: #e9ebf0;
-  --wm-color-note-shimmer-edge: rgba(0, 0, 0, 0.05);
-  --wm-color-note-shimmer-soft: rgba(255, 255, 255, 0.45);
-  --wm-color-note-shimmer-highlight: rgba(255, 255, 255, 1);
+  --wm-color-follow-up-icon: #525252;
+  /* 「正在帮你记」骨架：#F3F3F4 底 + 一道深色斜向光带（Figma 46:7858，渐变整体 10% 不透明） */
+  --wm-color-note-shimmer-1: rgba(12, 12, 12, 0.03);
+  --wm-color-note-shimmer-2: rgba(38, 38, 38, 0.1);
+  --wm-color-note-shimmer-3: rgba(48, 48, 48, 0.085);
+  --wm-color-note-shimmer-4: rgba(94, 94, 94, 0.013);
+  --wm-color-note-shimmer-clear: rgba(102, 102, 102, 0);
 
   /* 字体 */
   --wm-font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial,
