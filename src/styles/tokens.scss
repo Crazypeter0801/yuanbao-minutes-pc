@@ -132,12 +132,9 @@
   --wm-color-input-add-fill: rgba(102, 102, 102, 0.12);
   --wm-color-input-menu-hover: rgba(0, 0, 0, 0.06);
   --wm-color-follow-up-icon: #525252;
-  /* 「正在帮你记」骨架：#F3F3F4 底 + 一道深色斜向光带（Figma 46:7858，渐变整体 10% 不透明） */
-  --wm-color-note-shimmer-1: rgba(12, 12, 12, 0.03);
-  --wm-color-note-shimmer-2: rgba(38, 38, 38, 0.1);
-  --wm-color-note-shimmer-3: rgba(48, 48, 48, 0.085);
-  --wm-color-note-shimmer-4: rgba(94, 94, 94, 0.013);
-  --wm-color-note-shimmer-clear: rgba(102, 102, 102, 0);
+  /* 「正在帮你记」文字闪光：中灰字上扫过一道浅色亮带 */
+  --wm-color-note-text-shimmer-base: #7b818f;
+  --wm-color-note-text-shimmer-light: #d3d6dd;
 
   /* 字体 */
   --wm-font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial,

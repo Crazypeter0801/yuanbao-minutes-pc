@@ -63,66 +63,58 @@
   padding: 0 13px 13px;
 }
 
-/*
- * 闪光骨架（Figma 46:7858）：#F3F3F4 底，上面压一道从右下往左上的深色光带。
- * 渐变角度与色标照抄设计稿（288°，10% 不透明的 #262626 为最深处）；
- * 光带两端是全透明的，平移时不会出现硬边。
- * 动画只移动 ::after：一次 2.8s 从左扫到右，再停 1.2s，节奏慢、不催人；光带居中时正好是设计稿的位置。
- */
-.shimmer {
-  position: relative;
+/* 识别中的灰条：静止底色，不再有骨架扫光（Figma 46:7858 的底色） */
+.hintBar {
   flex: 1 1 auto;
-  height: 36px;
-  overflow: hidden;
-  border-radius: 8px;
-  background-color: var(--wm-color-background-septenary);
-
-  &::after {
-    position: absolute;
-    inset: 0;
-    content: '';
-    background-image: linear-gradient(
-      288deg,
-      var(--wm-color-note-shimmer-clear) 0%,
-      var(--wm-color-note-shimmer-1) 19.4%,
-      var(--wm-color-note-shimmer-2) 34.6%,
-      var(--wm-color-note-shimmer-3) 42.6%,
-      var(--wm-color-note-shimmer-4) 57.6%,
-      var(--wm-color-note-shimmer-clear) 100%
-    );
-    transform: translateX(-100%);
-    animation: note-shimmer-sweep 4s cubic-bezier(0.45, 0, 0.55, 1) infinite;
-    will-change: transform;
-  }
-}
-
-@keyframes note-shimmer-sweep {
-  0% {
-    transform: translateX(-100%);
-  }
-
-  70%,
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-/* 阶段文案：13/20 tertiary，左右 12；光带从文字上扫过，形成飞书那种一明一暗的读感 */
-.hint {
-  position: absolute;
-  top: 0;
-  left: 12px;
-  right: 12px;
   display: flex;
   align-items: center;
+  min-width: 0;
   height: 36px;
+  padding: 0 12px;
+  border-radius: 8px;
+  background-color: var(--wm-color-background-septenary);
+}
+
+/*
+ * 文字闪光（参考飞书 AI 视图「正在识别说话人和讨论内容…」）
+ * 字本身是中灰，一道亮带从左往右扫过：用 background-clip: text 把渐变裁成字形，只动 background-position。
+ * 4s 一轮，与换句节奏一致：扫过约 2.4s，停 1.6s。
+ */
+.hint {
+  min-width: 0;
   overflow: hidden;
   font-size: 13px;
   line-height: 20px;
-  color: var(--wm-color-text-tertiary);
   white-space: nowrap;
   text-overflow: ellipsis;
-  animation: note-text-in 240ms ease-out both;
+  color: transparent;
+  background-image: linear-gradient(
+    90deg,
+    var(--wm-color-note-text-shimmer-base) 0%,
+    var(--wm-color-note-text-shimmer-base) 35%,
+    var(--wm-color-note-text-shimmer-light) 50%,
+    var(--wm-color-note-text-shimmer-base) 65%,
+    var(--wm-color-note-text-shimmer-base) 100%
+  );
+  background-size: 300% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation:
+    note-text-in 240ms ease-out both,
+    note-text-shimmer 4s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+/* 亮带从字的左侧外面进来、右侧外面出去 */
+@keyframes note-text-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+
+  60%,
+  100% {
+    background-position: 0% 0;
+  }
 }
 
 /* 有话题：同一块灰条，停掉闪光；「当前正在聊」灰字 + 话题黑字，话题过长截断 */
@@ -170,17 +162,17 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  /* 不播动画时停在设计稿的位置 */
-  .shimmer::after {
-    animation: none;
-    transform: none;
-  }
-
   .card {
     transition: none;
   }
 
-  .hint,
+  /* 不播动画：字保持中灰，不闪 */
+  .hint {
+    animation: none;
+    color: var(--wm-color-note-text-shimmer-base);
+    background-image: none;
+  }
+
   .topic {
     animation: none;
   }

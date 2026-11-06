@@ -51,38 +51,43 @@ export type ProactiveScenario =
 
 export const proactiveScenarios: ProactiveScenario[] = [
   {
+    id: 'recording-start',
+    kind: 'nudge',
+    label: '正在帮你记',
+    hint: '模拟开启云笔记：元宝说明已开始记录，下方附「正在帮你记」卡片',
+    keywords: ['正在帮你记', '开始记录', '开启云笔记'],
+    build: () => ({
+      id: createId('nudge-recording'),
+      role: 'assistant',
+      createdAt: Date.now(),
+      bubbles: [
+        {
+          id: createId('nudge-recording-bubble'),
+          blocks: [paragraph('我已经开始记录啦～ 你专心开会就好。')],
+        },
+      ],
+      recordingCard: true,
+    }),
+  },
+  {
     id: 'mid-join',
     kind: 'nudge',
     label: '刚入会',
-    hint: '模拟开启云笔记后中途入会：元宝先发「正在帮你记」闪光卡片，再问要不要补前 5 分钟的内容',
+    hint: '模拟中途入会：元宝主动问要不要补前 5 分钟的内容',
     keywords: ['刚入会', '中途入会', '入会'],
-    build: () => [
-      {
-        id: createId('nudge-join-note'),
-        role: 'assistant',
-        createdAt: Date.now(),
-        bubbles: [
-          {
-            id: createId('nudge-join-note-bubble'),
-            blocks: [paragraph('我已经开始记录啦～ 你专心开会就好。')],
-          },
-        ],
-        recordingCard: true,
-      },
-      {
-        id: createId('nudge-join'),
-        role: 'assistant',
-        createdAt: Date.now(),
-        bubbles: [
-          {
-            id: createId('nudge-join-bubble'),
-            blocks: [paragraph('你刚进会。要不要我把前 5 分钟讨论的内容总结一下？')],
-          },
-        ],
-        // 两条快捷提问都要能落到问答规则表里，不能出现点了没回应
-        followUps: ['帮我快速回顾', '我有哪些待办'],
-      },
-    ],
+    build: () => ({
+      id: createId('nudge-join'),
+      role: 'assistant',
+      createdAt: Date.now(),
+      bubbles: [
+        {
+          id: createId('nudge-join-bubble'),
+          blocks: [paragraph('你刚进会。要不要我把前 5 分钟讨论的内容总结一下？')],
+        },
+      ],
+      // 两条快捷提问都要能落到问答规则表里，不能出现点了没回应
+      followUps: ['帮我快速回顾', '我有哪些待办'],
+    }),
   },
   {
     id: 'mentioned',
