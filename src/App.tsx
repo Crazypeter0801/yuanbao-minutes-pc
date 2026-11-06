@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { MeetingWindow } from '@/components/meeting/MeetingWindow';
 import { PollComposer } from '@/components/poll/PollComposer';
 import { WINDOW_TOAST_ROOT_ID } from '@/components/common/Toast';
+import { DemoToolbar } from '@/components/demo/DemoToolbar';
 import { YuanbaoSidebar } from '@/components/YuanbaoSidebar';
 import {
   buildArtifact,
@@ -10,8 +11,11 @@ import {
   resolveArtifactTitle,
   type ArtifactKind,
 } from '@/data/artifacts';
+import { buildAutoNote } from '@/data/autoNotes';
+import type { CommandItem } from '@/data/commands';
 import { buildPollPostedMessage, teamBuildingPoll } from '@/data/polls';
 import { matchScenario } from '@/data/proactiveScenarios';
+import { buildScreenshotNote } from '@/data/yuanbaoContent';
 import { useYuanbaoSession } from '@/hooks/useYuanbaoSession';
 import type { ArtifactItem } from '@/types/artifact';
 import styles from './App.module.scss';
@@ -23,10 +27,10 @@ const FILE_KIND_PATTERN = /pdf|ppt|幻灯片|文件|纪要文档/i;
 /**
  * 腾讯会议 PC + 元宝 Agent 对话区（Figma 257:1540）· Figma 导入版
  *
- * 1. 去掉壁纸，页面底色为纯白，画布就是窗口本身；
- * 2. 去掉窗口外的场景切换条；
- * 3. 只留一个 1440×760 的主窗口（会议区 + 元宝侧栏）；
- * 4. 演示场景用输入框或记笔记面板里的指令集合触发。
+ * 1. 去掉壁纸，页面底色为纯白；
+ * 2. 只留一个 1440×760 的主窗口（会议区 + 元宝侧栏），窗口内不放任何演示入口；
+ * 3. 窗口下方是三个演示按钮：模拟元宝发言 / 模拟用户发言 / 模拟交互功能；
+ * 4. 输入框里直接打「刚入会」「建个投票」这类词也能触发演示场景。
  */
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -34,6 +38,8 @@ export default function App() {
   /** 产物一开始是空的：没有文件时底栏不出现「输出」入口 */
   const [artifacts, setArtifacts] = useState<ArtifactItem[]>([]);
   const chat = useYuanbaoSession();
+  /** 会中记录素材的游标：每次手动记一条往后走一格，不重复 */
+  const noteIndex = useRef(0);
 
   /**
    * 创建产物：本次生成的文件排最前；第一次额外附带一组会中已有文件。
@@ -73,6 +79,25 @@ export default function App() {
     [scenario.build()].flat().forEach(chat.push);
   };
 
+  /**
+   * 执行一条演示指令：侧栏关着就先打开，再按类型分发
+   * - effect：会中记录 / 记录画面，直接推一条元宝消息；
+   * - 其余都走和输入框相同的链路（普通提问 / 生成文件 / 演示场景）。
+   */
+  const runCommand = (item: CommandItem) => {
+    setSidebarOpen(true);
+    if (item.effect === 'auto-note') {
+      chat.push(buildAutoNote(noteIndex.current));
+      noteIndex.current += 1;
+      return;
+    }
+    if (item.effect === 'screenshot') {
+      chat.push(buildScreenshotNote());
+      return;
+    }
+    handleSubmit(item.prompt ?? item.label);
+  };
+
   return (
     <div className={styles.page}>
       <div className={styles.window} id={WINDOW_TOAST_ROOT_ID}>
@@ -99,6 +124,8 @@ export default function App() {
           />
         )}
       </div>
+      {/* 窗口外：演示按钮 */}
+      <DemoToolbar onCommand={runCommand} />
     </div>
   );
 }

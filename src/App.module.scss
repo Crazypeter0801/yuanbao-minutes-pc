@@ -1,9 +1,10 @@
-/* Figma 导入版：页面尺寸就是窗口尺寸，没有壁纸，也没有窗口外的演示条 */
+/* Figma 导入版：没有壁纸；上面是 1440×760 的窗口，下面 64 高是窗口外的演示按钮条 */
 .page {
+  display: flex;
+  flex-direction: column;
   width: 1440px;
-  height: 760px;
+  height: 824px;
   margin: 0 auto;
-  overflow: hidden;
 }
 
 /* 会议区容器：投票弹窗以它为定位基准，只覆盖左侧，不盖住元宝侧栏 */
@@ -18,8 +19,9 @@
 .window {
   position: relative;
   display: flex;
+  flex: 0 0 auto;
   width: 100%;
-  height: 100%;
+  height: 760px;
   overflow: hidden;
   border-radius: 12px;
   background-color: var(--wm-color-window-background);

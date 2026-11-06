@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState, type FC } from 'react';
+import { useCallback, useMemo, useState, type FC } from 'react';
 import type { PopMenuItem } from '@/components/common/PopMenu';
 import type { ArtifactItem } from '@/types/artifact';
 import type { BubbleCard } from '@/types/chat';
@@ -6,52 +6,44 @@ import { AiDisclaimer } from '@/components/sidebar/AiDisclaimer';
 import { ArtifactEntry } from '@/components/sidebar/ArtifactEntry';
 import { ChatInput } from '@/components/sidebar/ChatInput';
 import { ChatList } from '@/components/sidebar/ChatList';
-import { CommandEntry } from '@/components/sidebar/CommandEntry';
 import { MessageStream } from '@/components/sidebar/MessageStream';
 import { NotePill } from '@/components/sidebar/NotePill';
 import { SidebarHeader } from '@/components/sidebar/SidebarHeader';
 import { SidebarShell } from '@/components/sidebar/SidebarShell';
-import { buildAutoNote } from '@/data/autoNotes';
-import type { CommandItem } from '@/data/commands';
 import { buildCardResult } from '@/data/interactiveCards';
-import { buildRecordingStateNote, buildScreenshotNote } from '@/data/yuanbaoContent';
+import { buildRecordingStateNote } from '@/data/yuanbaoContent';
 import { useListening } from '@/hooks/useListening';
 import { useToast } from '@/hooks/useToast';
 import type { YuanbaoSession } from '@/hooks/useYuanbaoSession';
 import styles from './index.module.scss';
 
 interface YuanbaoSidebarProps {
-  /** 元宝会话（消息流 + 指令面板状态），由 App 持有 */
+  /** 元宝会话（消息流），由 App 持有 */
   chat: YuanbaoSession;
   /** 元宝本轮产出的文件；为空时不出现产物入口 */
   artifacts: ArtifactItem[];
   /** 关闭侧栏 */
   onClose: () => void;
-  /** 输入框 / 指令提交：App 层会先匹配生成文件与演示场景，未命中才走普通提问 */
+  /** 输入框提交：App 层会先匹配生成文件与演示场景，未命中才走普通提问 */
   onSubmit?: (text: string) => void;
 }
 
 /**
  * 元宝 Agent 对话区 · V1（Figma 257:1540 右侧，底栏按 Figma 36:2249）
  *
- * 底栏一行从左到右：快捷指令（36 圆钮）→ 产物（有文件才出现）→「元宝正在记笔记」，
- * 三者都按内容自适应宽度、间距 8。指令与产物可展开成浮层，展开时其余胶囊让位。
+ * 底栏一行从左到右：产物（有文件才出现）→「元宝正在记笔记」，按内容自适应宽度、间距 8。
+ * 产物可展开成浮层，展开时笔记胶囊让位。
  *
- * 元宝不再定时自己说话：会中记录、主动提醒、交互卡片全部从快捷指令手动触发，演示节奏可控。
+ * 快捷指令已移出窗口：元宝发言、用户发言、交互功能都从窗口外的三个演示按钮触发。
  */
 export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ chat, artifacts, onClose, onSubmit }) => {
   const { toast, showToast } = useToast();
   const [artifactsOpen, setArtifactsOpen] = useState(false);
-  /** 会中记录素材的游标：每次手动记一条往后走一格，不重复 */
-  const noteIndex = useRef(0);
 
   // 暂停 / 继续只在对话里留一条消息，不弹 Toast：反馈集中在一处
   const { isListening, toggleListening } = useListening((listening) => {
     chat.push(buildRecordingStateNote(listening));
   });
-
-  const commandsOpen = chat.notePanelOpen;
-  const setCommandsOpen = chat.setNotePanelOpen;
 
   const menuItems = useMemo<PopMenuItem[]>(
     () => [
@@ -75,26 +67,6 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ chat, artifacts, onClo
   );
 
   const send = (text: string) => (onSubmit ? onSubmit(text) : chat.ask(text));
-
-  /**
-   * 执行一条快捷指令：先收起面板，再按类型分发
-   * - effect：会中记录 / 记录画面，直接推一条元宝消息；
-   * - 其余都交给和输入框相同的链路，由 App 判断是普通提问、生成文件还是演示场景。
-   */
-  const runCommand = (item: CommandItem) => {
-    setCommandsOpen(false);
-
-    if (item.effect === 'auto-note') {
-      chat.push(buildAutoNote(noteIndex.current));
-      noteIndex.current += 1;
-      return;
-    }
-    if (item.effect === 'screenshot') {
-      chat.push(buildScreenshotNote());
-      return;
-    }
-    send(item.prompt ?? item.label);
-  };
 
   return (
     <SidebarShell toast={toast}>
@@ -124,25 +96,12 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ chat, artifacts, onClo
 
       <div className={styles.footer}>
         <div className={styles.statusRow}>
-          <CommandEntry
-            expanded={commandsOpen}
-            onExpandedChange={(open) => {
-              setArtifactsOpen(false);
-              setCommandsOpen(open);
-            }}
-            hidden={artifactsOpen}
-            onCommand={runCommand}
-          />
           {/* 没有产物就不出这个入口，生成文件之后才出现 */}
           {artifacts.length > 0 && (
             <ArtifactEntry
               artifacts={artifacts}
               expanded={artifactsOpen}
-              onExpandedChange={(open) => {
-                setCommandsOpen(false);
-                setArtifactsOpen(open);
-              }}
-              hidden={commandsOpen}
+              onExpandedChange={setArtifactsOpen}
               onOpen={openArtifact}
               onOpenSide={() => {
                 setArtifactsOpen(false);
@@ -152,7 +111,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ chat, artifacts, onClo
           )}
           <NotePill
             isListening={isListening}
-            hidden={commandsOpen || artifactsOpen}
+            hidden={artifactsOpen}
             onOpen={openNote}
             onToggleListening={toggleListening}
           />
