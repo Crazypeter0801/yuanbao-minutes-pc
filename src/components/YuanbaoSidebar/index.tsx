@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState, type FC } from 'react';
 import type { PopMenuItem } from '@/components/common/PopMenu';
+import { NOTE_ARTIFACT_ID } from '@/data/artifacts';
 import type { ArtifactItem } from '@/types/artifact';
 import type { BubbleCard } from '@/types/chat';
 import { AiDisclaimer } from '@/components/sidebar/AiDisclaimer';
@@ -57,8 +58,10 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ chat, artifacts, onClo
   );
 
   const openSource = () => showToast('已定位到原文（演示）');
-  const openArtifact = (item: ArtifactItem) => showToast(`打开「${item.name}」（演示）`);
   const openNote = () => showToast('已在浏览器打开元宝笔记（演示）');
+  // 文件夹里的「元宝笔记」和对话里的笔记卡片、底栏胶囊是同一个入口，反馈一致
+  const openArtifact = (item: ArtifactItem) =>
+    item.id === NOTE_ARTIFACT_ID ? openNote() : showToast(`打开「${item.name}」（演示）`);
 
   // 交互卡片提交：元宝紧接着回一条按所选结构组织的结果
   const submitCard = useCallback(
@@ -98,7 +101,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ chat, artifacts, onClo
 
       <div className={styles.footer}>
         <div className={styles.statusRow}>
-          {/* 没有产物就不出这个入口，生成文件之后才出现 */}
+          {/* 元宝笔记本身就是一个文件，开启云笔记后这个入口一直都在 */}
           {artifacts.length > 0 && (
             <ArtifactEntry
               artifacts={artifacts}

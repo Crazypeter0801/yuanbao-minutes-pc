@@ -9,6 +9,7 @@ import {
   buildArtifactCreatedMessage,
   buildScreenshotArtifact,
   companionArtifacts,
+  noteArtifact,
   resolveArtifactTitle,
   type ArtifactKind,
 } from "@/data/artifacts";
@@ -36,8 +37,8 @@ const FILE_KIND_PATTERN = /pdf|ppt|幻灯片|文件|纪要文档/i;
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [pollOpen, setPollOpen] = useState(false);
-  /** 产物一开始是空的：没有文件时底栏不出现「输出」入口 */
-  const [artifacts, setArtifacts] = useState<ArtifactItem[]>([]);
+  /** 会中文件：一开始只有「元宝笔记」（来源），生成文件、记录画面后再往里加 */
+  const [artifacts, setArtifacts] = useState<ArtifactItem[]>([noteArtifact]);
   const chat = useYuanbaoSession();
   /** 会中记录素材的游标：每次手动记一条往后走一格，不重复 */
   const noteIndex = useRef(0);

@@ -18,6 +18,20 @@ export const companionArtifacts: ArtifactItem[] = [
   { id: 'artifact-brief', name: '两版视觉稿对比', type: 'PDF', size: '5.8MB', icon: 'pdf', group: 'source' },
 ];
 
+/**
+ * 元宝笔记：开启云笔记后从第一刻起就在，算「来源」里的一个文件，始终排在来源第一条
+ * 所以文件夹入口一入会就会出现（至少 1 个文件）。
+ */
+export const NOTE_ARTIFACT_ID = 'artifact-yuanbao-note';
+export const noteArtifact: ArtifactItem = {
+  id: NOTE_ARTIFACT_ID,
+  name: '元宝笔记',
+  type: '笔记',
+  size: '实时更新',
+  icon: 'yuanbao',
+  group: 'source',
+};
+
 /** 记录会议画面时同步进「来源」的截图 */
 export function buildScreenshotArtifact(thumb: string, createdAt: number = Date.now()): ArtifactItem {
   const date = new Date(createdAt);

@@ -9,6 +9,7 @@ import IconStatusFolder from '@/assets/d2c/icons/input/icon-status-folder';
 import IconMeetSidebar from '@/assets/d2c/icons/v1/icon-meet-sidebar';
 import { Pressable } from '@/components/common/Pressable';
 import { MorphPanel } from '@/components/sidebar/MorphPanel';
+import { NOTE_ARTIFACT_ID } from '@/data/artifacts';
 import type { ArtifactGroup, ArtifactIcon, ArtifactItem } from '@/types/artifact';
 import styles from './index.module.scss';
 
@@ -44,6 +45,7 @@ const GROUPS: { key: ArtifactGroup; title: string }[] = [
 /**
  * 文件入口（Figma 36:2280：文件夹图标 + 条数）
  * 文件夹装的是对话里出现过的全部内容，所以展开后按「输出 / 来源」分两组，空组不显示。
+ * 元宝笔记也算一个文件，固定在「来源」第一条，所以入会后这个入口就一直在。
  * 每条压成一行（参考 Codex）：20 图标 + 文件名 + 右侧类型，行高 36，比两行版省一半高度。
  * 标题行右侧不是「收起」，而是「在侧边打开」；收起靠点标题行、点面板外或 Esc。
  */
@@ -55,9 +57,13 @@ export const ArtifactEntry: FC<ArtifactEntryProps> = ({
   onOpen,
   onOpenSide,
 }) => {
-  const groups = GROUPS.map((group) => ({ ...group, items: artifacts.filter((item) => item.group === group.key) })).filter(
-    (group) => group.items.length > 0,
-  );
+  // 元宝笔记固定在「来源」第一条，其余按加入顺序（新的在前）
+  const groups = GROUPS.map((group) => ({
+    ...group,
+    items: artifacts
+      .filter((item) => item.group === group.key)
+      .sort((a, b) => Number(b.id === NOTE_ARTIFACT_ID) - Number(a.id === NOTE_ARTIFACT_ID)),
+  })).filter((group) => group.items.length > 0);
 
   return (
     <MorphPanel
