@@ -153,12 +153,12 @@
   }
 }
 
-/* 20×20 回车箭头，描边 #525252（Figma 14355:75191） */
+/* 回车箭头（Figma 14355:75191），配 14 号字缩到 16×16，描边 #525252 */
 .followUpIcon {
   flex: 0 0 auto;
   display: flex;
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   color: var(--wm-color-follow-up-icon);
 }
 

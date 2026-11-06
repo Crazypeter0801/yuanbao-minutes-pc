@@ -64,7 +64,7 @@
  * 闪光骨架（Figma 46:7858）：#F3F3F4 底，上面压一道从右下往左上的深色光带。
  * 渐变角度与色标照抄设计稿（288°，10% 不透明的 #262626 为最深处）；
  * 光带两端是全透明的，平移时不会出现硬边。
- * 动画只移动 ::after：一次 1.6s 从左扫到右，再停 0.8s，节奏不催人；静止帧（50%）正好是设计稿的位置。
+ * 动画只移动 ::after：一次 2.8s 从左扫到右，再停 1.2s，节奏慢、不催人；光带居中时正好是设计稿的位置。
  */
 .shimmer {
   position: relative;
@@ -88,7 +88,7 @@
       var(--wm-color-note-shimmer-clear) 100%
     );
     transform: translateX(-100%);
-    animation: note-shimmer-sweep 2.4s cubic-bezier(0.45, 0, 0.25, 1) infinite;
+    animation: note-shimmer-sweep 4s cubic-bezier(0.45, 0, 0.55, 1) infinite;
     will-change: transform;
   }
 }
@@ -98,7 +98,7 @@
     transform: translateX(-100%);
   }
 
-  66.7%,
+  70%,
   100% {
     transform: translateX(100%);
   }

@@ -137,7 +137,7 @@ export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
             <Pressable className={styles.followUp} key={text} onClick={() => onFollowUp?.(text)}>
               {/* 左侧回车箭头（Figma PC新框架改版 14355:74961） */}
               <span className={styles.followUpIcon} aria-hidden="true">
-                <IconFollowUpNext />
+                <IconFollowUpNext width={16} height={16} />
               </span>
               <span className={styles.followUpText}>{text}</span>
             </Pressable>
