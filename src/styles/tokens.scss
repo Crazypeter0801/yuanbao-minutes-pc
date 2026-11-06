@@ -131,6 +131,9 @@
   /* 输入框左侧添加按钮底（Figma 36:10814，#6666661F） */
   --wm-color-input-add-fill: rgba(102, 102, 102, 0.12);
   --wm-color-input-menu-hover: rgba(0, 0, 0, 0.06);
+  /* 底栏渐变底（Figma 91:15671）：透明白 → 80% 白 → 纯白 */
+  --wm-color-footer-fade-start: rgba(255, 255, 255, 0);
+  --wm-color-footer-fade-mid: rgba(255, 255, 255, 0.8);
   --wm-color-follow-up-icon: #525252;
   /* 「正在帮你记」文字闪光：中灰字上扫过一道浅色亮带 */
   --wm-color-note-text-shimmer-base: #7b818f;
