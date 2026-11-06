@@ -45,7 +45,6 @@ export const demoMenus: DemoMenu[] = [
       {
         items: [
           { label: '记下一条会议要点', kind: 'yuanbao', effect: 'auto-note' },
-          { label: '开始记录（正在帮你记）', kind: 'yuanbao', prompt: '正在帮你记' },
           { label: '中途入会，补前 5 分钟', kind: 'yuanbao', prompt: '刚入会' },
           { label: '识别到新话题', kind: 'yuanbao', effect: 'next-topic' },
           { label: '有人提到相关内容', kind: 'yuanbao', prompt: '别人提到' },

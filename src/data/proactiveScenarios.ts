@@ -49,26 +49,26 @@ export type ProactiveScenario =
       opens?: 'poll';
     });
 
+/**
+ * 开始记录：打开侧栏时默认就有的第一条消息（开启了云笔记），不需要手动触发
+ * 「我已经开始记录啦～」+ 下方「正在帮你记」卡片
+ */
+export function buildRecordingStartMessage(): AssistantMessage {
+  return {
+    id: createId('recording-start'),
+    role: 'assistant',
+    createdAt: Date.now(),
+    bubbles: [
+      {
+        id: createId('recording-start-bubble'),
+        blocks: [paragraph('我已经开始记录啦～ 你专心开会就好。')],
+      },
+    ],
+    recordingCard: true,
+  };
+}
+
 export const proactiveScenarios: ProactiveScenario[] = [
-  {
-    id: 'recording-start',
-    kind: 'nudge',
-    label: '正在帮你记',
-    hint: '模拟开启云笔记：元宝说明已开始记录，下方附「正在帮你记」卡片',
-    keywords: ['正在帮你记', '开始记录', '开启云笔记'],
-    build: () => ({
-      id: createId('nudge-recording'),
-      role: 'assistant',
-      createdAt: Date.now(),
-      bubbles: [
-        {
-          id: createId('nudge-recording-bubble'),
-          blocks: [paragraph('我已经开始记录啦～ 你专心开会就好。')],
-        },
-      ],
-      recordingCard: true,
-    }),
-  },
   {
     id: 'mid-join',
     kind: 'nudge',

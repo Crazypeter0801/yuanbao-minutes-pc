@@ -40,9 +40,9 @@ export default function App() {
   const chat = useYuanbaoSession();
   /** 会中记录素材的游标：每次手动记一条往后走一格，不重复 */
   const noteIndex = useRef(0);
-  /** 会中当前正在聊的话题：没有时「正在帮你记」卡片显示识别中，有了就显示话题 */
-  const [topicIndex, setTopicIndex] = useState(-1);
-  const noteTopic = topicIndex >= 0 ? meetingTopics[topicIndex] : undefined;
+  /** 会中已识别出的话题数：0 时「正在帮你记」卡片显示识别中，之后逐条出现在「当前正在聊」下 */
+  const [topicCount, setTopicCount] = useState(0);
+  const noteTopics = meetingTopics.slice(0, topicCount);
 
   /**
    * 创建产物：本次生成的文件排最前；第一次额外附带一组会中已有文件。
@@ -102,7 +102,7 @@ export default function App() {
     }
     if (item.effect === "next-topic") {
       // 只换卡片上的话题，不往对话里加消息：要点在对话里，话题在卡片上，两边不重复
-      setTopicIndex((current) => Math.min(current + 1, meetingTopics.length - 1));
+      setTopicCount((current) => Math.min(current + 1, meetingTopics.length));
       return;
     }
     if (item.effect === "screenshot") {
@@ -139,7 +139,7 @@ export default function App() {
               artifacts={artifacts}
               onClose={() => setSidebarOpen(false)}
               onSubmit={handleSubmit}
-              noteTopic={noteTopic}
+              noteTopics={noteTopics}
             />
           )}
         </div>

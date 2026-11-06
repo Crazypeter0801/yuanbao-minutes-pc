@@ -117,35 +117,95 @@
   }
 }
 
-/* 有话题：同一块灰条，停掉闪光；「当前正在聊」灰字 + 话题黑字，话题过长截断 */
-.topicBar {
+/*
+ * 有话题（参考飞书 AI 视图）：同一块灰底展开
+ * 卡片最高 186 = 标题行 49 + 本区 124 + 底部 13，与产物卡片同高；本区 padding 10 12，
+ * 「当前正在聊」20 + 间距 6，剩下 78 给话题列表，约三行半，超出滚动。
+ */
+.topicPanel {
   flex: 1 1 auto;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   min-width: 0;
-  height: 36px;
-  padding: 0 12px;
+  max-height: 124px;
+  padding: 10px 12px;
   border-radius: 8px;
   background-color: var(--wm-color-background-septenary);
-  font-size: 13px;
-  line-height: 20px;
-  white-space: nowrap;
 }
 
 .topicLabel {
   flex: 0 0 auto;
-  color: var(--wm-color-text-tertiary);
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--wm-color-text-primary);
 }
 
-.topic {
+/* 话题列表：可滚动，滚动条隐藏；往下滚过后顶部渐隐，提示上面还有 */
+.topicList {
   flex: 1 1 auto;
-  min-width: 0;
-  margin-left: 6px;
-  overflow: hidden;
-  font-weight: 500;
-  color: var(--wm-color-text-primary);
-  text-overflow: ellipsis;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  margin-top: 6px;
+  overscroll-behavior: contain;
+}
+
+.topicListScrolled {
+  mask-image: linear-gradient(to bottom, transparent 0, #000 12px);
+}
+
+/* 单条话题：左侧 12 宽的时间线列（圆点 + 竖线），文字 13/20，最多不限行 */
+.topicItem {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  padding-left: 16px;
   animation: note-text-in 240ms ease-out both;
+
+  & + & {
+    margin-top: 6px;
+  }
+
+  /* 竖线：从本条圆点往下连到下一条，最后一条没有 */
+  &:not(:last-child)::after {
+    position: absolute;
+    top: 14px;
+    bottom: -12px;
+    left: 2.5px;
+    width: 1px;
+    content: '';
+    background-color: var(--wm-color-note-topic-line);
+  }
+}
+
+.topicDot {
+  position: absolute;
+  top: 7px;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  background-color: var(--wm-color-note-topic-dot);
+}
+
+.topicText {
+  min-width: 0;
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--wm-color-text-tertiary);
+  overflow-wrap: anywhere;
+}
+
+/* 最新一条：蓝点 + 黑字 */
+.topicCurrent {
+  .topicDot {
+    background-color: var(--wm-color-brand-primary);
+  }
+
+  .topicText {
+    color: var(--wm-color-text-primary);
+  }
 }
 
 /* 换字：淡入 + 上移 3px，不硬切 */
@@ -173,7 +233,7 @@
     background-image: none;
   }
 
-  .topic {
+  .topicItem {
     animation: none;
   }
 }
