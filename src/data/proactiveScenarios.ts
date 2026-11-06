@@ -54,7 +54,7 @@ export const proactiveScenarios: ProactiveScenario[] = [
     id: 'mid-join',
     kind: 'nudge',
     label: '刚入会',
-    hint: '模拟开启云笔记后中途入会：元宝先发云笔记文件，再问要不要补前 5 分钟的内容',
+    hint: '模拟开启云笔记后中途入会：元宝先发「正在帮你记」闪光卡片，再问要不要补前 5 分钟的内容',
     keywords: ['刚入会', '中途入会', '入会'],
     build: () => [
       {
@@ -64,10 +64,10 @@ export const proactiveScenarios: ProactiveScenario[] = [
         bubbles: [
           {
             id: createId('nudge-join-note-bubble'),
-            blocks: [paragraph('云笔记已开启，点击可查看实时转写文本与AI总结等内容，还可针对录音内容提问哦～')],
+            blocks: [paragraph('我已经开始记录啦～ 你专心开会就好。')],
           },
         ],
-        noteFile: { title: '元宝会中交互设计讨论', duration: '05:12' },
+        recordingCard: {},
       },
       {
         id: createId('nudge-join'),

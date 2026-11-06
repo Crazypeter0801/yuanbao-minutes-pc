@@ -89,7 +89,6 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({ chat, artifacts, onClo
           onOpenSource={openSource}
           onOpenArtifact={openArtifact}
           onOpenNote={openNote}
-          onPlayNote={() => showToast('播放录音（演示）')}
           onCardSubmit={submitCard}
         />
       </MessageStream>

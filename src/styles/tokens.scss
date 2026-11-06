@@ -131,6 +131,10 @@
   /* 输入框左侧添加按钮底（Figma 36:10814，#6666661F） */
   --wm-color-input-add-fill: rgba(102, 102, 102, 0.12);
   --wm-color-input-menu-hover: rgba(0, 0, 0, 0.06);
+  --wm-color-note-shimmer-base: #e9ebf0;
+  --wm-color-note-shimmer-edge: rgba(0, 0, 0, 0.05);
+  --wm-color-note-shimmer-soft: rgba(255, 255, 255, 0.45);
+  --wm-color-note-shimmer-highlight: rgba(255, 255, 255, 1);
 
   /* 字体 */
   --wm-font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial,

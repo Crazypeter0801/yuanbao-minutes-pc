@@ -1,0 +1,123 @@
+/* 卡片：248 宽、圆角 20、白底 1px 内描边、顶部 8（Figma 46:7838） */
+.card {
+  display: flex;
+  flex-direction: column;
+  width: 248px;
+  max-width: 100%;
+  padding-top: 8px;
+  border-radius: 20px;
+  background-color: var(--wm-color-background-quaternary);
+  box-shadow: inset 0 0 0 1px var(--wm-color-outline-tertiary);
+  cursor: pointer;
+  outline: none;
+  transition: box-shadow 160ms ease-out;
+
+  &:hover,
+  &:focus-visible {
+    box-shadow: inset 0 0 0 1px var(--wm-color-outline-tertiary), var(--wm-shadow-hover);
+  }
+}
+
+/* 标题行：padding 14 16、图标 18 → 标题间距 6 → 右箭头靠右（Figma 46:7839） */
+.header {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+}
+
+.icon {
+  flex: 0 0 auto;
+  display: flex;
+  width: 18px;
+  height: 18px;
+  color: var(--wm-color-text-secondary);
+}
+
+.title {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-left: 6px;
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--wm-color-text-artifact-name);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chevron {
+  flex: 0 0 auto;
+  display: flex;
+  width: 28px;
+  height: 16px;
+  margin-left: 12px;
+}
+
+/* 占位区：左右下各 12，高 36（与产物卡片封面 224 对齐） */
+.slot {
+  display: flex;
+  padding: 0 12px 12px;
+}
+
+/* 闪光骨架：灰底 + 一道斜向高光从左扫到右 */
+.shimmer {
+  position: relative;
+  flex: 1 1 auto;
+  height: 36px;
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: var(--wm-color-note-shimmer-base);
+
+  &::after {
+    position: absolute;
+    inset: 0;
+    content: '';
+    background-image: linear-gradient(
+      105deg,
+      var(--wm-color-note-shimmer-edge) 0%,
+      var(--wm-color-note-shimmer-soft) 24%,
+      var(--wm-color-note-shimmer-highlight) 48%,
+      var(--wm-color-note-shimmer-highlight) 56%,
+      var(--wm-color-note-shimmer-soft) 76%,
+      var(--wm-color-note-shimmer-edge) 100%
+    );
+    transform: translateX(-100%);
+    animation: note-shimmer-sweep 1.9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+}
+
+@keyframes note-shimmer-sweep {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* 有内容之后：同一块区域显示文字，单行截断，高度仍是 36 */
+.summary {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  height: 36px;
+  padding: 0 12px;
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: var(--wm-color-background-septenary);
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--wm-color-text-secondary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmer::after {
+    animation: none;
+    transform: none;
+  }
+
+  .card {
+    transition: none;
+  }
+}
