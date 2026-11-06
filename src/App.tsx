@@ -14,7 +14,7 @@ import {
 import { buildAutoNote } from "@/data/autoNotes";
 import type { CommandItem } from "@/data/commands";
 import { buildPollPostedMessage, teamBuildingPoll } from "@/data/polls";
-import { meetingTopics } from "@/data/meetingTopics";
+import { topicAt } from "@/data/meetingTopics";
 import { matchScenario } from "@/data/proactiveScenarios";
 import { buildScreenshotNote } from "@/data/yuanbaoContent";
 import { useYuanbaoSession } from "@/hooks/useYuanbaoSession";
@@ -42,7 +42,7 @@ export default function App() {
   const noteIndex = useRef(0);
   /** 会中已识别出的话题数：0 时「正在帮你记」卡片显示识别中，之后逐条出现在「当前正在聊」下 */
   const [topicCount, setTopicCount] = useState(0);
-  const noteTopics = meetingTopics.slice(0, topicCount);
+  const noteTopics = Array.from({ length: topicCount }, (_, index) => topicAt(index));
 
   /**
    * 创建产物：本次生成的文件排最前；第一次额外附带一组会中已有文件。
@@ -102,7 +102,8 @@ export default function App() {
     }
     if (item.effect === "next-topic") {
       // 只换卡片上的话题，不往对话里加消息：要点在对话里，话题在卡片上，两边不重复
-      setTopicCount((current) => Math.min(current + 1, meetingTopics.length));
+      // 不封顶：话题池用完后从头轮着取
+      setTopicCount((current) => current + 1);
       return;
     }
     if (item.effect === "screenshot") {

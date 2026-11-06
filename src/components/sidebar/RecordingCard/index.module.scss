@@ -83,7 +83,7 @@
 .hint {
   min-width: 0;
   overflow: hidden;
-  font-size: 13px;
+  font-size: 14px;
   line-height: 20px;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -119,8 +119,8 @@
 
 /*
  * 有话题（Figma 91:15376，尺寸按 2x 导出图量出）：灰底区 220 宽，距卡片左右下各 14
- * 灰底 padding 10 12；「当前正在聊」13/20 灰字，话题 13/20 黑字一行一条，行距 6。
- * 卡片最高 186（与产物卡片同高）= 标题行 49 + 本区 123 + 底部 14，放得下 3 条，再多在列表里滚动。
+ * 灰底 padding 10 12；「当前正在聊」与话题都是 14/20，话题行距 12，标题到列表 8。
+ * 列表最高 76（2.5 条），卡片最高 = 49 + (10 + 20 + 8 + 76 + 10) + 14 = 187。
  */
 .slotTopics {
   padding: 0 14px 14px;
@@ -131,7 +131,6 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
-  max-height: 123px;
   padding: 10px 12px;
   border-radius: 8px;
   background-color: var(--wm-color-background-septenary);
@@ -139,58 +138,59 @@
 
 .topicLabel {
   flex: 0 0 auto;
-  font-size: 13px;
+  font-size: 14px;
   line-height: 20px;
   color: var(--wm-color-text-tertiary);
 }
 
-/* 话题列表：可滚动，滚动条隐藏；往下滚过后顶部渐隐，提示上面还有 */
+/* 话题列表：高度由组件按内容给（带过渡），超过 76 滚动；滚动条隐藏，往下滚过后顶部渐隐 */
 .topicList {
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
   min-height: 0;
-  margin-top: 6px;
+  margin-top: 8px;
   overscroll-behavior: contain;
+  transition: height 260ms cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .topicListScrolled {
   mask-image: linear-gradient(to bottom, transparent 0, #000 12px);
 }
 
-/* 单条话题：左 16 留给圆点和竖线，文字压成一行 */
+/* 单条话题：左 14 留给圆点和竖线，文字压成一行 */
 .topicItem {
   position: relative;
   flex: 0 0 auto;
   display: flex;
   min-width: 0;
-  padding-left: 16px;
-  animation: note-text-in 240ms ease-out both;
+  padding-left: 14px;
+  animation: note-topic-in 220ms ease-out both;
 
   & + & {
-    margin-top: 6px;
+    margin-top: 12px;
   }
 
-  /* 竖线 1px #DFE1E6：圆点下方 1px 起，到下一个圆点上方 1px 止 */
+  /* 竖线 1px #DFE1E6：从本条圆点下方 2px 连到下一条圆点上方 2px（下一条圆点在 20 + 12 + 8 = 40） */
   &:not(:last-child)::after {
     position: absolute;
     top: 14px;
-    bottom: -12px;
-    left: 3px;
+    bottom: -18px;
+    left: 2px;
     width: 1px;
     content: '';
     background-color: var(--wm-color-note-topic-line);
   }
 }
 
-/* 圆点 6×6：之前的话题 #C3C7CF */
+/* 圆点 4×4（比设计稿 6 小一号），垂直居中在 20 的行高里 */
 .topicDot {
   position: absolute;
-  top: 7px;
-  left: 0;
-  width: 6px;
-  height: 6px;
-  border-radius: 3px;
+  top: 8px;
+  left: 0.5px;
+  width: 4px;
+  height: 4px;
+  border-radius: 2px;
   background-color: var(--wm-color-note-topic-dot);
 }
 
@@ -198,7 +198,7 @@
 .topicText {
   min-width: 0;
   overflow: hidden;
-  font-size: 13px;
+  font-size: 14px;
   line-height: 20px;
   color: var(--wm-color-text-primary);
   text-overflow: ellipsis;
@@ -208,6 +208,17 @@
 /* 当前话题：蓝点 #0066FF */
 .topicCurrent .topicDot {
   background-color: var(--wm-color-brand-primary);
+}
+
+/* 新话题只淡入，不位移：位移会和列表长高、滚动叠加，看起来像弹了一下 */
+@keyframes note-topic-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 /* 换字：淡入 + 上移 3px，不硬切 */
@@ -237,5 +248,9 @@
 
   .topicItem {
     animation: none;
+  }
+
+  .topicList {
+    transition: none;
   }
 }
