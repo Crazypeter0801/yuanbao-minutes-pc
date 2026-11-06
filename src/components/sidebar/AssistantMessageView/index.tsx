@@ -8,7 +8,6 @@ import { RecordingCard } from '@/components/sidebar/RecordingCard';
 import { RichText } from '@/components/sidebar/RichText';
 import type { ArtifactItem } from '@/types/artifact';
 import type { AssistantMessage, BubbleCard } from '@/types/chat';
-import { formatMessageTime } from './formatTime';
 import styles from './index.module.scss';
 
 interface AssistantMessageViewProps {
@@ -20,11 +19,6 @@ interface AssistantMessageViewProps {
    * - plain：无气泡、无署名，像文档一样直接排版（方案 C，参考 Granola）
    */
   shape: 'round' | 'compact' | 'plain';
-  /**
-   * 是否显示「元宝 + 时间」
-   * 元宝会连着发几条，间隔短时只在组头标一次；只有距上一条足够久才重新标。
-   */
-  showMeta?: boolean;
   /** 点击追问建议 */
   onFollowUp?: (text: string) => void;
   /** 点击链接徽标 / 引用来源 */
@@ -42,11 +36,13 @@ interface AssistantMessageViewProps {
   showFollowUps?: boolean;
 }
 
-/** 元宝消息组：署名 + 时间 + 若干气泡 + 引用来源 + 追问建议 */
+/**
+ * 元宝消息组：若干气泡 + 卡片 + 追问建议
+ * 按 IM 习惯不再逐条写「元宝」署名，时间统一由 ChatList 居中插在消息之间。
+ */
 export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
   message,
   shape,
-  showMeta = true,
   onFollowUp,
   onOpenSource,
   onOpenArtifact,
@@ -61,13 +57,6 @@ export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
 
   return (
     <div className={`${styles.group} ${isPlain ? styles.groupPlain : ''}`}>
-      {!isPlain && showMeta && (
-        <div className={styles.meta}>
-          <span className={styles.name}>元宝</span>
-          <span className={styles.time}>{formatMessageTime(message.createdAt)}</span>
-        </div>
-      )}
-
       <div className={styles.bubbles}>
         {message.bubbles.map((bubble, index) => {
           const shapeClass = isPlain

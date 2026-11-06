@@ -4,6 +4,11 @@ import { ThinkingIndicator } from '@/components/sidebar/ThinkingIndicator';
 import { UserMessageView } from '@/components/sidebar/UserMessageView';
 import type { ArtifactItem } from '@/types/artifact';
 import type { BubbleCard, ChatMessage } from '@/types/chat';
+import { formatDividerTime } from './formatTime';
+import styles from './index.module.scss';
+
+/** 距上一条超过 1 分钟才再插一次时间 */
+const TIME_GAP_MS = 60 * 1000;
 
 interface ChatListProps {
   messages: ChatMessage[];
@@ -21,12 +26,12 @@ interface ChatListProps {
 }
 
 /**
- * 按角色渲染消息列表
- * 返回 Fragment，直接作为 MessageStream 的子元素参与 12px 间距。
+ * 按 IM 习惯排列消息
  *
- * 演示阶段每条元宝消息都带「元宝 + 时间」：方便逐条核对时一眼定位是哪一句。
- * （真实产品里连续消息只在组头标一次，靠 AssistantMessageView 的 showMeta 控制，
- * 需要时在这里按 createdAt 分组传 false 即可。）
+ * - 不写发言人：左边灰泡就是元宝，右边蓝泡就是自己；
+ * - 时间居中单独一行：第一条消息前出一次，之后只有距上一条超过 1 分钟才再出；
+ *   同一个人连发、或一问一答紧挨着时都不插时间；
+ * - 间距：换人 20、同一人连发 12，时间行上 20 下 12。
  */
 export const ChatList: FC<ChatListProps> = ({
   messages,
@@ -37,27 +42,50 @@ export const ChatList: FC<ChatListProps> = ({
   onOpenArtifact,
   onOpenNote,
   onCardSubmit,
-}) => (
-  <>
-    {messages.map((message, index) =>
-      message.role === 'user' ? (
-        <UserMessageView key={message.id} message={message} shape="round" />
-      ) : (
-        <AssistantMessageView
-          key={message.id}
-          message={message}
-          shape={shape}
-          showMeta
-          onFollowUp={onFollowUp}
-          onOpenSource={onOpenSource}
-          onOpenArtifact={onOpenArtifact}
-          onOpenNote={onOpenNote}
-          onCardSubmit={onCardSubmit}
-          // 只留最后一轮的追问：元宝说了下一句，旧提问就收起
-          showFollowUps={index === messages.length - 1}
-        />
-      ),
-    )}
-    {isThinking && <ThinkingIndicator plain={shape === 'plain'} />}
-  </>
-);
+}) => {
+  const lastRole = messages[messages.length - 1]?.role;
+
+  return (
+    <div className={styles.list}>
+      {messages.map((message, index) => {
+        const previous = messages[index - 1];
+        const showTime = !previous || message.createdAt - previous.createdAt > TIME_GAP_MS;
+        const sameSender = Boolean(previous) && previous.role === message.role;
+        const spacing = showTime ? styles.afterTime : sameSender ? styles.sameSender : styles.newSender;
+
+        return (
+          <div className={styles.entry} key={message.id}>
+            {showTime && (
+              <p className={`${styles.time} ${index === 0 ? styles.timeFirst : ''}`}>
+                {formatDividerTime(message.createdAt)}
+              </p>
+            )}
+            <div className={spacing}>
+              {message.role === 'user' ? (
+                <UserMessageView message={message} shape="round" />
+              ) : (
+                <AssistantMessageView
+                  message={message}
+                  shape={shape}
+                  onFollowUp={onFollowUp}
+                  onOpenSource={onOpenSource}
+                  onOpenArtifact={onOpenArtifact}
+                  onOpenNote={onOpenNote}
+                  onCardSubmit={onCardSubmit}
+                  // 只留最后一轮的追问：元宝说了下一句，旧提问就收起
+                  showFollowUps={index === messages.length - 1}
+                />
+              )}
+            </div>
+          </div>
+        );
+      })}
+      {isThinking && (
+        // 思考中一定是元宝：紧跟在元宝后面按连发算，跟在用户后面按换人算
+        <div className={lastRole === 'assistant' ? styles.sameSender : styles.newSender}>
+          <ThinkingIndicator plain={shape === 'plain'} />
+        </div>
+      )}
+    </div>
+  );
+};

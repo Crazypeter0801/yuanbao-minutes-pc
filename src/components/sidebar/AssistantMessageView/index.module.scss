@@ -1,4 +1,4 @@
-/* 消息组：署名行 + 气泡，间距 4（Figma layout_NEIQTT） */
+/* 消息组：气泡 → 卡片 → 追问，间距 4（Figma layout_NEIQTT）；署名行已去掉 */
 .group {
   display: flex;
   flex-direction: column;
@@ -11,27 +11,6 @@
 /* 方案 C：无署名，正文与追问之间留更多呼吸 */
 .groupPlain > * + * {
   margin-top: 12px;
-}
-
-.meta {
-  display: flex;
-  align-items: center;
-
-  & > * + * {
-    margin-left: 6px;
-  }
-}
-
-.name {
-  font-size: 12px;
-  line-height: 20px;
-  color: var(--wm-color-text-secondary);
-}
-
-.time {
-  font-size: 12px;
-  line-height: 20px;
-  color: var(--wm-color-text-disabled);
 }
 
 .bubbles {
