@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type RefObject } from 'react';
 
-/** 元宝窗口的两种形态：吸附在会议窗口右侧（并列、连成一体）/ 分离出来的浮动小窗 */
+/** 元宝窗口的两种形态：吸附在会议窗口右侧（两个完整圆角窗口并排）/ 分离出来的浮动小窗 */
 export type AgentDockMode = 'docked' | 'floating';
 
-/** 浮动小窗尺寸；吸附态宽度同为 400，高度跟会议窗口一致（760） */
+/** 浮动小窗尺寸；吸附态宽度同为 400，高度跟会议窗口一致（760）；浮动窗矮一点（580） */
 export const FLOAT_WIDTH = 400;
-export const FLOAT_HEIGHT = 680;
+export const FLOAT_HEIGHT = 580;
 /** 按住标题栏移动超过多少像素才算「拖出」，避免点一下就分离 */
 export const DETACH_DISTANCE = 6;
 /** 浮动窗右缘与会议窗口右缘相距小于多少像素，就出现吸附提示（超出右缘也算） */

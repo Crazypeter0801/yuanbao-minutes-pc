@@ -1,14 +1,23 @@
+/*
+ * 元宝窗口外壳
+ * 吸附态：和会议并排的完整圆角窗口（18），磨砂材质；
+ * 分离态：矮一点的浮动窗（400×580，圆角 22），不透明暖白。
+ * 同一个节点两种形态只换样式，对话滚动位置、输入内容不会丢。
+ */
 .shell {
   display: flex;
   flex-direction: column;
   width: 400px;
   overflow: hidden;
-  background-color: var(--wm-color-background-quaternary);
+  transition:
+    border-radius 160ms ease-out,
+    box-shadow 160ms ease-out;
 }
 
 /*
- * 吸附态：相对会议窗口外框（.frame）贴右、上下撑满，宽 400 与会议内容让出的空间一致；
- * 右侧圆角与会议窗口一致（12），没有投影、不探出，左缘一条细线。
+ * 吸附态：相对会议窗口外框（.frame）贴右、上下撑满（760），宽 400；
+ * 与会议窗口之间留 10 的缝隙（会议让出的 410 里已含）；阴影和会议窗口一致，两个窗口是平级的。
+ * 磨砂：白 82% + 背景模糊，壁纸的色彩隐约透出来。
  */
 .docked {
   position: absolute;
@@ -16,45 +25,35 @@
   right: 0;
   bottom: 0;
   z-index: 20;
-  border-radius: 0 12px 12px 0;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 7;
-    width: 0.5px;
-    background-color: var(--wm-color-line);
-    pointer-events: none;
-  }
+  border-radius: 18px;
+  background-color: rgba(255, 255, 255, 0.82);
+  -webkit-backdrop-filter: blur(28px) saturate(1.6);
+  backdrop-filter: blur(28px) saturate(1.6);
+  box-shadow:
+    var(--wm-shadow-canvas),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.7);
 }
 
-/* 分离态：浮动小窗，轻阴影；位置由 inline left/top 决定 */
+/* 分离态：浮动小窗，位置由 inline left/top 决定；不透明暖白，轻阴影 + 一圈极淡的描边 */
 .floating {
   position: fixed;
   z-index: 50;
-  height: 680px;
+  height: 580px;
   max-height: calc(100vh - 16px);
-  border-radius: 12px;
+  border-radius: 22px;
+  background-color: #fcfbf9;
   box-shadow:
-    0 0 0 0.5px rgba(0, 0, 0, 0.12),
-    0 6px 20px rgba(2, 26, 58, 0.14);
+    0 8px 30px rgba(0, 0, 0, 0.1),
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 0 0 0.5px rgba(0, 0, 0, 0.08);
 }
 
-/* 拖动中：略加深阴影，像被拿起；禁选字，避免拖动时选中文本 */
+/* 拖动中：禁选字，避免拖动时选中文本；阴影不变，只靠光标表达「被拿起」 */
 .dragging {
   user-select: none;
-
-  &.floating {
-    box-shadow:
-      0 0 0 0.5px rgba(0, 0, 0, 0.14),
-      0 10px 28px rgba(2, 26, 58, 0.2);
-  }
 }
 
-/* 靠近会议右缘：窗口略透，让下面的吸附占位区看得见 */
+/* 靠近会议右缘：窗口略透，让下面的吸附占位框看得见 */
 .nearDock {
   opacity: 0.92;
 }

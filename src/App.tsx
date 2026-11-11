@@ -160,17 +160,15 @@ export default function App() {
               />
             )}
           </div>
-          {/* 元宝吸附在右侧时，会议内容让出 400 宽；分离或关闭后恢复撑满 1440 */}
+          {/* 元宝吸附在右侧时，会议窗口让出 410（元宝 400 + 缝隙 10）；分离或关闭后恢复撑满 1440 */}
           <div
             className={`${styles.reserve} ${sidebarOpen && dock.mode === "docked" ? styles.reserveOpen : ""}`}
             aria-hidden="true"
           />
         </div>
-        {/* 拖回会议右缘时的吸附提示：右缘一块占位区，松手后元宝落在这里 */}
+        {/* 拖回会议右缘时的吸附提示：右缘一个浅色描边的玻璃占位框（无文字），松手后元宝落在这里 */}
         {sidebarOpen && dock.mode === "floating" && dock.dockHint && (
-          <div className={styles.dockHint} aria-hidden="true">
-            <span className={styles.dockHintLabel}>松手吸附到会议右侧</span>
-          </div>
+          <div className={styles.dockHint} aria-hidden="true" />
         )}
         {/* 元宝 personal agent：默认吸附在会议窗口右缘并列；按住标题栏拖动可分离成浮动小窗 */}
         {sidebarOpen && (

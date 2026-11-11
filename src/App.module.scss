@@ -32,28 +32,32 @@
   white-space: nowrap;
 }
 
-/* 会议区容器：投票弹窗以它为定位基准，只覆盖左侧，不盖住元宝侧栏 */
+/* 会议窗口：完整的圆角窗口（18），自带底色和阴影；投票弹窗以它为定位基准，只覆盖会议、不盖元宝 */
 .meetingArea {
   position: relative;
   flex: 1 1 auto;
   min-width: 0;
   display: flex;
+  overflow: hidden;
+  border-radius: 18px;
+  background-color: var(--wm-color-window-background);
+  box-shadow: var(--wm-shadow-canvas);
 }
 
-/* V1 窗口 1440×760、圆角 12、底色 #F0F2F7（Figma 257:1540） */
+/*
+ * 窗口布局容器 1440×760：本身不画底、不裁切、不投影。
+ * 吸附态里会议和元宝是两个各自完整的圆角窗口并排（中间留 10 缝隙）；
+ * 元宝关闭或分离后，会议窗口撑满整个 1440。
+ */
 .window {
   position: relative;
   display: flex;
   flex: 0 0 auto;
   width: 1440px;
   height: 760px;
-  overflow: hidden;
-  border-radius: 12px;
-  background-color: var(--wm-color-window-background);
-  box-shadow: var(--wm-shadow-canvas);
 }
 
-/* 元宝吸附在右侧时留给它的空间：会议内容缩到 1040 宽，元宝（400）贴紧会议右缘 */
+/* 元宝吸附在右侧时留给它的空间：元宝 400 + 缝隙 10，会议窗口缩到 1030 */
 .reserve {
   flex: 0 0 auto;
   width: 0;
@@ -61,39 +65,27 @@
 }
 
 .reserveOpen {
-  width: 400px;
+  width: 410px;
 }
 
 /*
- * 吸附提示：会议窗口右缘的占位区（宽 400、与吸附后的元宝完全重合），
- * 淡绿底 + 绿色虚线内框 + 右缘一道高亮，盖在会议内容和元宝浮窗之上、不拦截鼠标。
+ * 吸附提示：会议右缘的占位框（400 宽、与吸附后的元宝完全重合）。
+ * 约 8% 的中性浅色占位 + 一圈浅色描边（内白外灰，深浅背景上都看得清），不带文字、不带按钮；盖在会议内容和浮窗之上、不拦截鼠标。
  */
 .dockHint {
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
-  z-index: 55; /* 盖在浮动小窗（50）之上，占位区和标签才看得清 */
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  z-index: 55; /* 盖在浮动小窗（50）之上，占位框的轮廓才看得清 */
   width: 400px;
-  border-radius: 0 12px 12px 0;
-  background-color: rgba(0, 204, 112, 0.18);
+  border-radius: 18px;
+  background-color: rgba(110, 120, 140, 0.08);
   box-shadow:
-    inset 0 0 0 2px rgba(0, 204, 112, 0.55),
-    inset -4px 0 0 0 rgba(0, 204, 112, 0.9);
+    inset 0 0 0 1.5px rgba(255, 255, 255, 0.9),
+    0 0 0 1px rgba(60, 70, 90, 0.26);
   pointer-events: none;
   animation: dock-hint-in 140ms ease-out;
-}
-
-.dockHintLabel {
-  padding: 6px 14px;
-  border-radius: 14px;
-  background-color: rgba(0, 150, 82, 0.92);
-  font-size: 13px;
-  line-height: 20px;
-  color: #ffffff;
 }
 
 @keyframes dock-hint-in {

@@ -1,17 +1,16 @@
-/* 标题栏底色带一点元宝绿的浅渐变，和会议窗口的灰蓝标题栏区分开 */
+/* 标题栏：44 高，只放品牌和分离 / 关闭；底色只带 4% 的品牌绿，其余透明，让窗口材质透出来 */
 .header {
   position: relative;
   z-index: 6;
   flex: 0 0 auto;
-  background-image: linear-gradient(180deg, #f1faf5 0%, #ffffff 100%);
-  border-bottom: 0.5px solid var(--wm-color-line);
+  background-color: rgba(0, 204, 112, 0.04);
 }
 
 .row {
   display: flex;
   align-items: center;
-  height: 40px;
-  padding: 0 12px;
+  height: 44px;
+  padding: 0 12px 0 14px;
   cursor: grab;
   touch-action: none;
   user-select: none;
@@ -31,29 +30,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
-  border-radius: 6px;
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
   background-color: var(--wm-color-brand-yuanbao);
   color: #ffffff;
 }
 
 .brandText {
-  margin-left: 6px;
+  margin-left: 8px;
   font-size: 14px;
   line-height: 20px;
   font-weight: 600;
   color: var(--wm-color-text-primary);
-}
-
-.brandTag {
-  margin-left: 6px;
-  padding: 0 6px;
-  border-radius: 8px;
-  background-color: rgba(0, 204, 112, 0.12);
-  font-size: 11px;
-  line-height: 16px;
-  color: #0a8a50;
 }
 
 .actions {
@@ -67,13 +56,15 @@
   }
 }
 
+/* 中性灰图标按钮：不带品牌色，hover 才出一块浅灰底 */
 .iconButton {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  color: var(--wm-color-text-secondary);
   cursor: pointer;
   transition: background-color 120ms ease-in-out;
 
@@ -85,4 +76,22 @@
 .moreWrap {
   position: relative;
   display: flex;
+}
+
+/* 第二行：会话切换条撑满，右边是「更多」；整行的左右边距由切换条自己的 padding 和这里的右边距给 */
+.subRow {
+  display: flex;
+  align-items: flex-start;
+  padding-right: 8px;
+
+  & > :first-child {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding-right: 4px;
+  }
+
+  .moreWrap {
+    flex: 0 0 auto;
+    margin-top: 2px;
+  }
 }

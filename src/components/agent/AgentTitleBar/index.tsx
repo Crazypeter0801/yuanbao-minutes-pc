@@ -2,7 +2,6 @@ import { useState, type FC } from 'react';
 import IconSideLogo from '@/assets/d2c/icons/v1/icon-side-logo';
 import IconSideClose from '@/assets/d2c/icons/v1/icon-side-close';
 import IconSideMore from '@/assets/d2c/icons/v1/icon-side-more';
-import IconSidePip from '@/assets/d2c/icons/v1/icon-side-pip';
 import { PopMenu, type PopMenuItem } from '@/components/common/PopMenu';
 import { Pressable } from '@/components/common/Pressable';
 import { SessionSwitcher } from '@/components/agent/SessionSwitcher';
@@ -24,12 +23,16 @@ interface AgentTitleBarProps {
 
 /**
  * 元宝窗口标题栏（两行）
- * 第一行：元宝品牌 | 分离/吸附 · 在元宝打开 · 更多 · 关闭。没有 macOS 红黄绿圆点；
+ * 第一行（44 高）：logo + 名称 | 分离/吸附 · 关闭，只放这四样。没有 macOS 红黄绿圆点；
  *   按住这一行（按钮除外）拖动即可把元宝从会议窗口分离出来，拖回会议右缘松手再吸附回去；
- * 第二行：会话切换条，显示当前会话属于元宝主端的「腾讯会议」分组，点开可切换到其他会话。
+ * 第二行：会话切换条（右侧是「更多」，菜单里有「在元宝主端打开」），显示当前会话属于元宝主端的「腾讯会议」分组，点开可切换到其他会话。
  */
 export const AgentTitleBar: FC<AgentTitleBarProps> = ({ dock, onClose, onOpenMain, onPickSession, menuItems }) => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const moreItems: PopMenuItem[] = [
+    { key: 'open-main', label: '在元宝主端打开', onClick: onOpenMain },
+    ...menuItems,
+  ];
 
   return (
     <header className={styles.header}>
@@ -43,7 +46,6 @@ export const AgentTitleBar: FC<AgentTitleBarProps> = ({ dock, onClose, onOpenMai
             <IconSideLogo width={14} height={14} />
           </span>
           <span className={styles.brandText}>元宝</span>
-          <span className={styles.brandTag}>Personal Agent</span>
         </div>
 
         <div className={styles.actions} data-nodrag>
@@ -67,27 +69,27 @@ export const AgentTitleBar: FC<AgentTitleBarProps> = ({ dock, onClose, onOpenMai
               </svg>
             )}
           </Pressable>
-          <Pressable className={styles.iconButton} onClick={onOpenMain} title="在元宝打开" ariaLabel="在元宝主端打开">
-            <IconSidePip />
-          </Pressable>
-          <div className={styles.moreWrap}>
-            <Pressable
-              className={styles.iconButton}
-              onClick={() => setMenuOpen((open) => !open)}
-              title="更多"
-              ariaLabel="更多操作"
-            >
-              <IconSideMore />
-            </Pressable>
-            {menuOpen && <PopMenu items={menuItems} onClose={() => setMenuOpen(false)} />}
-          </div>
           <Pressable className={styles.iconButton} onClick={onClose} title="关闭元宝" ariaLabel="关闭元宝">
             <IconSideClose />
           </Pressable>
         </div>
       </div>
 
-      <SessionSwitcher onPick={onPickSession} />
+      {/* 第二行：会话切换条 + 「更多」（含「在元宝主端打开」）；标题栏本身只留品牌、分离、关闭 */}
+      <div className={styles.subRow}>
+        <SessionSwitcher onPick={onPickSession} />
+        <div className={styles.moreWrap}>
+          <Pressable
+            className={styles.iconButton}
+            onClick={() => setMenuOpen((open) => !open)}
+            title="更多"
+            ariaLabel="更多操作"
+          >
+            <IconSideMore />
+          </Pressable>
+          {menuOpen && <PopMenu items={moreItems} onClose={() => setMenuOpen(false)} />}
+        </div>
+      </div>
     </header>
   );
 };
