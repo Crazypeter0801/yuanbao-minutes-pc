@@ -73,6 +73,13 @@
   width: 408px;
 }
 
+/* 左侧吸附的空位在会议窗口前面，拖拽条落在靠会议的一侧（右缘 8 的缝隙正中） */
+.reserveLeft .handle,
+.handleLeft {
+  left: auto;
+  right: 2px;
+}
+
 /* 两窗之间的拖拽条（Figma 214:11038）：4×48 白、圆角 2，落在 8 的缝隙正中、垂直居中 */
 .handle {
   position: absolute;
@@ -103,6 +110,11 @@
     0 0 0 1px rgba(60, 70, 90, 0.26);
   pointer-events: none;
   animation: dock-hint-in 140ms ease-out;
+}
+
+.dockHintLeft {
+  right: auto;
+  left: 0;
 }
 
 @keyframes dock-hint-in {

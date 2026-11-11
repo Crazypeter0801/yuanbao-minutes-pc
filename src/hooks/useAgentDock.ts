@@ -1,14 +1,16 @@
 import { useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type RefObject } from 'react';
 
-/** 元宝窗口的两种形态：吸附在会议窗口右侧（两个完整圆角窗口并排）/ 分离出来的浮动小窗 */
+/** 元宝窗口的两种形态：吸附在会议窗口一侧（两个完整圆角窗口并排）/ 分离出来的浮动小窗 */
 export type AgentDockMode = 'docked' | 'floating';
+/** 吸附在会议窗口的哪一侧，默认右侧 */
+export type AgentDockSide = 'left' | 'right';
 
 /** 浮动小窗尺寸；吸附态宽度同为 400，高度跟会议窗口一致（760）；浮动窗矮一点（580） */
 export const FLOAT_WIDTH = 400;
 export const FLOAT_HEIGHT = 580;
 /** 按住标题栏移动超过多少像素才算「拖出」，避免点一下就分离 */
 export const DETACH_DISTANCE = 6;
-/** 浮动窗右缘与会议窗口右缘相距小于多少像素，就出现吸附提示（超出右缘也算） */
+/** 浮动窗靠会议窗口左 / 右缘的一边与该缘相距小于多少像素，就出现吸附提示（超出缘也算） */
 export const DOCK_THRESHOLD = 120;
 /** 指针纵向要落在会议窗口上下各多少像素范围内，才认为是「拖回会议」 */
 const DOCK_VERTICAL_SLACK = 60;
@@ -19,8 +21,10 @@ export interface AgentDockControl {
   position: { x: number; y: number };
   /** 正在拖动 */
   dragging: boolean;
-  /** 靠近会议右缘：松手会吸附，同时显示吸附提示 */
-  dockHint: boolean;
+  /** 吸附在哪一侧（浮动态时是松手后回去的那一侧） */
+  side: AgentDockSide;
+  /** 靠近会议左 / 右缘：松手会吸附到那一侧，同时显示吸附提示；不靠近时为 null */
+  dockHint: AgentDockSide | null;
   /** 挂到元宝窗口根节点，用来量当前位置 */
   panelRef: RefObject<HTMLElement>;
   /** 标题栏按下：开始拖动 / 拖出 */
@@ -42,10 +46,14 @@ export function useAgentDock(frameRef: RefObject<HTMLElement>): AgentDockControl
   const [mode, setMode] = useState<AgentDockMode>('docked');
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
-  const [dockHint, setDockHint] = useState(false);
+  const [side, setSide] = useState<AgentDockSide>('right');
+  const [dockHint, setDockHint] = useState<AgentDockSide | null>(null);
   const panelRef = useRef<HTMLElement>(null);
   const modeRef = useRef<AgentDockMode>(mode);
   modeRef.current = mode;
+  const sideRef = useRef<AgentDockSide>(side);
+  sideRef.current = side;
+  const hintRef = useRef<AgentDockSide | null>(null);
   const cleanup = useRef<(() => void) | null>(null);
 
   useEffect(() => () => cleanup.current?.(), []);
@@ -86,14 +94,21 @@ export function useAgentDock(frameRef: RefObject<HTMLElement>): AgentDockControl
         setPosition({ x, y });
 
         const frameRect = frame.getBoundingClientRect();
-        const near =
-          x + FLOAT_WIDTH >= frameRect.right - DOCK_THRESHOLD &&
-          move.clientY >= frameRect.top - DOCK_VERTICAL_SLACK &&
-          move.clientY <= frameRect.bottom + DOCK_VERTICAL_SLACK;
-        if (!near) {
+        const nearVertical =
+          move.clientY >= frameRect.top - DOCK_VERTICAL_SLACK && move.clientY <= frameRect.bottom + DOCK_VERTICAL_SLACK;
+        const nearSide: AgentDockSide | null = !nearVertical
+          ? null
+          : x + FLOAT_WIDTH >= frameRect.right - DOCK_THRESHOLD
+            ? 'right'
+            : x <= frameRect.left + DOCK_THRESHOLD
+              ? 'left'
+              : null;
+        if (!nearSide) {
           state.armed = true;
         }
-        setDockHint(state.armed && near);
+        const hint = state.armed ? nearSide : null;
+        hintRef.current = hint;
+        setDockHint(hint);
       };
 
       const onUp = () => {
@@ -102,12 +117,12 @@ export function useAgentDock(frameRef: RefObject<HTMLElement>): AgentDockControl
         window.removeEventListener('pointercancel', onUp);
         cleanup.current = null;
         setDragging(false);
-        setDockHint((hint) => {
-          if (hint) {
-            setMode('docked');
-          }
-          return false;
-        });
+        if (hintRef.current) {
+          setSide(hintRef.current);
+          setMode('docked');
+        }
+        hintRef.current = null;
+        setDockHint(null);
       };
 
       window.addEventListener('pointermove', onMove);
@@ -126,11 +141,11 @@ export function useAgentDock(frameRef: RefObject<HTMLElement>): AgentDockControl
     const frame = frameRef.current;
     const rect = frame?.getBoundingClientRect();
     setPosition({
-      x: rect ? rect.right - FLOAT_WIDTH - 24 : 24,
+      x: rect ? (sideRef.current === 'left' ? rect.left + 24 : rect.right - FLOAT_WIDTH - 24) : 24,
       y: rect ? rect.top + 40 : 40,
     });
     setMode('floating');
   }, [frameRef]);
 
-  return { mode, position, dragging, dockHint, panelRef, onTitlePointerDown, toggleDock };
+  return { mode, side, position, dragging, dockHint, panelRef, onTitlePointerDown, toggleDock };
 }

@@ -31,6 +31,13 @@
   backdrop-filter: blur(15px);
 }
 
+/* 吸附在左侧：布局镜像，贴左、其余（圆角、磨砂、间距）与右侧一致 */
+.dockedLeft {
+  composes: docked;
+  right: auto;
+  left: 0;
+}
+
 /* 分离态：浮动小窗，位置由 inline left/top 决定；不透明暖白，轻阴影 + 一圈极淡的描边 */
 .floating {
   position: fixed;

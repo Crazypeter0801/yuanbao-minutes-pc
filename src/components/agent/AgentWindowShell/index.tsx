@@ -13,7 +13,7 @@ interface AgentWindowShellProps {
 
 /**
  * 元宝 personal agent 窗口外壳
- * - 吸附态：贴紧会议窗口右缘，和会议连成一体（无重阴影、不探出），左缘一条细线分隔；
+ * - 吸附态：贴紧会议窗口一侧（默认右缘，可吸附到左缘），和会议连成一体（无重阴影、不探出），左缘一条细线分隔；
  * - 分离态：浮动小窗，轻阴影，位置由拖动决定。
  * 同一个节点在两种形态间只换样式，对话滚动位置、输入内容不会丢。
  */
@@ -21,7 +21,7 @@ export const AgentWindowShell: FC<AgentWindowShellProps> = ({ toast, dock, child
   const floating = dock.mode === 'floating';
   const className = [
     styles.shell,
-    floating ? styles.floating : styles.docked,
+    floating ? styles.floating : dock.side === 'left' ? styles.dockedLeft : styles.docked,
     dock.dragging ? styles.dragging : '',
     floating && dock.dockHint ? styles.nearDock : '',
   ]
