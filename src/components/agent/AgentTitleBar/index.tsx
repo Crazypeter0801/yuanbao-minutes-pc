@@ -5,6 +5,12 @@ import IconAgentPip from '@/assets/d2c/icons/agent/icon-agent-pip';
 import { PopMenu, type PopMenuItem } from '@/components/common/PopMenu';
 import { Pressable } from '@/components/common/Pressable';
 import { YuanbaoAvatar } from '@/components/agent/YuanbaoAvatar';
+import {
+  CHAT_FONT_FAMILIES,
+  CHAT_FONT_SIZES,
+  type ChatFontFamilyKey,
+  type ChatFontSizeKey,
+} from '@/data/chatPreferences';
 import type { YuanbaoMood } from '@/data/agentTasks';
 import type { AgentDockControl } from '@/hooks/useAgentDock';
 import styles from './index.module.scss';
@@ -18,22 +24,26 @@ interface AgentTitleBarProps {
   statusText: string;
   /** 同一个状态要重播时递增（连续摸头） */
   replayKey: number;
-  /** 一次性动画（打招呼 / 喝彩 / 吃新动态 / 吸边…）播完 */
+  /** 一次性动画（打招呼 / 喝彩 / 吃新动态…）播完 */
   onOnceEnd: () => void;
   /** 点一下头像：摸头 */
   onTouch: () => void;
   /** 关闭元宝窗口（和底部元宝按钮是同一个开关） */
   onClose: () => void;
-  /** 在元宝主端打开 */
-  onOpenMain: () => void;
-  /** 「更多」菜单项 */
-  menuItems: PopMenuItem[];
+  /** 对话区当前字号 */
+  fontSize: ChatFontSizeKey;
+  /** 对话区当前字体 */
+  fontFamily: ChatFontFamilyKey;
+  /** 切换字号：实时改对话区 */
+  onFontSizeChange: (key: ChatFontSizeKey) => void;
+  /** 切换字体：实时改对话区 */
+  onFontFamilyChange: (key: ChatFontFamilyKey) => void;
 }
 
 /**
  * 元宝窗口标题栏（Figma 215:16958）
  * 左：元宝头像 + 名称 + 状态文字（没有胶囊底，直接落在白色窗口上）；右：独立窗口 / 更多 / 关闭，中性灰图标。
- * 215 稿里右侧只剩独立窗口和关闭；「更多」里挂着立即总结、导出纪要等功能入口，这里保留，不随稿删除。
+ * 「更多」里是对话区的字号 / 字体设置（四档字号、三种字体），当前项打勾。
  * 没有 macOS 红黄绿圆点；按住这一行（按钮除外）拖动即可把元宝从会议窗口分离出来，拖到会议左 / 右缘松手再吸附回去。
  * 头像用雪碧图跟着任务状态动（Figma 197:42 方案 A：顶部头像集成），点一下头像会被摸头；状态文字常驻在名称下方。
  */
@@ -45,13 +55,27 @@ export const AgentTitleBar: FC<AgentTitleBarProps> = ({
   onOnceEnd,
   onTouch,
   onClose,
-  onOpenMain,
-  menuItems,
+  fontSize,
+  fontFamily,
+  onFontSizeChange,
+  onFontFamilyChange,
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const moreItems: PopMenuItem[] = [
-    { key: 'open-main', label: '在元宝主端打开', onClick: onOpenMain },
-    ...menuItems,
+    ...CHAT_FONT_SIZES.map<PopMenuItem>((option) => ({
+      key: `size-${option.key}`,
+      group: '字号',
+      label: option.label,
+      active: option.key === fontSize,
+      onClick: () => onFontSizeChange(option.key),
+    })),
+    ...CHAT_FONT_FAMILIES.map<PopMenuItem>((option) => ({
+      key: `font-${option.key}`,
+      group: '字体',
+      label: option.label,
+      active: option.key === fontFamily,
+      onClick: () => onFontFamilyChange(option.key),
+    })),
   ];
   const floating = dock.mode === 'floating';
 

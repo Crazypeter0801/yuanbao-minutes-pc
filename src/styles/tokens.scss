@@ -172,4 +172,9 @@
   /* 字体 */
   --wm-font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial,
     system-ui, -apple-system, 'BlinkMacSystemFont', sans-serif;
+
+  /* 对话区阅读偏好（标题栏「更多」菜单切换）：侧栏根节点会覆盖这三个变量 */
+  --chat-font-size: 14px;
+  --chat-line-height: 22px;
+  --chat-font-family: var(--wm-font-family);
 }

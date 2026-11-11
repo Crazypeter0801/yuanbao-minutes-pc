@@ -9,7 +9,7 @@
 /**
  * 头像状态：每个状态对应一组雪碧图动画（见 YuanbaoAvatar）
  * - 由任务 / 会话推出来的「常驻」状态：idle / working / scanning / thinking / confirm / done / sleep；
- * - 一次性的「反应」：greeting / cheer / eat / touch / wink / edgeLeft / edgeRight，播完回到常驻状态。
+ * - 一次性的「反应」：greeting / cheer / eat / touch / wink，播完回到常驻状态。
  */
 export type YuanbaoMood =
   | 'greeting'
@@ -23,9 +23,7 @@ export type YuanbaoMood =
   | 'sleep'
   | 'eat'
   | 'touch'
-  | 'wink'
-  | 'edgeLeft'
-  | 'edgeRight';
+  | 'wink';
 
 /** 一次性动画：播完一遍就回到常驻状态 */
 export const ONCE_MOODS: ReadonlySet<YuanbaoMood> = new Set<YuanbaoMood>([
@@ -34,8 +32,6 @@ export const ONCE_MOODS: ReadonlySet<YuanbaoMood> = new Set<YuanbaoMood>([
   'eat',
   'touch',
   'wink',
-  'edgeLeft',
-  'edgeRight',
 ]);
 
 /** 空闲多久没有任何操作，元宝打瞌睡（有操作再醒来） */
@@ -96,8 +92,6 @@ const MOOD_TEXT: Record<YuanbaoMood, string> = {
   eat: '收到新内容',
   touch: '嘿嘿，被摸头啦',
   wink: '我在呢',
-  edgeLeft: '靠左待命',
-  edgeRight: '靠右待命',
 };
 
 /** 工作中按任务类型换动画：没列出的类型用「对着电脑工作」 */
@@ -125,7 +119,7 @@ interface MoodInput {
 
 /**
  * 由任务推出头像状态：待确认 > 工作中（按第一个进行中任务的类型换动画）> 思考 > 刚完成。
- * 「空闲太久打瞌睡」「新内容 / 吸边 / 摸头」这些随时间和操作变化的反应不在这里，见 useYuanbaoMood。
+ * 「空闲太久打瞌睡」「新内容 / 摸头」这些随时间和操作变化的反应不在这里，见 useYuanbaoMood。
  */
 export function resolveMood({ greeted, tasks, celebrating, listening, thinking }: MoodInput): YuanbaoMood {
   if (!greeted) {
@@ -334,6 +328,4 @@ export const MOOD_DEMO_ITEMS: { mood: YuanbaoMood; label: string }[] = [
   { mood: 'done', label: '已完成 · 任务收尾' },
   { mood: 'cheer', label: '喝彩 · 文件生成 / 投票发布' },
   { mood: 'eat', label: '吃新动态 · 有新内容进来' },
-  { mood: 'edgeLeft', label: '左吸边 · 吸附到左侧' },
-  { mood: 'edgeRight', label: '右吸边 · 吸附到右侧' },
 ];

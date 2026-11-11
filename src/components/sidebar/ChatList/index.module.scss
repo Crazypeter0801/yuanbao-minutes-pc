@@ -24,11 +24,11 @@
   margin-top: 12px;
 }
 
-/* 居中时间：12/18 浅灰，上方 20（第一条前不留） */
+/* 居中时间：比正文小一档，随对话区字号等比缩放 */
 .time {
   margin: 20px 0 0;
-  font-size: 12px;
-  line-height: 18px;
+  font-size: calc(var(--chat-font-size) * 12 / 14);
+  line-height: calc(var(--chat-font-size) * 18 / 14);
   text-align: center;
   color: var(--wm-color-text-disabled);
   font-variant-numeric: tabular-nums;

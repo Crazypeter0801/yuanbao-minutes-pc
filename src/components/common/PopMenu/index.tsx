@@ -1,10 +1,12 @@
-import type { FC } from 'react';
+import { Fragment, type FC } from 'react';
 import { Pressable } from '@/components/common/Pressable';
 import styles from './index.module.scss';
 
 export interface PopMenuItem {
   key: string;
   label: string;
+  /** 分组标题：分组相同的一组条目只在第一项前显示一次 */
+  group?: string;
   /** 当前选中项（显示勾选态） */
   active?: boolean;
   onClick: () => void;
@@ -38,18 +40,29 @@ export const PopMenu: FC<PopMenuProps> = ({ items, onClose, align = 'right', pla
     <>
       <div className={styles.mask} onClick={onClose} aria-hidden="true" />
       <div className={menuClassName} role="menu">
-        {items.map((item) => (
-          <Pressable
-            key={item.key}
-            className={`${styles.item} ${item.active ? styles.itemActive : ''}`}
-            onClick={() => {
-              item.onClick();
-              onClose();
-            }}
-          >
-            {item.label}
-          </Pressable>
-        ))}
+        {items.map((item, index) => {
+          const showGroup = Boolean(item.group) && item.group !== items[index - 1]?.group;
+          return (
+            <Fragment key={item.key}>
+              {showGroup && <p className={styles.groupTitle}>{item.group}</p>}
+              <Pressable
+                className={`${styles.item} ${item.active ? styles.itemActive : ''}`}
+                ariaLabel={item.label}
+                onClick={() => {
+                  item.onClick();
+                  onClose();
+                }}
+              >
+                <span className={styles.itemText}>{item.label}</span>
+                {item.active && (
+                  <span className={styles.check} aria-hidden="true">
+                    ✓
+                  </span>
+                )}
+              </Pressable>
+            </Fragment>
+          );
+        })}
       </div>
     </>
   );

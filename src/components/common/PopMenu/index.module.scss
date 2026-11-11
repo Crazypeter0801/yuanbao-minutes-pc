@@ -9,7 +9,7 @@
   top: calc(100% + 6px);
   left: 0;
   z-index: 31;
-  min-width: 132px;
+  min-width: 148px;
   padding: 4px;
   border-radius: 8px;
   background-color: var(--wm-color-background-senary);
@@ -27,7 +27,23 @@
   bottom: calc(100% + 6px);
 }
 
+/* 分组标题：11/16 tertiary，与条目文字左对齐（同演示菜单） */
+.groupTitle {
+  margin: 0;
+  padding: 6px 10px 2px;
+  font-size: 11px;
+  line-height: 16px;
+  color: var(--wm-color-text-tertiary);
+
+  /* 第二组起和上一组拉开一点，分组更清楚 */
+  .item + & {
+    margin-top: 2px;
+  }
+}
+
 .item {
+  display: flex;
+  align-items: center;
   padding: 6px 10px;
   border-radius: 6px;
   color: var(--wm-color-text-primary);
@@ -39,6 +55,19 @@
   &:hover {
     background-color: var(--wm-color-background-septenary);
   }
+}
+
+.itemText {
+  flex: 1 1 auto;
+}
+
+/* 当前选中项：蓝字 + 右侧勾 */
+.check {
+  flex: 0 0 auto;
+  margin-left: 16px;
+  font-size: 11px;
+  line-height: 16px;
+  color: var(--wm-color-text-septenary);
 }
 
 .itemActive {

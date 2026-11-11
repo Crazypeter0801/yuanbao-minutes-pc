@@ -131,19 +131,20 @@
   }
 }
 
-/* 右侧 ↗（Figma 215:16877）：tertiary 灰，随文字一起 14/18 */
+/* 右侧 ↗（Figma 215:16877）：tertiary 灰，随文字一起缩放 */
 .followUpArrow {
   flex: 0 0 auto;
-  font-size: 14px;
-  line-height: 18px;
+  font-size: var(--chat-font-size);
+  line-height: calc(var(--chat-font-size) * 18 / 14);
   color: var(--wm-color-text-tertiary);
 }
 
-/* 14/18 400 primary */
+/* 400 primary，字号 / 字体跟随对话区阅读设置 */
 .followUpText {
   min-width: 0;
-  font-size: 14px;
-  line-height: 18px;
+  font-family: var(--chat-font-family);
+  font-size: var(--chat-font-size);
+  line-height: calc(var(--chat-font-size) * 18 / 14);
   color: var(--wm-color-text-primary);
   text-align: left;
   overflow-wrap: anywhere;

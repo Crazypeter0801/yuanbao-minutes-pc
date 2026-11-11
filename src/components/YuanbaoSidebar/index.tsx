@@ -1,13 +1,19 @@
 import {
   useCallback,
   useLayoutEffect,
-  useMemo,
   useRef,
   useState,
   type CSSProperties,
   type FC,
 } from "react";
-import type { PopMenuItem } from "@/components/common/PopMenu";
+import {
+  DEFAULT_CHAT_FONT_FAMILY,
+  DEFAULT_CHAT_FONT_SIZE,
+  findChatFontFamily,
+  findChatFontSize,
+  type ChatFontFamilyKey,
+  type ChatFontSizeKey,
+} from "@/data/chatPreferences";
 import { NOTE_ARTIFACT_ID } from "@/data/artifacts";
 import type { ArtifactItem } from "@/types/artifact";
 import type { BubbleCard } from "@/types/chat";
@@ -71,6 +77,9 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
   const { toast, showToast } = useToast();
   const [artifactsOpen, setArtifactsOpen] = useState(false);
   const [taskListOpen, setTaskListOpen] = useState(false);
+  /** 对话区阅读偏好：字号 / 字体，实时下发到侧栏根节点上的 CSS 变量 */
+  const [fontSize, setFontSize] = useState<ChatFontSizeKey>(DEFAULT_CHAT_FONT_SIZE);
+  const [fontFamily, setFontFamily] = useState<ChatFontFamilyKey>(DEFAULT_CHAT_FONT_FAMILY);
   /** 正在看详情的长程任务；为空时对话区显示对话 */
   const [detailTaskId, setDetailTaskId] = useState<string | null>(null);
   /**
@@ -97,23 +106,6 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
     chat.push(buildRecordingStateNote(listening));
   });
 
-  const menuItems = useMemo<PopMenuItem[]>(
-    () => [
-      { key: "summary", label: "立即总结", onClick: chat.summarizeNow },
-      {
-        key: "export",
-        label: "导出纪要文档",
-        onClick: () => showToast("纪要已导出为文档（演示）"),
-      },
-      {
-        key: "settings",
-        label: "纪要设置",
-        onClick: () => showToast("打开纪要设置（演示）"),
-      },
-    ],
-    [chat.summarizeNow, showToast],
-  );
-
   const openSource = () => showToast("已定位到原文（演示）");
   const openNote = () => showToast("已在浏览器打开元宝笔记（演示）");
   // 文件夹里的「元宝笔记」和对话里的笔记卡片、底栏胶囊是同一个入口，反馈一致
@@ -132,15 +124,23 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
 
   const send = (text: string) => (onSubmit ? onSubmit(text) : chat.ask(text));
 
-  // 头像状态：任务推出的常驻状态 + 打瞌睡 / 眨眼 / 摸头 / 吃新动态 / 吸边 / 喝彩这些反应
+  // 头像状态：任务推出的常驻状态 + 打瞌睡 / 眨眼 / 摸头 / 吃新动态 / 喝彩这些反应
   const { mood, replayKey, onOnceEnd, touch } = useYuanbaoMood({
     agent,
-    dock,
     messages: chat.messages,
     thinking: chat.isThinking,
     listening: isListening,
   });
   const detailTask = agent.tasks.find((task) => task.id === detailTaskId);
+
+  // 对话区字号 / 字体：挂在侧栏根节点上，对话里的样式统一引用这三个变量
+  const sizeOption = findChatFontSize(fontSize);
+  const familyOption = findChatFontFamily(fontFamily);
+  const chatStyle = {
+    "--chat-font-size": sizeOption.fontSize,
+    "--chat-line-height": sizeOption.lineHeight,
+    "--chat-font-family": familyOption.stack,
+  } as CSSProperties;
 
   // 任务列表里点一行：长程任务进详情，其余给演示反馈
   const openTask = (task: AgentTask) => {
@@ -157,7 +157,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
   };
 
   return (
-    <AgentWindowShell toast={toast} dock={dock}>
+    <AgentWindowShell toast={toast} dock={dock} rootStyle={chatStyle}>
       <AgentTitleBar
         dock={dock}
         mood={mood}
@@ -166,8 +166,10 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
         onOnceEnd={onOnceEnd}
         onTouch={touch}
         onClose={onClose}
-        onOpenMain={() => showToast("已在元宝主端打开「腾讯会议」分组（演示）")}
-        menuItems={menuItems}
+        fontSize={fontSize}
+        fontFamily={fontFamily}
+        onFontSizeChange={setFontSize}
+        onFontFamilyChange={setFontFamily}
       />
 
       {/* 消息流与底栏叠在一起：对话可以滚到底栏后面，被渐进模糊一点点糊掉 */}

@@ -8,6 +8,8 @@ interface AgentWindowShellProps {
   /** 轻提示：在元宝窗口正中弹出（portal 到本窗口根节点） */
   toast: ToastState | null;
   dock: AgentDockControl;
+  /** 挂到侧栏根节点上的自定义属性（对话区字号 / 字体 CSS 变量） */
+  rootStyle?: CSSProperties;
   children: ReactNode;
 }
 
@@ -17,7 +19,7 @@ interface AgentWindowShellProps {
  * - 分离态：浮动小窗，轻阴影，位置由拖动决定。
  * 同一个节点在两种形态间只换样式，对话滚动位置、输入内容不会丢。
  */
-export const AgentWindowShell: FC<AgentWindowShellProps> = ({ toast, dock, children }) => {
+export const AgentWindowShell: FC<AgentWindowShellProps> = ({ toast, dock, rootStyle, children }) => {
   const floating = dock.mode === 'floating';
   const className = [
     styles.shell,
@@ -27,9 +29,10 @@ export const AgentWindowShell: FC<AgentWindowShellProps> = ({ toast, dock, child
   ]
     .filter(Boolean)
     .join(' ');
-  const style: CSSProperties | undefined = floating
-    ? { left: dock.position.x, top: dock.position.y }
-    : undefined;
+  const style: CSSProperties | undefined =
+    floating || rootStyle
+      ? { ...(floating ? { left: dock.position.x, top: dock.position.y } : {}), ...rootStyle }
+      : undefined;
 
   return (
     <aside

@@ -4,12 +4,13 @@
   padding-left: 48px;
 }
 
-/* 与元宝正文同为 14/22，一问一答读起来是同一个字号 */
+/* 与元宝正文共用阅读设置，一问一答始终同一个字号 / 字体 */
 .bubble {
   margin: 0;
   padding: 10px 12px;
-  font-size: 14px;
-  line-height: 22px;
+  font-family: var(--chat-font-family);
+  font-size: var(--chat-font-size);
+  line-height: var(--chat-line-height);
   color: var(--wm-color-text-primary);
   word-break: break-word;
   white-space: pre-wrap;

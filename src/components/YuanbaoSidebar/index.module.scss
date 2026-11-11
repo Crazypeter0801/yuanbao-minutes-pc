@@ -5,6 +5,8 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
+  /* 对话区字体：整块继承标题栏「更多」里选的字体；字号由各文本样式引用变量 */
+  font-family: var(--chat-font-family);
 }
 
 /*

@@ -5,13 +5,7 @@ import doneSheet from '@/assets/sprites/yuanbao/done.webp';
 import eatInSheet from '@/assets/sprites/yuanbao/eat-in.webp';
 import eatOutSheet from '@/assets/sprites/yuanbao/eat-out.webp';
 import eatSheet from '@/assets/sprites/yuanbao/eat.webp';
-import edgeLeftToIdleSheet from '@/assets/sprites/yuanbao/edge-left-to-idle.webp';
-import edgeLeftSheet from '@/assets/sprites/yuanbao/edge-left.webp';
-import edgeRightToIdleSheet from '@/assets/sprites/yuanbao/edge-right-to-idle.webp';
-import edgeRightSheet from '@/assets/sprites/yuanbao/edge-right.webp';
 import greetingSheet from '@/assets/sprites/yuanbao/greeting.webp';
-import idleToEdgeLeftSheet from '@/assets/sprites/yuanbao/idle-to-edge-left.webp';
-import idleToEdgeRightSheet from '@/assets/sprites/yuanbao/idle-to-edge-right.webp';
 import idleToSleepSheet from '@/assets/sprites/yuanbao/idle-to-sleep.webp';
 import idleToWorkingSheet from '@/assets/sprites/yuanbao/idle-to-working.webp';
 import idleSheet from '@/assets/sprites/yuanbao/idle.webp';
@@ -30,44 +24,51 @@ const FPS = 20;
 /** 每行 10 帧（素材原样保留的排布） */
 const COLUMNS = 10;
 
-/** 吸边动画里形象贴着哪一侧：整个头像随动画滑到窗口那一侧的边缘 */
-type EdgeSide = 'left' | 'right';
-
 interface Clip {
   src: string;
+  /** 播放几帧 */
   frames: number;
-  /** 吸边动画：in = 从原位滑向窗口边缘，hold = 停在边缘，out = 滑回原位 */
-  slide?: 'in' | 'hold' | 'out';
+  /** 从雪碧图第几帧开始播（默认 0）；done 跳过带勾的前段，避免勾挡住脸 */
+  start?: number;
+  /** 覆盖全局帧率（done 只剩两帧，放慢一点才不会闪） */
+  fps?: number;
+  /**
+   * 每段动画的缩放 / 位移（相对 48 显示尺寸，transform-origin 为帧中心）。
+   * 素材里各段动画的形象占比不一致：以「形象本体」等大为准逐段标定，
+   * 让所有状态看起来一样大，同时都完整落在 33×36 的头像槽里。
+   */
+  scale?: number;
+  /** 水平位移（px），配合 scale 把形象摆到头像槽正中 */
+  dx?: number;
+  /** 垂直位移（px） */
+  dy?: number;
 }
 
 /**
  * 帧数 = 原图里非透明格子数（脚本统计，末行不满的空格子已去掉）；注释为素材原文件名。
  * 原图 260×260/帧，缩到 96×96（48 显示尺寸的 2 倍）后转 webp。
+ * scale / dx / dy 是按每段动画非透明区域的并集（或形象本体）量出来的：
+ * 常驻状态统一按本体约 30px 显示；张嘴吃东西、喝彩这类会撑满整帧的动作单独缩小到槽内。
  */
 const CLIPS = {
-  idle: { src: idleSheet, frames: 58 }, // 20帧空闲态
-  working: { src: workingSheet, frames: 36 }, // 工作中2
-  idleToWorking: { src: idleToWorkingSheet, frames: 6 }, // 空闲-工作中
-  workingToIdle: { src: workingToIdleSheet, frames: 6 }, // 工作中-空闲
-  confirm: { src: confirmSheet, frames: 53 }, // 20帧待确认
-  done: { src: doneSheet, frames: 53 }, // 20帧已完成
-  sleep: { src: sleepSheet, frames: 60 }, // 20休眠态
-  idleToSleep: { src: idleToSleepSheet, frames: 10 }, // 空闲态 - 休眠态
-  sleepToIdle: { src: sleepToIdleSheet, frames: 6 }, // 休眠态-空闲
-  greeting: { src: greetingSheet, frames: 61 }, // 打招呼
-  cheer: { src: cheerSheet, frames: 35 }, // 20帧喝彩
-  touch: { src: touchSheet, frames: 50 }, // 20帧空闲摸头
-  wink: { src: winkSheet, frames: 40 }, // 20帧默认态wink
-  thinking: { src: thinkingSheet, frames: 61 }, // 空闲+待确认+空闲（问号冒出来再收回去，首尾都是空闲姿态，可无缝循环）
-  eatIn: { src: eatInSheet, frames: 7 }, // 吃 新动态(前)
-  eat: { src: eatSheet, frames: 13 }, // 吃 新动态(中)
-  eatOut: { src: eatOutSheet, frames: 14 }, // 吃 新动态(后)
-  idleToEdgeLeft: { src: idleToEdgeLeftSheet, frames: 8, slide: 'in' }, // 空闲-左吸边
-  edgeLeft: { src: edgeLeftSheet, frames: 24, slide: 'hold' }, // 12左吸边
-  edgeLeftToIdle: { src: edgeLeftToIdleSheet, frames: 8, slide: 'out' }, // 左吸边-空闲
-  idleToEdgeRight: { src: idleToEdgeRightSheet, frames: 8, slide: 'in' }, // 空闲-右吸边
-  edgeRight: { src: edgeRightSheet, frames: 24, slide: 'hold' }, // 12右吸边
-  edgeRightToIdle: { src: edgeRightToIdleSheet, frames: 8, slide: 'out' }, // 右吸边-空闲
+  idle: { src: idleSheet, frames: 58, scale: 0.88, dx: -0.28, dy: 0.44 }, // 20帧空闲态
+  working: { src: workingSheet, frames: 36, scale: 0.88, dx: -1.38, dy: 0.44 }, // 工作中2
+  idleToWorking: { src: idleToWorkingSheet, frames: 6, scale: 0.88, dx: -0.72, dy: 0.22 }, // 空闲-工作中
+  workingToIdle: { src: workingToIdleSheet, frames: 6, scale: 0.88, dx: -0.72, dy: 0 }, // 工作中-空闲
+  confirm: { src: confirmSheet, frames: 53, scale: 0.85, dx: -0.08, dy: -0.64 }, // 20帧待确认
+  // 只用最后两帧：前段的大绿勾会挡住脸，最后两帧是完整笑脸（放慢到 4fps，像在轻轻眨眼）
+  done: { src: doneSheet, frames: 2, start: 51, fps: 4, scale: 0.9, dx: -0.5, dy: -0.23 }, // 20帧已完成
+  sleep: { src: sleepSheet, frames: 60, scale: 0.85, dx: -0.5, dy: 0.42 }, // 20休眠态
+  idleToSleep: { src: idleToSleepSheet, frames: 10, scale: 0.85, dx: -0.5, dy: 0 }, // 空闲态 - 休眠态
+  sleepToIdle: { src: sleepToIdleSheet, frames: 6, scale: 0.85, dx: -0.5, dy: 0 }, // 休眠态-空闲
+  greeting: { src: greetingSheet, frames: 61, scale: 0.85, dx: 0.77, dy: 2.98 }, // 打招呼
+  cheer: { src: cheerSheet, frames: 35, scale: 0.68, dx: -0.5, dy: 0 }, // 20帧喝彩
+  touch: { src: touchSheet, frames: 50, scale: 0.86, dx: -0.93, dy: 1.94 }, // 20帧空闲摸头
+  wink: { src: winkSheet, frames: 40, scale: 0.82, dx: -2.35, dy: 2.87 }, // 20帧默认态wink
+  thinking: { src: thinkingSheet, frames: 61, scale: 0.85, dx: -0.08, dy: -0.64 }, // 空闲+待确认+空闲（问号冒出来再收回去，首尾都是空闲姿态，可无缝循环）
+  eatIn: { src: eatInSheet, frames: 7, scale: 0.68, dx: -0.67, dy: 0.85 }, // 吃 新动态(前)
+  eat: { src: eatSheet, frames: 13, scale: 0.68, dx: -0.5, dy: 1.36 }, // 吃 新动态(中)
+  eatOut: { src: eatOutSheet, frames: 14, scale: 0.68, dx: -0.5, dy: 1.36 }, // 吃 新动态(后)
 } satisfies Record<string, Clip>;
 
 interface MoodClips {
@@ -77,8 +78,6 @@ interface MoodClips {
   loop: Clip;
   /** 离开时的过渡 */
   exit?: Clip;
-  /** 吸边状态：头像要滑到哪一侧 */
-  edge?: EdgeSide;
 }
 
 /**
@@ -99,15 +98,7 @@ const MOOD_CLIPS: Record<YuanbaoMood, MoodClips> = {
   eat: { enter: CLIPS.eatIn, loop: CLIPS.eat, exit: CLIPS.eatOut },
   touch: { loop: CLIPS.touch },
   wink: { loop: CLIPS.wink },
-  edgeLeft: { enter: CLIPS.idleToEdgeLeft, loop: CLIPS.edgeLeft, exit: CLIPS.edgeLeftToIdle, edge: 'left' },
-  edgeRight: { enter: CLIPS.idleToEdgeRight, loop: CLIPS.edgeRight, exit: CLIPS.edgeRightToIdle, edge: 'right' },
 };
-
-/** 播放队列里的一段：吸边动画还要知道往哪一侧滑 */
-interface Stage {
-  clip: Clip;
-  edge?: EdgeSide;
-}
 
 interface YuanbaoAvatarProps {
   mood: YuanbaoMood;
@@ -115,7 +106,7 @@ interface YuanbaoAvatarProps {
   size?: number;
   /** 同一个状态要重播时换一个值（如连续摸头） */
   replayKey?: number;
-  /** 一次性动画（打招呼 / 喝彩 / 吃新动态 / 吸边…）播完时回调 */
+  /** 一次性动画（打招呼 / 喝彩 / 吃新动态…）播完时回调 */
   onOnceEnd?: () => void;
   className?: string;
 }
@@ -124,7 +115,7 @@ interface YuanbaoAvatarProps {
  * 元宝头像：雪碧图逐帧动画
  * 状态切换时先播上一个状态的退出过渡、再播新状态的进入过渡，最后进入循环；
  * 用 requestAnimationFrame 直接改 background-position，不触发 React 重渲染。
- * 吸边动画里头像按进度平移到所在窗口的左 / 右边缘（雪碧图的形象本身就被裁在那一侧的边上）。
+ * 每段动画按 Clip 上的 scale / dx / dy 缩放居中：所有状态的形象一样大，且都完整落在头像槽里。
  * 系统开了「减少动态效果」时只显示循环动画的第一帧。
  */
 export const YuanbaoAvatar: FC<YuanbaoAvatarProps> = ({ mood, size = 48, replayKey = 0, onOnceEnd, className }) => {
@@ -151,52 +142,32 @@ export const YuanbaoAvatar: FC<YuanbaoAvatarProps> = ({ mood, size = 48, replayK
     const from = previousMood.current ? MOOD_CLIPS[previousMood.current] : undefined;
     previousMood.current = mood;
 
-    /** 头像从原位滑到窗口 side 一侧边缘需要的位移（量的时候先去掉当前平移） */
-    const measureShift = (side: EdgeSide) => {
-      const windowNode = node.closest('aside');
-      if (!windowNode) {
-        return 0;
-      }
-      const previous = node.style.transform;
-      node.style.transform = 'none';
-      const outer = windowNode.getBoundingClientRect();
-      const inner = node.getBoundingClientRect();
-      node.style.transform = previous;
-      return side === 'left' ? outer.left - inner.left : outer.right - inner.right;
-    };
-    const shifts: Partial<Record<EdgeSide, number>> = {};
-
-    const showFrame = ({ clip, edge }: Stage, frame: number) => {
-      const rows = Math.ceil(clip.frames / COLUMNS);
+    const showFrame = (clip: Clip, frame: number) => {
+      const start = clip.start ?? 0;
+      const rows = Math.ceil((start + clip.frames) / COLUMNS);
+      const frameIndex = start + frame;
       node.style.backgroundImage = `url(${clip.src})`;
       node.style.backgroundSize = `${COLUMNS * size}px ${rows * size}px`;
-      node.style.backgroundPosition = `${-(frame % COLUMNS) * size}px ${-Math.floor(frame / COLUMNS) * size}px`;
-      if (!edge || !clip.slide) {
-        node.style.transform = '';
-        return;
-      }
-      shifts[edge] ??= measureShift(edge);
-      const progress = (frame + 1) / clip.frames;
-      const ratio = clip.slide === 'in' ? progress : clip.slide === 'out' ? 1 - progress : 1;
-      node.style.transform = `translateX(${(shifts[edge] ?? 0) * ratio}px)`;
+      node.style.backgroundPosition = `${-(frameIndex % COLUMNS) * size}px ${-Math.floor(frameIndex / COLUMNS) * size}px`;
+      node.style.transform = `translate(${clip.dx ?? 0}px, ${clip.dy ?? 0}px) scale(${clip.scale ?? 1})`;
     };
 
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      showFrame({ clip: target.loop }, 0);
+      showFrame(target.loop, 0);
       if (once) {
         onOnceEndRef.current?.();
       }
       return undefined;
     }
 
-    const queue: Stage[] = [];
+    const queue: Clip[] = [];
     if (from?.exit) {
-      queue.push({ clip: from.exit, edge: from.edge });
+      queue.push(from.exit);
     }
     if (target.enter) {
-      queue.push({ clip: target.enter, edge: target.edge });
+      queue.push(target.enter);
     }
-    queue.push({ clip: target.loop, edge: target.edge });
+    queue.push(target.loop);
     let stageIndex = 0;
     let frame = 0;
     let last = performance.now();
@@ -207,11 +178,12 @@ export const YuanbaoAvatar: FC<YuanbaoAvatarProps> = ({ mood, size = 48, replayK
     const step = (now: number) => {
       elapsed += now - last;
       last = now;
-      while (elapsed >= 1000 / FPS) {
-        elapsed -= 1000 / FPS;
+      const stage = queue[stageIndex];
+      const stepTime = 1000 / (stage.fps ?? FPS);
+      while (elapsed >= stepTime) {
+        elapsed -= stepTime;
         frame += 1;
-        const stage = queue[stageIndex];
-        if (frame < stage.clip.frames) {
+        if (frame < stage.frames) {
           continue;
         }
         if (stageIndex < queue.length - 1) {
@@ -219,7 +191,7 @@ export const YuanbaoAvatar: FC<YuanbaoAvatarProps> = ({ mood, size = 48, replayK
           frame = 0;
         } else if (once) {
           // 只播一次：停在最后一帧，交给外面切到下一个状态
-          showFrame(stage, stage.clip.frames - 1);
+          showFrame(stage, stage.frames - 1);
           onOnceEndRef.current?.();
           return;
         } else {

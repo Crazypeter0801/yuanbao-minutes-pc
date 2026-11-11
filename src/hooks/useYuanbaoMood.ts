@@ -8,13 +8,11 @@ import {
   resolveMood,
   type YuanbaoMood,
 } from '@/data/agentTasks';
-import type { AgentDockControl } from '@/hooks/useAgentDock';
 import type { AgentTasksControl } from '@/hooks/useAgentTasks';
 import type { ChatMessage } from '@/types/chat';
 
 interface MoodOptions {
   agent: AgentTasksControl;
-  dock: AgentDockControl;
   messages: ChatMessage[];
   /** 正在回答用户的提问 */
   thinking: boolean;
@@ -50,10 +48,10 @@ const ACTIVITY_THROTTLE = 400;
  *
  * - 常驻状态来自 resolveMood：空闲 / 工作中（按任务类型换动画）/ 思考 / 待确认 / 已完成 / 休眠；
  * - 空闲连续 IDLE_SLEEP_DELAY 没有任何操作（鼠标、键盘、滚轮、新消息）就打瞌睡，有操作醒来；
- * - 空闲时偶尔眨眼；点头像摸头；有新内容进来吃一口；吸附到左 / 右侧时贴边；
+ * - 空闲时偶尔眨眼；点头像摸头；有新内容进来吃一口；
  * - 一次性反应只在空闲 / 休眠时播，忙着干活或等确认时丢掉；演示面板的 force 触发不受限。
  */
-export function useYuanbaoMood({ agent, dock, messages, thinking, listening }: MoodOptions): YuanbaoMoodControl {
+export function useYuanbaoMood({ agent, messages, thinking, listening }: MoodOptions): YuanbaoMoodControl {
   const base = resolveMood({
     greeted: agent.greeted,
     tasks: agent.tasks,
@@ -141,15 +139,6 @@ export function useYuanbaoMood({ agent, dock, messages, thinking, listening }: M
       play(reaction.mood, { force: reaction.force });
     }
   }, [agent.reaction, play]);
-
-  // 吸附到会议窗口的左 / 右侧：贴边
-  const previousDockMode = useRef(dock.mode);
-  useEffect(() => {
-    if (previousDockMode.current === 'floating' && dock.mode === 'docked') {
-      play(dock.side === 'left' ? 'edgeLeft' : 'edgeRight');
-    }
-    previousDockMode.current = dock.mode;
-  }, [dock.mode, dock.side, play]);
 
   // 干活 / 等确认时没空：把还没播完的非强制反应收掉
   useEffect(() => {

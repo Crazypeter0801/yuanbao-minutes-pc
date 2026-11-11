@@ -1,12 +1,14 @@
 /*
  * 元宝消息富文本
- * 正文 14/22：会中边听边看，12、13 号在侧栏里偏小，统一提到 14，行距同步放宽；
+ * 正文基准：14/22（标准档），会中边听边看，12、13 号在侧栏里偏小；
+ * 字号 / 行高 / 字体跟随标题栏「更多」里的阅读设置（--chat-font-size / --chat-line-height / --chat-font-family）。
  * 段落、列表、小标题之间给 8px 间距，块与块才分得开。
  */
 
 .rich {
-  font-size: 14px;
-  line-height: 22px;
+  font-family: var(--chat-font-family);
+  font-size: var(--chat-font-size);
+  line-height: var(--chat-line-height);
   color: var(--wm-color-text-primary);
   word-break: break-word;
 
@@ -54,16 +56,16 @@
 }
 
 /* 人名胶囊（Figma 8:1904 light 稳态：12 号字配 18 高、圆角 9、padding 0 4、底 蓝 15%）
-   正文提到 14/22 后按同一比例放大到 13 号字、20 高、圆角 10，避免胶囊在正文里显得缩一截；
+   随正文基准等比放大：0.93 倍字号、1.43 倍行高，避免胶囊在正文里显得缩一截；
    行内出现，可落在句中；用 inline-block 才能吃到固定高度，基线贴正文底部 */
 .mention {
   display: inline-block;
-  height: 20px;
+  height: calc(var(--chat-font-size) * 1.43);
   padding: 0 4px;
-  border-radius: 10px;
+  border-radius: calc(var(--chat-font-size) * 0.71);
   background-color: var(--wm-color-background-twenty-third);
-  font-size: 13px;
-  line-height: 20px;
+  font-size: calc(var(--chat-font-size) * 0.93);
+  line-height: calc(var(--chat-font-size) * 1.43);
   color: var(--wm-color-text-primary);
   vertical-align: text-bottom;
   white-space: nowrap;
