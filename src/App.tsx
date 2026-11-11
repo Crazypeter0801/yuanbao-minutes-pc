@@ -22,8 +22,14 @@ import { buildPollPostedMessage, teamBuildingPoll } from "@/data/polls";
 import { SHARE_TO_GROUP_LABEL } from "@/data/meetingSession";
 import { topicAt } from "@/data/meetingTopics";
 import { matchScenario } from "@/data/proactiveScenarios";
+import {
+  buildWhiteboardDoneMessage,
+  buildWhiteboardIntroMessage,
+  isWhiteboardDrawRequest,
+} from "@/data/whiteboardScenario";
 import { buildScreenshotNote, meetingShotSrc } from "@/data/yuanbaoContent";
 import { useYuanbaoSession } from "@/hooks/useYuanbaoSession";
+import { WhiteboardOverlay } from "@/components/whiteboard/WhiteboardOverlay";
 import type { ArtifactItem } from "@/types/artifact";
 import styles from "./App.module.scss";
 
@@ -57,6 +63,9 @@ export default function App() {
   /** 会中已识别出的话题数：0 时「正在帮你记」卡片显示识别中，之后逐条出现在「当前正在聊」下 */
   const [topicCount, setTopicCount] = useState(0);
   const noteTopics = Array.from({ length: topicCount }, (_, index) => topicAt(index));
+  /** 元宝画白板：非空时主讲人画面上盖一层批注白板；runKey 每次 +1 重播 */
+  const [whiteboard, setWhiteboard] = useState<{ runKey: number } | null>(null);
+  const whiteboardRun = useRef(0);
 
   /**
    * 创建产物：本次生成的文件排最前；第一次额外附带一组会中已有文件。
@@ -77,6 +86,18 @@ export default function App() {
   };
 
   /**
+   * 元宝画白板：先按普通任务出用户气泡、元宝想一下再回；
+   * 回复落地时把白板盖到主讲人画面上逐笔绘制，鼠标淡出后往对话里补一句「已画好」。
+   */
+  const startWhiteboard = (text: string) => {
+    chat.runTask(text, () => {
+      whiteboardRun.current += 1;
+      setWhiteboard({ runKey: whiteboardRun.current });
+      chat.push(buildWhiteboardIntroMessage());
+    });
+  };
+
+  /**
    * 输入框提交：先看是不是要生成文件，再过一遍演示场景，都没命中才当普通提问。
    * 主动开口的场景（刚入会 / 别人提到 / 会议将结束）只追加元宝消息，不出现用户气泡；
    * 投票这类任务场景用场景自带的 userText 提问，同时把确认弹窗摊开。
@@ -85,6 +106,11 @@ export default function App() {
     const shared = lastArtifact.current;
     if (text === SHARE_TO_GROUP_LABEL && shared) {
       chat.runTask(text, () => chat.push(buildArtifactSharedMessage(shared)));
+      return;
+    }
+
+    if (isWhiteboardDrawRequest(text)) {
+      startWhiteboard(text);
       return;
     }
 
@@ -161,6 +187,17 @@ export default function App() {
             <MeetingWindow
               yuanbaoOpen={sidebarOpen}
               onToggleYuanbao={() => setSidebarOpen((open) => !open)}
+              stageOverlay={
+                whiteboard && (
+                  <WhiteboardOverlay
+                    runKey={whiteboard.runKey}
+                    onComplete={() => {
+                      chat.push(buildWhiteboardDoneMessage());
+                      agent.react("cheer");
+                    }}
+                  />
+                )
+              }
             />
             {pollOpen && (
               <PollComposer
@@ -203,6 +240,15 @@ export default function App() {
           <DemoToolbar
             onCommand={runCommand}
             actions={[
+              {
+                key: "whiteboard",
+                label: "元宝画白板",
+                // 示例说法本身就带触发词，走和输入框一样的链路
+                onClick: () => {
+                  setSidebarOpen(true);
+                  handleSubmit("帮我在白板上画一个灰度放量的原理流程图");
+                },
+              },
               {
                 key: "task-states",
                 label: "演示任务状态",

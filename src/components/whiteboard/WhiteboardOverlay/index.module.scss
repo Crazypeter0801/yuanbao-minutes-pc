@@ -1,0 +1,187 @@
+/*
+ * 元宝画白板：盖在主讲人画面上的一层批注白板。
+ * 白底点阵 + 底部工具栏 + SVG 逐笔绘制的流程图 + 带元宝头像的 AI 鼠标。
+ * 整层不接收鼠标事件，会议区本身的交互不受影响。
+ */
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 320ms ease-out;
+}
+
+.overlayStarted {
+  opacity: 1;
+}
+
+/* 共享画面的白板底：24 的点阵网格，像常见的在线白板 */
+.board {
+  position: absolute;
+  inset: 0;
+  background-color: var(--wm-color-whiteboard-board);
+  background-image: radial-gradient(
+    circle,
+    var(--wm-color-whiteboard-grid) 1px,
+    var(--wm-color-whiteboard-grid-fade) 1.4px
+  );
+  background-size: 24px 24px;
+  background-position: -4px -4px;
+}
+
+.canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ---------- 流程图 ---------- */
+
+.shape {
+  fill: var(--wm-color-whiteboard-fill);
+  stroke: var(--wm-color-whiteboard-ink);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.edge {
+  fill: none;
+  stroke: var(--wm-color-whiteboard-ink);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.arrowHead {
+  fill: var(--wm-color-whiteboard-ink);
+}
+
+.label {
+  fill: var(--wm-color-whiteboard-ink);
+  font-family: var(--wm-font-family);
+  font-weight: 500;
+}
+
+.edgeLabel {
+  fill: var(--wm-color-whiteboard-ink-soft);
+  font-family: var(--wm-font-family);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+/* ---------- 批注工具栏 ---------- */
+
+.toolbar {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  display: flex;
+  padding: 5px;
+  border-radius: 12px;
+  background-color: var(--wm-color-whiteboard-tool-fill);
+  box-shadow: var(--wm-shadow-whiteboard-tool);
+  transform: translateX(-50%);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.tool {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  color: var(--wm-color-whiteboard-tool-icon);
+  transition: background-color 120ms ease-out, color 120ms ease-out, transform 90ms ease-out;
+}
+
+.tool + .tool {
+  margin-left: 6px;
+}
+
+/* 被选中的工具：浅蓝底 + 品牌蓝图标 */
+.toolActive {
+  background-color: var(--wm-color-whiteboard-tool-active);
+  color: var(--wm-color-brand-primary);
+}
+
+/* AI 鼠标按下的那一下 */
+.toolPressed {
+  background-color: var(--wm-color-whiteboard-tool-pressed);
+  transform: scale(0.9);
+}
+
+/* 点击涟漪：从指针尖向外扩一圈再淡出 */
+.ripple {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border: 1.5px solid var(--wm-color-whiteboard-ripple-line);
+  border-radius: 50%;
+  background-color: var(--wm-color-whiteboard-ripple-fill);
+  animation: whiteboard-ripple 520ms ease-out forwards;
+}
+
+@keyframes whiteboard-ripple {
+  from {
+    opacity: 0.9;
+    transform: scale(0.2);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.55);
+  }
+}
+
+/* ---------- AI 鼠标 ---------- */
+
+.cursor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  opacity: 0;
+  transition: opacity 420ms ease-out;
+  will-change: transform;
+}
+
+.cursorVisible {
+  opacity: 1;
+}
+
+.pointer {
+  position: relative;
+  z-index: 2;
+  filter: drop-shadow(0 2px 3px var(--wm-color-whiteboard-cursor-shadow));
+  transform-origin: 3px 2px;
+  transition: transform 90ms ease-out;
+}
+
+.pointerBody {
+  fill: var(--wm-color-whiteboard-cursor);
+  stroke: var(--wm-color-whiteboard-cursor-line);
+  stroke-width: 1.2;
+  stroke-linejoin: round;
+}
+
+/* 按住左键拖动时指针略收紧，像真的按下去 */
+.cursorPressing .pointer {
+  transform: scale(0.86);
+}
+
+/* 元宝小头像挂在指针右下角 */
+.cursorAvatar {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  display: flex;
+  filter: drop-shadow(0 2px 4px var(--wm-color-whiteboard-cursor-shadow));
+}

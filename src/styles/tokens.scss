@@ -155,6 +155,24 @@
   --wm-color-follow-up-fill: #ffffff;
   --wm-color-follow-up-fill-hover: #f3f3f4;
 
+  /* 元宝画白板（演示）：共享画面上的批注层 */
+  --wm-color-whiteboard-board: #ffffff;
+  --wm-color-whiteboard-grid: rgba(31, 45, 61, 0.09);
+  --wm-color-whiteboard-grid-fade: rgba(31, 45, 61, 0);
+  --wm-color-whiteboard-ink: #26303f;
+  --wm-color-whiteboard-ink-soft: rgba(38, 48, 63, 0.62);
+  --wm-color-whiteboard-fill: rgba(0, 102, 255, 0.05);
+  --wm-color-whiteboard-tool-fill: rgba(255, 255, 255, 0.94);
+  --wm-color-whiteboard-tool-icon: #303440;
+  --wm-color-whiteboard-tool-active: rgba(0, 102, 255, 0.12);
+  --wm-color-whiteboard-tool-pressed: rgba(0, 102, 255, 0.24);
+  --wm-color-whiteboard-ripple-line: rgba(0, 102, 255, 0.55);
+  --wm-color-whiteboard-ripple-fill: rgba(0, 102, 255, 0.16);
+  --wm-color-whiteboard-cursor: #1f2937;
+  --wm-color-whiteboard-cursor-line: #ffffff;
+  --wm-color-whiteboard-cursor-shadow: rgba(15, 23, 42, 0.28);
+  --wm-shadow-whiteboard-tool: 0 4px 16px rgba(15, 23, 42, 0.14);
+
   /* 任务条 / 任务列表 / 长程任务详情（Figma 197:42 方案稿） */
   --wm-color-task-title: #1f2329;
   --wm-color-task-text-secondary: #8f959e;
