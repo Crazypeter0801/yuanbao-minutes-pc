@@ -1,0 +1,78 @@
+/* 折叠的补充信息卡：白底 + 0.5px 内描边，比普通气泡更轻，折叠时只占一行 */
+.card {
+  width: 100%;
+  max-width: 100%;
+  border-radius: 12px;
+  background-color: var(--wm-color-background-bubble);
+  box-shadow: inset 0 0 0 0.5px var(--wm-color-line);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+}
+
+.spark {
+  flex: 0 0 auto;
+  display: inline-flex;
+  margin-right: 6px;
+  color: #3370ff;
+}
+
+.title {
+  flex: 0 0 auto;
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--wm-color-text-primary);
+  white-space: nowrap;
+}
+
+.hint {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-left: 8px;
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--wm-color-text-tertiary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.action {
+  flex: 0 0 auto;
+  margin-left: auto;
+  padding-left: 8px;
+  font-size: 12px;
+  line-height: 20px;
+  color: #3370ff;
+}
+
+.caret {
+  flex: 0 0 auto;
+  display: inline-flex;
+  margin-left: 2px;
+  color: #3370ff;
+  transition: transform 160ms ease-out;
+}
+
+.caretOpen {
+  transform: rotate(180deg);
+}
+
+.body {
+  padding: 0 12px 10px;
+  border-top: 0.5px solid var(--wm-color-line);
+  padding-top: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .caret {
+    transition: none;
+  }
+}

@@ -17,12 +17,13 @@ import { ChatInput } from "@/components/sidebar/ChatInput";
 import { ChatList } from "@/components/sidebar/ChatList";
 import { MessageStream } from "@/components/sidebar/MessageStream";
 import { NotePill } from "@/components/sidebar/NotePill";
-import { SidebarHeader } from "@/components/sidebar/SidebarHeader";
-import { SidebarShell } from "@/components/sidebar/SidebarShell";
+import { AgentTitleBar } from "@/components/agent/AgentTitleBar";
+import { AgentWindowShell } from "@/components/agent/AgentWindowShell";
 import { buildCardResult } from "@/data/interactiveCards";
 import { buildRecordingStateNote } from "@/data/yuanbaoContent";
 import { useListening } from "@/hooks/useListening";
 import { useToast } from "@/hooks/useToast";
+import type { AgentDockControl } from "@/hooks/useAgentDock";
 import type { YuanbaoSession } from "@/hooks/useYuanbaoSession";
 import styles from "./index.module.scss";
 
@@ -31,6 +32,8 @@ interface YuanbaoSidebarProps {
   chat: YuanbaoSession;
   /** 元宝本轮产出的文件；为空时不出现产物入口 */
   artifacts: ArtifactItem[];
+  /** 吸附 / 分离状态（由 App 持有，会议内容是否让位也取决于它） */
+  dock: AgentDockControl;
   /** 关闭侧栏 */
   onClose: () => void;
   /** 输入框提交：App 层会先匹配生成文件与演示场景，未命中才走普通提问 */
@@ -40,7 +43,8 @@ interface YuanbaoSidebarProps {
 }
 
 /**
- * 元宝 Agent 对话区 · V1（Figma 257:1540 右侧，底栏按 Figma 36:2249）
+ * 元宝 personal agent 窗口 · 框架改版原型（对话区与底栏沿用 Figma 257:1540 / 36:2249）
+ * 外壳从会议窗口里的侧栏改成独立窗口：自己的标题栏、品牌、会话切换条（会议是元宝主端的「腾讯会议」分组）。
  *
  * 输入框上方一行：左边是长程任务（「元宝正在记笔记」，多个时从左往右排），右边固定是文件夹。
  * 文件夹可展开成整行浮层，展开时左边的任务胶囊让位。
@@ -50,6 +54,7 @@ interface YuanbaoSidebarProps {
 export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
   chat,
   artifacts,
+  dock,
   onClose,
   onSubmit,
   noteTopics,
@@ -116,11 +121,13 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
   const send = (text: string) => (onSubmit ? onSubmit(text) : chat.ask(text));
 
   return (
-    <SidebarShell toast={toast}>
-      <SidebarHeader
-        onPip={() => showToast("已在独立窗口打开（演示）")}
-        menuItems={menuItems}
+    <AgentWindowShell toast={toast} dock={dock}>
+      <AgentTitleBar
+        dock={dock}
         onClose={onClose}
+        onOpenMain={() => showToast("已在元宝主端打开「腾讯会议」分组（演示）")}
+        onPickSession={(title) => showToast(`已切换到「${title}」（演示）`)}
+        menuItems={menuItems}
       />
 
       {/* 消息流与底栏叠在一起：对话可以滚到底栏后面，被渐变底一点点盖掉 */}
@@ -184,6 +191,6 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
           />
         </div>
       </div>
-    </SidebarShell>
+    </AgentWindowShell>
   );
 };
