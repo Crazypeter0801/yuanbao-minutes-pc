@@ -11,6 +11,7 @@ import type { PopMenuItem } from "@/components/common/PopMenu";
 import { NOTE_ARTIFACT_ID } from "@/data/artifacts";
 import type { ArtifactItem } from "@/types/artifact";
 import type { BubbleCard } from "@/types/chat";
+import { AiDisclaimer } from "@/components/sidebar/AiDisclaimer";
 import { ArtifactEntry } from "@/components/sidebar/ArtifactEntry";
 import { ProgressiveBlur } from "@/components/common/ProgressiveBlur";
 import { ChatInput } from "@/components/sidebar/ChatInput";
@@ -21,11 +22,12 @@ import { AgentTitleBar } from "@/components/agent/AgentTitleBar";
 import { AgentWindowShell } from "@/components/agent/AgentWindowShell";
 import { TaskDetail } from "@/components/agent/TaskDetail";
 import { TaskTray } from "@/components/agent/TaskTray";
-import { resolveMood, resolveMoodText, type AgentTask } from "@/data/agentTasks";
+import { resolveMoodText, type AgentTask } from "@/data/agentTasks";
 import { buildCardResult } from "@/data/interactiveCards";
 import { buildRecordingStateNote } from "@/data/yuanbaoContent";
 import { useListening } from "@/hooks/useListening";
 import { useToast } from "@/hooks/useToast";
+import { useYuanbaoMood } from "@/hooks/useYuanbaoMood";
 import type { AgentDockControl } from "@/hooks/useAgentDock";
 import type { AgentTasksControl } from "@/hooks/useAgentTasks";
 import type { YuanbaoSession } from "@/hooks/useYuanbaoSession";
@@ -49,8 +51,8 @@ interface YuanbaoSidebarProps {
 }
 
 /**
- * 元宝 personal agent 窗口（视觉 Figma 214:10684，任务状态交互 Figma 197:42）
- * 外壳是和会议并排的独立窗口：标题栏左侧是「头像 + 元宝 + 状态文字」胶囊，头像用雪碧图跟着任务状态动。
+ * 元宝 personal agent 窗口（视觉 Figma 215:16455，任务状态交互 Figma 197:42）
+ * 外壳是和会议并排的独立窗口（纯白底）：标题栏左侧是「头像 + 元宝 + 状态文字」，头像用雪碧图跟着任务状态和用户操作动。
  *
  * 输入框上方一行：左边是任务条（「N 个任务进行中」，可展开任务列表）和记笔记胶囊，右边固定是文件夹。
  * 文件夹、任务列表都向上展开，展开一个时另一个让位；点进行中的长程任务，对话区换成任务详情。
@@ -130,10 +132,12 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
 
   const send = (text: string) => (onSubmit ? onSubmit(text) : chat.ask(text));
 
-  const mood = resolveMood({
-    greeted: agent.greeted,
-    tasks: agent.tasks,
-    celebrating: agent.celebrating,
+  // 头像状态：任务推出的常驻状态 + 打瞌睡 / 眨眼 / 摸头 / 吃新动态 / 吸边 / 喝彩这些反应
+  const { mood, replayKey, onOnceEnd, touch } = useYuanbaoMood({
+    agent,
+    dock,
+    messages: chat.messages,
+    thinking: chat.isThinking,
     listening: isListening,
   });
   const detailTask = agent.tasks.find((task) => task.id === detailTaskId);
@@ -158,7 +162,9 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
         dock={dock}
         mood={mood}
         statusText={resolveMoodText(mood, agent.tasks)}
-        onGreetingEnd={agent.finishGreeting}
+        replayKey={replayKey}
+        onOnceEnd={onOnceEnd}
+        onTouch={touch}
         onClose={onClose}
         onOpenMain={() => showToast("已在元宝主端打开「腾讯会议」分组（演示）")}
         menuItems={menuItems}
@@ -189,6 +195,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
             className={styles.stream}
             scrollKey={`${chat.messages.length}-${chat.isThinking}`}
           >
+            <AiDisclaimer />
             <ChatList
               messages={chat.messages}
               shape="round"
@@ -204,7 +211,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
           </MessageStream>
         )}
 
-        <ProgressiveBlur className={styles.blur} tint="rgba(240, 242, 247, 0.28)" />
+        <ProgressiveBlur className={styles.blur} tint="var(--wm-color-blur-tint-agent)" />
 
         <div className={styles.footer} ref={footerRef}>
           {/*

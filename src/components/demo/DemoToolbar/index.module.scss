@@ -77,6 +77,11 @@
   box-shadow: var(--wm-shadow-input-menu), inset 0 0 0 0.5px var(--wm-color-line);
 }
 
+/* 动作菜单（元宝表情）条目文字更长，放宽一点 */
+.menuWide {
+  width: 280px;
+}
+
 .group + .group {
   margin-top: 8px;
 }

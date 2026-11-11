@@ -15,6 +15,7 @@ import {
   resolveArtifactTitle,
   type ArtifactKind,
 } from "@/data/artifacts";
+import { MOOD_DEMO_ITEMS } from "@/data/agentTasks";
 import { buildAutoNote } from "@/data/autoNotes";
 import type { CommandItem } from "@/data/commands";
 import { buildPollPostedMessage, teamBuildingPoll } from "@/data/polls";
@@ -71,6 +72,8 @@ export default function App() {
     );
     lastArtifact.current = created;
     chat.push(buildArtifactCreatedMessage(created));
+    // 文件生成好了：元宝喝一声彩
+    agent.react("cheer");
   };
 
   /**
@@ -166,6 +169,7 @@ export default function App() {
                 onSubmit={() => {
                   setPollOpen(false);
                   chat.push(buildPollPostedMessage(teamBuildingPoll.title));
+                  agent.react("cheer");
                 }}
               />
             )}
@@ -207,6 +211,21 @@ export default function App() {
                   setSidebarOpen(true);
                   agent.runDemo();
                 },
+              },
+            ]}
+            actionMenus={[
+              {
+                key: "yuanbao-moods",
+                label: "元宝表情",
+                // 逐个触发头像的每一种表情 / 动画；侧栏关着就先打开
+                items: MOOD_DEMO_ITEMS.map(({ mood, label }) => ({
+                  key: mood,
+                  label,
+                  onClick: () => {
+                    setSidebarOpen(true);
+                    agent.react(mood, { force: true });
+                  },
+                })),
               },
             ]}
           />

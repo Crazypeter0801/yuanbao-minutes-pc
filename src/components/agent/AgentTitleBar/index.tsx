@@ -16,8 +16,12 @@ interface AgentTitleBarProps {
   mood: YuanbaoMood;
   /** 名称下方的状态文字：待命 / 正在生成会议纪要… / 等你确认 / 任务已完成 / 休息中 */
   statusText: string;
-  /** 打招呼动画播完 */
-  onGreetingEnd: () => void;
+  /** 同一个状态要重播时递增（连续摸头） */
+  replayKey: number;
+  /** 一次性动画（打招呼 / 喝彩 / 吃新动态 / 吸边…）播完 */
+  onOnceEnd: () => void;
+  /** 点一下头像：摸头 */
+  onTouch: () => void;
   /** 关闭元宝窗口（和底部元宝按钮是同一个开关） */
   onClose: () => void;
   /** 在元宝主端打开 */
@@ -27,16 +31,19 @@ interface AgentTitleBarProps {
 }
 
 /**
- * 元宝窗口标题栏（Figma 214:11040）
- * 左：标题胶囊（元宝头像 + 名称 + 状态文字）；右：独立窗口 / 更多 / 关闭，三个中性灰图标。
- * 没有 macOS 红黄绿圆点；按住这一行（按钮除外）拖动即可把元宝从会议窗口分离出来，拖回会议右缘松手再吸附回去。
- * 头像用雪碧图跟着任务状态动（Figma 197:42 方案 A：顶部头像集成），状态文字常驻在名称下方。
+ * 元宝窗口标题栏（Figma 215:16958）
+ * 左：元宝头像 + 名称 + 状态文字（没有胶囊底，直接落在白色窗口上）；右：独立窗口 / 更多 / 关闭，中性灰图标。
+ * 215 稿里右侧只剩独立窗口和关闭；「更多」里挂着立即总结、导出纪要等功能入口，这里保留，不随稿删除。
+ * 没有 macOS 红黄绿圆点；按住这一行（按钮除外）拖动即可把元宝从会议窗口分离出来，拖到会议左 / 右缘松手再吸附回去。
+ * 头像用雪碧图跟着任务状态动（Figma 197:42 方案 A：顶部头像集成），点一下头像会被摸头；状态文字常驻在名称下方。
  */
 export const AgentTitleBar: FC<AgentTitleBarProps> = ({
   dock,
   mood,
   statusText,
-  onGreetingEnd,
+  replayKey,
+  onOnceEnd,
+  onTouch,
   onClose,
   onOpenMain,
   menuItems,
@@ -54,9 +61,13 @@ export const AgentTitleBar: FC<AgentTitleBarProps> = ({
       onPointerDown={dock.onTitlePointerDown}
       title="按住拖动，可把元宝从会议窗口分离出来"
     >
-      {/* 标题胶囊（Figma 215:16125）：头像压在左侧 52 的留白里，文字两行 */}
-      <div className={styles.pill}>
-        <YuanbaoAvatar className={styles.avatar} mood={mood} onOnceEnd={onGreetingEnd} />
+      {/* 标题（Figma 215:17019 / 215:16997）：头像 33×36 + 两行文字 */}
+      <div className={styles.title}>
+        <div className={styles.avatarSlot} data-nodrag>
+          <Pressable className={styles.avatarTouch} onClick={onTouch} ariaLabel="摸摸元宝" title="摸摸元宝">
+            <YuanbaoAvatar className={styles.avatar} mood={mood} replayKey={replayKey} onOnceEnd={onOnceEnd} />
+          </Pressable>
+        </div>
         <div className={styles.titleText}>
           <span className={styles.name}>元宝</span>
           {/* key 跟着文案变：换状态时淡入一次 */}

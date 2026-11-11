@@ -4,9 +4,21 @@ import {
   DEMO_WORKING_TICKS,
   demoConfirmTasks,
   demoDoneTasks,
+  demoScanTasks,
   demoWorkingTasks,
   type AgentTask,
+  type YuanbaoMood,
 } from '@/data/agentTasks';
+
+/** 外部要求头像播放的一次表情（演示面板 / 文件生成 / 投票发布）；id 每次 +1，同一个表情连点也能重播 */
+export interface MoodReaction {
+  id: number;
+  mood: YuanbaoMood;
+  /** 强制播放：不管元宝当前在忙什么（演示面板用）；否则只在空闲 / 休眠时播 */
+  force: boolean;
+  /** 触发时间：侧栏刚被这次触发打开时，刚挂载的头像据此判断要不要补播 */
+  at: number;
+}
 
 export interface AgentTasksControl {
   tasks: AgentTask[];
@@ -15,7 +27,11 @@ export interface AgentTasksControl {
   /** 刚全部完成，头像播「已完成」 */
   celebrating: boolean;
   finishGreeting: () => void;
-  /** 窗口外的演示按钮：元宝依次走一遍 空闲 → 工作中 → 待确认 → 已完成 */
+  /** 最近一次外部触发的头像表情 */
+  reaction: MoodReaction | null;
+  /** 触发一次头像表情：喝彩（文件生成 / 投票发布）、演示面板逐个看动画 */
+  react: (mood: YuanbaoMood, options?: { force?: boolean }) => void;
+  /** 窗口外的演示按钮：元宝依次走一遍 空闲 → 识别画面 → 工作中 → 待确认 → 已完成 → 喝彩 */
   runDemo: () => void;
   /** 长程任务详情里的「停止任务」：已完成的步骤保留 */
   stopTask: (id: string) => void;
@@ -30,6 +46,8 @@ export function useAgentTasks(): AgentTasksControl {
   const [tasks, setTasks] = useState<AgentTask[]>([]);
   const [greeted, setGreeted] = useState(false);
   const [celebrating, setCelebrating] = useState(false);
+  const [reaction, setReaction] = useState<MoodReaction | null>(null);
+  const reactionId = useRef(0);
   const timers = useRef<number[]>([]);
   /** 用户手动停掉的任务：演示后续阶段跳过它们 */
   const stopped = useRef(new Set<string>());
@@ -60,6 +78,8 @@ export function useAgentTasks(): AgentTasksControl {
       timers.current.push(window.setTimeout(run, delay));
     };
     let at = DEMO_TIMING.idle;
+    schedule(at, () => applyPhase(demoScanTasks()));
+    at += DEMO_TIMING.scan;
     for (let tick = 0; tick < DEMO_WORKING_TICKS; tick += 1) {
       schedule(at, () => applyPhase(demoWorkingTasks(tick)));
       at += DEMO_TIMING.workingTick;
@@ -71,8 +91,16 @@ export function useAgentTasks(): AgentTasksControl {
       setCelebrating(true);
     });
     at += DEMO_TIMING.celebrate;
-    schedule(at, () => setCelebrating(false));
+    schedule(at, () => {
+      setCelebrating(false);
+      // 庆祝完回到空闲，再喝一声彩
+      setReaction({ id: (reactionId.current += 1), mood: 'cheer', force: false, at: Date.now() });
+    });
   }, [applyPhase, clearTimers]);
+
+  const react = useCallback((mood: YuanbaoMood, options?: { force?: boolean }) => {
+    setReaction({ id: (reactionId.current += 1), mood, force: options?.force ?? false, at: Date.now() });
+  }, []);
 
   const stopTask = useCallback((id: string) => {
     stopped.current.add(id);
@@ -94,5 +122,5 @@ export function useAgentTasks(): AgentTasksControl {
 
   const finishGreeting = useCallback(() => setGreeted(true), []);
 
-  return { tasks, greeted, celebrating, finishGreeting, runDemo, stopTask };
+  return { tasks, greeted, celebrating, finishGreeting, reaction, react, runDemo, stopTask };
 }
