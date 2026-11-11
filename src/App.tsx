@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
+import { useAgentDock } from "@/hooks/useAgentDock";
 import { MeetingWindow } from "@/components/meeting/MeetingWindow";
 import { PollComposer } from "@/components/poll/PollComposer";
-import { WINDOW_TOAST_ROOT_ID } from "@/components/common/Toast";
 import { DemoToolbar } from "@/components/demo/DemoToolbar";
 import { YuanbaoSidebar } from "@/components/YuanbaoSidebar";
 import {
@@ -42,6 +42,10 @@ export default function App() {
   /** 会中文件：一开始只有「元宝笔记」（来源），生成文件、记录画面后再往里加 */
   const [artifacts, setArtifacts] = useState<ArtifactItem[]>([noteArtifact]);
   const chat = useYuanbaoSession();
+  /** 会议窗口外框：吸附 / 分离都以它的位置为准 */
+  const frameRef = useRef<HTMLDivElement>(null);
+  /** 元宝窗口：吸附在会议右侧并列，或分离成浮动小窗 */
+  const dock = useAgentDock(frameRef);
   /** 会中记录素材的游标：每次手动记一条往后走一格，不重复 */
   const noteIndex = useRef(0);
   /** 最近生成的文件：「发送到某某会议群」的追问发的就是它 */
@@ -137,8 +141,8 @@ export default function App() {
 
   return (
     <div className={styles.page}>
-      <div className={styles.frame}>
-        <div className={styles.window} id={WINDOW_TOAST_ROOT_ID}>
+      <div className={styles.frame} ref={frameRef}>
+        <div className={styles.window}>
           {/* 投票弹窗只盖会议区，元宝说的话仍然看得见 */}
           <div className={styles.meetingArea}>
             <MeetingWindow
@@ -156,16 +160,29 @@ export default function App() {
               />
             )}
           </div>
-          {sidebarOpen && (
-            <YuanbaoSidebar
-              chat={chat}
-              artifacts={artifacts}
-              onClose={() => setSidebarOpen(false)}
-              onSubmit={handleSubmit}
-              noteTopics={noteTopics}
-            />
-          )}
+          {/* 元宝吸附在右侧时，会议内容让出 400 宽；分离或关闭后恢复撑满 1440 */}
+          <div
+            className={`${styles.reserve} ${sidebarOpen && dock.mode === "docked" ? styles.reserveOpen : ""}`}
+            aria-hidden="true"
+          />
         </div>
+        {/* 拖回会议右缘时的吸附提示：右缘一块占位区，松手后元宝落在这里 */}
+        {sidebarOpen && dock.mode === "floating" && dock.dockHint && (
+          <div className={styles.dockHint} aria-hidden="true">
+            <span className={styles.dockHintLabel}>松手吸附到会议右侧</span>
+          </div>
+        )}
+        {/* 元宝 personal agent：默认吸附在会议窗口右缘并列；按住标题栏拖动可分离成浮动小窗 */}
+        {sidebarOpen && (
+          <YuanbaoSidebar
+            chat={chat}
+            artifacts={artifacts}
+            dock={dock}
+            onClose={() => setSidebarOpen(false)}
+            onSubmit={handleSubmit}
+            noteTopics={noteTopics}
+          />
+        )}
         {/* 窗口外：演示按钮，浮在窗口下方的壁纸上 */}
         <div className={styles.demoBar}>
           <DemoToolbar onCommand={runCommand} />
