@@ -4,6 +4,7 @@ import { useAgentTasks } from "@/hooks/useAgentTasks";
 import { MeetingWindow } from "@/components/meeting/MeetingWindow";
 import { PollComposer } from "@/components/poll/PollComposer";
 import { DemoToolbar } from "@/components/demo/DemoToolbar";
+import type { AgentStatusScheme } from "@/components/agent/AgentStatusPage";
 import { YuanbaoSidebar } from "@/components/YuanbaoSidebar";
 import {
   buildArtifact,
@@ -40,6 +41,10 @@ const FILE_KIND_PATTERN = /pdf|ppt|幻灯片|文件|纪要文档/i;
  */
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  /** Agent 状态页是否覆盖在元宝对话区之上 */
+  const [statusOpen, setStatusOpen] = useState(false);
+  /** 状态页两个方案：Tab 切换 / 自上而下 */
+  const [statusScheme, setStatusScheme] = useState<AgentStatusScheme>("tabs");
   const [pollOpen, setPollOpen] = useState(false);
   /** 会中文件：一开始只有「元宝笔记」（来源），生成文件、记录画面后再往里加 */
   const [artifacts, setArtifacts] = useState<ArtifactItem[]>([noteArtifact]);
@@ -57,6 +62,34 @@ export default function App() {
   /** 会中已识别出的话题数：0 时「正在帮你记」卡片显示识别中，之后逐条出现在「当前正在聊」下 */
   const [topicCount, setTopicCount] = useState(0);
   const noteTopics = Array.from({ length: topicCount }, (_, index) => topicAt(index));
+
+  /** 关闭元宝窗口：状态页一起收起，下次打开回到对话 */
+  const closeSidebar = () => {
+    setSidebarOpen(false);
+    setStatusOpen(false);
+  };
+
+  /** 工具栏元宝按钮：保持原有开关行为，关闭时顺带退出状态页 */
+  const toggleSidebar = () => {
+    if (sidebarOpen) {
+      closeSidebar();
+      return;
+    }
+    setSidebarOpen(true);
+  };
+
+  /** 点头像 / 名字进入状态页 */
+  const openStatus = () => {
+    setSidebarOpen(true);
+    setStatusOpen(true);
+  };
+
+  /** 窗口外演示菜单切换状态页方案；没打开时直接打开对应方案 */
+  const openStatusScheme = (scheme: AgentStatusScheme) => {
+    setStatusScheme(scheme);
+    setSidebarOpen(true);
+    setStatusOpen(true);
+  };
 
   /**
    * 创建产物：本次生成的文件排最前；第一次额外附带一组会中已有文件。
@@ -124,6 +157,8 @@ export default function App() {
    */
   const runCommand = (item: CommandItem) => {
     setSidebarOpen(true);
+    // 演示指令都是给对话用的；状态页开着时先回到对话
+    setStatusOpen(false);
     if (item.effect === "auto-note") {
       chat.push(buildAutoNote(noteIndex.current));
       noteIndex.current += 1;
@@ -160,7 +195,7 @@ export default function App() {
           <div className={styles.meetingArea}>
             <MeetingWindow
               yuanbaoOpen={sidebarOpen}
-              onToggleYuanbao={() => setSidebarOpen((open) => !open)}
+              onToggleYuanbao={toggleSidebar}
             />
             {pollOpen && (
               <PollComposer
@@ -193,7 +228,11 @@ export default function App() {
             artifacts={artifacts}
             dock={dock}
             agent={agent}
-            onClose={() => setSidebarOpen(false)}
+            onClose={closeSidebar}
+            statusOpen={statusOpen}
+            statusScheme={statusScheme}
+            onOpenStatus={openStatus}
+            onCloseStatus={() => setStatusOpen(false)}
             onSubmit={handleSubmit}
             noteTopics={noteTopics}
           />
@@ -226,6 +265,23 @@ export default function App() {
                     agent.react(mood, { force: true });
                   },
                 })),
+              },
+              {
+                key: "agent-status-scheme",
+                label: "状态页方案",
+                // 随时切换两个状态页方案；状态页没开时直接打开所选方案
+                items: [
+                  {
+                    key: "tabs",
+                    label: `方案一 · Tab 切换${statusScheme === "tabs" ? "（当前）" : ""}`,
+                    onClick: () => openStatusScheme("tabs"),
+                  },
+                  {
+                    key: "flow",
+                    label: `方案二 · 自上而下${statusScheme === "flow" ? "（当前）" : ""}`,
+                    onClick: () => openStatusScheme("flow"),
+                  },
+                ],
               },
             ]}
           />

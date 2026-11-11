@@ -25,6 +25,7 @@ import { ChatList } from "@/components/sidebar/ChatList";
 import { MessageStream } from "@/components/sidebar/MessageStream";
 import { NotePill } from "@/components/sidebar/NotePill";
 import { AgentTitleBar } from "@/components/agent/AgentTitleBar";
+import { AgentStatusPage, type AgentStatusScheme } from "@/components/agent/AgentStatusPage";
 import { AgentWindowShell } from "@/components/agent/AgentWindowShell";
 import { TaskDetail } from "@/components/agent/TaskDetail";
 import { TaskTray } from "@/components/agent/TaskTray";
@@ -50,6 +51,14 @@ interface YuanbaoSidebarProps {
   agent: AgentTasksControl;
   /** 关闭侧栏 */
   onClose: () => void;
+  /** 是否显示 Agent 状态页（覆盖对话区） */
+  statusOpen: boolean;
+  /** 当前状态页方案 */
+  statusScheme: AgentStatusScheme;
+  /** 点击头部头像 / 名字进入状态页 */
+  onOpenStatus: () => void;
+  /** 状态页左上角返回聊天 */
+  onCloseStatus: () => void;
   /** 输入框提交：App 层会先匹配生成文件与演示场景，未命中才走普通提问 */
   onSubmit?: (text: string) => void;
   /** 会中已识别出的话题（最后一条是当前正在聊的），显示在「正在帮你记」卡片里 */
@@ -71,6 +80,10 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
   dock,
   agent,
   onClose,
+  statusOpen,
+  statusScheme,
+  onOpenStatus,
+  onCloseStatus,
   onSubmit,
   noteTopics,
 }) => {
@@ -165,6 +178,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
         replayKey={replayKey}
         onOnceEnd={onOnceEnd}
         onTouch={touch}
+        onOpenStatus={onOpenStatus}
         onClose={onClose}
         fontSize={fontSize}
         fontFamily={fontFamily}
@@ -272,6 +286,20 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
           />
         </div>
       </div>
+
+      {/* 状态页覆盖整个元宝窗口：对话区保持挂载，返回后消息、输入和滚动位置都还在 */}
+      {statusOpen && (
+        <div className={styles.statusOverlay}>
+          <AgentStatusPage
+            scheme={statusScheme}
+            dock={dock}
+            onBack={onCloseStatus}
+            onClose={onClose}
+            onOpenSetting={(setting) => showToast(`打开「${setting.label}」设置（演示）`)}
+            onOpenLibraryItem={(item) => showToast(`打开「${item.title}」（演示）`)}
+          />
+        </div>
+      )}
     </AgentWindowShell>
   );
 };

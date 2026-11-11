@@ -1,0 +1,248 @@
+/* 资料库：筛选标签 + 本场 / 更早列表（方案一）或单列文件列表（方案二） */
+.section {
+  display: flex;
+  flex-direction: column;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 0;
+}
+
+.sectionTitle {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--wm-color-task-title);
+}
+
+.sectionAction {
+  flex: 0 0 auto;
+  margin-left: 12px;
+  font-size: 12px;
+  line-height: 17px;
+  color: var(--wm-color-status-text-muted);
+  white-space: nowrap;
+}
+
+/* 筛选行：标签间距 8 */
+.filters {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  & > * + * {
+    margin-left: 8px;
+  }
+}
+
+.filtersFlow {
+  margin-top: 8px;
+}
+
+.filterPill {
+  padding: 4px 12px;
+  border-radius: 12.5px;
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 500;
+  color: var(--wm-color-status-filter-text);
+  cursor: pointer;
+  outline: none;
+  transition:
+    background-color 120ms ease-in-out,
+    color 120ms ease-in-out;
+
+  &:hover {
+    background-color: var(--wm-color-control-fill);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 1.5px var(--wm-color-line);
+  }
+}
+
+.filterPillFlow {
+  padding: 6px 14px;
+  border-radius: 14.5px;
+  background-color: var(--wm-color-card-background);
+}
+
+/* 方案一：选中是浅灰胶囊；方案二：选中是近黑胶囊 */
+.filterPillActive {
+  background-color: var(--wm-color-status-filter-active);
+  color: var(--wm-color-task-title);
+
+  &:hover {
+    background-color: var(--wm-color-status-filter-active);
+  }
+}
+
+.filterPillActiveFlow {
+  background-color: var(--wm-color-task-title);
+  color: var(--wm-color-text-senary);
+
+  &:hover {
+    background-color: var(--wm-color-task-title);
+  }
+}
+
+/* 方案一：筛选标签与白色列表卡之间 16 */
+.tabCard {
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: 12px;
+  background-color: var(--wm-color-card-background);
+}
+
+.groupTitle {
+  padding-left: 8px;
+  font-size: 12px;
+  line-height: 17px;
+  color: var(--wm-color-text-tertiary);
+}
+
+/* 方案一资料行：24 图标 + 标题 + 右侧说明，高 36 */
+.tabRow {
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease-in-out;
+
+  &:hover {
+    background-color: var(--wm-color-background-septenary);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 1.5px var(--wm-color-line);
+  }
+}
+
+.tabRow > img,
+.tabRow > svg {
+  flex: 0 0 auto;
+}
+
+.fileImage {
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
+.tabTitle {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-left: 10px;
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--wm-color-text-primary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tabMeta {
+  flex: 0 0 auto;
+  margin-left: 12px;
+  font-size: 12px;
+  line-height: 17px;
+  color: var(--wm-color-text-quaternary);
+  white-space: nowrap;
+}
+
+.divider {
+  height: 1px;
+  margin: 6px 8px;
+  background-color: var(--wm-color-line);
+}
+
+/* 方案二：单张白色卡，3 行资料 */
+.flowCard {
+  margin-top: 8px;
+  border-radius: 12px;
+  background-color: var(--wm-color-card-background);
+}
+
+.flowRow {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease-in-out;
+
+  &:hover {
+    background-color: var(--wm-color-background-septenary);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 1.5px var(--wm-color-line);
+  }
+}
+
+.flowRow > img,
+.flowRow > svg {
+  flex: 0 0 auto;
+}
+
+.flowText {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-width: 0;
+  margin-left: 12px;
+}
+
+.flowTitle {
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--wm-color-text-primary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.flowMeta {
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 17px;
+  color: var(--wm-color-text-tertiary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.flowTrailing {
+  flex: 0 0 auto;
+  margin-left: 12px;
+  font-size: 12px;
+  line-height: 17px;
+  color: var(--wm-color-status-text-muted);
+  white-space: nowrap;
+}
+
+.flowDivider {
+  height: 1px;
+  margin-left: 60px;
+  background-color: var(--wm-color-line);
+}
+
+.empty {
+  padding: 10px 8px;
+  font-size: 12px;
+  line-height: 17px;
+  color: var(--wm-color-text-tertiary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .filterPill,
+  .tabRow,
+  .flowRow {
+    transition: none;
+  }
+}

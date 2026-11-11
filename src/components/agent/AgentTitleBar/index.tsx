@@ -26,8 +26,10 @@ interface AgentTitleBarProps {
   replayKey: number;
   /** 一次性动画（打招呼 / 喝彩 / 吃新动态…）播完 */
   onOnceEnd: () => void;
-  /** 点一下头像：摸头 */
+  /** 点一下头像：摸摸元宝 */
   onTouch: () => void;
+  /** 点击头像或名字：进入 Agent 状态页 */
+  onOpenStatus: () => void;
   /** 关闭元宝窗口（和底部元宝按钮是同一个开关） */
   onClose: () => void;
   /** 对话区当前字号 */
@@ -54,6 +56,7 @@ export const AgentTitleBar: FC<AgentTitleBarProps> = ({
   replayKey,
   onOnceEnd,
   onTouch,
+  onOpenStatus,
   onClose,
   fontSize,
   fontFamily,
@@ -85,20 +88,34 @@ export const AgentTitleBar: FC<AgentTitleBarProps> = ({
       onPointerDown={dock.onTitlePointerDown}
       title="按住拖动，可把元宝从会议窗口分离出来"
     >
-      {/* 标题（Figma 215:17019 / 215:16997）：头像 33×36 + 两行文字 */}
+      {/* 标题（Figma 215:17019 / 215:16997）：头像 33×36 + 两行文字；两者都可进入状态页 */}
       <div className={styles.title}>
         <div className={styles.avatarSlot} data-nodrag>
-          <Pressable className={styles.avatarTouch} onClick={onTouch} ariaLabel="摸摸元宝" title="摸摸元宝">
+          <Pressable
+            className={styles.avatarTouch}
+            onClick={() => {
+              // 保留摸头反馈；状态页会盖住对话区，动画在返回后继续按状态机收尾
+              onTouch();
+              onOpenStatus();
+            }}
+            ariaLabel="查看元宝状态"
+            title="查看元宝状态"
+          >
             <YuanbaoAvatar className={styles.avatar} mood={mood} replayKey={replayKey} onOnceEnd={onOnceEnd} />
           </Pressable>
         </div>
-        <div className={styles.titleText}>
+        <Pressable
+          className={styles.titleText}
+          onClick={onOpenStatus}
+          ariaLabel="查看元宝状态"
+          title="查看元宝状态"
+        >
           <span className={styles.name}>元宝</span>
           {/* key 跟着文案变：换状态时淡入一次 */}
           <span className={styles.status} key={statusText} role="status">
             {statusText}
           </span>
-        </div>
+        </Pressable>
       </div>
 
       <div className={styles.actions} data-nodrag>

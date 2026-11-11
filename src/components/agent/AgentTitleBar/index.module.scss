@@ -58,13 +58,20 @@
   left: -7px;
 }
 
-/* 文字列：名称 + 状态文字两行，与头像相距 8 */
+/* 文字列：名称 + 状态文字两行，与头像相距 8；整块可进入状态页 */
 .titleText {
   display: flex;
   flex-direction: column;
   justify-content: center;
   min-width: 0;
   margin-left: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  outline: none;
+
+  &:focus-visible {
+    box-shadow: 0 0 0 1.5px var(--wm-color-line);
+  }
 }
 
 /* 13/18 600，#1F2329（Figma 215:16998） */

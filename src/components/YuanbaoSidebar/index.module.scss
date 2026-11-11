@@ -87,3 +87,11 @@
 .tasksHidden {
   pointer-events: none;
 }
+
+/* Agent 状态页：绝对铺满元宝窗口，盖住对话区；对话组件不卸载 */
+.statusOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background-color: var(--wm-color-status-background);
+}
