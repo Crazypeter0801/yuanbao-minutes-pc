@@ -12,6 +12,7 @@ import { NOTE_ARTIFACT_ID } from "@/data/artifacts";
 import type { ArtifactItem } from "@/types/artifact";
 import type { BubbleCard } from "@/types/chat";
 import { ArtifactEntry } from "@/components/sidebar/ArtifactEntry";
+import { ProgressiveBlur } from "@/components/common/ProgressiveBlur";
 import { ChatInput } from "@/components/sidebar/ChatInput";
 import { ChatList } from "@/components/sidebar/ChatList";
 import { MessageStream } from "@/components/sidebar/MessageStream";
@@ -163,7 +164,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
         menuItems={menuItems}
       />
 
-      {/* 消息流与底栏叠在一起：对话可以滚到底栏后面，被渐变底一点点盖掉 */}
+      {/* 消息流与底栏叠在一起：对话可以滚到底栏后面，被渐进模糊一点点糊掉 */}
       <div
         className={styles.body}
         style={{ "--yb-footer-height": `${footerHeight}px` } as CSSProperties}
@@ -202,6 +203,8 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
             />
           </MessageStream>
         )}
+
+        <ProgressiveBlur className={styles.blur} tint="rgba(240, 242, 247, 0.28)" />
 
         <div className={styles.footer} ref={footerRef}>
           {/*

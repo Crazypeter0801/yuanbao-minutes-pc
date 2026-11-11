@@ -1,11 +1,37 @@
 /* padding 0 16 16，三段 space-between（Figma 214:10935） */
 .toolbar {
+  position: relative;
   flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
   height: 64px;
   padding: 0 16px 16px;
+}
+
+/*
+ * 底栏背景：4px 背景模糊打底，上面叠苹果式渐进模糊（往上多出 24px 盖住大画面下沿，越往下越糊）。
+ * 控件在它之上（z-index 1），模糊层不拦点击。
+ */
+.blurBase {
+  position: absolute;
+  inset: 0;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+
+.blur {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 88px;
+}
+
+.side,
+.controls {
+  position: relative;
+  z-index: 1;
 }
 
 /* 左右两侧各 120 宽，保证中间胶囊居中（Figma 316:2596 / 316:2616） */

@@ -195,8 +195,6 @@ export const MorphPanel: FC<MorphPanelProps> = ({
         {summary}
       </div>
 
-      <div className={styles.fade} aria-hidden="true" />
-
       <div
         className={[styles.card, expanded ? styles.cardExpanded : '', alignHeaderToContent ? styles.cardAligned : '']
           .filter(Boolean)

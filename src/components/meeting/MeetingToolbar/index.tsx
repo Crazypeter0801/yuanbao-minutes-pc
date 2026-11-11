@@ -12,6 +12,7 @@ import IconTbRecord from '@/assets/d2c/icons/v1/icon-tb-record';
 import IconTbShare from '@/assets/d2c/icons/v1/icon-tb-share';
 import IconTbYuanbao from '@/assets/d2c/icons/v1/icon-tb-yuanbao';
 import IconTbYuanbaoActive from '@/assets/d2c/icons/agent/icon-tb-yuanbao-active';
+import { ProgressiveBlur } from '@/components/common/ProgressiveBlur';
 import { Pressable } from '@/components/common/Pressable';
 import styles from './index.module.scss';
 
@@ -32,6 +33,8 @@ interface MeetingToolbarProps {
  */
 export const MeetingToolbar: FC<MeetingToolbarProps> = ({ yuanbaoOpen, onToggleYuanbao }) => (
   <div className={styles.toolbar}>
+    <div className={styles.blurBase} aria-hidden="true" />
+    <ProgressiveBlur className={styles.blur} tint="rgba(240, 242, 247, 0.28)" />
     <div className={styles.side}>
       <IconTbEmoji />
       <IconTbChat />

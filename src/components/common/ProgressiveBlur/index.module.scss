@@ -1,0 +1,18 @@
+/* 渐进模糊容器：只负责铺层，不拦点击；位置和高度由使用方的 className 给 */
+.root {
+  position: absolute;
+  pointer-events: none;
+
+  /* 一点点半透明着色，自上而下由无到有（--pb-tint 不传则无色） */
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(180deg, transparent 0, var(--pb-tint, transparent) 100%);
+  }
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+}

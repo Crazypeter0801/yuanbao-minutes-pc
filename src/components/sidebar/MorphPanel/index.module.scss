@@ -43,27 +43,6 @@ $duration: 380ms;
   }
 }
 
-/* 展开时面板上缘外加 24px 白色渐隐，把身后的消息流压下去 */
-.fade {
-  position: absolute;
-  left: calc(var(--morph-expanded-left) - 16px);
-  bottom: 0;
-  width: calc(var(--morph-expanded-width) + 32px);
-  height: calc(var(--morph-panel-height) + 24px);
-  background-image: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0) 0,
-    var(--wm-color-background-quaternary) 24px
-  );
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 200ms ease-out;
-
-  .slotExpanded & {
-    opacity: 1;
-  }
-}
-
 /* 收起：白底、0.5px 内描边 + 浮层阴影、圆角 18（Figma 36:2475 / 36:2280） */
 .card {
   position: absolute;
@@ -216,7 +195,6 @@ $duration: 380ms;
 
 @media (prefers-reduced-motion: reduce) {
   .slot,
-  .fade,
   .card,
   .label,
   .headerAction,
