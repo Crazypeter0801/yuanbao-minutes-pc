@@ -134,7 +134,6 @@
   /* 底栏渐变底（Figma 91:15671）：透明白 → 80% 白 → 纯白 */
   --wm-color-footer-fade-start: rgba(255, 255, 255, 0);
   --wm-color-footer-fade-mid: rgba(255, 255, 255, 0.8);
-  --wm-color-follow-up-icon: #525252;
   /* 「正在帮你记」文字闪光：中灰字上扫过一道浅色亮带 */
   --wm-color-note-text-shimmer-base: #7b818f;
   --wm-color-note-text-shimmer-light: #d3d6dd;
@@ -142,24 +141,19 @@
   --wm-color-note-topic-dot: #c3c7cf;
   --wm-color-note-topic-line: #dfe1e6;
 
-  /* 窗口材质（Figma 214:10687 / 214:11039）：#F0F1F5 90% + blur 15，会议窗和元宝窗同一种 */
-  --wm-color-window-glass: rgba(240, 241, 245, 0.9);
-  /* 两窗之间的拖拽条 4×48（Figma 214:11038） */
+  /* 会议窗口材质（Figma 215:16458）：#F0F2F7 90% + 背景模糊 4；元宝窗口是纯白实底（--wm-color-background-quaternary） */
+  --wm-color-window-glass: rgba(240, 242, 247, 0.9);
+  /* 渐进模糊带的着色：会议底栏跟着会议窗口的色，元宝底栏跟着白底 */
+  --wm-color-blur-tint-meeting: rgba(240, 242, 247, 0.28);
+  --wm-color-blur-tint-agent: rgba(255, 255, 255, 0.4);
+  /* 两窗之间的拖拽条 4×48（Figma 215:16809） */
   --wm-color-window-handle: #ffffff;
 
-  /* 元宝标题胶囊（Figma 215:16127）：#FAFAFA + 1px 白内描边 + 0 4 30 8% 投影 */
-  --wm-color-agent-pill: #fafafa;
-  --wm-color-agent-pill-stroke: #ffffff;
-  --wm-shadow-agent-pill: 0 4px 30px rgba(0, 0, 0, 0.08);
-
-  /* 对话气泡（Figma 214:13177 / 214:13216）：元宝白底；用户深灰底白字 */
-  --wm-color-background-assistant-bubble: #ffffff;
-  --wm-color-background-user-bubble-strong: #5e6270;
-  --wm-color-text-on-user-bubble: #ffffff;
-  /* 追问胶囊（Figma 214:13243）：60% 白 + 1px 白内描边 */
-  --wm-color-follow-up-fill: rgba(255, 255, 255, 0.6);
-  --wm-color-follow-up-fill-hover: rgba(255, 255, 255, 0.9);
-  --wm-color-follow-up-stroke: #ffffff;
+  /* 对话气泡（Figma 215:16840 / 215:16849）：用户气泡品牌蓝 8%、文字近黑；元宝气泡 #F3F3F4 */
+  --wm-color-background-assistant-bubble: #f3f3f4;
+  /* 追问胶囊（Figma 215:16873）：白底 + 1px #EBEDF2 内描边 */
+  --wm-color-follow-up-fill: #ffffff;
+  --wm-color-follow-up-fill-hover: #f3f3f4;
 
   /* 任务条 / 任务列表 / 长程任务详情（Figma 197:42 方案稿） */
   --wm-color-task-title: #1f2329;

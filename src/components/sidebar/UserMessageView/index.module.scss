@@ -15,11 +15,10 @@
   white-space: pre-wrap;
 }
 
-/* 深灰底白字（Figma 214:13216） */
+/* 品牌蓝 8% 底、近黑字（Figma 215:16840） */
 .round {
   border-radius: 16px 1px 16px 16px;
-  color: var(--wm-color-text-on-user-bubble);
-  background-color: var(--wm-color-background-user-bubble-strong);
+  background-color: var(--wm-color-background-user-bubble);
 }
 
 .compact {

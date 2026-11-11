@@ -8,11 +8,11 @@
 }
 
 /*
- * 消息区 padding 12 16 20（Figma 214:13171）
+ * 消息区 padding 16 16 20（Figma 215:16836）
  * 底栏浮在上面，所以底部再加上底栏高度：滚到底时最后一条仍停在底栏上方 20，往上翻时才从底栏后面经过。
  */
 .stream {
-  padding: 12px 16px calc(var(--yb-footer-height, 122px) + 20px);
+  padding: 16px 16px calc(var(--yb-footer-height, 122px) + 20px);
 }
 
 /* 长程任务详情的滚动容器：和消息流同样撑满、同样的内边距（内层复用 .stream） */

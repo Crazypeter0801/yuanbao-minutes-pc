@@ -87,19 +87,6 @@
   }
 }
 
-/* 元宝窗口已打开：不铺底色，只把图标换成元宝绿的激活态（Figma 214:11010） */
-.slotActionOn {
-  background-color: transparent;
-}
-
-/* 激活态图标 24×24，放在 56×30 按钮里 left 16 / top 3（Figma 214:11011） */
-.yuanbaoActive {
-  position: absolute;
-  top: 3px;
-  left: 16px;
-  display: flex;
-}
-
 /* ---------- 成员按钮：图标含数字，需拆开实现（Figma 316:2088） ---------- */
 .invite {
   position: absolute;

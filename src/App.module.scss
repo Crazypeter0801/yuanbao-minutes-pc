@@ -1,5 +1,5 @@
 /*
- * 页面：Tahoe 壁纸铺满，1440×760 窗口在正中；四周各留 80，最小 1600×920。
+ * 页面：Tahoe 壁纸铺满，1368×760 窗口在正中（Figma 215:16455：会议 960 + 缝隙 8 + 元宝 400）；四周各留 80，最小 1600×920。
  * 壁纸画在 .page 自身（不用 fixed），导入 Figma code layer 时也能完整显示。
  */
 .page {
@@ -33,7 +33,7 @@
 }
 
 /*
- * 会议窗口（Figma 214:10687）：圆角 12，#F0F1F5 90% 磨砂（blur 15），不投影；
+ * 会议窗口（Figma 215:16458）：圆角 12，#F0F2F7 90% + 背景模糊 4，不投影；
  * 投票弹窗以它为定位基准，只覆盖会议、不盖元宝。
  */
 .meetingArea {
@@ -44,24 +44,24 @@
   overflow: hidden;
   border-radius: 12px;
   background-color: var(--wm-color-window-glass);
-  -webkit-backdrop-filter: blur(15px);
-  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
 }
 
 /*
- * 窗口布局容器 1440×760：本身不画底、不裁切、不投影。
- * 吸附态里会议和元宝是两个各自完整的圆角窗口并排（中间 8：2 + 拖拽条 4 + 2，Figma 214:10686）；
- * 元宝关闭或分离后，会议窗口撑满整个 1440。
+ * 窗口布局容器 1368×760：本身不画底、不裁切、不投影。
+ * 吸附态里会议（960）和元宝（400）是两个各自完整的圆角窗口并排（中间 8：2 + 拖拽条 4 + 2，Figma 215:16457）；
+ * 元宝关闭或分离后，会议窗口撑满整个 1368。
  */
 .window {
   position: relative;
   display: flex;
   flex: 0 0 auto;
-  width: 1440px;
+  width: 1368px;
   height: 760px;
 }
 
-/* 元宝吸附在右侧时留给它的空间：元宝 400 + 缝隙 8，会议窗口缩到 1032 */
+/* 元宝吸附在一侧时留给它的空间：元宝 400 + 缝隙 8，会议窗口缩到 960 */
 .reserve {
   position: relative;
   flex: 0 0 auto;
@@ -80,7 +80,7 @@
   right: 2px;
 }
 
-/* 两窗之间的拖拽条（Figma 214:11038）：4×48 白、圆角 2，落在 8 的缝隙正中、垂直居中 */
+/* 两窗之间的拖拽条（Figma 215:16809）：4×48 白、圆角 2，落在 8 的缝隙正中、垂直居中 */
 .handle {
   position: absolute;
   top: 50%;

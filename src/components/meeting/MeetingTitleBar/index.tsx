@@ -8,14 +8,13 @@ import IconMeetHostTools from '@/assets/d2c/icons/v1/icon-meet-host-tools';
 import IconMeetNetwork from '@/assets/d2c/icons/v1/icon-meet-network';
 import IconMeetSettings from '@/assets/d2c/icons/v1/icon-meet-settings';
 import IconMeetShare from '@/assets/d2c/icons/v1/icon-meet-share';
-import IconMeetSidebar from '@/assets/d2c/icons/v1/icon-meet-sidebar';
 import { meetingSession } from '@/data/meetingSession';
 import styles from './index.module.scss';
 
 /**
- * 会议窗口标题栏（Figma 214:10689）
- * 左：窗口控制 + 会议标题 + 时长 + 网络/分享 | 云录制（214:10684 里分隔线后只剩云录制，元宝纪要图标已去掉）
- * 右：宫格 / 主持人工具 / 设置 + 全屏 / 侧边栏
+ * 会议窗口标题栏（Figma 215:16460）
+ * 左：窗口控制 + 会议标题 + 时长 + 网络/分享 | 云录制
+ * 右：宫格 / 主持人工具 / 设置 + 全屏（215 稿里右侧不再有侧边栏图标）
  * 说明：本期仅做视觉还原，不挂交互。
  */
 export const MeetingTitleBar: FC = () => (
@@ -72,7 +71,6 @@ export const MeetingTitleBar: FC = () => (
         </div>
       </div>
       <IconMeetFullscreen />
-      <IconMeetSidebar />
     </div>
   </div>
 );
