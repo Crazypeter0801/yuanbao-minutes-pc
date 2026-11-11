@@ -1,0 +1,7 @@
+/* 雪碧图容器：尺寸由组件按 size 给，背景图与位置由动画逐帧改写 */
+.avatar {
+  display: block;
+  flex: 0 0 auto;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}

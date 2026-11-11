@@ -3,17 +3,26 @@ import { Pressable } from '@/components/common/Pressable';
 import { demoMenus, type CommandItem, type DemoMenu } from '@/data/commands';
 import styles from './index.module.scss';
 
+/** 不带菜单、点一下就执行的演示按钮（如「演示任务状态」） */
+export interface DemoAction {
+  key: string;
+  label: string;
+  onClick: () => void;
+}
+
 interface DemoToolbarProps {
   /** 点了某条演示指令 */
   onCommand: (item: CommandItem) => void;
+  /** 排在三个菜单按钮后面的直接动作 */
+  actions?: DemoAction[];
 }
 
 /**
- * 窗口外的演示按钮条：模拟元宝发言 / 模拟用户发言 / 模拟交互功能
+ * 窗口外的演示按钮条：模拟元宝发言 / 模拟用户发言 / 模拟交互功能 + 直接动作（演示任务状态）
  * 快捷指令从会议窗口里整体拿出来放到这里，窗口内只保留真实产品界面。
  * 点按钮向上弹出指令菜单，同一时间只开一个；点外面或按 Esc 收起，点指令后自动收起。
  */
-export const DemoToolbar: FC<DemoToolbarProps> = ({ onCommand }) => {
+export const DemoToolbar: FC<DemoToolbarProps> = ({ onCommand, actions = [] }) => {
   const [openKey, setOpenKey] = useState<DemoMenu['key'] | null>(null);
   const barRef = useRef<HTMLDivElement>(null);
 
@@ -87,6 +96,20 @@ export const DemoToolbar: FC<DemoToolbarProps> = ({ onCommand }) => {
           </div>
         );
       })}
+      {actions.map((action) => (
+        <div className={styles.slot} key={action.key}>
+          <Pressable
+            className={styles.button}
+            onClick={() => {
+              setOpenKey(null);
+              action.onClick();
+            }}
+            ariaLabel={action.label}
+          >
+            <span className={styles.buttonText}>{action.label}</span>
+          </Pressable>
+        </div>
+      ))}
     </div>
   );
 };

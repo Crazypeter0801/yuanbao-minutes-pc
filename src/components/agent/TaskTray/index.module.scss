@@ -1,0 +1,299 @@
+/* 任务条 + 向上展开的任务列表（Figma 204:290 / 204:297） */
+
+.root {
+  position: relative;
+  z-index: 3;
+  flex: 0 0 auto;
+  height: 36px;
+  transition: opacity 120ms ease-out;
+}
+
+/* 文件夹面板展开时让位 */
+.rootHidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 120ms ease-out,
+    visibility 0s linear 120ms;
+}
+
+/* ---------- 任务条：白底、0 4 24 6% 投影、padding 0 12、间距 8 ---------- */
+
+.bar {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 18px;
+  background-color: var(--wm-color-background-bubble);
+  box-shadow: var(--wm-shadow-float);
+  cursor: pointer;
+  outline: none;
+  white-space: nowrap;
+  transition: box-shadow 160ms ease-out;
+
+  & > * + * {
+    margin-left: 8px;
+  }
+
+  &:hover,
+  &:focus-visible {
+    box-shadow: inset 0 0 0 0.5px var(--wm-color-line), var(--wm-shadow-hover);
+  }
+}
+
+.barIcon {
+  display: flex;
+  width: 16px;
+  height: 16px;
+}
+
+/* 13/18 500 #1F2329 */
+.barText {
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 500;
+  color: var(--wm-color-task-title);
+}
+
+.barChevron {
+  display: flex;
+  width: 14px;
+  height: 14px;
+  transition: transform 200ms ease-out;
+}
+
+/* 展开后箭头朝上（Figma 197:1432 标注 4） */
+.barChevronOpen {
+  transform: rotate(180deg);
+}
+
+/* 进行中的转圈图标 */
+.spin {
+  animation: task-spin 1s linear infinite;
+}
+
+@keyframes task-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- 任务列表卡片：368 宽、padding 12、间距 8、圆角 14、1px #E5E6EB、0 8 24 12% ---------- */
+
+.card {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  width: 368px;
+  padding: 12px;
+  border-radius: 14px;
+  background-color: var(--wm-color-card-background);
+  box-shadow:
+    inset 0 0 0 1px var(--wm-color-task-card-stroke),
+    var(--wm-shadow-task-card);
+  cursor: default;
+  animation: card-in 220ms cubic-bezier(0.32, 0.72, 0, 1);
+
+  & > * + * {
+    margin-top: 8px;
+  }
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* 标题行：padding 0 2，左「任务 + 计数」，右「收起」 */
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2px;
+}
+
+.cardTitle {
+  display: flex;
+  align-items: center;
+
+  & > * + * {
+    margin-left: 8px;
+  }
+}
+
+/* 13/18 600 */
+.cardTitleText {
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 600;
+  color: var(--wm-color-task-title);
+}
+
+/* 11/15 #8F959E */
+.cardSummary {
+  font-size: 11px;
+  line-height: 15px;
+  color: var(--wm-color-task-text-secondary);
+}
+
+/* 12/17 #646A73 */
+.collapse {
+  font-size: 12px;
+  line-height: 17px;
+  color: var(--wm-color-task-text-action);
+  cursor: pointer;
+  outline: none;
+
+  &:hover {
+    color: var(--wm-color-task-title);
+  }
+}
+
+/* 行间距 6 */
+.list {
+  display: flex;
+  flex-direction: column;
+
+  & > * + * {
+    margin-top: 6px;
+  }
+}
+
+/* 任务行（Figma 199:243）：#F7F8FA、圆角 8、padding 10 12、左右间距 10 */
+.row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background-color: var(--wm-color-task-row);
+  cursor: pointer;
+  outline: none;
+  transition: box-shadow 120ms ease-out;
+
+  & > * + * {
+    margin-left: 10px;
+  }
+
+  &:hover,
+  &:focus-visible {
+    box-shadow: inset 0 0 0 1px var(--wm-color-task-card-stroke);
+  }
+}
+
+.rowLeft {
+  display: flex;
+  min-width: 0;
+
+  & > * + * {
+    margin-left: 10px;
+  }
+}
+
+.rowIcon {
+  flex: 0 0 auto;
+  display: flex;
+  width: 20px;
+  height: 20px;
+}
+
+/* 文字列：标题 / 说明 / 进度条，间距 3 */
+.rowText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+
+  & > * + * {
+    margin-top: 3px;
+  }
+}
+
+/* 13/18 500 */
+.rowTitle {
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 500;
+  color: var(--wm-color-task-title);
+}
+
+/* 11/15 #8F959E */
+.rowDesc {
+  overflow: hidden;
+  font-size: 11px;
+  line-height: 15px;
+  color: var(--wm-color-task-text-secondary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 进度条 220×4、圆角 2，轨道 #E5E6EB */
+.progress {
+  display: block;
+  width: 220px;
+  height: 4px;
+  overflow: hidden;
+  border-radius: 2px;
+  background-color: var(--wm-color-task-track);
+}
+
+.progressFill {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+  background-color: var(--wm-color-task-progress);
+  transition: width 600ms ease-out;
+}
+
+/* 右侧状态 12/17 500 */
+.rowStatus {
+  flex: 0 0 auto;
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 500;
+  color: var(--wm-color-task-title);
+  white-space: nowrap;
+}
+
+.rowStatusSuccess {
+  color: var(--wm-color-task-success);
+}
+
+.rowStatusMuted {
+  color: var(--wm-color-task-text-secondary);
+}
+
+/* 「查看产物 >」：文字 + 16 箭头，间距 2 */
+.rowAction {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  height: 17px;
+
+  & > * + * {
+    margin-left: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root,
+  .bar,
+  .barChevron,
+  .progressFill {
+    transition: none;
+  }
+
+  .spin,
+  .card {
+    animation: none;
+  }
+}

@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { useAgentDock } from "@/hooks/useAgentDock";
+import { useAgentTasks } from "@/hooks/useAgentTasks";
 import { MeetingWindow } from "@/components/meeting/MeetingWindow";
 import { PollComposer } from "@/components/poll/PollComposer";
 import { DemoToolbar } from "@/components/demo/DemoToolbar";
@@ -33,7 +34,7 @@ const FILE_KIND_PATTERN = /pdf|ppt|幻灯片|文件|纪要文档/i;
  * 腾讯会议 PC + 元宝 Agent 对话区（Figma 257:1540）· Figma 导入版
  *
  * 1. Tahoe 壁纸铺满页面，1440×760 主窗口（会议区 + 元宝侧栏）居中，窗口内不放任何演示入口；
- * 2. 窗口下方的壁纸上浮着三个演示按钮：模拟元宝发言 / 模拟用户发言 / 模拟交互功能；
+ * 2. 窗口下方的壁纸上浮着演示按钮：模拟元宝发言 / 模拟用户发言 / 模拟交互功能 / 演示任务状态；
  * 3. 输入框里直接打「刚入会」「建个投票」这类词也能触发演示场景。
  */
 export default function App() {
@@ -46,6 +47,8 @@ export default function App() {
   const frameRef = useRef<HTMLDivElement>(null);
   /** 元宝窗口：吸附在会议右侧并列，或分离成浮动小窗 */
   const dock = useAgentDock(frameRef);
+  /** 元宝的任务：头像状态、任务条、长程任务详情；窗口关掉再打开也不丢 */
+  const agent = useAgentTasks();
   /** 会中记录素材的游标：每次手动记一条往后走一格，不重复 */
   const noteIndex = useRef(0);
   /** 最近生成的文件：「发送到某某会议群」的追问发的就是它 */
@@ -178,6 +181,7 @@ export default function App() {
             chat={chat}
             artifacts={artifacts}
             dock={dock}
+            agent={agent}
             onClose={() => setSidebarOpen(false)}
             onSubmit={handleSubmit}
             noteTopics={noteTopics}
@@ -185,7 +189,20 @@ export default function App() {
         )}
         {/* 窗口外：演示按钮，浮在窗口下方的壁纸上 */}
         <div className={styles.demoBar}>
-          <DemoToolbar onCommand={runCommand} />
+          <DemoToolbar
+            onCommand={runCommand}
+            actions={[
+              {
+                key: "task-states",
+                label: "演示任务状态",
+                // 元宝依次走一遍：空闲 → 工作中 → 待确认 → 已完成；侧栏关着就先打开
+                onClick: () => {
+                  setSidebarOpen(true);
+                  agent.runDemo();
+                },
+              },
+            ]}
+          />
         </div>
       </div>
     </div>

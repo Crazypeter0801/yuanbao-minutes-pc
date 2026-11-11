@@ -1,69 +1,111 @@
-/* 标题栏：44 高，只放品牌和分离 / 关闭；底色只带 4% 的品牌绿，其余透明，让窗口材质透出来 */
+/* 标题栏（Figma 214:11040）：padding 16 12 12 16，左胶囊、右操作，两端对齐、垂直居中 */
 .header {
   position: relative;
   z-index: 6;
   flex: 0 0 auto;
-  background-color: rgba(0, 204, 112, 0.04);
-}
-
-.row {
   display: flex;
   align-items: center;
-  height: 44px;
-  padding: 0 12px 0 14px;
+  justify-content: space-between;
+  padding: 16px 12px 12px 16px;
   cursor: grab;
   touch-action: none;
   user-select: none;
 }
 
-.rowDragging {
+.headerDragging {
   cursor: grabbing;
 }
 
-.brand {
+/*
+ * 标题胶囊（Figma 215:16125 / 215:16127）：高 44、圆角 22，宽度随文字；
+ * #FAFAFA + 1px 白色内描边 + 0 4 30 8% 投影 + 背景模糊 10。
+ */
+.pill {
+  position: relative;
   display: flex;
   align-items: center;
   min-width: 0;
+  height: 44px;
+  border-radius: 22px;
+  background-color: var(--wm-color-agent-pill);
+  box-shadow:
+    inset 0 0 0 1px var(--wm-color-agent-pill-stroke),
+    var(--wm-shadow-agent-pill);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
 }
 
-.logo {
+/*
+ * 头像：Figma 里 33×36 的形象距胶囊左 7、垂直居中下移 1。
+ * 雪碧图一帧 48×48，形象约占帧宽 68%（33px），帧放在 left 0 / top -2 时形象正好落在同一位置；
+ * 形象的手、道具会探出胶囊，所以不裁切。
+ */
+.avatar {
+  position: absolute;
+  top: -2px;
+  left: 0;
+}
+
+/* 文字列（Figma 215:16129）：padding 4 18 4 52，两行垂直居中 */
+.titleText {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 7px;
-  background-color: var(--wm-color-brand-yuanbao);
-  color: #ffffff;
+  min-width: 0;
+  padding: 4px 18px 4px 52px;
 }
 
-.brandText {
-  margin-left: 8px;
-  font-size: 14px;
-  line-height: 20px;
+/* 13/18 600（Figma 215:16164） */
+.name {
+  font-size: 13px;
+  line-height: 18px;
   font-weight: 600;
-  color: var(--wm-color-text-primary);
+  color: var(--wm-color-task-title);
+  white-space: nowrap;
 }
 
-.actions {
-  display: flex;
-  cursor: default;
-  align-items: center;
-  margin-left: auto;
+/* 12/18 400 secondary（Figma 215:16201）；超长截断 */
+.status {
+  max-width: 200px;
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--wm-color-text-secondary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  animation: status-in 200ms ease-out;
+}
 
-  & > * + * {
-    margin-left: 4px;
+@keyframes status-in {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
   }
 }
 
-/* 中性灰图标按钮：不带品牌色，hover 才出一块浅灰底 */
+/* 操作按钮（Figma 214:11047）：20×20，后两个自带左侧 4 的间距 */
+.actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  margin-left: 12px;
+  cursor: default;
+}
+
+/* 中性灰图标按钮：hover 才出一块浅灰底（圆角 6） */
 .iconButton {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
   color: var(--wm-color-text-secondary);
   cursor: pointer;
   transition: background-color 120ms ease-in-out;
@@ -73,25 +115,41 @@
   }
 }
 
+/* 图标画布 24×20（左侧含 4 的间距）：按钮本身不出底色，用伪元素只在右侧 20×20 上铺 hover 底 */
+.iconButtonMargin {
+  width: 24px;
+
+  &::before {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    content: '';
+    transition: background-color 120ms ease-in-out;
+  }
+
+  &:hover {
+    background-color: transparent;
+  }
+
+  &:hover::before {
+    background-color: var(--wm-color-control-fill);
+  }
+
+  & > svg {
+    position: relative;
+  }
+}
+
 .moreWrap {
   position: relative;
   display: flex;
 }
 
-/* 第二行：会话切换条撑满，右边是「更多」；整行的左右边距由切换条自己的 padding 和这里的右边距给 */
-.subRow {
-  display: flex;
-  align-items: flex-start;
-  padding-right: 8px;
-
-  & > :first-child {
-    flex: 1 1 auto;
-    min-width: 0;
-    padding-right: 4px;
-  }
-
-  .moreWrap {
-    flex: 0 0 auto;
-    margin-top: 2px;
+@media (prefers-reduced-motion: reduce) {
+  .status {
+    animation: none;
   }
 }
