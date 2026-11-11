@@ -1,6 +1,6 @@
 /**
  * Agent 状态页 · 资料库数据
- * 文案取自 Figma 243:1222（方案一 · 资料库）与 243:1376（方案二 · 资料库）。
+ * 文案取自 Figma 241:1413（方案一 · 资料库）与 243:1376（方案二 · 资料库）。
  * filter 是筛选标签真正使用的分类，fileKind 决定列表左侧的文件图标。
  */
 
@@ -49,7 +49,7 @@ export const AGENT_FLOW_LIBRARY_FILTERS: { key: AgentLibraryFilter; label: strin
   { key: 'file', label: '文件' },
 ];
 
-/** 方案一「资料库」Tab（Figma 243:1222） */
+/** 方案一「资料库」Tab（Figma 241:1413，文件行组件 252:1315） */
 export const AGENT_STATUS_LIBRARY: AgentLibraryItem[] = [
   {
     id: 'lib-note',
@@ -62,6 +62,7 @@ export const AGENT_STATUS_LIBRARY: AgentLibraryItem[] = [
   {
     id: 'lib-whitelist-conclusion',
     title: '白名单评审结论',
+    meta: '10-28 · 已引用',
     filter: 'file',
     fileKind: 'docx',
     group: 'current',
@@ -69,6 +70,7 @@ export const AGENT_STATUS_LIBRARY: AgentLibraryItem[] = [
   {
     id: 'lib-design-review',
     title: '设计评审.pptx',
+    meta: '共享中 · 18 页',
     filter: 'file',
     fileKind: 'pptx',
     group: 'current',
@@ -76,6 +78,7 @@ export const AGENT_STATUS_LIBRARY: AgentLibraryItem[] = [
   {
     id: 'lib-scale-doc',
     title: '灰度放量说明',
+    meta: '刚刚 · 术语解释',
     filter: 'file',
     fileKind: 'docx',
     group: 'current',
@@ -99,6 +102,7 @@ export const AGENT_STATUS_LIBRARY: AgentLibraryItem[] = [
   {
     id: 'lib-whitelist-minutes',
     title: '白名单评审纪要',
+    meta: '10-28 · 评审会',
     filter: 'file',
     fileKind: 'docx',
     group: 'earlier',
@@ -106,6 +110,7 @@ export const AGENT_STATUS_LIBRARY: AgentLibraryItem[] = [
   {
     id: 'lib-product-plan',
     title: '产品方案.pdf',
+    meta: '周一 · 评审会',
     filter: 'file',
     fileKind: 'pdf',
     group: 'earlier',
@@ -113,6 +118,7 @@ export const AGENT_STATUS_LIBRARY: AgentLibraryItem[] = [
   {
     id: 'lib-schedule',
     title: '需求排期.xlsx',
+    meta: '上周 · 周会',
     filter: 'file',
     fileKind: 'xlsx',
     group: 'earlier',
