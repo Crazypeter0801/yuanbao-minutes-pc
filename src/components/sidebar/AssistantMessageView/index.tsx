@@ -3,6 +3,7 @@ import IconFollowUpNext from '@/assets/d2c/icons/chat/icon-follow-up-next';
 import IconSideLink from '@/assets/d2c/icons/v1/icon-side-link';
 import { Pressable } from '@/components/common/Pressable';
 import { ArtifactCard } from '@/components/sidebar/ArtifactCard';
+import { FoldCard } from '@/components/sidebar/FoldCard';
 import { MessageCard } from '@/components/sidebar/MessageCard';
 import { RecordingCard } from '@/components/sidebar/RecordingCard';
 import { RichText } from '@/components/sidebar/RichText';
@@ -71,6 +72,11 @@ export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
               ]
                 .filter(Boolean)
                 .join(' ');
+
+          // 默认折叠的补充信息：不套气泡，独立一张轻卡片
+          if (bubble.fold) {
+            return <FoldCard fold={bubble.fold} key={bubble.id} />;
+          }
 
           return (
             <div className={shapeClass} key={bubble.id}>

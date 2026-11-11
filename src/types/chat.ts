@@ -50,6 +50,17 @@ export interface BubbleCard {
   secondaryLabel?: string;
 }
 
+/**
+ * 默认折叠的补充信息（专业信息补充：术语 / 数据 / 竞品）
+ * 折叠态只露一行标题 + 简述，避免打断开会；点击后展开 blocks。
+ */
+export interface BubbleFold {
+  title: string;
+  /** 折叠态下标题右侧的简述，如「术语 · 数据 · 竞品」 */
+  hint?: string;
+  blocks: RichBlock[];
+}
+
 /** 一个气泡 */
 export interface Bubble {
   id: string;
@@ -60,6 +71,8 @@ export interface Bubble {
   image?: BubbleImage;
   /** 附在文字下方的交互卡片 */
   card?: BubbleCard;
+  /** 默认折叠的补充信息卡片；有 fold 的气泡 blocks 可以为空 */
+  fold?: BubbleFold;
 }
 
 /** 元宝发出的一组消息（同一时间点的连续气泡） */

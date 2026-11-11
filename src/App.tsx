@@ -99,6 +99,11 @@ export default function App() {
       }
       return;
     }
+    if (scenario.asReply) {
+      // 追问建议触发的承接场景：先出用户气泡，元宝想一下再回
+      chat.runTask(text, () => [scenario.build()].flat().forEach(chat.push));
+      return;
+    }
     [scenario.build()].flat().forEach(chat.push);
   };
 

@@ -43,11 +43,31 @@ export const demoMenus: DemoMenu[] = [
     label: '模拟元宝发言',
     groups: [
       {
+        title: '会中',
+        items: [
+          { label: '迟到入会，补错过的内容', kind: 'yuanbao', prompt: '迟到' },
+          { label: '聊到白名单，检索上次结论', kind: 'yuanbao', prompt: '上下文检索' },
+          { label: '议题跑偏，提醒主持人', kind: 'yuanbao', prompt: '议题跑偏' },
+          { label: '时间管理，10 分钟还有 2 个议题', kind: 'yuanbao', prompt: '时间管理' },
+          { label: '问题悬而未决，需要决策吗', kind: 'yuanbao', prompt: '悬而未决' },
+          { label: '议题结束，阶段性总结', kind: 'yuanbao', prompt: '阶段总结' },
+          { label: '专业信息补充（默认折叠）', kind: 'yuanbao', prompt: '专业信息' },
+          { label: '实时翻译，检测到英文发言', kind: 'yuanbao', prompt: '实时翻译' },
+          { label: 'OCR 识别，提取共享画面文字', kind: 'yuanbao', prompt: 'OCR识别' },
+        ],
+      },
+      {
+        title: '跨会议',
+        items: [
+          { label: '决策记忆，带出旧决策原因', kind: 'yuanbao', prompt: '决策记忆' },
+          { label: '个人工作流，今日事项汇总', kind: 'yuanbao', prompt: '个人工作流' },
+        ],
+      },
+      {
+        title: '原有',
         items: [
           { label: '记下一条会议要点', kind: 'yuanbao', effect: 'auto-note' },
-          { label: '中途入会，补前 5 分钟', kind: 'yuanbao', prompt: '刚入会' },
           { label: '识别到新话题', kind: 'yuanbao', effect: 'next-topic' },
-          { label: '有人提到相关内容', kind: 'yuanbao', prompt: '别人提到' },
           { label: '会议快结束，约下次', kind: 'yuanbao', prompt: '会议将结束' },
           { label: '记录当前会议画面', kind: 'yuanbao', effect: 'screenshot' },
         ],
