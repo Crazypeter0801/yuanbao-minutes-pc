@@ -1,4 +1,4 @@
-/* padding 0 16 16，三段 space-between（Figma layout_712GEB） */
+/* padding 0 16 16，三段 space-between（Figma 214:10935） */
 .toolbar {
   flex: 0 0 auto;
   display: flex;
@@ -24,13 +24,12 @@
   justify-content: flex-end;
 }
 
-/* 中间灰底胶囊：高 48、圆角 12、子项间距 8（Figma 316:2048） */
+/* 中间控件组：高 48、子项间距 8，不带底色（Figma 214:10950） */
 .controls {
   display: flex;
   align-items: center;
   height: 48px;
   border-radius: 12px;
-  background-color: var(--wm-color-control-fill);
 
   & > * + * {
     margin-left: 8px;
@@ -62,15 +61,17 @@
   }
 }
 
-/* 元宝窗口已打开：按钮底部亮元宝绿底，表示这是个开关且当前为开 */
+/* 元宝窗口已打开：不铺底色，只把图标换成元宝绿的激活态（Figma 214:11010） */
 .slotActionOn {
-  background-color: rgba(0, 204, 112, 0.16);
-  box-shadow: inset 0 0 0 0.5px rgba(0, 204, 112, 0.45);
+  background-color: transparent;
+}
 
-  &:hover,
-  &:focus-visible {
-    background-color: rgba(0, 204, 112, 0.22);
-  }
+/* 激活态图标 24×24，放在 56×30 按钮里 left 16 / top 3（Figma 214:11011） */
+.yuanbaoActive {
+  position: absolute;
+  top: 3px;
+  left: 16px;
+  display: flex;
 }
 
 /* ---------- 成员按钮：图标含数字，需拆开实现（Figma 316:2088） ---------- */

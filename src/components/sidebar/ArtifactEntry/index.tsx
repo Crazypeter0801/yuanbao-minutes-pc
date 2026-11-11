@@ -5,7 +5,7 @@ import iconFileSlide from '@/assets/d2c/icons/v1/icon-file-slide.svg';
 import iconFileTranscript from '@/assets/d2c/icons/v1/icon-file-transcript.svg';
 import iconFileWord from '@/assets/d2c/icons/v1/icon-file-word.svg';
 import iconFileYuanbao from '@/assets/d2c/icons/v1/icon-file-yuanbao.svg';
-import IconStatusFolder from '@/assets/d2c/icons/input/icon-status-folder';
+import IconAgentFold from '@/assets/d2c/icons/agent/icon-agent-fold';
 import IconMeetSidebar from '@/assets/d2c/icons/v1/icon-meet-sidebar';
 import { Pressable } from '@/components/common/Pressable';
 import { MorphPanel } from '@/components/sidebar/MorphPanel';
@@ -74,7 +74,7 @@ export const ArtifactEntry: FC<ArtifactEntryProps> = ({
       summary={
         <>
           <span className={styles.icon}>
-            <IconStatusFolder />
+            <IconAgentFold />
           </span>
           <span className={styles.count}>{artifacts.length}</span>
         </>

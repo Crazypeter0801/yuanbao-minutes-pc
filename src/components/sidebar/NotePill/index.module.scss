@@ -1,4 +1,4 @@
-/* 「元宝正在记笔记」胶囊（Figma 36:2251）：36 高、宽度随内容 */
+/* 「正在记笔记」胶囊（Figma 214:11115）：36 高、宽度随内容 */
 
 .slot {
   position: relative;
@@ -17,7 +17,7 @@
     visibility 0s linear 120ms;
 }
 
-/* padding 0 8 0 12、间距 4、圆角 18，白底 + 0.5px 内描边 + 浮层阴影 */
+/* padding 0 8 0 12、间距 8、圆角 18，白底 + 0.5px 内描边 + 浮层阴影 */
 .pill {
   display: flex;
   align-items: center;
@@ -31,7 +31,7 @@
   transition: box-shadow 160ms ease-out;
 
   & > * + * {
-    margin-left: 4px;
+    margin-left: 8px;
   }
 
   &:hover,
@@ -40,14 +40,24 @@
   }
 }
 
+/* 图标 + 文案，间距 4（Figma 214:11116） */
+.label {
+  display: flex;
+  align-items: center;
+
+  & > * + * {
+    margin-left: 4px;
+  }
+}
+
 .icon {
   flex: 0 0 auto;
   display: flex;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
 }
 
-/* 12/18 400 secondary（Figma 36:2271） */
+/* 12/18 400 secondary（Figma 214:11118） */
 .text {
   font-size: 12px;
   line-height: 18px;
@@ -55,7 +65,7 @@
   white-space: nowrap;
 }
 
-/* 24×24 圆钮，灰底已包含在导出的图标里（Figma 36:2276） */
+/* 24×24 圆钮，灰底已包含在导出的图标里（Figma 214:11123） */
 .toggle {
   flex: 0 0 auto;
   display: flex;

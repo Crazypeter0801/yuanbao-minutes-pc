@@ -24,11 +24,11 @@
   }
 }
 
-/* 气泡 padding 10 12，底 #F3F3F4；max-width 兜住长内容，不撑破侧栏 */
+/* 气泡 padding 10 12，白底（Figma 214:13177：窗口换成灰色磨砂后气泡改白）；max-width 兜住长内容，不撑破侧栏 */
 .bubble {
   max-width: 100%;
   padding: 10px 12px;
-  background-color: var(--wm-color-background-septenary);
+  background-color: var(--wm-color-background-assistant-bubble);
 }
 
 /* 方案 A：1 16 16 16（Figma 248:14881） */
@@ -102,8 +102,7 @@
 }
 
 /*
- * 白底 + 0.5px 内描边 #EBEDF2（Figma 8:594）；正文放大到 14/20 后高 36、圆角 18。
- * 图标在左，左侧留白比右侧少 2（与 Figma 14355:74961 的 16 / 20 同比例）。
+ * 60% 白 + 1px 白色内描边 + 0.5px #EBEDF2（Figma 214:13243）；14/20、高 36、圆角 18、padding 8 14 8 12。
  */
 .followUp {
   display: flex;
@@ -111,8 +110,10 @@
   max-width: 100%;
   padding: 8px 14px 8px 12px;
   border-radius: 18px;
-  background-color: var(--wm-color-background-quaternary);
-  box-shadow: inset 0 0 0 0.5px var(--wm-color-outline-tertiary);
+  background-color: var(--wm-color-follow-up-fill);
+  box-shadow:
+    inset 0 0 0 1px var(--wm-color-follow-up-stroke),
+    inset 0 0 0 0.5px var(--wm-color-outline-tertiary);
   cursor: pointer;
   outline: none;
   transition:
@@ -124,15 +125,17 @@
   }
 
   &:hover {
-    background-color: var(--wm-color-background-septenary);
+    background-color: var(--wm-color-follow-up-fill-hover);
   }
 
   &:focus-visible {
-    box-shadow: inset 0 0 0 0.5px var(--wm-color-outline-secondary);
+    box-shadow:
+      inset 0 0 0 1px var(--wm-color-follow-up-stroke),
+      inset 0 0 0 0.5px var(--wm-color-outline-secondary);
   }
 }
 
-/* 回车箭头（Figma 14355:75191），配 14 号字缩到 16×16，描边 #525252 */
+/* 回车箭头 16×16（Figma 214:13244） */
 .followUpIcon {
   flex: 0 0 auto;
   display: flex;

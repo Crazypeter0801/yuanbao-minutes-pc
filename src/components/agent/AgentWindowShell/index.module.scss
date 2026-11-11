@@ -1,6 +1,6 @@
 /*
  * 元宝窗口外壳
- * 吸附态：和会议并排的完整圆角窗口（18），磨砂材质；
+ * 吸附态：和会议并排的完整圆角窗口（12），与会议同一种磨砂材质（Figma 214:11039）；
  * 分离态：矮一点的浮动窗（400×580，圆角 22），不透明暖白。
  * 同一个节点两种形态只换样式，对话滚动位置、输入内容不会丢。
  */
@@ -16,8 +16,8 @@
 
 /*
  * 吸附态：相对会议窗口外框（.frame）贴右、上下撑满（760），宽 400；
- * 与会议窗口之间留 10 的缝隙（会议让出的 410 里已含）；阴影和会议窗口一致，两个窗口是平级的。
- * 磨砂：白 82% + 背景模糊，壁纸的色彩隐约透出来。
+ * 与会议窗口之间留 8 的缝隙（会议让出的 408 里已含）；两个窗口平级，都不投影。
+ * 磨砂：#F0F1F5 90% + blur 15（Figma 214:11039），和会议窗口一样。
  */
 .docked {
   position: absolute;
@@ -25,13 +25,10 @@
   right: 0;
   bottom: 0;
   z-index: 20;
-  border-radius: 18px;
-  background-color: rgba(255, 255, 255, 0.82);
-  -webkit-backdrop-filter: blur(28px) saturate(1.6);
-  backdrop-filter: blur(28px) saturate(1.6);
-  box-shadow:
-    var(--wm-shadow-canvas),
-    inset 0 0 0 0.5px rgba(255, 255, 255, 0.7);
+  border-radius: 12px;
+  background-color: var(--wm-color-window-glass);
+  -webkit-backdrop-filter: blur(15px);
+  backdrop-filter: blur(15px);
 }
 
 /* 分离态：浮动小窗，位置由 inline left/top 决定；不透明暖白，轻阴影 + 一圈极淡的描边 */

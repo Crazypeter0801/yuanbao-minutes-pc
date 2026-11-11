@@ -142,6 +142,39 @@
   --wm-color-note-topic-dot: #c3c7cf;
   --wm-color-note-topic-line: #dfe1e6;
 
+  /* 窗口材质（Figma 214:10687 / 214:11039）：#F0F1F5 90% + blur 15，会议窗和元宝窗同一种 */
+  --wm-color-window-glass: rgba(240, 241, 245, 0.9);
+  /* 两窗之间的拖拽条 4×48（Figma 214:11038） */
+  --wm-color-window-handle: #ffffff;
+
+  /* 元宝标题胶囊（Figma 215:16127）：#FAFAFA + 1px 白内描边 + 0 4 30 8% 投影 */
+  --wm-color-agent-pill: #fafafa;
+  --wm-color-agent-pill-stroke: #ffffff;
+  --wm-shadow-agent-pill: 0 4px 30px rgba(0, 0, 0, 0.08);
+
+  /* 对话气泡（Figma 214:13177 / 214:13216）：元宝白底；用户深灰底白字 */
+  --wm-color-background-assistant-bubble: #ffffff;
+  --wm-color-background-user-bubble-strong: #5e6270;
+  --wm-color-text-on-user-bubble: #ffffff;
+  /* 追问胶囊（Figma 214:13243）：60% 白 + 1px 白内描边 */
+  --wm-color-follow-up-fill: rgba(255, 255, 255, 0.6);
+  --wm-color-follow-up-fill-hover: rgba(255, 255, 255, 0.9);
+  --wm-color-follow-up-stroke: #ffffff;
+
+  /* 任务条 / 任务列表 / 长程任务详情（Figma 197:42 方案稿） */
+  --wm-color-task-title: #1f2329;
+  --wm-color-task-text-secondary: #8f959e;
+  --wm-color-task-text-action: #646a73;
+  --wm-color-task-success: #0e9f57;
+  /* 进度条填充：节点数据里未给出，取自 Figma 2x 导出图像素 */
+  --wm-color-task-progress: #16b364;
+  --wm-color-task-track: #e5e6eb;
+  --wm-color-task-row: #f7f8fa;
+  --wm-color-task-tag: #e8f7ef;
+  --wm-color-task-button: #f2f3f5;
+  --wm-color-task-card-stroke: #e5e6eb;
+  --wm-shadow-task-card: 0 8px 24px rgba(0, 0, 0, 0.12);
+
   /* 字体 */
   --wm-font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial,
     system-ui, -apple-system, 'BlinkMacSystemFont', sans-serif;

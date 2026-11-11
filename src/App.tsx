@@ -160,11 +160,13 @@ export default function App() {
               />
             )}
           </div>
-          {/* 元宝吸附在右侧时，会议窗口让出 410（元宝 400 + 缝隙 10）；分离或关闭后恢复撑满 1440 */}
+          {/* 元宝吸附在右侧时，会议窗口让出 408（元宝 400 + 缝隙 8，缝隙正中是拖拽条）；分离或关闭后恢复撑满 1440 */}
           <div
             className={`${styles.reserve} ${sidebarOpen && dock.mode === "docked" ? styles.reserveOpen : ""}`}
             aria-hidden="true"
-          />
+          >
+            {sidebarOpen && dock.mode === "docked" && <span className={styles.handle} />}
+          </div>
         </div>
         {/* 拖回会议右缘时的吸附提示：右缘一个浅色描边的玻璃占位框（无文字），松手后元宝落在这里 */}
         {sidebarOpen && dock.mode === "floating" && dock.dockHint && (

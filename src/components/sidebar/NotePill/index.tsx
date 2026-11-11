@@ -1,6 +1,6 @@
 import type { FC } from 'react';
-import IconStatusNotes from '@/assets/d2c/icons/input/icon-status-notes';
-import IconNotePause from '@/assets/d2c/icons/v1/icon-note-pause';
+import IconAgentNoteStop from '@/assets/d2c/icons/agent/icon-agent-note-stop';
+import IconAgentPenAi from '@/assets/d2c/icons/agent/icon-agent-pen-ai';
 import IconNotePlay from '@/assets/d2c/icons/v1/icon-note-play';
 import { Pressable } from '@/components/common/Pressable';
 import styles from './index.module.scss';
@@ -17,18 +17,20 @@ interface NotePillProps {
 }
 
 /**
- * 「元宝正在记笔记」胶囊（Figma 36:2251）
- * 宽度跟着文案走：笔记图标 18 + 文案 12/18 + 24 的暂停钮，padding 0 8 0 12、间距 4。
+ * 「正在记笔记」胶囊（Figma 214:11115）
+ * 宽度跟着文案走：（笔 AI 图标 16 + 间距 4 + 文案 12/18）+ 间距 8 + 24 的暂停钮，padding 0 8 0 12。
  * 不再展开面板：点胶囊跳浏览器看完整笔记，点右侧圆钮暂停 / 继续。
  */
 export const NotePill: FC<NotePillProps> = ({ isListening, hidden = false, onOpen, onToggleListening }) => (
   <div className={`${styles.slot} ${hidden ? styles.slotHidden : ''}`}>
     <Pressable className={styles.pill} onClick={onOpen} title="在浏览器打开元宝笔记" ariaLabel="在浏览器打开元宝笔记">
-      <span className={styles.icon} aria-hidden="true">
-        <IconStatusNotes />
+      <span className={styles.label}>
+        <span className={styles.icon} aria-hidden="true">
+          <IconAgentPenAi />
+        </span>
+        {/* 暂停文案沿用 Figma 318:7200 原文「元宝休息中」 */}
+        <span className={styles.text}>{isListening ? '正在记笔记' : '元宝休息中'}</span>
       </span>
-      {/* 暂停文案沿用 Figma 318:7200 原文「元宝休息中」 */}
-      <span className={styles.text}>{isListening ? '元宝正在记笔记' : '元宝休息中'}</span>
       <Pressable
         as="span"
         className={styles.toggle}
@@ -37,7 +39,7 @@ export const NotePill: FC<NotePillProps> = ({ isListening, hidden = false, onOpe
         title={isListening ? '暂停记笔记' : '继续记笔记'}
         ariaLabel={isListening ? '暂停记录' : '继续记录'}
       >
-        {isListening ? <IconNotePause /> : <IconNotePlay />}
+        {isListening ? <IconAgentNoteStop /> : <IconNotePlay />}
       </Pressable>
     </Pressable>
   </div>

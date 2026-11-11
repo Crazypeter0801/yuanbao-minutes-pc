@@ -11,7 +11,6 @@ import type { PopMenuItem } from "@/components/common/PopMenu";
 import { NOTE_ARTIFACT_ID } from "@/data/artifacts";
 import type { ArtifactItem } from "@/types/artifact";
 import type { BubbleCard } from "@/types/chat";
-import { AiDisclaimer } from "@/components/sidebar/AiDisclaimer";
 import { ArtifactEntry } from "@/components/sidebar/ArtifactEntry";
 import { ChatInput } from "@/components/sidebar/ChatInput";
 import { ChatList } from "@/components/sidebar/ChatList";
@@ -139,7 +138,6 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
           className={styles.stream}
           scrollKey={`${chat.messages.length}-${chat.isThinking}`}
         >
-          <AiDisclaimer />
           <ChatList
             messages={chat.messages}
             shape="round"
@@ -185,7 +183,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
             )}
           </div>
           <ChatInput
-            placeholder="提问或创建任务"
+            placeholder="和元宝聊聊"
             onSubmit={send}
             onToolAction={(label) => showToast(`${label}（演示）`)}
           />

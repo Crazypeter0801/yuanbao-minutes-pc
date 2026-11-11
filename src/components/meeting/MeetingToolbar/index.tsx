@@ -11,6 +11,7 @@ import IconTbMore from '@/assets/d2c/icons/v1/icon-tb-more';
 import IconTbRecord from '@/assets/d2c/icons/v1/icon-tb-record';
 import IconTbShare from '@/assets/d2c/icons/v1/icon-tb-share';
 import IconTbYuanbao from '@/assets/d2c/icons/v1/icon-tb-yuanbao';
+import IconTbYuanbaoActive from '@/assets/d2c/icons/agent/icon-tb-yuanbao-active';
 import { Pressable } from '@/components/common/Pressable';
 import styles from './index.module.scss';
 
@@ -25,9 +26,9 @@ interface MeetingToolbarProps {
 }
 
 /**
- * 会议底部工具栏（Figma 257:1968）
- * 左：表情 / 聊天；中：灰底胶囊（麦克风 / 摄像头 / 共享 / 成员 / 录制 / 元宝 / 更多）；右：离开会议。
- * 说明：仅「元宝」按钮可点（开关元宝 personal agent 窗口，打开时按钮高亮），其余按钮只做视觉还原。
+ * 会议底部工具栏（Figma 214:10935）
+ * 左：表情 / 聊天；中：麦克风 / 摄像头 / 共享 / 成员 / 录制 / 元宝 / 更多（无底色）；右：离开会议。
+ * 说明：仅「元宝」按钮可点（开关元宝 personal agent 窗口，打开时图标变成元宝绿的激活态 214:11010），其余按钮只做视觉还原。
  */
 export const MeetingToolbar: FC<MeetingToolbarProps> = ({ yuanbaoOpen, onToggleYuanbao }) => (
   <div className={styles.toolbar}>
@@ -73,7 +74,13 @@ export const MeetingToolbar: FC<MeetingToolbarProps> = ({ yuanbaoOpen, onToggleY
         ariaExpanded={yuanbaoOpen}
         title={yuanbaoOpen ? '关闭元宝' : '打开元宝'}
       >
-        <IconTbYuanbao />
+        {yuanbaoOpen ? (
+          <span className={styles.yuanbaoActive}>
+            <IconTbYuanbaoActive />
+          </span>
+        ) : (
+          <IconTbYuanbao />
+        )}
       </Pressable>
       <span className={`${styles.slot} ${styles.slotNarrow}`}>
         <IconTbMore />

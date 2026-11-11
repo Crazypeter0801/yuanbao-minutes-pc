@@ -25,11 +25,11 @@
 }
 
 /*
- * 消息区 padding 8 16 20（Figma 316:2652）
+ * 消息区 padding 12 16 20（Figma 214:13171）
  * 底栏浮在上面，所以底部再加上底栏高度：滚到底时最后一条仍停在底栏上方 20，往上翻时才从底栏后面经过。
  */
 .stream {
-  padding: 8px 16px calc(var(--yb-footer-height, 122px) + 20px);
+  padding: 12px 16px calc(var(--yb-footer-height, 122px) + 20px);
 }
 
 /*
