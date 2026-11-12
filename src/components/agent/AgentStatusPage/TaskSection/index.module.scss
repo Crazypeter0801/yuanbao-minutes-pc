@@ -29,13 +29,21 @@
   color: #7b8190;
 }
 
-.item {
-  padding: 6px 8px 8px;
+.item,
+.itemDone {
   border-radius: 12px;
 
   &:hover {
     background-color: rgba(0, 0, 0, 0.03);
   }
+}
+
+.item {
+  padding: 6px 8px;
+}
+
+.itemDone {
+  padding: 6px 8px;
 }
 
 .titleRow,
@@ -75,21 +83,15 @@
 .statusRow {
   display: flex;
   align-items: center;
-  margin-top: 4px;
+  margin-top: 2px;
 }
 
-.status,
-.doneNote {
+.status {
   margin: 0;
   font-size: 12px;
   line-height: 18px;
   font-weight: 400;
   color: #7b8190;
-}
-
-.doneNote {
-  margin-top: 2px;
-  padding-left: 22px;
 }
 
 /* 约 12px 的小方块：2×2 圆角方点，顺时针依次从 0.3 亮到 1 */
@@ -131,42 +133,6 @@
   flex: 0 0 auto;
   margin-right: 8px;
   color: #6d8b7c;
-}
-
-.details {
-  margin: 4px 0 0;
-  padding: 0 0 0 19px;
-  list-style: none;
-}
-
-.details li {
-  display: flex;
-  align-items: flex-start;
-  font-size: 12px;
-  line-height: 18px;
-  color: #9298a5;
-}
-
-.details li + li {
-  margin-top: 2px;
-}
-
-.detailMark,
-.detailDot {
-  flex: 0 0 auto;
-  width: 8px;
-  height: 18px;
-  margin-right: 6px;
-}
-
-.detailMark {
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='18' viewBox='0 0 8 18'%3E%3Cpath d='M1.2 9.2 3.1 11.1 6.8 7' fill='none' stroke='%23b7bec8' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
-    center / 8px 18px no-repeat;
-}
-
-.detailDot {
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='18' viewBox='0 0 8 18'%3E%3Ccircle cx='4' cy='9' r='1.6' fill='%239298a5'/%3E%3C/svg%3E")
-    center / 8px 18px no-repeat;
 }
 
 .chevron {

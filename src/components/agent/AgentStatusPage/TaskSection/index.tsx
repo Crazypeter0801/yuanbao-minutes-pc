@@ -36,29 +36,17 @@ const DoneCheck: FC = () => (
 const TaskItem: FC<{ task: AgentStatusTask }> = ({ task }) => {
   const running = task.state === 'running';
   return (
-    <div className={styles.item}>
+    <div className={running ? styles.item : styles.itemDone}>
       <div className={styles.titleRow}>
         {!running && <DoneCheck />}
         <span className={styles.taskTitle}>{task.title}</span>
         <img className={styles.chevron} src={iconChevron} width={16} height={16} alt="" />
       </div>
-      {running ? (
+      {running && (
         <div className={styles.statusRow}>
           <RunningDots />
           <span className={styles.status}>{task.status}</span>
         </div>
-      ) : (
-        task.status && <p className={styles.doneNote}>{task.status}</p>
-      )}
-      {task.details && task.details.length > 0 && (
-        <ul className={styles.details}>
-          {task.details.map((detail) => (
-            <li key={detail.text} className={detail.active ? styles.detailActive : undefined}>
-              <span className={detail.active ? styles.detailDot : styles.detailMark} aria-hidden="true" />
-              <span>{detail.text}</span>
-            </li>
-          ))}
-        </ul>
       )}
     </div>
   );
@@ -66,8 +54,8 @@ const TaskItem: FC<{ task: AgentStatusTask }> = ({ task }) => {
 
 /**
  * 详情页任务区（Figma 289:30737）
- * 进行中：标题、奔跑的点阵和当前说明，下面是更浅的细项。
- * 已完成：标题左侧静态勾，下面一句结果。分组和自动任务卡片保持原样。
+ * 进行中两行：标题，以及点阵加当前说明。已完成一行：静态勾加标题。
+ * 分组和自动任务卡片保持原样。
  */
 export const TaskSection: FC<TaskSectionProps> = ({ tasks, onCreateAuto }) => {
   const running = tasks.filter((task) => task.state === 'running');
