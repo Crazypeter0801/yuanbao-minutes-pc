@@ -27,11 +27,10 @@
   --wm-color-background-septenary: #f3f3f4;
   --wm-color-background-bubble: #ffffff;
   /*
-   * 元宝侧栏面板（Figma 215:19388 / 215:21817）
-   * 纯白 #FFFFFF，圆角 12；对话页和 Agent 状态页共用同一个容器。
-   * 面板变白后，落在上面的卡片 / 气泡用 --wm-color-panel-surface 或细描边拉开层次。
+   * 状态页铺底（Figma 215:21817 的毛玻璃色去掉透明度）
+   * 对话页外壳用 --wm-color-window-glass；状态页要盖住下面的对话，所以用同色实底。
    */
-  --wm-color-sidebar-panel: #ffffff;
+  --wm-color-sidebar-panel: #f0f2f7;
   --wm-color-panel-surface: #f5f6f7;
   --wm-color-panel-card-border: #e5e6eb;
   --wm-radius-sidebar-panel: 12px;
@@ -151,19 +150,61 @@
   --wm-color-note-topic-dot: #c3c7cf;
   --wm-color-note-topic-line: #dfe1e6;
 
-  /* 会议窗口材质（Figma 215:16458）：#F0F2F7 90% + 背景模糊 4；元宝窗口是近白实底（--wm-color-sidebar-panel） */
-  --wm-color-window-glass: rgba(240, 242, 247, 0.9);
-  /* 渐进模糊带的着色：会议底栏跟着会议窗口的色，元宝底栏跟着侧栏面板（Figma 215:19534 / 215:22014） */
+  /* 会议窗与元宝窗共用材质（Figma 215:21466 / 215:21817）：#F0F2F7F2 + 背景模糊 4 */
+  --wm-color-window-glass: rgba(240, 242, 247, 0.95);
+  /* 渐进模糊带的着色：跟着毛玻璃，不要再铺一层纯白（Figma 215:19534 / 215:21963） */
   --wm-color-blur-tint-meeting: rgba(240, 242, 247, 0.28);
-  --wm-color-blur-tint-agent: rgba(255, 255, 255, 0.55);
+  --wm-color-blur-tint-agent: rgba(244, 244, 245, 0.12);
+  /*
+   * 方案 B 底栏遮罩（Figma 215:22014）
+   * 渐变向量只有容器高度的 12.7%（gradientHandles h2.y = 0.127），
+   * 61.7% 的色标落在这段向量上，约等于整段的 7.84%，之后保持 #F1F2F44D。
+   */
+  --wm-gradient-task-footer: linear-gradient(
+    to bottom,
+    rgba(241, 242, 244, 0) 0%,
+    rgba(241, 242, 244, 0.3) 7.84%,
+    rgba(241, 242, 244, 0.3) 100%
+  );
   /* 两窗之间的拖拽条 4×48（Figma 215:16809） */
   --wm-color-window-handle: #ffffff;
 
-  /* 对话气泡（Figma 215:19455 / 215:19494）：元宝气泡浅灰，落在纯白侧栏面板上 */
-  --wm-color-background-assistant-bubble: var(--wm-color-panel-surface);
-  /* 追问胶囊（Figma 215:16873）：浅灰底 + 1px 细描边，白面板上仍能看出胶囊边界 */
-  --wm-color-follow-up-fill: var(--wm-color-panel-surface);
-  --wm-color-follow-up-fill-hover: #eceef1;
+  /* 元宝气泡（Figma 215:21884）：白底，落在毛玻璃侧栏上 */
+  --wm-color-background-assistant-bubble: var(--wm-color-background-senary);
+  /* 追问胶囊（Figma 215:21950）：#FFFFFF99 + 1px 白描边，圆角 18 */
+  --wm-color-follow-up-fill: rgba(255, 255, 255, 0.6);
+  --wm-color-follow-up-fill-hover: rgba(255, 255, 255, 0.82);
+  --wm-color-follow-up-line: #ffffff;
+
+  /* 元宝画白板（演示）：Figma 221:30082 的白板框架与批注内容 */
+  --wm-color-whiteboard-board: #ffffff;
+  /* 板书蜡笔色：太阳、雨滴、白光、七色 */
+  --wm-color-whiteboard-crayon-ink: #373c48;
+  --wm-color-whiteboard-crayon-yellow: #f0a500;
+  --wm-color-whiteboard-crayon-blue: #3b9ae1;
+  --wm-color-whiteboard-crayon-gray: #b3bcc9;
+  --wm-color-whiteboard-crayon-red: #e5484d;
+  --wm-color-whiteboard-crayon-orange: #f76b15;
+  --wm-color-whiteboard-crayon-green: #46a758;
+  --wm-color-whiteboard-crayon-cyan: #12a594;
+  --wm-color-whiteboard-crayon-indigo: #3e63dd;
+  --wm-color-whiteboard-crayon-violet: #8e4ec6;
+  /* 雨滴里那层淡蓝 */
+  --wm-color-whiteboard-droplet-fill: rgba(59, 154, 225, 0.16);
+  /* 调色板：白底 + 1px 描边，选中色加一圈 */
+  --wm-color-whiteboard-palette-ring: rgba(55, 60, 72, 0.28);
+  /* 工具栏选中 / 按下：设计稿未给，沿用品牌蓝的 12% / 24% */
+  --wm-color-whiteboard-tool-active: rgba(0, 102, 255, 0.12);
+  --wm-color-whiteboard-tool-pressed: rgba(0, 102, 255, 0.24);
+  --wm-color-whiteboard-ripple-line: rgba(0, 102, 255, 0.55);
+  --wm-color-whiteboard-ripple-fill: rgba(0, 102, 255, 0.16);
+  --wm-color-whiteboard-cursor: #1f2937;
+  --wm-color-whiteboard-cursor-line: #ffffff;
+  --wm-color-whiteboard-cursor-shadow: rgba(15, 23, 42, 0.28);
+  /* 元宝角色的落地影：比箭头更散，看起来是「站在」白板上 */
+  --wm-color-whiteboard-avatar-shadow: rgba(15, 23, 42, 0.16);
+  /* 设计稿 effect：0 4 32 rgba(52, 57, 70, 0.08) */
+  --wm-shadow-whiteboard-panel: 0 4px 32px rgba(52, 57, 70, 0.08);
 
   /* 任务条 / 任务列表 / 长程任务详情（Figma 197:42 方案稿） */
   --wm-color-task-title: #1f2329;
@@ -192,19 +233,29 @@
   /* 设置列表分隔线（Figma 243:1196） */
   --wm-color-status-setting-line: #eef0f3;
 
-  /* 顶部任务胶囊（Figma 215:19392 / 215:21821）：浅灰底 + 1px 白描边 + 柔和落影 */
-  --wm-color-header-pill: var(--wm-color-panel-surface);
+  /* 顶部任务胶囊（Figma 294:36998）：#FAFAFA + 1px 白描边 + 0 4 30 */
+  --wm-color-header-pill: #fafafa;
   --wm-color-header-pill-line: #ffffff;
   --wm-shadow-header-pill: 0 4px 30px rgba(0, 0, 0, 0.08);
-  /* 输入框上方任务胶囊（Figma 215:22016 / 268:25268 / 215:22028）：浅灰底 + 0.5px 描边 + 落影 */
-  --wm-color-task-entry-fill: var(--wm-color-panel-surface);
-  --wm-color-task-entry-line: rgba(0, 0, 0, 0.08);
+  /*
+   * 输入框上方任务胶囊（Figma 215:22016 / 268:25268 / 215:22028）
+   * 填充从 #FFFFFF99 加深到 #FFFFFFE6，后面的对话不再透出来。
+   * 描边仍是白，落影仍是 0 4 30 / 8%。
+   */
+  --wm-color-task-entry-fill: #ffffffe6;
+  --wm-color-task-entry-fill-hover: #fffffff5;
+  --wm-color-task-entry-line: #ffffff;
   --wm-color-task-entry-text: #4e5461;
-  --wm-shadow-task-entry: 0 4px 24px rgba(0, 0, 0, 0.06);
+  --wm-color-task-entry-count: #00be68;
+  --wm-shadow-task-entry: 0 4px 30px rgba(0, 0, 0, 0.08);
+  /* 指令大全浮层：比胶囊更实一点，字才读得清，描边和落影仍跟胶囊走 */
+  --wm-color-command-menu: rgba(255, 255, 255, 0.92);
 
   /* 字体 */
   --wm-font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial,
     system-ui, -apple-system, 'BlinkMacSystemFont', sans-serif;
+  /* 板书标注：优先楷体 / 行楷，最后退回系统手写体 */
+  --wm-font-hand: 'Kaiti SC', 'STKaiti', 'Xingkai SC', 'KaiTi', 'Kaiti', 'Songti SC', cursive;
 
   /* 对话区阅读偏好（标题栏「更多」菜单切换）：侧栏根节点会覆盖这三个变量 */
   --chat-font-size: 14px;

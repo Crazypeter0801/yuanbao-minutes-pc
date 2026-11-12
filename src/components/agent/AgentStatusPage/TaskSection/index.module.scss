@@ -1,32 +1,23 @@
-/* 任务区：分区标题 + 白底任务卡（Figma 250:1324 / 254:1282） */
 .section {
   display: flex;
   flex-direction: column;
 }
 
-.sectionHeader {
-  display: flex;
-  align-items: center;
-  padding: 2px 0;
-}
-
 .sectionTitle {
+  padding: 2px 0;
   font-size: 14px;
   line-height: normal;
   font-weight: 600;
-  color: var(--wm-color-task-title);
+  color: #1f2329;
 }
 
-/* 白底任务卡，内边距 12，圆角 12；白面板上加 1px 描边保持边界 */
 .taskCard {
   margin-top: 8px;
   padding: 12px;
   border-radius: 12px;
-  background-color: var(--wm-color-card-background);
-  box-shadow: inset 0 0 0 1px var(--wm-color-panel-card-border);
+  background-color: #fff;
 }
 
-/* 分组标题：高 24，左缩进 8，12 号次文字 */
 .groupTitle {
   display: flex;
   align-items: center;
@@ -35,20 +26,44 @@
   font-size: 12px;
   line-height: normal;
   font-weight: 400;
-  color: var(--wm-color-text-tertiary);
+  color: #7b8190;
 }
 
-/* 进行中行：高 36，左标题右状态；悬停整行出现停止按钮 */
-.runningRow {
+.item,
+.itemDone {
+  border-radius: 12px;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+  }
+}
+
+.item {
+  padding: 6px 8px;
+}
+
+.itemDone {
+  padding: 6px 8px;
+}
+
+.titleRow,
+.row {
   display: flex;
   align-items: center;
+  width: 100%;
+}
+
+.row {
   height: 36px;
   padding: 0 8px;
   border-radius: 12px;
-  transition: background-color 120ms ease-in-out;
+  background: transparent;
+  color: inherit;
+  cursor: default;
+  outline: none;
 
   &:hover {
-    background-color: var(--wm-color-status-task-hover);
+    background-color: rgba(0, 0, 0, 0.03);
   }
 }
 
@@ -57,83 +72,149 @@
   min-width: 0;
   overflow: hidden;
   font-size: 14px;
-  line-height: normal;
-  font-weight: 400;
-  color: var(--wm-color-task-title);
+  line-height: 20px;
+  font-weight: 500;
+  color: #1f2329;
+  text-align: left;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* 已完成：只保留一行标题 */
-.doneRow {
+.statusRow {
   display: flex;
   align-items: center;
-  height: 36px;
-  padding: 0 8px;
-  overflow: hidden;
-  font-size: 14px;
-  line-height: normal;
-  font-weight: 400;
-  color: var(--wm-color-task-title);
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  margin-top: 2px;
+  /* 4px 点 + 8px 间距，说明行跟标题文字左对齐，不跟点的左缘对齐 */
+  padding-left: 12px;
 }
 
-/* 分隔线：上下 6、左右 8，0.5px */
+.status {
+  margin: 0;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 400;
+  color: #7b8190;
+}
+
+.ring,
+.filled {
+  flex: 0 0 auto;
+  align-self: center;
+  box-sizing: border-box;
+  width: 4px;
+  height: 4px;
+  margin-right: 8px;
+  border-radius: 50%;
+}
+
+.ring {
+  background-color: #16b364;
+}
+
+.filled {
+  background-color: #8b93a0;
+}
+
+/* 约 14px 的小方块：3×3 圆角方点。外圈顺时针亮起，最后亮中心 */
+.dots {
+  display: grid;
+  flex: 0 0 auto;
+  grid-template-columns: repeat(3, 3px);
+  gap: 2.5px;
+  width: 14px;
+  height: 14px;
+  margin-right: 7px;
+
+  i {
+    display: block;
+    width: 3px;
+    height: 3px;
+    border-radius: 1px;
+    background-color: #6d8b7c;
+    opacity: 0.3;
+    animation: task-dot 1s ease-in-out infinite;
+  }
+
+  i:nth-child(1) {
+    animation-delay: 0s;
+  }
+
+  i:nth-child(2) {
+    animation-delay: 0.11s;
+  }
+
+  i:nth-child(3) {
+    animation-delay: 0.22s;
+  }
+
+  i:nth-child(6) {
+    animation-delay: 0.33s;
+  }
+
+  i:nth-child(9) {
+    animation-delay: 0.44s;
+  }
+
+  i:nth-child(8) {
+    animation-delay: 0.56s;
+  }
+
+  i:nth-child(7) {
+    animation-delay: 0.67s;
+  }
+
+  i:nth-child(4) {
+    animation-delay: 0.78s;
+  }
+
+  i:nth-child(5) {
+    animation-delay: 0.89s;
+  }
+}
+
+.chevron {
+  flex: 0 0 auto;
+  margin-left: 12px;
+}
+
+.taskIcon {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin-right: 4px;
+}
+
 .divider {
   height: 0.5px;
   margin: 6px 8px;
-  background-color: var(--wm-color-line);
+  background-color: rgba(0, 0, 0, 0.08);
 }
 
-/* 右侧 24×24：默认 16px 转圈，悬停换成停止按钮 */
-.stopSlot {
-  position: relative;
-  flex: 0 0 auto;
-  width: 24px;
-  height: 24px;
-  margin-left: 12px;
-  border-radius: 12px;
-  cursor: pointer;
-}
-
-.spinner {
-  position: absolute;
-  top: 4px;
-  left: 4px;
-  animation: status-spin 1s linear infinite;
-}
-
-.stopIcon {
-  display: none;
-}
-
-.stopSlot:hover .spinner,
-.runningRow:hover .spinner {
-  display: none;
-}
-
-.stopSlot:hover .stopIcon,
-.runningRow:hover .stopIcon {
-  display: block;
-}
-
-@keyframes status-spin {
-  from {
-    transform: rotate(0deg);
+@keyframes task-dot {
+  0%,
+  100% {
+    opacity: 0.3;
   }
 
-  to {
-    transform: rotate(360deg);
+  18% {
+    opacity: 1;
+  }
+
+  42% {
+    opacity: 0.45;
+  }
+
+  68% {
+    opacity: 0.3;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .spinner {
+  .dots i {
     animation: none;
-  }
-
-  .runningRow {
-    transition: none;
+    opacity: 0.72;
   }
 }

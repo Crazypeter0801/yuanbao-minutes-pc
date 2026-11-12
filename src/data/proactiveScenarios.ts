@@ -5,10 +5,13 @@ import type { AssistantMessage, RichBlock } from '@/types/chat';
 
 /**
  * 主动触发场景（演示用）
- * 元宝不该只在被问时才说话。一期只做用户主观打五星的 9 个主动服务场景，清单以外不再新增：
+ * 元宝不该只在被问时才说话。一期做了用户主观打五星的 9 个主动服务场景：
  *   会中：1 迟到/中途加入摘要 · 2 上下文主动检索 · 3 议题跑偏提醒 · 4 时间管理 ·
  *         5 问题悬而未决 · 6 主动总结阶段性讨论 · 7 专业信息补充（默认折叠，已并入智能问答）
  *   跨会议：8 决策记忆 · 9 个人工作流
+ * 按设计师要求，在清单外加了两条代表性主动 offer，体现元宝有眼睛、有耳朵：
+ * 看见共享屏幕上的英文，就问要不要开屏幕翻译；听见先前问过的概念，就问要不要结合当下再讲。
+ * 这两条都是先问要不要，用户点了追问再给结果，和「专业信息补充」一上来倒全文不同。
  * 已定方向保留：实时翻译、OCR 识别。原 demo 自带的会议将结束约下次、建个投票、选总结方式、
  * 提取内容、创建任务也保留。另有几条挂在追问建议后面的「承接场景」（internal），点了追问不会没有回应。
  * 来源：钉钉听记 11-10「元宝入会融合方案与10个主动场景规划」，以及用户给出的五星场景清单。
@@ -150,6 +153,56 @@ export const proactiveScenarios: ProactiveScenario[] = [
       followUps: ['我有哪些待办？'],
     }),
   },
+  {
+    id: 'follow-screen-translate',
+    kind: 'nudge',
+    asReply: true,
+    internal: true,
+    phase: '会中',
+    label: '开启屏幕翻译',
+    hint: '承接「屏幕翻译」的追问：用户点了开启，元宝确认已把画面英文叠成中文',
+    keywords: ['开启屏幕翻译'],
+    build: () => ({
+      id: createId('follow-screen-translate'),
+      role: 'assistant',
+      createdAt: Date.now(),
+      bubbles: [
+        {
+          id: createId('follow-screen-translate-bubble'),
+          blocks: [
+            paragraph('已开启 **屏幕翻译**。画面上的英文会实时叠中文译文，只有你能看到。不需要了跟我说一声就行。'),
+          ],
+        },
+      ],
+      source: '操作 · 已开启屏幕翻译',
+    }),
+  },
+  {
+    id: 'follow-explain-in-context',
+    kind: 'nudge',
+    asReply: true,
+    internal: true,
+    phase: '会中',
+    label: '结合现在讲讲',
+    hint: '承接「结合当下解释」的追问：结合本场登录页讨论，讲渐进式披露具体指什么',
+    keywords: ['结合现在讲讲'],
+    build: () => ({
+      id: createId('follow-explain-in-context'),
+      role: 'assistant',
+      createdAt: Date.now(),
+      bubbles: [
+        {
+          id: createId('follow-explain-in-context-bubble'),
+          blocks: [
+            paragraph(
+              '结合刚才的讨论：**渐进式披露**在登录页里，就是先只露出手机号和主按钮，验证码、第三方登录这些次要入口先收着，用户点到再展开。这跟[[立昌]]说的「先保证主路径干净」是一回事；[[黄婷婷]]担心的信息密度，也可以用这个办法：默认给摘要，细节按需展开，而不要把所有字段一次性铺开。',
+            ),
+          ],
+        },
+      ],
+      source: '结合 · 本场讨论和你上周的提问',
+    }),
+  },
 
   /* ================= 会中（用户主观五星清单 1～7） ================= */
   {
@@ -241,7 +294,7 @@ export const proactiveScenarios: ProactiveScenario[] = [
         },
       ],
       source: '对照 · 会议议程',
-      followUps: ['先不用', '记到笔记里'],
+      followUps: ['记到笔记里'],
     }),
   },
   {
@@ -363,7 +416,7 @@ export const proactiveScenarios: ProactiveScenario[] = [
     phase: '会中',
     label: '实时翻译',
     hint: '会中 · 实时翻译（已定）：检测到发言人在说英语，元宝主动问要不要开 AI 同传',
-    keywords: ['实时翻译', '翻译', '英文发言', '英语'],
+    keywords: ['实时翻译', '英文发言', '英语'],
     build: () => ({
       id: createId('nudge-translate'),
       role: 'assistant',
@@ -376,7 +429,55 @@ export const proactiveScenarios: ProactiveScenario[] = [
           ],
         },
       ],
-      followUps: ['开启 AI 同传', '先不用'],
+      followUps: ['开启 AI 同传'],
+    }),
+  },
+  {
+    id: 'screen-translate',
+    kind: 'nudge',
+    phase: '会中',
+    label: '屏幕翻译',
+    hint: '会中 · 眼：元宝看见共享屏幕上的英文材料，主动问要不要开屏幕翻译，先不倒译文',
+    keywords: ['屏幕翻译', '屏幕有英文', '英文材料'],
+    build: () => ({
+      id: createId('nudge-screen-translate'),
+      role: 'assistant',
+      createdAt: Date.now(),
+      bubbles: [
+        {
+          id: createId('nudge-screen-translate-bubble'),
+          blocks: [
+            paragraph('共享屏幕上是一份英文材料。要不要我打开 **屏幕翻译**，把画面里的英文叠成中文？只有你能看到。'),
+          ],
+        },
+      ],
+      source: '识别 · 共享屏幕',
+      followUps: ['开启屏幕翻译'],
+    }),
+  },
+  {
+    id: 'explain-in-context',
+    kind: 'nudge',
+    phase: '会中',
+    label: '结合当下解释',
+    hint: '会中 · 耳：用户上周问过「渐进式披露」；刚才黄婷婷讨论登录页时又提到这个词。元宝靠听和记忆主动问要不要结合当下再讲，不给词典定义',
+    keywords: ['结合当下解释', '先前问过的概念', '渐进式披露'],
+    build: () => ({
+      id: createId('nudge-explain-in-context'),
+      role: 'assistant',
+      createdAt: Date.now(),
+      bubbles: [
+        {
+          id: createId('nudge-explain-in-context-bubble'),
+          blocks: [
+            paragraph(
+              '刚才[[黄婷婷]]提到了「**渐进式披露**」。这是你上周问过我的。要不要我结合现在讨论的登录页，再给你讲讲它在这个方案里具体指什么？',
+            ),
+          ],
+        },
+      ],
+      source: '回忆 · 你上周问过',
+      followUps: ['结合现在讲讲'],
     }),
   },
   {

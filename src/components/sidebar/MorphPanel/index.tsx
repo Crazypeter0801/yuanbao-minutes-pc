@@ -25,8 +25,21 @@ interface MorphPanelProps {
   summary: ReactNode;
   /** 只在展开后接在 summary 后面的文字，如「快捷指令」 */
   expandedLabel?: string;
-  /** 收起态左右内边距：纯图标 10（凑成 36 的正圆），图标 + 文字 12 */
+  /** 收起态左右内边距：纯图标用来把 16 的图标凑成胶囊宽，图标 + 文字 12 */
   collapsedPaddingX: number;
+  /** 收起高度，默认 36（产物胶囊）。任务入口的书本胶囊是 32，要和旁边的胶囊对齐 */
+  collapsedHeight?: number;
+  /** 收起圆角，默认 18。书本胶囊是 16 */
+  collapsedRadius?: number;
+  /** 展开圆角，默认 12。快捷指令面板单独用 20，产物列表仍是 12 */
+  expandedRadius?: number;
+  /**
+   * 展开后让标题图标的左边缘和列表文案的左边缘对齐。
+   * 图标仍在标题文字左侧，不要比问法更靠左。只给推荐指令用，产物列表不传。
+   */
+  alignLabelWithItems?: boolean;
+  /** glass：收起态用下午新稿的半透明白胶囊；展开后仍回到原来的白底面板 */
+  appearance?: 'solid' | 'glass';
   /** 展开宽度：数字为固定 px，'full' 为撑满底栏这一行 */
   panelWidth: number | 'full';
   /** 读屏用的面板名 */
@@ -61,6 +74,11 @@ export const MorphPanel: FC<MorphPanelProps> = ({
   summary,
   expandedLabel,
   collapsedPaddingX,
+  collapsedHeight = 36,
+  collapsedRadius = 18,
+  expandedRadius = 12,
+  alignLabelWithItems = false,
+  appearance = 'solid',
   panelWidth,
   name,
   contentKey,
@@ -177,6 +195,9 @@ export const MorphPanel: FC<MorphPanelProps> = ({
   const vars = {
     '--morph-collapsed-width': `${collapsedWidth}px`,
     '--morph-collapsed-padding-x': `${collapsedPaddingX}px`,
+    '--morph-collapsed-height': `${collapsedHeight}px`,
+    '--morph-collapsed-radius': `${collapsedRadius}px`,
+    '--morph-expanded-radius': `${expandedRadius}px`,
     '--morph-expanded-width': `${expandedWidth}px`,
     '--morph-expanded-left': `${-offsetLeft}px`,
     '--morph-panel-height': `${panelHeight}px`,
@@ -196,7 +217,13 @@ export const MorphPanel: FC<MorphPanelProps> = ({
       </div>
 
       <div
-        className={[styles.card, expanded ? styles.cardExpanded : '', alignHeaderToContent ? styles.cardAligned : '']
+        className={[
+          styles.card,
+          expanded ? styles.cardExpanded : '',
+          appearance === 'glass' ? styles.cardGlass : '',
+          alignHeaderToContent ? styles.cardAligned : '',
+          alignLabelWithItems ? styles.cardLabelAligned : '',
+        ]
           .filter(Boolean)
           .join(' ')}
       >

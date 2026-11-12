@@ -1,0 +1,100 @@
+.layer {
+  position: absolute;
+  inset: 0;
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.window {
+  position: relative;
+  width: 1196px;
+  height: 762px;
+  pointer-events: auto;
+  filter: drop-shadow(0 24px 60px rgba(0, 0, 0, 0.18));
+}
+
+.sheet {
+  display: block;
+  width: 1196px;
+  height: 762px;
+  border-radius: 16px;
+}
+
+.close {
+  position: absolute;
+  top: 14px;
+  left: 12px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.closeHit {
+  display: block;
+  width: 14px;
+  height: 14px;
+}
+
+.reply {
+  position: absolute;
+  bottom: 124px;
+  left: 50%;
+  width: 500px;
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  font-size: 14px;
+  line-height: 20px;
+  color: rgba(0, 0, 0, 0.9);
+  transform: translateX(-50%);
+}
+
+.ask {
+  position: absolute;
+  bottom: 64px;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  width: 500px;
+  height: 40px;
+  padding: 0 6px 0 10px;
+  border: 0.75px solid #ebedf2;
+  border-radius: 30px;
+  background: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+  transform: translateX(-50%);
+}
+
+.plus,
+.send {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.plus {
+  width: 28px;
+  height: 28px;
+  border-radius: 20px;
+}
+
+.input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 20px;
+  margin: 0 8px;
+  border: 0;
+  background: transparent;
+  font-size: 14px;
+  line-height: 20px;
+  color: rgba(0, 0, 0, 0.9);
+  outline: none;
+}

@@ -1,0 +1,61 @@
+/*
+ * 元宝 AI 鼠标：黑箭头 + 右下角元宝小角色。
+ * 箭头层单独旋转（transform 由 useCursorTilt 每帧写入），旋转中心在箭头尖端。
+ */
+.cursor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transition: opacity calc(420ms * var(--wb-speed-scale, 1)) ease-out;
+  will-change: transform;
+}
+
+.cursorVisible {
+  opacity: 1;
+}
+
+/* 箭头层：把尖端对到 translate 的原点（path 尖端在 svg 的 4.2 / 3） */
+.cursorArrow {
+  position: absolute;
+  top: -3px;
+  left: -4.2px;
+  z-index: 2;
+  display: block;
+  width: 28px;
+  height: 28px;
+  transform-origin: 4.2px 3px;
+  will-change: transform;
+}
+
+/* 实心黑箭头 + 较粗白描边：描边画在填充之下，只露出外圈；尖端与拐角都圆润 */
+.arrowBody {
+  fill: var(--wm-color-whiteboard-cursor);
+  stroke: var(--wm-color-whiteboard-cursor-line);
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  paint-order: stroke;
+}
+
+.arrowGlyph {
+  display: block;
+  filter: drop-shadow(0 1px 2px var(--wm-color-whiteboard-cursor-shadow));
+  transform-origin: 4.2px 3px;
+  transition: transform calc(90ms * var(--wb-speed-scale, 1)) ease-out;
+}
+
+/* 按住左键时箭头略收紧：只缩放图标，不碰旋转层 */
+.cursorPressing .arrowGlyph {
+  transform: scale(0.86);
+}
+
+/* 元宝小角色：立在箭头左下方，正立不跟着转，只跟随位置 */
+.cursorAvatar {
+  position: absolute;
+  top: 8px;
+  z-index: 1;
+  display: flex;
+  filter: drop-shadow(0 6px 12px var(--wm-color-whiteboard-avatar-shadow));
+  transition: left calc(120ms * var(--wb-speed-scale, 1)) ease-out;
+}

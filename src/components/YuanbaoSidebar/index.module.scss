@@ -10,11 +10,11 @@
 }
 
 /*
- * 消息区左右 16、顶部不额外留白（Figma 215:19447：首条「内容由 AI 生成」紧接头部），
- * 底栏浮在上面，所以底部再加上底栏高度：滚到底时最后一条仍停在底栏上方 20，往上翻时才从底栏后面经过。
+ * 消息区左右 16。底栏浮在对话上（方案 B 从侧栏 y=614 起，含顶部 40 的渐变），
+ * 底部留出整个底栏高度再加 36：滚到底时，最后一条追问停在胶囊上方，不会被盖住。
  */
 .stream {
-  padding: 0 16px calc(var(--yb-footer-height, 122px) + 20px);
+  padding: 0 16px calc(var(--yb-footer-height, 122px) + 36px);
 }
 
 /* 长程任务详情的滚动容器：和消息流同样撑满、同样的内边距（内层复用 .stream） */
@@ -25,17 +25,17 @@
 }
 
 /*
- * 底部 padding 12 16 16、间距 10（Figma 316:2704）
- * 原先 Figma 91:15671 的白色渐变底改成了渐进模糊（见 .blur），底栏本身没有底色，
- * 吸附态的磨砂和分离态的暖白都能直接透出来。透明区域不拦点击，按钮和输入框照常可点。
+ * 方案 A 底栏（Figma 215:19535）：外层 pt 12 + 输入框外再 pt 10，左右下 16。
+ * 方案 B（Figma 215:22014）：贴底、pt 40、左右下 16，上面是从透明淡到 #F1F2F44D 的遮罩。
+ * 透明区域不拦点击，按钮和输入框照常可点。
  */
-/* 底部渐进模糊带：盖住消息流在底栏后面的部分，越往下越糊；高度跟底栏，再往上多出一截做过渡 */
+/* 底部渐进模糊带：盖住消息流在底栏后面的部分；高度跟底栏，再往上多出一截做过渡 */
 .blur {
   left: 0;
   right: 0;
   bottom: 0;
   z-index: 4;
-  height: calc(var(--yb-footer-height, 122px) + 32px);
+  height: calc(var(--yb-footer-height, 96px) + 8px);
 }
 
 .footer {
@@ -46,7 +46,7 @@
   z-index: 5;
   display: flex;
   flex-direction: column;
-  padding: 12px 16px 16px;
+  padding: 22px 16px 16px;
   pointer-events: none;
 
   & > * {
@@ -58,9 +58,19 @@
   }
 }
 
-/* 方案 B：任务胶囊与输入框之间按设计稿收紧到 4 */
-.footerWithTasks > * + * {
-  margin-top: 4px;
+/* 方案 A：画板胶囊单独一行，不换行 */
+.boardRow {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* 方案 B：任务胶囊在输入框上方，间距 10；顶部 40 用来做那层淡入的乳白遮罩 */
+.footerWithTasks {
+  padding-top: 40px;
+  background-image: var(--wm-gradient-task-footer);
 }
 
 /* Agent 状态页：绝对铺满元宝窗口，和对话页共用侧栏面板底色；对话组件不卸载 */

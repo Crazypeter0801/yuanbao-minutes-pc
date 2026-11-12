@@ -1,7 +1,7 @@
 /**
- * Agent 状态页 · 任务数据
- * 文案取自 Figma 243:1054（概览）。
- * 状态页只做本地演示状态，不改动元宝会话里的真实任务。
+ * 详情页任务条目。
+ * 进行中只有标题和一行状态；已完成只有带勾的标题。
+ * 只用于详情页演示，不改会话里的真实任务。
  */
 
 /** 任务状态：进行中 / 已完成 */
@@ -11,19 +11,23 @@ export interface AgentStatusTask {
   id: string;
   title: string;
   state: AgentStatusTaskState;
+  /** 进行中第二行的状态说明 */
+  status?: string;
 }
 
-/** 概览「任务」：进行中 2 条 + 已完成 3 条（Figma 243:1054） */
+/** 任务 Tab：进行中 2 条 + 已完成 3 条 */
 export const AGENT_STATUS_TASKS: AgentStatusTask[] = [
   {
     id: 'status-note',
-    title: '元宝笔记：正在记录本场要点',
+    title: '元宝笔记',
     state: 'running',
+    status: '正在记录本场要点',
   },
   {
     id: 'status-todo',
-    title: '待办捕捉：已记下 2 条与你相关的待办',
+    title: '待办捕捉',
     state: 'running',
+    status: '已记下 2 条与你相关的待办',
   },
   {
     id: 'status-missed',

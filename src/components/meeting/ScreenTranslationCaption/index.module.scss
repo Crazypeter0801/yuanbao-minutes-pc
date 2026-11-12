@@ -1,0 +1,27 @@
+/* 贴在主讲画面底部、名字水牌右侧：不挡会议控件，点不到 */
+.caption {
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  left: 116px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background-color: rgba(8, 22, 44, 0.62);
+  color: var(--wm-color-text-senary);
+  pointer-events: none;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+.badge {
+  margin: 0 0 4px;
+  font-size: 10px;
+  line-height: 14px;
+  opacity: 0.82;
+}
+
+.line {
+  margin: 0;
+  font-size: 13px;
+  line-height: 18px;
+}

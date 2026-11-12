@@ -1,14 +1,15 @@
 /*
  * Agent 状态页（Figma 243:1054 / 243:1222）
- * 整页 400×760，与对话页共用纯白侧栏面板底色和 12 圆角容器；顶部栏 + 元宝状态头部 + Tab 固定，下方内容独立滚动。
+ * 整页 400×760，铺在毛玻璃同色的实底上，盖住下面的对话；顶部栏 + 元宝状态头部 + Tab 固定，下方内容独立滚动。
  */
 .page {
+  position: relative;
   display: flex;
   flex-direction: column;
   height: 100%;
   overflow: hidden;
-  background-color: var(--wm-color-sidebar-panel);
-  color: var(--wm-color-task-title);
+  background-color: rgba(240, 242, 247, 0.95);
+  color: #1f2329;
 }
 
 /* 顶部栏：padding 16 12 12 16，左返回、右独立窗口 / 关闭；空白处可拖动窗口 */
@@ -72,12 +73,58 @@
 }
 
 .heroAvatar {
+  position: relative;
   display: flex;
   flex: 0 0 auto;
   align-items: center;
   justify-content: center;
   width: 48px;
   height: 48px;
+  cursor: pointer;
+  outline: none;
+}
+
+.portrait {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.editTip {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 2;
+  display: none;
+  align-items: center;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.9);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.heroAvatar:hover .editTip,
+.heroAvatar:focus-visible .editTip {
+  display: flex;
+}
+
+.settings {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-left: auto;
+  cursor: pointer;
+  outline: none;
 }
 
 .heroText {

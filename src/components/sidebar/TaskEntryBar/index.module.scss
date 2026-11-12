@@ -1,55 +1,78 @@
 /*
- * 输入框上方任务入口（Figma 215:22015 / 215:22016）
- * 一行 368×36：左侧任务胶囊从做到右排，右侧文件夹贴右；中间留空。
+ * 输入框上方任务入口（Figma 215:22015）
+ * 一行宽 368：指令大全 + 两枚任务胶囊，gap 4，左对齐，不再贴右放文件夹。
  */
 .row {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  height: 36px;
+  flex-wrap: nowrap;
+  gap: 4px;
+  width: 100%;
+  min-width: 0;
 }
 
-.tasks {
+/* 书本右侧的任务行：单行往右顶，装不下就滑出，不换行、不缩胶囊 */
+.scroller {
   display: flex;
+  flex: 1 1 auto;
   align-items: center;
+  gap: 4px;
   min-width: 0;
+  height: 32px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  flex-wrap: nowrap;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  cursor: grab;
+  touch-action: pan-x;
 
-  & > * + * {
-    margin-left: 8px;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  &:active {
+    cursor: grabbing;
   }
 }
 
-/* 任务胶囊：高 36、圆角 18、白底 + 0.5px 描边 + 落影 */
+/*
+ * 任务胶囊（Figma 215:22016 / 268:25268）。书本入口是 MorphPanel，样式在那边。
+ * 高 32、水平 padding 12、圆角 16；#FFFFFFE6 + 1px 白描边 + 0 4 30 的落影。
+ * 稿里的垂直 padding 16 在 32 高里收成垂直居中。
+ * 图标、文案、增量之间是内部 frame 的 4。
+ */
 .pill {
   display: flex;
   flex: 0 0 auto;
   align-items: center;
-  height: 36px;
+  gap: 4px;
+  height: 32px;
   padding: 0 12px;
-  border-radius: 18px;
+  border: 1px solid var(--wm-color-task-entry-line);
+  border-radius: 16px;
   background-color: var(--wm-color-task-entry-fill);
-  box-shadow:
-    inset 0 0 0 0.5px var(--wm-color-task-entry-line),
-    var(--wm-shadow-task-entry);
+  box-shadow: var(--wm-shadow-task-entry);
   cursor: pointer;
   outline: none;
   user-select: none;
   transition: background-color 120ms ease-in-out;
 
   &:hover {
-    background-color: var(--wm-color-background-septenary);
+    background-color: var(--wm-color-task-entry-fill-hover);
   }
 
   &:focus-visible {
-    box-shadow:
-      inset 0 0 0 1.5px var(--wm-color-task-entry-line),
-      var(--wm-shadow-task-entry);
+    box-shadow: 0 0 0 1.5px var(--wm-color-task-entry-line), var(--wm-shadow-task-entry);
   }
 }
 
-/* 文件夹胶囊：图标 + 数字，数字与图标间距 4 */
-.filePill {
-  padding: 0 12px;
+/* 指令大全：只有 16 的书本图标 */
+.iconPill {
+  justify-content: center;
+  width: 40px;
+  padding: 0;
 }
 
 .icon {
@@ -61,24 +84,67 @@
   height: 16px;
 }
 
-/* 12/18 400 secondary（Figma 215:22019 / 268:25271 / 215:22034） */
+/* 12/18 400 secondary。胶囊按文字撑开，不在胶囊里折行 */
 .label {
-  min-width: 0;
-  margin-left: 4px;
-  overflow: hidden;
+  flex: 0 0 auto;
   font-size: 12px;
   line-height: 18px;
   color: var(--wm-color-task-entry-text);
-  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+/* +16 / +5：12/18，#00BE68 */
 .count {
+  flex: 0 0 auto;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--wm-color-task-entry-count);
   font-variant-numeric: tabular-nums;
+}
+
+/* 进行中：12 的转圈，不做成书本指令胶囊 */
+.spinner {
+  flex: 0 0 auto;
+  width: 12px;
+  height: 12px;
+  border: 1.5px solid rgba(0, 102, 255, 0.22);
+  border-top-color: var(--wm-color-brand-primary);
+  border-radius: 50%;
+  animation: board-spin 0.8s linear infinite;
+}
+
+.doneMark {
+  flex: 0 0 auto;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--wm-color-task-entry-count);
+  box-shadow: inset 0 0 0 1.5px var(--wm-color-task-entry-count);
+
+  &::after {
+    content: '';
+    display: block;
+    width: 3px;
+    height: 6px;
+    margin: 1px 0 0 4px;
+    border-right: 1.5px solid #fff;
+    border-bottom: 1.5px solid #fff;
+    transform: rotate(40deg);
+  }
+}
+
+@keyframes board-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .pill {
     transition: none;
+  }
+
+  .spinner {
+    animation: none;
   }
 }

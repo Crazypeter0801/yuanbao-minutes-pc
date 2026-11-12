@@ -6,6 +6,12 @@
   & > * + * {
     margin-top: 4px;
   }
+
+  /* 笔记卡、追问要压过上面的 4，按稿留 8（Figma 215:21887 / 215:21949） */
+  & > .cardSlot,
+  & > .followUps {
+    margin-top: 8px;
+  }
 }
 
 /* 方案 C：无署名，正文与追问之间留更多呼吸 */
@@ -24,7 +30,7 @@
   }
 }
 
-/* 气泡 padding 10 12，浅灰底（Figma 215:19455，落在纯白面板上）；max-width 兜住长内容，不撑破侧栏 */
+/* 气泡 padding 10 12，白底（Figma 215:21884，落在毛玻璃上）；max-width 兜住长内容，不撑破侧栏 */
 .bubble {
   max-width: 100%;
   padding: 10px 12px;
@@ -102,24 +108,23 @@
 }
 
 /*
- * 浅灰底 + 1px 细描边（Figma 215:16873）；14/18、高 34、圆角 17、padding 8 14；文字在左、↗ 在右。
+ * 追问胶囊（Figma 215:21950）：#FFFFFF99 + 1px 白描边、圆角 18。
+ * 左 12 放 16 的拐弯箭头，箭头和文字间距 6，右 14，上下 8；文字 14/20。
  */
 .followUp {
   display: flex;
   align-items: center;
   max-width: 100%;
-  padding: 8px 14px;
-  border-radius: 17px;
+  padding: 8px 14px 8px 12px;
+  border: 1px solid var(--wm-color-follow-up-line);
+  border-radius: 18px;
   background-color: var(--wm-color-follow-up-fill);
-  box-shadow: inset 0 0 0 1px var(--wm-color-panel-card-border);
   cursor: pointer;
   outline: none;
-  transition:
-    background-color 120ms ease-in-out,
-    box-shadow 120ms ease-in-out;
+  transition: background-color 120ms ease-in-out;
 
   & > * + * {
-    margin-left: 8px;
+    margin-left: 6px;
   }
 
   &:hover {
@@ -127,24 +132,26 @@
   }
 
   &:focus-visible {
-    box-shadow: inset 0 0 0 1px var(--wm-color-outline-secondary);
+    box-shadow: inset 0 0 0 1.5px var(--wm-color-follow-up-line);
   }
 }
 
-/* 右侧 ↗（Figma 215:16877）：tertiary 灰，随文字一起缩放 */
-.followUpArrow {
+.followUpIcon {
+  display: flex;
   flex: 0 0 auto;
-  font-size: var(--chat-font-size);
-  line-height: calc(var(--chat-font-size) * 18 / 14);
-  color: var(--wm-color-text-tertiary);
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  color: #525252;
 }
 
-/* 400 primary，字号 / 字体跟随对话区阅读设置 */
+/* 400 primary，字号跟随对话区阅读设置，行高按稿 20 */
 .followUpText {
   min-width: 0;
   font-family: var(--chat-font-family);
   font-size: var(--chat-font-size);
-  line-height: calc(var(--chat-font-size) * 18 / 14);
+  line-height: 20px;
   color: var(--wm-color-text-primary);
   text-align: left;
   overflow-wrap: anywhere;

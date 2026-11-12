@@ -1,7 +1,7 @@
 /*
- * 元宝窗口外壳
- * 吸附态：和会议并排的完整圆角窗口（12），纯白 #FFFFFF 面板底色（Figma 215:19388 / 215:21817）；
- * 分离态：矮一点的浮动窗（400×580，圆角 22），沿同一面板底色。
+ * 元宝窗口外壳（Figma 215:21817）
+ * 吸附态：和会议并排的完整圆角窗口（12），#F0F2F7F2 + 背景模糊 4，和会议窗同一块毛玻璃；
+ * 分离态：矮一点的浮动窗（400×580，圆角 22），沿同一材质。
  * 同一个节点两种形态只换样式，对话滚动位置、输入内容不会丢。
  */
 .shell {
@@ -16,8 +16,8 @@
 
 /*
  * 吸附态：相对会议窗口外框（.frame）贴右、上下撑满（760），宽 400；
- * 与会议窗口之间留 8 的缝隙（会议让出的 408 里已含）；两个窗口平级，都不投影。
- * 底色按 Figma 215:19388 / 215:21817 的侧栏面板改为纯白 #FFFFFF，圆角 12。
+ * 与会议窗口之间留 8（缝隙 2 + 白条 4 + 缝隙 2，Figma 215:21465）；两个窗口平级，都不投影。
+ * 底色与会议窗相同：#F0F2F7F2 + blur(4px)，圆角 12。
  */
 .docked {
   position: absolute;
@@ -26,7 +26,9 @@
   bottom: 0;
   z-index: 20;
   border-radius: var(--wm-radius-sidebar-panel);
-  background-color: var(--wm-color-sidebar-panel);
+  background-color: var(--wm-color-window-glass);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
 }
 
 /* 吸附在左侧：布局镜像，贴左、其余（圆角、磨砂、间距）与右侧一致 */
@@ -36,14 +38,16 @@
   left: 0;
 }
 
-/* 分离态：浮动小窗，位置由 inline left/top 决定；沿用侧栏面板底色，轻阴影 + 一圈极淡的描边 */
+/* 分离态：浮动小窗，位置由 inline left/top 决定；沿用同一块毛玻璃，轻阴影 + 一圈极淡的描边 */
 .floating {
   position: fixed;
   z-index: 50;
   height: 580px;
   max-height: calc(100vh - 16px);
   border-radius: 22px;
-  background-color: var(--wm-color-sidebar-panel);
+  background-color: var(--wm-color-window-glass);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
   box-shadow:
     0 8px 30px rgba(0, 0, 0, 0.1),
     0 1px 2px rgba(0, 0, 0, 0.04),

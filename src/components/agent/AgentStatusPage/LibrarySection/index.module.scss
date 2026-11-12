@@ -1,134 +1,165 @@
-/* 资料库：筛选标签 + 本场 / 更早列表（Figma 243:1295 / 252:1413） */
 .section {
   display: flex;
   flex-direction: column;
 }
 
-/* 筛选行：标签间距 8 */
 .filters {
   display: flex;
   align-items: center;
+  height: 32px;
+}
 
-  & > * + * {
-    margin-left: 8px;
+.chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  margin-right: 8px;
+  padding: 8px 12px;
+  border-radius: 20px;
+  background: transparent;
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+  outline: none;
+  white-space: nowrap;
+
+  &:last-child {
+    margin-right: 0;
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 1.5px rgba(0, 0, 0, 0.28);
   }
 }
 
-/* 未选中：透明底，Medium 12，次文字 #4e5461；圆角 100 */
-.filterPill {
-  padding: 4px 12px;
-  border-radius: 100px;
-  font-size: 12px;
-  line-height: normal;
+.chipActive {
+  background-color: rgba(102, 102, 102, 0.06);
   font-weight: 500;
-  color: var(--wm-color-status-filter-text);
-  cursor: pointer;
-  outline: none;
-  transition: background-color 120ms ease-in-out;
-
-  &:hover {
-    background-color: var(--wm-color-control-fill);
-  }
-
-  &:focus-visible {
-    box-shadow: inset 0 0 0 1.5px var(--wm-color-line);
-  }
+  color: #000;
 }
 
-/* 选中：浅灰胶囊 #ececec，主文字 #1f2329 */
-.filterPillActive {
-  background-color: var(--wm-color-status-filter-active);
-  color: var(--wm-color-task-title);
-
-  &:hover {
-    background-color: var(--wm-color-status-filter-active);
-  }
-}
-
-/* 筛选标签与白色列表卡之间 16；白面板上加 1px 描边保持边界 */
-.card {
+.grid {
+  display: grid;
+  grid-template-columns: 170px 170px;
+  gap: 12px;
   margin-top: 16px;
-  padding: 12px;
-  border-radius: 12px;
-  background-color: var(--wm-color-card-background);
-  box-shadow: inset 0 0 0 1px var(--wm-color-panel-card-border);
 }
 
-/* 分组标题：高 24，左缩进 8 */
-.groupTitle {
+.card {
+  position: relative;
   display: flex;
-  align-items: center;
-  height: 24px;
-  padding-left: 8px;
-  font-size: 12px;
-  line-height: normal;
-  font-weight: 400;
-  color: var(--wm-color-text-tertiary);
-}
-
-/* 资料行：24 图标 + 标题 + 右侧说明，间距 10，内边距 8 6，圆角 8 */
-.row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 36px;
-  padding: 6px 8px;
-  border-radius: 8px;
+  flex-direction: column;
+  width: 170px;
+  height: 170px;
+  overflow: hidden;
+  border: 0.5px solid rgba(0, 0, 0, 0.08);
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
   cursor: pointer;
   outline: none;
-  transition: background-color 120ms ease-in-out;
-
-  &:hover {
-    background-color: var(--wm-color-background-septenary);
-  }
 
   &:focus-visible {
-    box-shadow: inset 0 0 0 1.5px var(--wm-color-line);
+    box-shadow: inset 0 0 0 1.5px rgba(0, 0, 0, 0.28);
   }
 }
 
-.fileImage {
-  flex: 0 0 auto;
-  object-fit: contain;
+.docCover,
+.mediaCover {
+  display: block;
+  overflow: hidden;
+  background: #fff;
 }
 
-.title {
-  flex: 1 1 auto;
-  min-width: 0;
+.docCover {
+  height: 104px;
+
+  img {
+    display: block;
+    width: 170px;
+    height: 104px;
+    object-fit: cover;
+    object-position: top center;
+  }
+}
+
+.mediaCover {
+  height: 170px;
+
+  img {
+    display: block;
+    width: 170px;
+    height: 170px;
+    object-fit: cover;
+  }
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  height: 66px;
+  padding: 14px 16px;
+  border-top: 0.5px solid rgba(0, 0, 0, 0.08);
+}
+
+.cardTitle,
+.cardTime {
   overflow: hidden;
-  font-size: 14px;
-  line-height: normal;
-  font-weight: 400;
-  color: var(--wm-color-text-primary);
+  font-size: 12px;
+  line-height: 18px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.meta {
-  flex: 0 0 auto;
-  font-size: 12px;
-  line-height: normal;
-  font-weight: 400;
-  color: var(--wm-color-text-quaternary);
-  white-space: nowrap;
+.cardTitle {
+  font-weight: 500;
+  color: #0d0d0d;
 }
 
-.divider {
-  height: 0.5px;
-  margin: 6px 8px;
-  background-color: var(--wm-color-line);
+.cardTime {
+  font-weight: 400;
+  color: #707070;
+  opacity: 0.7;
+}
+
+.album,
+.play {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 26px;
+  border-radius: 8px;
+  background: rgba(32, 32, 32, 0.55);
+  color: #fff;
+}
+
+.album {
+  min-width: 39px;
+  padding: 0 8px;
+  font-size: 12px;
+  line-height: 14px;
+  font-weight: 500;
+
+  svg {
+    margin-right: 2px;
+  }
+}
+
+.play {
+  width: 30px;
 }
 
 .empty {
-  padding: 10px 8px;
-  font-size: 12px;
-  line-height: normal;
-  color: var(--wm-color-text-tertiary);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .filterPill,
-  .row {
-    transition: none;
-  }
+  margin-top: 48px;
+  font-size: 13px;
+  line-height: 20px;
+  color: #7b818f;
+  text-align: center;
 }

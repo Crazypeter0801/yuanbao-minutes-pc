@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { useAgentDock } from "@/hooks/useAgentDock";
 import { useAgentTasks } from "@/hooks/useAgentTasks";
 import { MeetingWindow } from "@/components/meeting/MeetingWindow";
+import { ScreenTranslationCaption } from "@/components/meeting/ScreenTranslationCaption";
 import { PollComposer } from "@/components/poll/PollComposer";
 import { DemoToolbar } from "@/components/demo/DemoToolbar";
 import { YuanbaoSidebar } from "@/components/YuanbaoSidebar";
@@ -16,7 +17,7 @@ import {
   resolveArtifactTitle,
   type ArtifactKind,
 } from "@/data/artifacts";
-import { MOOD_DEMO_ITEMS } from "@/data/agentTasks";
+import { MOOD_DEMO_ITEMS, WHITEBOARD_TASK_ID, whiteboardBoardTask } from "@/data/agentTasks";
 import { buildAutoNote } from "@/data/autoNotes";
 import type { CommandItem } from "@/data/commands";
 import { buildPollPostedMessage, teamBuildingPoll } from "@/data/polls";
@@ -24,10 +25,24 @@ import { SHARE_TO_GROUP_LABEL } from "@/data/meetingSession";
 import { topicAt } from "@/data/meetingTopics";
 import { matchScenario } from "@/data/proactiveScenarios";
 import type { TaskEntryMode } from "@/data/taskEntry";
+import {
+  buildWhiteboardDoneMessage,
+  buildWhiteboardIntroMessage,
+  isWhiteboardDrawRequest,
+} from "@/data/whiteboardScenario";
 import { buildScreenshotNote, meetingShotSrc } from "@/data/yuanbaoContent";
 import { useYuanbaoSession } from "@/hooks/useYuanbaoSession";
+import { FileViewer } from "@/components/agent/FileViewer";
+import { WhiteboardGenerateOverlay } from "@/components/whiteboard/WhiteboardGenerateOverlay";
+import { WhiteboardOverlay } from "@/components/whiteboard/WhiteboardOverlay";
 import type { ArtifactItem } from "@/types/artifact";
 import styles from "./App.module.scss";
+
+/** 演示条里「元宝画白板」用的示例说法：本身就带触发词 */
+const WHITEBOARD_DEMO_TEXT = "帮我在白板上画一下彩虹形成的原理，给同学们讲讲";
+
+/** 白板的两种画法：逐笔绘制 / 一次生成 */
+type WhiteboardMode = "draw" | "instant";
 
 /** 「建一个 PDF / PPT / 文件」这类说法都算要生成产物 */
 const CREATE_FILE_PATTERN = /创建|建个|生成|做一?份|出一份/;
@@ -44,10 +59,16 @@ export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   /** Agent 状态页是否覆盖在元宝对话区之上 */
   const [statusOpen, setStatusOpen] = useState(false);
+  /** 详情页「设置头像」之后，顶部胶囊和详情头部共用这一张 */
+  const [portrait, setPortrait] = useState<string | null>(null);
+  /** 资料库点开的文件查看器，浮在两扇窗之外 */
+  const [fileViewerOpen, setFileViewerOpen] = useState(false);
   /** 状态页打开时落在哪个 Tab：任务胶囊进概览，文件夹进资料库 */
   const [statusTab, setStatusTab] = useState<AgentStatusTab>("overview");
-  /** 任务入口方案：A 顶部胶囊 / B 输入框上方胶囊（演示面板可随时切换） */
-  const [taskEntry, setTaskEntry] = useState<TaskEntryMode>("header");
+  /** 任务入口方案：默认输入框上方（方案 B）。演示面板仍可切回顶部，刷新后回到输入框上方 */
+  const [taskEntry, setTaskEntry] = useState<TaskEntryMode>("footer");
+  /** 接受「开启屏幕翻译」后，主讲画面底部叠一层只有自己能看到的中文 */
+  const [screenTranslation, setScreenTranslation] = useState(false);
   const [pollOpen, setPollOpen] = useState(false);
   /** 会中文件：一开始只有「元宝笔记」（来源），生成文件、记录画面后再往里加 */
   const [artifacts, setArtifacts] = useState<ArtifactItem[]>([noteArtifact]);
@@ -68,6 +89,11 @@ export default function App() {
    */
   const [topicCount, setTopicCount] = useState(2);
   const noteTopics = Array.from({ length: topicCount }, (_, index) => topicAt(index));
+  /** 元宝画白板：非空时主讲人画面上盖一层批注白板；runKey 每次 +1 重播 */
+  const [whiteboard, setWhiteboard] = useState<{ runKey: number; mode: WhiteboardMode } | null>(null);
+  const whiteboardRun = useRef(0);
+  /** 画完后完成态停留一会儿再收起，避免一直占着进行中 */
+  const boardHold = useRef<number>();
 
   /** 关闭元宝窗口：状态页一起收起，下次打开回到对话 */
   const closeSidebar = () => {
@@ -110,14 +136,48 @@ export default function App() {
   };
 
   /**
+   * 元宝画白板：先按普通任务出用户气泡、元宝想一下再回；
+   * 回复落地时把白板盖到主讲人画面上——逐笔绘制（draw）或一次生成（instant），
+   * 两种模式的文案一致，鼠标淡出后往对话里补一句「已画好」。
+   */
+  const beginBoardTask = () => {
+    if (boardHold.current) {
+      window.clearTimeout(boardHold.current);
+    }
+    agent.setTask(whiteboardBoardTask("running"));
+  };
+
+  const finishBoardTask = () => {
+    agent.setTask(whiteboardBoardTask("done"));
+    boardHold.current = window.setTimeout(() => {
+      agent.removeTask(WHITEBOARD_TASK_ID);
+    }, 4500);
+  };
+
+  const startWhiteboard = (text: string, mode: WhiteboardMode = "draw") => {
+    // 用户一开口就挂上两层状态，不要等画完才出现
+    beginBoardTask();
+    chat.runTask(text, () => {
+      whiteboardRun.current += 1;
+      setWhiteboard({ runKey: whiteboardRun.current, mode });
+      chat.push(buildWhiteboardIntroMessage());
+    });
+  };
+
+  /**
    * 输入框提交：先看是不是要生成文件，再过一遍演示场景，都没命中才当普通提问。
    * 主动开口的场景（刚入会 / 别人提到 / 会议将结束）只追加元宝消息，不出现用户气泡；
    * 投票这类任务场景用场景自带的 userText 提问，同时把确认弹窗摊开。
    */
-  const handleSubmit = (text: string) => {
+  const handleSubmit = (text: string, options?: { whiteboardMode?: WhiteboardMode }) => {
     const shared = lastArtifact.current;
     if (text === SHARE_TO_GROUP_LABEL && shared) {
       chat.runTask(text, () => chat.push(buildArtifactSharedMessage(shared)));
+      return;
+    }
+
+    if (isWhiteboardDrawRequest(text)) {
+      startWhiteboard(text, options?.whiteboardMode ?? "draw");
       return;
     }
 
@@ -144,6 +204,9 @@ export default function App() {
     }
     if (scenario.asReply) {
       // 追问建议触发的承接场景：先出用户气泡，元宝想一下再回
+      if (scenario.id === "follow-screen-translate") {
+        setScreenTranslation(true);
+      }
       chat.runTask(text, () => [scenario.build()].flat().forEach(chat.push));
       return;
     }
@@ -196,6 +259,31 @@ export default function App() {
             <MeetingWindow
               yuanbaoOpen={sidebarOpen}
               onToggleYuanbao={toggleSidebar}
+              stageOverlay={
+                whiteboard ? (
+                  whiteboard.mode === "instant" ? (
+                    <WhiteboardGenerateOverlay
+                      runKey={whiteboard.runKey}
+                      onComplete={() => {
+                        finishBoardTask();
+                        chat.push(buildWhiteboardDoneMessage());
+                        agent.react("cheer");
+                      }}
+                    />
+                  ) : (
+                    <WhiteboardOverlay
+                      runKey={whiteboard.runKey}
+                      onComplete={() => {
+                        finishBoardTask();
+                        chat.push(buildWhiteboardDoneMessage());
+                        agent.react("cheer");
+                      }}
+                    />
+                  )
+                ) : screenTranslation ? (
+                  <ScreenTranslationCaption />
+                ) : undefined
+              }
             />
             {pollOpen && (
               <PollComposer
@@ -209,7 +297,7 @@ export default function App() {
               />
             )}
           </div>
-          {/* 元宝吸附在右侧时，会议窗口让出 408（元宝 400 + 缝隙 8，缝隙正中是拖拽条）；分离或关闭后恢复撑满 1440 */}
+          {/* 元宝吸附在右侧时，会议窗口让出 404（元宝 400 + 缝隙 4，缝隙正中是 2×32 的白条） */}
           <div
             className={`${styles.reserve} ${sidebarOpen && dock.mode === "docked" && dock.side === "right" ? styles.reserveOpen : ""}`}
             aria-hidden="true"
@@ -234,10 +322,14 @@ export default function App() {
             statusOpen={statusOpen}
             onOpenStatus={openStatus}
             onCloseStatus={() => setStatusOpen(false)}
+            portrait={portrait}
+            onApplyPortrait={setPortrait}
+            onOpenFile={() => setFileViewerOpen(true)}
             onSubmit={handleSubmit}
             noteTopics={noteTopics}
           />
         )}
+        {fileViewerOpen && <FileViewer onClose={() => setFileViewerOpen(false)} />}
         {/* 窗口外：演示按钮，浮在窗口下方的壁纸上 */}
         <div className={styles.demoBar}>
           <DemoToolbar
@@ -268,6 +360,29 @@ export default function App() {
                     key: "footer",
                     label: "输入框上方（方案 B）",
                     onClick: () => setTaskEntry("footer"),
+                  },
+                ],
+              },
+              {
+                key: "whiteboard",
+                label: "元宝画白板",
+                // 两种画法：逐笔绘制（默认）/ 一次生成；示例说法本身就带触发词，走同一条链路
+                items: [
+                  {
+                    key: "draw",
+                    label: "逐笔绘制",
+                    onClick: () => {
+                      setSidebarOpen(true);
+                      handleSubmit(WHITEBOARD_DEMO_TEXT, { whiteboardMode: "draw" });
+                    },
+                  },
+                  {
+                    key: "instant",
+                    label: "一次生成",
+                    onClick: () => {
+                      setSidebarOpen(true);
+                      handleSubmit(WHITEBOARD_DEMO_TEXT, { whiteboardMode: "instant" });
+                    },
                   },
                 ],
               },

@@ -1,0 +1,134 @@
+.panel {
+  position: absolute;
+  top: 104px;
+  left: 16px;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  width: 246px;
+  height: 336px;
+  overflow: hidden;
+  border: 1px solid #f0f0f0;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.tabs {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  padding: 8px 7px 0;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.1);
+}
+
+.tab {
+  height: 22px;
+  margin-right: 12px;
+  padding: 0 7px;
+  border-radius: 11px;
+  background: transparent;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+  outline: none;
+}
+
+.tabActive {
+  background: rgba(12, 57, 102, 0.06);
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 16px 4px 0;
+}
+
+.option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 116px;
+  height: 82px;
+  margin-bottom: 24px;
+  cursor: pointer;
+  outline: none;
+}
+
+.thumb {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+
+  img:first-child {
+    max-width: 64px;
+    max-height: 64px;
+    object-fit: contain;
+  }
+}
+
+.check {
+  position: absolute;
+  top: 0;
+  right: -6px;
+}
+
+.name {
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 500;
+  color: #0d0d0d;
+  text-align: center;
+}
+
+.placeholder {
+  flex: 1 1 auto;
+  margin: 0;
+  padding: 48px 24px;
+  font-size: 12px;
+  line-height: 18px;
+  color: rgba(0, 0, 0, 0.6);
+  text-align: center;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 47px;
+  margin-top: auto;
+  padding: 11px 10px;
+  border-top: 0.5px solid #ebedf2;
+  background: #fff;
+}
+
+.cancel,
+.confirm {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 109px;
+  height: 25px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 400;
+  cursor: pointer;
+  outline: none;
+}
+
+.cancel {
+  background: #f2f2f2;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.confirm {
+  background: #000;
+  color: #fff;
+}

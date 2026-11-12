@@ -109,6 +109,8 @@ interface YuanbaoAvatarProps {
   /** 一次性动画（打招呼 / 喝彩 / 吃新动态…）播完时回调 */
   onOnceEnd?: () => void;
   className?: string;
+  /** 设置过头像后，用导出的形象替换雪碧图 */
+  portrait?: string | null;
 }
 
 /**
@@ -118,7 +120,14 @@ interface YuanbaoAvatarProps {
  * 每段动画按 Clip 上的 scale / dx / dy 缩放居中：所有状态的形象一样大，且都完整落在头像槽里。
  * 系统开了「减少动态效果」时只显示循环动画的第一帧。
  */
-export const YuanbaoAvatar: FC<YuanbaoAvatarProps> = ({ mood, size = 48, replayKey = 0, onOnceEnd, className }) => {
+export const YuanbaoAvatar: FC<YuanbaoAvatarProps> = ({
+  mood,
+  size = 48,
+  replayKey = 0,
+  onOnceEnd,
+  className,
+  portrait,
+}) => {
   const nodeRef = useRef<HTMLSpanElement>(null);
   const previousMood = useRef<YuanbaoMood | null>(null);
   const onOnceEndRef = useRef(onOnceEnd);
@@ -204,6 +213,14 @@ export const YuanbaoAvatar: FC<YuanbaoAvatarProps> = ({ mood, size = 48, replayK
     raf = window.requestAnimationFrame(step);
     return () => window.cancelAnimationFrame(raf);
   }, [mood, size, replayKey]);
+
+  if (portrait) {
+    return (
+      <span className={`${styles.avatar} ${styles.portrait} ${className ?? ''}`} style={{ width: size, height: size }} aria-hidden="true">
+        <img src={portrait} alt="" />
+      </span>
+    );
+  }
 
   return (
     <span
