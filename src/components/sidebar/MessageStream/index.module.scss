@@ -11,14 +11,10 @@
   min-height: 0;
 }
 
-/* 子元素间距 12（Figma 瞬态 gap 12） */
+/* 免责声明和时间行之间的 8 由时间自己留，这里不再叠一层间距 */
 .content {
   display: flex;
   flex-direction: column;
-
-  & > * + * {
-    margin-top: 12px;
-  }
 }
 
 .contentBottom {

@@ -98,7 +98,6 @@ export function buildTaskEntryConversation(): ChatMessage[] {
               type: 'list',
               items: [
                 [{ text: '竞品偏“以面为主”的布局，当前产品更偏线性结构，会上做了对照。' }],
-                [{ text: '视觉方向暂定两版并行：线条／卡片版、少色大灰版。' }],
                 [{ text: '登录页需要更亲和、有趣。' }],
               ],
             },
