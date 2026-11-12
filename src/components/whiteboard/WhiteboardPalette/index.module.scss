@@ -1,0 +1,50 @@
+/*
+ * 调色板：工具栏右侧弹出的一列色块。
+ * 几何与 useWhiteboardDraw 里的 PALETTE_METRICS 一一对应：
+ * 距左 60、宽 32、内边距 5 + 1px 描边、色块 20×20、间距 6。
+ */
+.palette {
+  position: absolute;
+  top: 50%;
+  left: 60px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 32px;
+  padding: 5px;
+  border: 1px solid var(--wm-color-outline-tertiary);
+  border-radius: 11px;
+  background-color: var(--wm-color-background-quaternary);
+  box-shadow: var(--wm-shadow-whiteboard-panel);
+  opacity: 0;
+  transform: translate(-6px, -50%);
+  transition: opacity calc(160ms * var(--wb-speed-scale, 1)) ease-out,
+    transform calc(160ms * var(--wb-speed-scale, 1)) ease-out;
+}
+
+.visible {
+  opacity: 1;
+  transform: translate(0, -50%);
+}
+
+.swatch {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  transition: box-shadow 120ms ease-out, transform 90ms ease-out;
+}
+
+.swatch + .swatch {
+  margin-top: 6px;
+}
+
+/* 当前颜色：外面套一圈细环，白底再垫一层，和相邻色块分开 */
+.active {
+  box-shadow: 0 0 0 2px var(--wm-color-background-quaternary),
+    0 0 0 3.5px var(--wm-color-whiteboard-palette-ring);
+}
+
+/* 被鼠标按下的那一下 */
+.pressed {
+  transform: scale(0.82);
+}

@@ -1,86 +1,26 @@
 /*
- * 白板内容层：SVG 铺满白板，图形与文字都按白板实际像素绘制。
- * 只负责画面，不接收鼠标事件。
+ * 板书内容层：一整块 SVG 按设计坐标排版，再等比缩放到白板上。
+ * 位置和尺寸由 getSceneTransform 算，和鼠标坐标换算共用同一份变换。
  */
 .canvas {
   position: absolute;
-  inset: 0;
   display: block;
-  width: 100%;
-  height: 100%;
+  overflow: visible;
 }
 
-/* 方框 / 判断菱形：白底 + 2px 深色描边，和常见白板的形状工具一致 */
-.shape {
-  fill: var(--wm-color-background-quaternary);
-  stroke: var(--wm-color-whiteboard-ink);
-  stroke-width: 2;
-  stroke-linejoin: round;
-}
-
-/* 注释框：虚线边框 + 极浅底，视觉上弱于主流程 */
-.note {
-  fill: var(--wm-color-whiteboard-note-fill);
-  stroke: var(--wm-color-whiteboard-ink-soft);
-  stroke-width: 1.5;
-  stroke-dasharray: 5 4;
-  stroke-linejoin: round;
-}
-
-/* 拖拽中的半成品：先给浅一点的描边，定型后回到正常色 */
-.shapeDragging {
-  fill: var(--wm-color-whiteboard-drag-fill);
-  stroke: var(--wm-color-whiteboard-ink);
-  stroke-width: 2;
-  stroke-linejoin: round;
-  /* 虚线表示「还没松手」：定型后回到实线 */
-  stroke-dasharray: 5 4;
-}
-
-.edge {
-  fill: none;
-  stroke: var(--wm-color-whiteboard-ink);
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-/* 注释引线：虚线细箭头，和主流程的粗实线分开 */
-.edgeDashed {
-  fill: none;
-  stroke: var(--wm-color-whiteboard-ink-soft);
-  stroke-width: 1.5;
-  stroke-dasharray: 5 4;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.arrowHead {
-  fill: var(--wm-color-whiteboard-ink);
-}
-
+/* 手写标注：楷体优先，退回系统手写体 */
 .label {
-  fill: var(--wm-color-whiteboard-ink);
-  font-family: var(--wm-font-family);
-  font-weight: 500;
-}
-
-.labelMuted {
-  fill: var(--wm-color-whiteboard-ink-soft);
-  font-family: var(--wm-font-family);
-  font-weight: 500;
-}
-
-.edgeLabel {
-  fill: var(--wm-color-whiteboard-ink-soft);
-  font-family: var(--wm-font-family);
+  fill: var(--wm-color-whiteboard-crayon-ink);
+  font-family: var(--wm-font-hand);
   font-weight: 500;
   letter-spacing: 0.5px;
 }
 
-/* 输入光标：1.5px 竖线，缓慢闪烁 */
+/* 文字工具点下后的输入光标 */
 .caret {
-  fill: var(--wm-color-whiteboard-ink);
+  position: absolute;
+  width: 1.5px;
+  background-color: var(--wm-color-whiteboard-crayon-ink);
   animation: whiteboard-caret 1s steps(2, start) infinite;
 }
 

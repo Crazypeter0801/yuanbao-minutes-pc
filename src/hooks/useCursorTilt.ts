@@ -25,6 +25,8 @@ const shortestDelta = (from: number, to: number) => wrapDeg(to - from);
 interface Point {
   x: number;
   y: number;
+  /** 笔尖切线方向（度）；有值时优先用它，没有再用位移推算 */
+  heading?: number | null;
 }
 
 /**
@@ -62,8 +64,14 @@ export function useCursorTilt(cursor: Point): RefObject<HTMLSpanElement> {
       // 方向取最近若干帧的平均：单帧抖动不至于让箭头乱摆
       velocity = { x: velocity.x * 0.72 + dx, y: velocity.y * 0.72 + dy };
       const speed = Math.hypot(velocity.x, velocity.y);
+      // 运笔时用笔尖切线（更准），鼠标空移时用位移方向
+      const heading = current.heading;
       const target =
-        speed > 0.5 ? wrapDeg((Math.atan2(velocity.y, velocity.x) * 180) / Math.PI - DEFAULT_POINT_DEG) : 0;
+        heading != null
+          ? wrapDeg(heading - DEFAULT_POINT_DEG)
+          : speed > 0.5
+            ? wrapDeg((Math.atan2(velocity.y, velocity.x) * 180) / Math.PI - DEFAULT_POINT_DEG)
+            : 0;
 
       const ease = 1 - Math.exp(-dt / (TILT_TAU / WHITEBOARD_SPEED));
       angle = wrapDeg(angle + shortestDelta(angle, target) * ease);

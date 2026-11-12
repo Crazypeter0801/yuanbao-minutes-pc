@@ -157,13 +157,21 @@
 
   /* 元宝画白板（演示）：Figma 221:30082 的白板框架与批注内容 */
   --wm-color-whiteboard-board: #ffffff;
-  /* 画上去的线条 / 文字：与工具栏图标同色 */
-  --wm-color-whiteboard-ink: #373c48;
-  --wm-color-whiteboard-ink-soft: rgba(55, 60, 72, 0.62);
-  /* 拖拽中的半成品：浅蓝底 + 虚线 */
-  --wm-color-whiteboard-drag-fill: rgba(0, 102, 255, 0.04);
-  /* 注释框底：几乎看不见的一层灰，只用来压住穿过来的引线 */
-  --wm-color-whiteboard-note-fill: rgba(55, 60, 72, 0.04);
+  /* 板书蜡笔色：太阳、雨滴、白光、七色 */
+  --wm-color-whiteboard-crayon-ink: #373c48;
+  --wm-color-whiteboard-crayon-yellow: #f0a500;
+  --wm-color-whiteboard-crayon-blue: #3b9ae1;
+  --wm-color-whiteboard-crayon-gray: #b3bcc9;
+  --wm-color-whiteboard-crayon-red: #e5484d;
+  --wm-color-whiteboard-crayon-orange: #f76b15;
+  --wm-color-whiteboard-crayon-green: #46a758;
+  --wm-color-whiteboard-crayon-cyan: #12a594;
+  --wm-color-whiteboard-crayon-indigo: #3e63dd;
+  --wm-color-whiteboard-crayon-violet: #8e4ec6;
+  /* 雨滴里那层淡蓝 */
+  --wm-color-whiteboard-droplet-fill: rgba(59, 154, 225, 0.16);
+  /* 调色板：白底 + 1px 描边，选中色加一圈 */
+  --wm-color-whiteboard-palette-ring: rgba(55, 60, 72, 0.28);
   /* 工具栏选中 / 按下：设计稿未给，沿用品牌蓝的 12% / 24% */
   --wm-color-whiteboard-tool-active: rgba(0, 102, 255, 0.12);
   --wm-color-whiteboard-tool-pressed: rgba(0, 102, 255, 0.24);
@@ -194,6 +202,8 @@
   /* 字体 */
   --wm-font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial,
     system-ui, -apple-system, 'BlinkMacSystemFont', sans-serif;
+  /* 板书标注：优先楷体 / 行楷，最后退回系统手写体 */
+  --wm-font-hand: 'Kaiti SC', 'STKaiti', 'Xingkai SC', 'KaiTi', 'Kaiti', 'Songti SC', cursive;
 
   /* 对话区阅读偏好（标题栏「更多」菜单切换）：侧栏根节点会覆盖这三个变量 */
   --chat-font-size: 14px;
