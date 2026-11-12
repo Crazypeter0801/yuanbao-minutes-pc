@@ -60,7 +60,7 @@ const paragraph = (...texts: string[]): RichBlock => ({
 
 /**
  * 演示初始对话（Figma 215:19035 / 215:21463）
- * 依次是：开始记录 + 元宝笔记卡片 → 用户「总结刚刚发生的事情」→ 元宝的三件事小结 + 追问建议。
+ * 依次是：开始记录 + 元宝笔记卡片 → 用户「总结刚刚发生的事情」→ 元宝的两件事小结 + 追问建议。
  * 三条消息共用 17:22，和设计稿一样只出现一次时间分割。
  */
 export function buildTaskEntryConversation(): ChatMessage[] {
@@ -93,7 +93,7 @@ export function buildTaskEntryConversation(): ChatMessage[] {
         {
           id: createId('task-entry-summary-bubble'),
           blocks: [
-            paragraph('到目前为止主要聊了三件事：'),
+            paragraph('到目前为止主要聊了两件事：'),
             {
               type: 'list',
               items: [
