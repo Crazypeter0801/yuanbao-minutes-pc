@@ -5,6 +5,7 @@ import { WhiteboardScene } from '@/components/whiteboard/WhiteboardScene';
 import { WhiteboardToolbar } from '@/components/whiteboard/WhiteboardToolbar';
 import { WhiteboardWindowControls } from '@/components/whiteboard/WhiteboardWindowControls';
 import { getBoardFrame, type BoardSize } from '@/data/whiteboardScenario';
+import { useCursorTilt } from '@/hooks/useCursorTilt';
 import { useWhiteboardDraw } from '@/hooks/useWhiteboardDraw';
 import styles from './index.module.scss';
 
@@ -25,6 +26,8 @@ export const WhiteboardOverlay: FC<WhiteboardOverlayProps> = ({ runKey, onComple
   const boardRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState<BoardSize | null>(null);
   const draw = useWhiteboardDraw({ size, runKey, onComplete });
+  /** 箭头朝向跟着鼠标移动方向转，停下回默认角度 */
+  const arrowRef = useCursorTilt(draw.cursor);
 
   // 白板尺寸按实际像素量：图形坐标按它换算，侧栏开合时图形跟着重新铺，不会拉伸变形
   useLayoutEffect(() => {
@@ -41,6 +44,12 @@ export const WhiteboardOverlay: FC<WhiteboardOverlayProps> = ({ runKey, onComple
     observer.observe(node);
     return () => observer.disconnect();
   }, []);
+
+  /**
+   * 角色立在箭头左下方；鼠标贴到白板左缘（点工具栏时）会把角色挤出画面，
+   * 这时把角色往右推、紧贴左缘，避免被裁掉。
+   */
+  const avatarLeft = Math.max(-48, 8 - draw.cursor.x);
 
   const frame = size ? getBoardFrame(size) : null;
 
@@ -82,14 +91,18 @@ export const WhiteboardOverlay: FC<WhiteboardOverlayProps> = ({ runKey, onComple
             }`}
             style={{ transform: `translate3d(${draw.cursor.x}px, ${draw.cursor.y}px, 0)` }}
           >
-            <svg className={styles.pointer} width="26" height="28" viewBox="0 0 22 24" fill="none">
-              <path
-                d="M3.2 2.2 3.2 18.4 7.5 14.3 10.3 20.6 13.2 19.3 10.4 13.2 16.6 12.9Z"
-                className={styles.pointerBody}
-              />
-            </svg>
-            <span className={styles.cursorAvatar}>
-              <YuanbaoAvatar mood="working" size={34} />
+            {/* 箭头层：只转这一层，旋转中心在箭头尖端 */}
+            <span className={styles.cursorArrow} ref={arrowRef}>
+              <svg className={styles.arrowGlyph} width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+                <path
+                  d="M4.2 3 4.2 22.4 9.4 17.2 12.8 24.2 16.6 22.4 13.3 15.6 20.4 15.1Z"
+                  className={styles.arrowBody}
+                />
+              </svg>
+            </span>
+            {/* 元宝：不跟着转，只跟随位置，立在箭头左下方 */}
+            <span className={styles.cursorAvatar} style={{ left: avatarLeft }}>
+              <YuanbaoAvatar mood="working" size={56} />
             </span>
           </div>
         )}

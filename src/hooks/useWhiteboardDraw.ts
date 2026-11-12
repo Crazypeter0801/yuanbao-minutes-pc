@@ -441,7 +441,7 @@ export function useWhiteboardDraw({ size, runKey, onComplete }: WhiteboardDrawOp
 
     const run = async () => {
       // 从白板左上角外侧进入，像人把鼠标移进画布
-      const startPoint = { x: 4, y: 12 };
+      const startPoint = { x: 130, y: 100 };
       cursorRef.current = startPoint;
       setCursor({ x: startPoint.x, y: startPoint.y, visible: true, pressing: false });
       setStarted(true);
