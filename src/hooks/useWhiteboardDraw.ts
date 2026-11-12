@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import {
-  BOARD_PALETTE,
   BOARD_TOOLBAR_TOOLS,
   findLabel,
   findStroke,
   getSceneTransform,
   whiteboardScenario,
-  WHITEBOARD_SPEED,
+  WHITEBOARD_DRAW_SPEED,
   type BoardLabel,
   type BoardSize,
   type BoardStroke,
@@ -26,26 +25,17 @@ export const TOOLBAR_METRICS = {
   gap: 4,
 };
 
-/** 调色板几何（px）：和 WhiteboardPalette 的样式一一对应 */
-export const PALETTE_METRICS = {
-  /** 距白板左缘（工具栏右边留 8） */
-  left: 60,
-  width: 32,
-  padding: 6,
-  swatch: 20,
-  gap: 6,
-};
-
 const toolbarHeight = () =>
   TOOLBAR_METRICS.paddingTop +
   TOOLBAR_METRICS.paddingBottom +
   BOARD_TOOLBAR_TOOLS.length * TOOLBAR_METRICS.button +
   (BOARD_TOOLBAR_TOOLS.length - 1) * TOOLBAR_METRICS.gap;
 
-const paletteHeight = () =>
-  PALETTE_METRICS.padding * 2 +
-  BOARD_PALETTE.length * PALETTE_METRICS.swatch +
-  (BOARD_PALETTE.length - 1) * PALETTE_METRICS.gap;
+/**
+ * 逐笔绘制时箭头的固定朝向（屏幕坐标，度）。
+ * 箭头尖端默认指向左上（-135°），42° 让它略向右下，像执笔，全程不改。
+ */
+const DRAW_ARROW_HEADING = 42;
 
 /** 第 index 个工具按钮的中心点（白板像素坐标） */
 function toolbarButtonCenter(index: number, size: BoardSize) {
@@ -59,25 +49,13 @@ function toolbarButtonCenter(index: number, size: BoardSize) {
   };
 }
 
-/** 第 index 个色块的中心点 */
-function paletteSwatchCenter(index: number, size: BoardSize) {
-  return {
-    x: PALETTE_METRICS.left + PALETTE_METRICS.padding + PALETTE_METRICS.swatch / 2,
-    y:
-      (size.height - paletteHeight()) / 2 +
-      PALETTE_METRICS.padding +
-      index * (PALETTE_METRICS.swatch + PALETTE_METRICS.gap) +
-      PALETTE_METRICS.swatch / 2,
-  };
-}
-
 export interface WhiteboardCursor {
   x: number;
   y: number;
   visible: boolean;
   /** 按住左键拖动：指针略微收紧 */
   pressing: boolean;
-  /** 笔尖切线方向（度）；为空时由鼠标位移推算 */
+  /** 箭头朝向（度）。逐笔绘制固定为执笔倾斜；为空时由鼠标位移推算 */
   heading: number | null;
 }
 
@@ -149,8 +127,8 @@ interface WhiteboardDrawOptions {
  * 白板绘制引擎（板书版）
  *
  * 按 whiteboardScenario.steps 顺序模拟老师板书：先去左侧工具栏点「文本 / AI 画笔」、挑颜色，
- * 再沿着每一笔的 SVG 路径描出来——笔尖位置由 getPointAtLength 取，描到哪里、线和光标就到哪里，
- * 箭头朝向用笔尖切线。
+ * 再沿着每一笔的 SVG 路径描出来——笔尖位置由 getPointAtLength 取，描到哪里、线和光标就到哪里。
+ * 箭头全程保持固定执笔角度，换颜色只切色板选中态，不把光标拖去色板。
  * 全程 requestAnimationFrame，重播时通过取消信号中断上一轮。
  */
 export function useWhiteboardDraw({ size, runKey, onComplete }: WhiteboardDrawOptions): WhiteboardDrawState {
@@ -163,7 +141,7 @@ export function useWhiteboardDraw({ size, runKey, onComplete }: WhiteboardDrawOp
     y: 0,
     visible: false,
     pressing: false,
-    heading: null,
+    heading: DRAW_ARROW_HEADING,
   });
   const [ripple, setRipple] = useState<WhiteboardRipple | null>(null);
   const [strokes, setStrokes] = useState<Record<string, number>>({});
@@ -228,7 +206,7 @@ export function useWhiteboardDraw({ size, runKey, onComplete }: WhiteboardDrawOp
             return;
           }
           resolve();
-        }, ms / WHITEBOARD_SPEED);
+        }, ms / WHITEBOARD_DRAW_SPEED);
         timers.add(timer);
       });
 
@@ -239,7 +217,7 @@ export function useWhiteboardDraw({ size, runKey, onComplete }: WhiteboardDrawOp
           return;
         }
         // 所有补间统一按全局速度系数缩短，调用处仍写 1 倍速的毫秒值
-        const span = duration / WHITEBOARD_SPEED;
+        const span = duration / WHITEBOARD_DRAW_SPEED;
         const start = performance.now();
         let handle = 0;
         const tick = (now: number) => {
@@ -261,7 +239,7 @@ export function useWhiteboardDraw({ size, runKey, onComplete }: WhiteboardDrawOp
         rafs.add(handle);
       });
 
-    const moveCursorTo = (point: Point, heading: number | null = null) => {
+    const moveCursorTo = (point: Point, heading: number | null = DRAW_ARROW_HEADING) => {
       cursorRef.current = point;
       setCursor((previous) => ({ ...previous, x: point.x, y: point.y, heading }));
     };
@@ -310,21 +288,13 @@ export function useWhiteboardDraw({ size, runKey, onComplete }: WhiteboardDrawOp
       await sleep(70);
     };
 
-    /** 点调色板挑颜色 */
+    /** 换颜色：只切色板选中态，箭头留在画布上，不去色板再回来 */
     const pickColor = async (index: number) => {
-      const target = paletteSwatchCenter(index, currentSize());
-      // 挑颜色是短促的一下，不用像画线那样慢慢挪
-      await moveTo(target, 300);
       setPressedColor(index);
-      setCursor((previous) => ({ ...previous, pressing: true }));
-      await sleep(40);
-      rippleSeq.current += 1;
-      setRipple({ x: target.x, y: target.y, key: rippleSeq.current });
+      await sleep(50);
       setActiveColor(index);
-      await sleep(80);
+      await sleep(40);
       setPressedColor(null);
-      setCursor((previous) => ({ ...previous, pressing: false }));
-      await sleep(60);
     };
 
     /** 画一笔：沿路径从起点描到终点，笔尖跟着 getPointAtLength 走 */
@@ -342,21 +312,14 @@ export function useWhiteboardDraw({ size, runKey, onComplete }: WhiteboardDrawOp
           y: transform.offsetY + point.y * transform.scale,
         };
       };
-      /** 笔尖切线：前后各取一点算方向 */
-      const headingAt = (length: number) => {
-        const before = measurePath.getPointAtLength(clamp(length - 4, 0, total));
-        const after = measurePath.getPointAtLength(clamp(length + 4, 0, total));
-        return (Math.atan2(after.y - before.y, after.x - before.x) * 180) / Math.PI;
-      };
-
       await moveTo(at(0));
-      setCursor((previous) => ({ ...previous, pressing: true }));
+      setCursor((previous) => ({ ...previous, pressing: true, heading: DRAW_ARROW_HEADING }));
       await sleep(20);
 
       await tween(stroke.duration, (t) => {
         const length = total * t;
         setStrokes((previous) => ({ ...previous, [stroke.id]: t }));
-        moveCursorTo(at(length), t >= 1 ? null : headingAt(length));
+        moveCursorTo(at(length), DRAW_ARROW_HEADING);
       });
 
       setCursor((previous) => ({ ...previous, pressing: false }));
@@ -410,7 +373,13 @@ export function useWhiteboardDraw({ size, runKey, onComplete }: WhiteboardDrawOp
       // 从白板左上角外侧进入，像人把鼠标移进画布
       const startPoint = { x: 130, y: 100 };
       cursorRef.current = startPoint;
-      setCursor({ x: startPoint.x, y: startPoint.y, visible: true, pressing: false, heading: null });
+      setCursor({
+        x: startPoint.x,
+        y: startPoint.y,
+        visible: true,
+        pressing: false,
+        heading: DRAW_ARROW_HEADING,
+      });
       setStarted(true);
       await sleep(180);
 

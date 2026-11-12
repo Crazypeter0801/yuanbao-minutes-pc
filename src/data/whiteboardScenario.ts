@@ -50,10 +50,16 @@ export const BOARD_TOOLBAR_TOOLS: BoardToolbarTool[] = [
 ];
 
 /**
- * 演示速度系数：鼠标移动、运笔、逐字输入、步骤停顿、开场收尾全部按它缩放。
- * 所有时长都按「1 倍速的毫秒值」写在代码里，由 useWhiteboardDraw / useCursorTilt 统一除以它。
+ * 一次生成模式的速度系数。逐笔绘制另用 WHITEBOARD_DRAW_SPEED，避免两边绑在一起。
+ * 时长按「1 倍速的毫秒值」写，播放时再除以对应系数。
  */
 export const WHITEBOARD_SPEED = 2;
+
+/**
+ * 逐笔绘制速度。原先和一次生成共用 2，画彩虹偏慢。
+ * 4 = 在原来 2 倍速上再快一倍（约 2 倍），笔画仍能看清。
+ */
+export const WHITEBOARD_DRAW_SPEED = 4;
 
 /** 板书用的蜡笔色（对应 tokens.scss 里的变量） */
 export const CRAYON = {

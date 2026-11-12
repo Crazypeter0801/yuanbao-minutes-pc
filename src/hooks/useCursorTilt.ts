@@ -47,7 +47,8 @@ export function useCursorTilt(cursor: Point): RefObject<HTMLSpanElement> {
       return undefined;
     }
     let raf = 0;
-    let angle = 0;
+    const initialHeading = positionRef.current.heading;
+    let angle = initialHeading != null ? wrapDeg(initialHeading - DEFAULT_POINT_DEG) : 0;
     let velocity = { x: 0, y: 0 };
     let last = { ...positionRef.current };
     let lastTime = performance.now();
@@ -64,7 +65,8 @@ export function useCursorTilt(cursor: Point): RefObject<HTMLSpanElement> {
       // 方向取最近若干帧的平均：单帧抖动不至于让箭头乱摆
       velocity = { x: velocity.x * 0.72 + dx, y: velocity.y * 0.72 + dy };
       const speed = Math.hypot(velocity.x, velocity.y);
-      // 运笔时用笔尖切线（更准），鼠标空移时用位移方向
+      // 逐笔绘制会一直带上固定朝向：不跟路径转，停笔、拐弯也不回正。
+      // 没给朝向时（一次生成）仍按位移转向，停下回到默认。
       const heading = current.heading;
       const target =
         heading != null
@@ -73,8 +75,13 @@ export function useCursorTilt(cursor: Point): RefObject<HTMLSpanElement> {
             ? wrapDeg((Math.atan2(velocity.y, velocity.x) * 180) / Math.PI - DEFAULT_POINT_DEG)
             : 0;
 
-      const ease = 1 - Math.exp(-dt / (TILT_TAU / WHITEBOARD_SPEED));
-      angle = wrapDeg(angle + shortestDelta(angle, target) * ease);
+      if (heading != null) {
+        // 有固定朝向就直接锁住，不缓动、不回正
+        angle = target;
+      } else {
+        const ease = 1 - Math.exp(-dt / (TILT_TAU / WHITEBOARD_SPEED));
+        angle = wrapDeg(angle + shortestDelta(angle, target) * ease);
+      }
       node.style.transform = `rotate(${angle.toFixed(2)}deg)`;
       raf = window.requestAnimationFrame(tick);
     };

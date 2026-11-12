@@ -5,12 +5,12 @@ import { WhiteboardPalette } from '@/components/whiteboard/WhiteboardPalette';
 import { WhiteboardScene } from '@/components/whiteboard/WhiteboardScene';
 import { WhiteboardToolbar } from '@/components/whiteboard/WhiteboardToolbar';
 import { WhiteboardWindowControls } from '@/components/whiteboard/WhiteboardWindowControls';
-import { WHITEBOARD_SPEED, getSceneTransform, type BoardSize } from '@/data/whiteboardScenario';
+import { WHITEBOARD_DRAW_SPEED, getSceneTransform, type BoardSize } from '@/data/whiteboardScenario';
 import { useWhiteboardDraw } from '@/hooks/useWhiteboardDraw';
 import styles from './index.module.scss';
 
 /** 把全局速度系数透给 CSS：淡入淡出、涟漪、调色板弹出等动画时长跟着一起缩放 */
-const speedStyle = { '--wb-speed-scale': 1 / WHITEBOARD_SPEED } as CSSProperties;
+const speedStyle = { '--wb-speed-scale': 1 / WHITEBOARD_DRAW_SPEED } as CSSProperties;
 
 interface WhiteboardOverlayProps {
   /** 每次触发 +1，重播时清空白板 */
