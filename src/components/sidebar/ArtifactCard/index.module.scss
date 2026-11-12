@@ -1,4 +1,4 @@
-/* 产物卡片（Figma 14330:23470）：固定 248 宽、圆角 20、白底 + 0.5px 内描边 */
+/* 产物卡片（Figma 14330:23470）：固定 248 宽、圆角 20、白底 + 1px 内描边 */
 .card {
   display: flex;
   flex-direction: column;
@@ -6,7 +6,7 @@
   max-width: 100%;
   border-radius: 20px;
   background-color: var(--wm-color-background-bubble);
-  box-shadow: inset 0 0 0 0.5px var(--wm-color-line);
+  box-shadow: inset 0 0 0 1px var(--wm-color-panel-card-border);
   cursor: pointer;
   outline: none;
   transition: box-shadow 160ms ease-out;

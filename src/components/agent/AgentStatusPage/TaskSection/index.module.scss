@@ -17,12 +17,13 @@
   color: var(--wm-color-task-title);
 }
 
-/* 白底任务卡，内边距 12，圆角 12 */
+/* 白底任务卡，内边距 12，圆角 12；白面板上加 1px 描边保持边界 */
 .taskCard {
   margin-top: 8px;
   padding: 12px;
   border-radius: 12px;
   background-color: var(--wm-color-card-background);
+  box-shadow: inset 0 0 0 1px var(--wm-color-panel-card-border);
 }
 
 /* 分组标题：高 24，左缩进 8，12 号次文字 */

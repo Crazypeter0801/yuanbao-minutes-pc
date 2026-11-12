@@ -24,7 +24,7 @@
   }
 }
 
-/* 气泡 padding 10 12，白底（Figma 215:19455，落在 #F6F6F6 面板上）；max-width 兜住长内容，不撑破侧栏 */
+/* 气泡 padding 10 12，浅灰底（Figma 215:19455，落在纯白面板上）；max-width 兜住长内容，不撑破侧栏 */
 .bubble {
   max-width: 100%;
   padding: 10px 12px;
@@ -102,7 +102,7 @@
 }
 
 /*
- * 白底 + 1px #EBEDF2 内描边（Figma 215:16873）；14/18、高 34、圆角 17、padding 8 14；文字在左、↗ 在右。
+ * 浅灰底 + 1px 细描边（Figma 215:16873）；14/18、高 34、圆角 17、padding 8 14；文字在左、↗ 在右。
  */
 .followUp {
   display: flex;
@@ -111,7 +111,7 @@
   padding: 8px 14px;
   border-radius: 17px;
   background-color: var(--wm-color-follow-up-fill);
-  box-shadow: inset 0 0 0 1px var(--wm-color-outline-tertiary);
+  box-shadow: inset 0 0 0 1px var(--wm-color-panel-card-border);
   cursor: pointer;
   outline: none;
   transition:
