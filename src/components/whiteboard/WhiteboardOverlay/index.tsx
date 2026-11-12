@@ -1,13 +1,16 @@
-import { useLayoutEffect, useRef, useState, type FC } from 'react';
+import { useLayoutEffect, useRef, useState, type CSSProperties, type FC } from 'react';
 import { YuanbaoAvatar } from '@/components/agent/YuanbaoAvatar';
 import { WhiteboardBoardTools } from '@/components/whiteboard/WhiteboardBoardTools';
 import { WhiteboardScene } from '@/components/whiteboard/WhiteboardScene';
 import { WhiteboardToolbar } from '@/components/whiteboard/WhiteboardToolbar';
 import { WhiteboardWindowControls } from '@/components/whiteboard/WhiteboardWindowControls';
-import { getBoardFrame, type BoardSize } from '@/data/whiteboardScenario';
+import { WHITEBOARD_SPEED, getBoardFrame, type BoardSize } from '@/data/whiteboardScenario';
 import { useCursorTilt } from '@/hooks/useCursorTilt';
 import { useWhiteboardDraw } from '@/hooks/useWhiteboardDraw';
 import styles from './index.module.scss';
+
+/** 把全局速度系数透给 CSS：淡入淡出、涟漪等动画时长跟着一起缩放 */
+const speedStyle = { '--wb-speed-scale': 1 / WHITEBOARD_SPEED } as CSSProperties;
 
 interface WhiteboardOverlayProps {
   /** 每次触发 +1，重播时清空白板 */
@@ -56,6 +59,7 @@ export const WhiteboardOverlay: FC<WhiteboardOverlayProps> = ({ runKey, onComple
   return (
     <div
       className={`${styles.overlay} ${draw.started ? styles.overlayStarted : ''}`}
+      style={speedStyle}
       aria-hidden="true"
       data-whiteboard="active"
     >

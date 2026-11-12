@@ -1,4 +1,8 @@
 import { useEffect, useRef, type RefObject } from 'react';
+import { WHITEBOARD_SPEED } from '@/data/whiteboardScenario';
+
+/** 转向的时间常数（1 倍速，ms）：越小转得越快，跟着全局速度系数一起缩短 */
+const TILT_TAU = 96;
 
 /** 箭头默认指向左上：屏幕坐标里是 -135°，旋转角 0 就表示这个姿态 */
 const DEFAULT_POINT_DEG = -135;
@@ -44,8 +48,12 @@ export function useCursorTilt(cursor: Point): RefObject<HTMLSpanElement> {
     let angle = 0;
     let velocity = { x: 0, y: 0 };
     let last = { ...positionRef.current };
+    let lastTime = performance.now();
 
-    const tick = () => {
+    const tick = (now: number) => {
+      // 按真实帧间隔做指数缓动：帧率波动不影响手感；时间常数跟着全局速度系数一起缩短
+      const dt = Math.min(64, now - lastTime);
+      lastTime = now;
       const current = positionRef.current;
       const dx = current.x - last.x;
       const dy = current.y - last.y;
@@ -57,7 +65,8 @@ export function useCursorTilt(cursor: Point): RefObject<HTMLSpanElement> {
       const target =
         speed > 0.5 ? wrapDeg((Math.atan2(velocity.y, velocity.x) * 180) / Math.PI - DEFAULT_POINT_DEG) : 0;
 
-      angle = wrapDeg(angle + shortestDelta(angle, target) * 0.16);
+      const ease = 1 - Math.exp(-dt / (TILT_TAU / WHITEBOARD_SPEED));
+      angle = wrapDeg(angle + shortestDelta(angle, target) * ease);
       node.style.transform = `rotate(${angle.toFixed(2)}deg)`;
       raf = window.requestAnimationFrame(tick);
     };

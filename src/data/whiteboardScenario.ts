@@ -86,6 +86,13 @@ export type BoardStep =
   | { action: 'write'; id: string }
   | { action: 'pause'; ms: number };
 
+/**
+ * 演示速度系数：鼠标移动、拖拽、逐字输入、步骤停顿、开场收尾全部按它缩放。
+ * 所有时长都按「1 倍速的毫秒值」写在代码里，由 useWhiteboardDraw / useCursorTilt 统一除以它；
+ * 调快调慢只改这一个数。
+ */
+export const WHITEBOARD_SPEED = 2;
+
 /** 白板内容区内边距（px）：左边留出工具栏，下边留出缩放条 */
 export const BOARD_CONTENT_INSET = { left: 72, top: 28, right: 28, bottom: 76 };
 

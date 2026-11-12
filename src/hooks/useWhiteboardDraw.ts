@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   BOARD_FONT,
+  WHITEBOARD_SPEED,
   BOARD_TOOLBAR_TOOLS,
   boxRectOf,
   findBoardElement,
@@ -218,7 +219,7 @@ export function useWhiteboardDraw({ size, runKey, onComplete }: WhiteboardDrawOp
             return;
           }
           resolve();
-        }, ms);
+        }, ms / WHITEBOARD_SPEED);
         timers.add(timer);
       });
 
@@ -228,6 +229,8 @@ export function useWhiteboardDraw({ size, runKey, onComplete }: WhiteboardDrawOp
           reject(CANCELLED);
           return;
         }
+        // 所有补间统一按全局速度系数缩短，调用处仍写 1 倍速的毫秒值
+        const span = duration / WHITEBOARD_SPEED;
         const start = performance.now();
         let handle = 0;
         const tick = (now: number) => {
@@ -236,7 +239,7 @@ export function useWhiteboardDraw({ size, runKey, onComplete }: WhiteboardDrawOp
             reject(CANCELLED);
             return;
           }
-          const t = clamp((now - start) / duration, 0, 1);
+          const t = clamp((now - start) / span, 0, 1);
           onUpdate(t);
           if (t >= 1) {
             resolve();

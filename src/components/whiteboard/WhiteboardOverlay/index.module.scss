@@ -11,7 +11,7 @@
   border-radius: inherit;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 320ms ease-out;
+  transition: opacity calc(320ms * var(--wb-speed-scale, 1)) ease-out;
 }
 
 .overlayStarted {
@@ -36,7 +36,7 @@
   border: 1.5px solid var(--wm-color-whiteboard-ripple-line);
   border-radius: 50%;
   background-color: var(--wm-color-whiteboard-ripple-fill);
-  animation: whiteboard-ripple 520ms ease-out forwards;
+  animation: whiteboard-ripple calc(520ms * var(--wb-speed-scale, 1)) ease-out forwards;
 }
 
 @keyframes whiteboard-ripple {
@@ -57,7 +57,7 @@
   top: 0;
   left: 0;
   opacity: 0;
-  transition: opacity 420ms ease-out;
+  transition: opacity calc(420ms * var(--wb-speed-scale, 1)) ease-out;
   will-change: transform;
 }
 
@@ -95,7 +95,7 @@
   display: block;
   filter: drop-shadow(0 1px 2px var(--wm-color-whiteboard-cursor-shadow));
   transform-origin: 4.2px 3px;
-  transition: transform 90ms ease-out;
+  transition: transform calc(90ms * var(--wb-speed-scale, 1)) ease-out;
 }
 
 /* 按住左键时箭头略收紧：只缩放图标，不碰旋转层 */
@@ -110,5 +110,5 @@
   z-index: 1;
   display: flex;
   filter: drop-shadow(0 6px 12px var(--wm-color-whiteboard-avatar-shadow));
-  transition: left 120ms ease-out;
+  transition: left calc(120ms * var(--wb-speed-scale, 1)) ease-out;
 }
