@@ -65,8 +65,8 @@ export default function App() {
   const [fileViewerOpen, setFileViewerOpen] = useState(false);
   /** 状态页打开时落在哪个 Tab：任务胶囊进概览，文件夹进资料库 */
   const [statusTab, setStatusTab] = useState<AgentStatusTab>("overview");
-  /** 任务入口方案：A 顶部胶囊 / B 输入框上方胶囊（演示面板可随时切换） */
-  const [taskEntry, setTaskEntry] = useState<TaskEntryMode>("header");
+  /** 任务入口方案：默认输入框上方（方案 B）。演示面板仍可切回顶部，刷新后回到输入框上方 */
+  const [taskEntry, setTaskEntry] = useState<TaskEntryMode>("footer");
   /** 接受「开启屏幕翻译」后，主讲画面底部叠一层只有自己能看到的中文 */
   const [screenTranslation, setScreenTranslation] = useState(false);
   const [pollOpen, setPollOpen] = useState(false);
