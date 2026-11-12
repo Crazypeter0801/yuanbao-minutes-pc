@@ -1,13 +1,13 @@
 /*
  * Agent 状态页（Figma 243:1054 / 243:1222）
- * 整页 400×760，浅灰底、白色卡片；顶部栏 + 元宝状态头部 + Tab 固定，下方内容独立滚动。
+ * 整页 400×760，与对话页共用侧栏面板底色（#F6F6F6 98%）和 12 圆角容器；顶部栏 + 元宝状态头部 + Tab 固定，下方内容独立滚动。
  */
 .page {
   display: flex;
   flex-direction: column;
   height: 100%;
   overflow: hidden;
-  background-color: var(--wm-color-status-background);
+  background-color: var(--wm-color-sidebar-panel);
   color: var(--wm-color-task-title);
 }
 

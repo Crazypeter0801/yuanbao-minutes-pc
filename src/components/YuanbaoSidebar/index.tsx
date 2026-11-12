@@ -18,20 +18,26 @@ import { NOTE_ARTIFACT_ID } from "@/data/artifacts";
 import type { ArtifactItem } from "@/types/artifact";
 import type { BubbleCard } from "@/types/chat";
 import { AiDisclaimer } from "@/components/sidebar/AiDisclaimer";
-import { ArtifactEntry } from "@/components/sidebar/ArtifactEntry";
 import { ProgressiveBlur } from "@/components/common/ProgressiveBlur";
 import { ChatInput } from "@/components/sidebar/ChatInput";
 import { ChatList } from "@/components/sidebar/ChatList";
 import { MessageStream } from "@/components/sidebar/MessageStream";
-import { NotePill } from "@/components/sidebar/NotePill";
+import { TaskEntryBar } from "@/components/sidebar/TaskEntryBar";
 import { AgentTitleBar } from "@/components/agent/AgentTitleBar";
-import { AgentStatusPage } from "@/components/agent/AgentStatusPage";
+import {
+  AgentStatusPage,
+  type AgentStatusTab,
+} from "@/components/agent/AgentStatusPage";
 import { AgentWindowShell } from "@/components/agent/AgentWindowShell";
 import { TaskDetail } from "@/components/agent/TaskDetail";
-import { TaskTray } from "@/components/agent/TaskTray";
-import { resolveMoodText, type AgentTask } from "@/data/agentTasks";
+import { resolveMoodText } from "@/data/agentTasks";
+import {
+  TASK_ENTRY_FILE_COUNT,
+  TASK_ENTRY_RECORDING_TEXT,
+  TASK_ENTRY_TASKS,
+  type TaskEntryMode,
+} from "@/data/taskEntry";
 import { buildCardResult } from "@/data/interactiveCards";
-import { buildRecordingStateNote } from "@/data/yuanbaoContent";
 import { useListening } from "@/hooks/useListening";
 import { useToast } from "@/hooks/useToast";
 import { useYuanbaoMood } from "@/hooks/useYuanbaoMood";
@@ -49,12 +55,16 @@ interface YuanbaoSidebarProps {
   dock: AgentDockControl;
   /** 元宝的任务（由 App 持有）：头像状态、任务条、长程任务详情都从这里推出来 */
   agent: AgentTasksControl;
+  /** 任务入口方案：顶部胶囊（A）/ 输入框上方（B） */
+  taskEntry: TaskEntryMode;
+  /** 打开状态页时默认停留的 Tab */
+  statusTab: AgentStatusTab;
   /** 关闭侧栏 */
   onClose: () => void;
   /** 是否显示 Agent 状态页（覆盖对话区） */
   statusOpen: boolean;
-  /** 点击头部头像 / 名字进入状态页 */
-  onOpenStatus: () => void;
+  /** 点击头部胶囊 / 任务胶囊 / 文件夹进入状态页，并指定 Tab */
+  onOpenStatus: (tab: AgentStatusTab) => void;
   /** 状态页左上角返回聊天 */
   onCloseStatus: () => void;
   /** 输入框提交：App 层会先匹配生成文件与演示场景，未命中才走普通提问 */
@@ -64,19 +74,20 @@ interface YuanbaoSidebarProps {
 }
 
 /**
- * 元宝 personal agent 窗口（视觉 Figma 215:16455，任务状态交互 Figma 197:42）
- * 外壳是和会议并排的独立窗口（纯白底）：标题栏左侧是「头像 + 元宝 + 状态文字」，头像用雪碧图跟着任务状态和用户操作动。
+ * 元宝 personal agent 窗口（Figma 215:19035 / 215:21463）
+ * 外壳是 #F6F6F6 98% 的近白面板（圆角 12），与会议并排。
+ * 方案 A：头部胶囊里放「头像 + 元宝 › + 正在记笔记…」，点胶囊进状态页概览；
+ * 方案 B：头部只留「元宝 ›」，输入框上方放任务胶囊（元宝笔记中… / 待办捕捉中…）和文件夹，分别进概览 / 资料库。
  *
- * 输入框上方一行：左边是任务条（「N 个任务进行中」，可展开任务列表）和记笔记胶囊，右边固定是文件夹。
- * 文件夹、任务列表都向上展开，展开一个时另一个让位；点进行中的长程任务，对话区换成任务详情。
- *
- * 快捷指令已移出窗口：元宝发言、用户发言、交互功能都从窗口外的三个演示按钮触发。
+ * 长程任务详情仍占用对话区；快捷指令仍在窗口外的演示按钮条上。
  */
 export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
   chat,
   artifacts,
   dock,
   agent,
+  taskEntry,
+  statusTab,
   onClose,
   statusOpen,
   onOpenStatus,
@@ -85,8 +96,6 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
   noteTopics,
 }) => {
   const { toast, showToast } = useToast();
-  const [artifactsOpen, setArtifactsOpen] = useState(false);
-  const [taskListOpen, setTaskListOpen] = useState(false);
   /** 对话区阅读偏好：字号 / 字体，实时下发到侧栏根节点上的 CSS 变量 */
   const [fontSize, setFontSize] = useState<ChatFontSizeKey>(DEFAULT_CHAT_FONT_SIZE);
   const [fontFamily, setFontFamily] = useState<ChatFontFamilyKey>(DEFAULT_CHAT_FONT_FAMILY);
@@ -111,10 +120,8 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
     return () => observer.disconnect();
   }, []);
 
-  // 暂停 / 继续只在对话里留一条消息，不弹 Toast：反馈集中在一处
-  const { isListening, toggleListening } = useListening((listening) => {
-    chat.push(buildRecordingStateNote(listening));
-  });
+  // 是否正在记笔记：驱动头像的休眠状态（暂停入口已从新方案的底栏移除）
+  const { isListening } = useListening();
 
   const openSource = () => showToast("已定位到原文（演示）");
   const openNote = () => showToast("已在浏览器打开元宝笔记（演示）");
@@ -141,6 +148,12 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
     thinking: chat.isThinking,
     listening: isListening,
   });
+  /*
+   * 头部胶囊状态：没有运行中的任务时按 Figma 215:19432 显示「正在记笔记...」；
+   * 演示任务状态跑起来后仍沿用任务文案，状态机不变。
+   */
+  const headerStatus =
+    agent.tasks.length > 0 ? resolveMoodText(mood, agent.tasks) : TASK_ENTRY_RECORDING_TEXT;
   const detailTask = agent.tasks.find((task) => task.id === detailTaskId);
 
   // 对话区字号 / 字体：挂在侧栏根节点上，对话里的样式统一引用这三个变量
@@ -152,30 +165,17 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
     "--chat-font-family": familyOption.stack,
   } as CSSProperties;
 
-  // 任务列表里点一行：长程任务进详情，其余给演示反馈
-  const openTask = (task: AgentTask) => {
-    setTaskListOpen(false);
-    if (task.steps) {
-      setDetailTaskId(task.id);
-      return;
-    }
-    if (task.status === "confirm") {
-      showToast(`已确认「${task.title}」包含待办清单（演示）`);
-      return;
-    }
-    showToast(task.status === "done" ? `打开「${task.title}」的产物（演示）` : `「${task.title}」${task.desc}`);
-  };
-
   return (
     <AgentWindowShell toast={toast} dock={dock} rootStyle={chatStyle}>
       <AgentTitleBar
         dock={dock}
+        taskEntry={taskEntry}
         mood={mood}
-        statusText={resolveMoodText(mood, agent.tasks)}
+        statusText={headerStatus}
         replayKey={replayKey}
         onOnceEnd={onOnceEnd}
         onTouch={touch}
-        onOpenStatus={onOpenStatus}
+        onOpenStatus={() => onOpenStatus('overview')}
         onClose={onClose}
         fontSize={fontSize}
         fontFamily={fontFamily}
@@ -207,6 +207,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
           <MessageStream
             className={styles.stream}
             scrollKey={`${chat.messages.length}-${chat.isThinking}`}
+            initialScroll="top"
           >
             <AiDisclaimer />
             <ChatList
@@ -226,56 +227,18 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
 
         <ProgressiveBlur className={styles.blur} tint="var(--wm-color-blur-tint-agent)" />
 
-        <div className={styles.footer} ref={footerRef}>
+        <div className={`${styles.footer} ${taskEntry === "footer" ? styles.footerWithTasks : ""}`} ref={footerRef}>
           {/*
-          输入框上方一行：左边是任务条（有任务时出现）和记笔记胶囊，从左往右排；
-          右边固定是文件夹，展开时向左长成整行面板；任务列表向上展开，两者互相让位
+          方案 B：输入框上方一排任务胶囊（元宝笔记中… / 待办捕捉中…）+ 右侧文件夹 + 数字；
+          方案 A 不出现这一行，任务状态全部收进头部胶囊。
         */}
-          <div className={styles.statusRow}>
-            <div
-              className={`${styles.tasks} ${artifactsOpen ? styles.tasksHidden : ""}`}
-            >
-              {agent.tasks.length > 0 && (
-                <TaskTray
-                  tasks={agent.tasks}
-                  expanded={taskListOpen}
-                  onExpandedChange={(open) => {
-                    setTaskListOpen(open);
-                    if (open) {
-                      setArtifactsOpen(false);
-                    }
-                  }}
-                  hidden={artifactsOpen}
-                  onOpenTask={openTask}
-                />
-              )}
-              <NotePill
-                isListening={isListening}
-                hidden={artifactsOpen}
-                onOpen={openNote}
-                onToggleListening={toggleListening}
-              />
-            </div>
-            {/* 元宝笔记本身就是一个文件，开启云笔记后这个入口一直都在 */}
-            {artifacts.length > 0 && (
-              <ArtifactEntry
-                artifacts={artifacts}
-                expanded={artifactsOpen}
-                onExpandedChange={(open) => {
-                  setArtifactsOpen(open);
-                  if (open) {
-                    setTaskListOpen(false);
-                  }
-                }}
-                hidden={taskListOpen}
-                onOpen={openArtifact}
-                onOpenSide={() => {
-                  setArtifactsOpen(false);
-                  showToast("已在侧边打开文件列表（演示）");
-                }}
-              />
-            )}
-          </div>
+          {taskEntry === "footer" && (
+            <TaskEntryBar
+              tasks={TASK_ENTRY_TASKS}
+              fileCount={Math.max(TASK_ENTRY_FILE_COUNT, artifacts.length)}
+              onOpen={onOpenStatus}
+            />
+          )}
           <ChatInput
             placeholder="和元宝聊聊"
             onSubmit={send}
@@ -289,6 +252,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
         <div className={styles.statusOverlay}>
           <AgentStatusPage
             dock={dock}
+            initialTab={statusTab}
             onBack={onCloseStatus}
             onClose={onClose}
             onOpenSetting={(setting) => showToast(`打开「${setting.label}」设置（演示）`)}

@@ -2,6 +2,7 @@ import { useState, type FC } from 'react';
 import IconAgentClose from '@/assets/d2c/icons/agent/icon-agent-close';
 import IconAgentMore from '@/assets/d2c/icons/agent/icon-agent-more';
 import IconAgentPip from '@/assets/d2c/icons/agent/icon-agent-pip';
+import IconTaskEntryIconChevron from '@/assets/d2c/icons/task-entry/icon-task-entry-icon-chevron';
 import { PopMenu, type PopMenuItem } from '@/components/common/PopMenu';
 import { Pressable } from '@/components/common/Pressable';
 import { YuanbaoAvatar } from '@/components/agent/YuanbaoAvatar';
@@ -12,12 +13,15 @@ import {
   type ChatFontSizeKey,
 } from '@/data/chatPreferences';
 import type { YuanbaoMood } from '@/data/agentTasks';
+import type { TaskEntryMode } from '@/data/taskEntry';
 import type { AgentDockControl } from '@/hooks/useAgentDock';
 import styles from './index.module.scss';
 
 interface AgentTitleBarProps {
   /** 吸附 / 分离状态与拖动句柄 */
   dock: AgentDockControl;
+  /** 任务入口方案：顶部显示状态文字（A）/ 头部只留名称（B） */
+  taskEntry: TaskEntryMode;
   /** 头像状态（雪碧图动画） */
   mood: YuanbaoMood;
   /** 名称下方的状态文字：待命 / 正在生成会议纪要… / 等你确认 / 任务已完成 / 休息中 */
@@ -43,14 +47,16 @@ interface AgentTitleBarProps {
 }
 
 /**
- * 元宝窗口标题栏（Figma 215:16958）
- * 左：元宝头像 + 名称 + 状态文字（没有胶囊底，直接落在白色窗口上）；右：独立窗口 / 更多 / 关闭，中性灰图标。
+ * 元宝窗口标题栏（Figma 215:19389 / 215:21818）
+ * 左侧是胶囊（Figma 215:19391 / 215:21820）：头像 +「元宝 ›」，方案 A 再加一行「正在记笔记…」；
+ * 点胶囊进入 Agent 状态页。右侧独立窗口 / 更多 / 关闭，中性灰图标。
  * 「更多」里是对话区的字号 / 字体设置（四档字号、三种字体），当前项打勾。
- * 没有 macOS 红黄绿圆点；按住这一行（按钮除外）拖动即可把元宝从会议窗口分离出来，拖到会议左 / 右缘松手再吸附回去。
- * 头像用雪碧图跟着任务状态动（Figma 197:42 方案 A：顶部头像集成），点一下头像会被摸头；状态文字常驻在名称下方。
+ * 按住标题栏空白处（按钮和胶囊除外）拖动即可把元宝从会议窗口分离出来，拖到会议左 / 右缘松手再吸附回去。
+ * 头像用雪碧图跟着任务状态动（Figma 197:42 方案 A：顶部头像集成）。
  */
 export const AgentTitleBar: FC<AgentTitleBarProps> = ({
   dock,
+  taskEntry,
   mood,
   statusText,
   replayKey,
@@ -88,35 +94,37 @@ export const AgentTitleBar: FC<AgentTitleBarProps> = ({
       onPointerDown={dock.onTitlePointerDown}
       title="按住拖动，可把元宝从会议窗口分离出来"
     >
-      {/* 标题（Figma 215:17019 / 215:16997）：头像 33×36 + 两行文字；两者都可进入状态页 */}
-      <div className={styles.title}>
-        <div className={styles.avatarSlot} data-nodrag>
-          <Pressable
-            className={styles.avatarTouch}
-            onClick={() => {
-              // 保留摸头反馈；状态页会盖住对话区，动画在返回后继续按状态机收尾
-              onTouch();
-              onOpenStatus();
-            }}
-            ariaLabel="查看元宝状态"
-            title="查看元宝状态"
-          >
-            <YuanbaoAvatar className={styles.avatar} mood={mood} replayKey={replayKey} onOnceEnd={onOnceEnd} />
-          </Pressable>
-        </div>
+      {/* 头部胶囊：头像 +「元宝 ›」（方案 A 再带一行状态），整块可进入状态页 */}
+      <span className={styles.pillSlot} data-nodrag>
         <Pressable
-          className={styles.titleText}
-          onClick={onOpenStatus}
+          className={styles.pill}
+          onClick={() => {
+            // 保留摸头反馈；状态页会盖住对话区，动画在返回后继续按状态机收尾
+            onTouch();
+            onOpenStatus();
+          }}
           ariaLabel="查看元宝状态"
           title="查看元宝状态"
         >
-          <span className={styles.name}>元宝</span>
-          {/* key 跟着文案变：换状态时淡入一次 */}
-          <span className={styles.status} key={statusText} role="status">
-            {statusText}
+          <span className={styles.avatarSlot} aria-hidden="true">
+            <YuanbaoAvatar className={styles.avatar} mood={mood} replayKey={replayKey} onOnceEnd={onOnceEnd} />
+          </span>
+          <span className={styles.pillText}>
+            <span className={styles.nameRow}>
+              <span className={styles.name}>元宝</span>
+              <span className={styles.chevron} aria-hidden="true">
+                <IconTaskEntryIconChevron />
+              </span>
+            </span>
+            {taskEntry === 'header' && (
+              // key 跟着文案变：换状态时淡入一次
+              <span className={styles.status} key={statusText} role="status">
+                {statusText}
+              </span>
+            )}
           </span>
         </Pressable>
-      </div>
+      </span>
 
       <div className={styles.actions} data-nodrag>
         <Pressable

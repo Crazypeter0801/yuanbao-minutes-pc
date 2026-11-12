@@ -24,7 +24,7 @@
   }
 }
 
-/* 气泡 padding 10 12，底 #F3F3F4（Figma 215:16849）；max-width 兜住长内容，不撑破侧栏 */
+/* 气泡 padding 10 12，白底（Figma 215:19455，落在 #F6F6F6 面板上）；max-width 兜住长内容，不撑破侧栏 */
 .bubble {
   max-width: 100%;
   padding: 10px 12px;

@@ -18,11 +18,13 @@ import { SettingsSection } from './SettingsSection';
 import { TaskSection } from './TaskSection';
 import styles from './index.module.scss';
 
-type StatusTab = 'overview' | 'library';
+export type AgentStatusTab = 'overview' | 'library';
 
 interface AgentStatusPageProps {
   /** 沿用现有吸附 / 分离能力：状态页顶部栏也可以拖动 */
   dock: AgentDockControl;
+  /** 打开时默认停留在哪个 Tab：任务胶囊进概览，文件夹进资料库 */
+  initialTab?: AgentStatusTab;
   /** 返回聊天 */
   onBack: () => void;
   /** 关闭元宝侧栏 */
@@ -42,12 +44,13 @@ interface AgentStatusPageProps {
  */
 export const AgentStatusPage: FC<AgentStatusPageProps> = ({
   dock,
+  initialTab = 'overview',
   onBack,
   onClose,
   onOpenSetting,
   onOpenLibraryItem,
 }) => {
-  const [tab, setTab] = useState<StatusTab>('overview');
+  const [tab, setTab] = useState<AgentStatusTab>(initialTab);
   const [libraryFilter, setLibraryFilter] = useState<AgentLibraryFilter>('all');
   const [tasks, setTasks] = useState<AgentStatusTask[]>(AGENT_STATUS_TASKS);
   const floating = dock.mode === 'floating';
