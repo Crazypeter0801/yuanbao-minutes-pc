@@ -292,7 +292,7 @@ export default function App() {
               />
             )}
           </div>
-          {/* 元宝吸附在右侧时，会议窗口让出 408（元宝 400 + 缝隙 8，缝隙正中是拖拽条）；分离或关闭后恢复撑满 1440 */}
+          {/* 元宝吸附在右侧时，会议窗口让出 404（元宝 400 + 缝隙 4，缝隙正中是 2×48 的白条） */}
           <div
             className={`${styles.reserve} ${sidebarOpen && dock.mode === "docked" && dock.side === "right" ? styles.reserveOpen : ""}`}
             aria-hidden="true"
