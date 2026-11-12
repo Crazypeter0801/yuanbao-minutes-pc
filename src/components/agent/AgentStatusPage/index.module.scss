@@ -48,6 +48,7 @@
   width: 20px;
   height: 20px;
   border-radius: 6px;
+  background-color: transparent;
   color: var(--wm-color-text-secondary);
   cursor: pointer;
   outline: none;
@@ -103,8 +104,8 @@
 }
 
 /*
- * Tab 栏（Figma 258:24665）：左右 24、上下 4。
- * 轨道（Figma 258:24666）：宽 366、底 rgba(0,0,0,0.04)、内边距 2、圆角 24。
+ * Tab 栏（Figma 258:24665）：左右 24、上下 4，与下方卡片同一条内容边。
+ * 轨道铺满这条内容宽：底 rgba(0,0,0,0.04)、内边距 2、圆角 24。
  */
 .tabBar {
   flex: 0 0 auto;
@@ -115,9 +116,10 @@
 
 .tabs {
   display: flex;
-  flex: 0 0 auto;
+  flex: 1 1 auto;
   align-items: center;
-  width: 366px;
+  width: 100%;
+  min-width: 0;
   padding: 2px;
   border-radius: 24px;
   background-color: var(--wm-color-status-tab-track);
