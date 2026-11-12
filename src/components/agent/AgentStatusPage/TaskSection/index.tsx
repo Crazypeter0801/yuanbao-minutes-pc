@@ -10,9 +10,14 @@ interface TaskSectionProps {
   onCreateAuto: () => void;
 }
 
-/** 2×2 圆角方点，顺时针依次亮起，表示这条任务还在跑 */
+/** 3×3 圆角方点，沿外圈顺时针亮起，表示这条任务还在跑 */
 const RunningDots: FC = () => (
   <span className={styles.dots} aria-hidden="true">
+    <i />
+    <i />
+    <i />
+    <i />
+    <i />
     <i />
     <i />
     <i />
@@ -20,25 +25,12 @@ const RunningDots: FC = () => (
   </span>
 );
 
-const DoneCheck: FC = () => (
-  <svg className={styles.check} width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
-    <path
-      d="M3.1 7.3 5.7 9.9 11 4.4"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.4"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
-
 const TaskItem: FC<{ task: AgentStatusTask }> = ({ task }) => {
   const running = task.state === 'running';
   return (
     <div className={running ? styles.item : styles.itemDone}>
       <div className={styles.titleRow}>
-        {!running && <DoneCheck />}
+        <span className={running ? styles.ring : styles.filled} aria-hidden="true" />
         <span className={styles.taskTitle}>{task.title}</span>
         <img className={styles.chevron} src={iconChevron} width={16} height={16} alt="" />
       </div>
@@ -54,8 +46,8 @@ const TaskItem: FC<{ task: AgentStatusTask }> = ({ task }) => {
 
 /**
  * 详情页任务区（Figma 289:30737）
- * 进行中两行：标题，以及点阵加当前说明。已完成一行：静态勾加标题。
- * 分组和自动任务卡片保持原样。
+ * 进行中两行：绿空心圈和标题，点阵与标题文字左对齐。箭头跟标题行对齐。
+ * 已完成一行：实心灰圈和标题。分组和自动任务卡片保持原样。
  */
 export const TaskSection: FC<TaskSectionProps> = ({ tasks, onCreateAuto }) => {
   const running = tasks.filter((task) => task.state === 'running');

@@ -84,6 +84,8 @@
   display: flex;
   align-items: center;
   margin-top: 2px;
+  /* 15px 圈 + 8px 间距，说明行跟标题文字左对齐，不跟圈的左缘对齐 */
+  padding-left: 23px;
 }
 
 .status {
@@ -94,45 +96,79 @@
   color: #7b8190;
 }
 
-/* 约 12px 的小方块：2×2 圆角方点，顺时针依次从 0.3 亮到 1 */
+.ring,
+.filled {
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  width: 15px;
+  height: 15px;
+  margin-right: 8px;
+  border-radius: 50%;
+}
+
+.ring {
+  border: 1.5px solid #16b364;
+}
+
+.filled {
+  background-color: #c5cad3;
+}
+
+/* 约 14px 的小方块：3×3 圆角方点。外圈顺时针亮起，最后亮中心 */
 .dots {
   display: grid;
   flex: 0 0 auto;
-  grid-template-columns: 3.5px 3.5px;
-  gap: 2px;
-  width: 12px;
-  height: 12px;
+  grid-template-columns: repeat(3, 3px);
+  gap: 2.5px;
+  width: 14px;
+  height: 14px;
   margin-right: 7px;
-  place-content: center;
 
   i {
     display: block;
-    width: 3.5px;
-    height: 3.5px;
+    width: 3px;
+    height: 3px;
     border-radius: 1px;
     background-color: #6d8b7c;
     opacity: 0.3;
     animation: task-dot 1s ease-in-out infinite;
   }
 
-  i:nth-child(2) {
-    animation-delay: 0.25s;
+  i:nth-child(1) {
+    animation-delay: 0s;
   }
 
-  /* 第三格在左下，第四格在右下：顺时针是左上 → 右上 → 右下 → 左下 */
+  i:nth-child(2) {
+    animation-delay: 0.11s;
+  }
+
   i:nth-child(3) {
-    animation-delay: 0.75s;
+    animation-delay: 0.22s;
+  }
+
+  i:nth-child(6) {
+    animation-delay: 0.33s;
+  }
+
+  i:nth-child(9) {
+    animation-delay: 0.44s;
+  }
+
+  i:nth-child(8) {
+    animation-delay: 0.56s;
+  }
+
+  i:nth-child(7) {
+    animation-delay: 0.67s;
   }
 
   i:nth-child(4) {
-    animation-delay: 0.5s;
+    animation-delay: 0.78s;
   }
-}
 
-.check {
-  flex: 0 0 auto;
-  margin-right: 8px;
-  color: #6d8b7c;
+  i:nth-child(5) {
+    animation-delay: 0.89s;
+  }
 }
 
 .chevron {
