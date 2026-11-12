@@ -84,8 +84,8 @@
   display: flex;
   align-items: center;
   margin-top: 2px;
-  /* 15px 圈 + 8px 间距，说明行跟标题文字左对齐，不跟圈的左缘对齐 */
-  padding-left: 23px;
+  /* 4px 点 + 8px 间距，说明行跟标题文字左对齐，不跟点的左缘对齐 */
+  padding-left: 12px;
 }
 
 .status {
@@ -99,19 +99,20 @@
 .ring,
 .filled {
   flex: 0 0 auto;
+  align-self: center;
   box-sizing: border-box;
-  width: 15px;
-  height: 15px;
+  width: 4px;
+  height: 4px;
   margin-right: 8px;
   border-radius: 50%;
 }
 
 .ring {
-  border: 1.5px solid #16b364;
+  background-color: #16b364;
 }
 
 .filled {
-  background-color: #c5cad3;
+  background-color: #8b93a0;
 }
 
 /* 约 14px 的小方块：3×3 圆角方点。外圈顺时针亮起，最后亮中心 */

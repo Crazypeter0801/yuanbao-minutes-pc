@@ -46,8 +46,8 @@ const TaskItem: FC<{ task: AgentStatusTask }> = ({ task }) => {
 
 /**
  * 详情页任务区（Figma 289:30737）
- * 进行中两行：绿空心圈和标题，点阵与标题文字左对齐。箭头跟标题行对齐。
- * 已完成一行：实心灰圈和标题。分组和自动任务卡片保持原样。
+ * 进行中两行：4px 绿点加标题，3×3 点阵与标题文字左对齐。箭头跟标题行对齐。
+ * 已完成一行：4px 灰点加标题。分组和自动任务卡片保持原样。
  */
 export const TaskSection: FC<TaskSectionProps> = ({ tasks, onCreateAuto }) => {
   const running = tasks.filter((task) => task.state === 'running');
