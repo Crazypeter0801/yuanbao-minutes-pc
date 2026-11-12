@@ -163,16 +163,16 @@ $duration: 380ms;
 }
 
 /*
- * 推荐指令：标题文字和列表文案对齐到同一条线。
- * 列表文案在卡片 padding 12 之外还有 8；图标 16 + 间距 4，所以整行左移 12，
- * 图标落进左内边距，文字从 20 起笔。收起态不移动。
+ * 推荐指令：书本图标的左边缘和下面问法的左边缘对齐。
+ * 问法在卡片 padding 12 之外还有 8，所以标题行只再缩进这 8，图标不要退进更靠左的内边距。
+ * 「推荐指令」四个字仍在图标右侧。收起态不移动。
  */
 .cardLabelAligned .summary {
   transition: margin-left $duration $ease-out;
 }
 
 .cardLabelAligned.cardExpanded .summary {
-  margin-left: -12px;
+  margin-left: 8px;
 }
 
 .cardAligned.cardExpanded .headerAction {

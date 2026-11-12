@@ -66,6 +66,8 @@ export const demoMenus: DemoMenu[] = [
           { label: '议题结束，阶段性总结', kind: 'yuanbao', prompt: '阶段总结' },
           { label: '专业信息补充（默认折叠）', kind: 'yuanbao', prompt: '专业信息' },
           { label: '实时翻译，检测到英文发言', kind: 'yuanbao', prompt: '实时翻译' },
+          { label: '屏幕有英文，推荐屏幕翻译', kind: 'yuanbao', prompt: '屏幕翻译' },
+          { label: '听到先前问过的概念，询问要不要再解释', kind: 'yuanbao', prompt: '结合当下解释' },
           { label: 'OCR 识别，提取共享画面文字', kind: 'yuanbao', prompt: 'OCR识别' },
         ],
       },

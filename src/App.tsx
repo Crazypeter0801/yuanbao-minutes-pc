@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { useAgentDock } from "@/hooks/useAgentDock";
 import { useAgentTasks } from "@/hooks/useAgentTasks";
 import { MeetingWindow } from "@/components/meeting/MeetingWindow";
+import { ScreenTranslationCaption } from "@/components/meeting/ScreenTranslationCaption";
 import { PollComposer } from "@/components/poll/PollComposer";
 import { DemoToolbar } from "@/components/demo/DemoToolbar";
 import { YuanbaoSidebar } from "@/components/YuanbaoSidebar";
@@ -61,6 +62,8 @@ export default function App() {
   const [statusTab, setStatusTab] = useState<AgentStatusTab>("overview");
   /** 任务入口方案：A 顶部胶囊 / B 输入框上方胶囊（演示面板可随时切换） */
   const [taskEntry, setTaskEntry] = useState<TaskEntryMode>("header");
+  /** 接受「开启屏幕翻译」后，主讲画面底部叠一层只有自己能看到的中文 */
+  const [screenTranslation, setScreenTranslation] = useState(false);
   const [pollOpen, setPollOpen] = useState(false);
   /** 会中文件：一开始只有「元宝笔记」（来源），生成文件、记录画面后再往里加 */
   const [artifacts, setArtifacts] = useState<ArtifactItem[]>([noteArtifact]);
@@ -178,6 +181,9 @@ export default function App() {
     }
     if (scenario.asReply) {
       // 追问建议触发的承接场景：先出用户气泡，元宝想一下再回
+      if (scenario.id === "follow-screen-translate") {
+        setScreenTranslation(true);
+      }
       chat.runTask(text, () => [scenario.build()].flat().forEach(chat.push));
       return;
     }
@@ -231,24 +237,27 @@ export default function App() {
               yuanbaoOpen={sidebarOpen}
               onToggleYuanbao={toggleSidebar}
               stageOverlay={
-                whiteboard &&
-                (whiteboard.mode === "instant" ? (
-                  <WhiteboardGenerateOverlay
-                    runKey={whiteboard.runKey}
-                    onComplete={() => {
-                      chat.push(buildWhiteboardDoneMessage());
-                      agent.react("cheer");
-                    }}
-                  />
-                ) : (
-                  <WhiteboardOverlay
-                    runKey={whiteboard.runKey}
-                    onComplete={() => {
-                      chat.push(buildWhiteboardDoneMessage());
-                      agent.react("cheer");
-                    }}
-                  />
-                ))
+                whiteboard ? (
+                  whiteboard.mode === "instant" ? (
+                    <WhiteboardGenerateOverlay
+                      runKey={whiteboard.runKey}
+                      onComplete={() => {
+                        chat.push(buildWhiteboardDoneMessage());
+                        agent.react("cheer");
+                      }}
+                    />
+                  ) : (
+                    <WhiteboardOverlay
+                      runKey={whiteboard.runKey}
+                      onComplete={() => {
+                        chat.push(buildWhiteboardDoneMessage());
+                        agent.react("cheer");
+                      }}
+                    />
+                  )
+                ) : screenTranslation ? (
+                  <ScreenTranslationCaption />
+                ) : undefined
               }
             />
             {pollOpen && (
