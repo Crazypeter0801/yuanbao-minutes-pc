@@ -6,14 +6,6 @@ import {
   type CSSProperties,
   type FC,
 } from "react";
-import {
-  DEFAULT_CHAT_FONT_FAMILY,
-  DEFAULT_CHAT_FONT_SIZE,
-  findChatFontFamily,
-  findChatFontSize,
-  type ChatFontFamilyKey,
-  type ChatFontSizeKey,
-} from "@/data/chatPreferences";
 import { NOTE_ARTIFACT_ID } from "@/data/artifacts";
 import type { ArtifactItem } from "@/types/artifact";
 import type { BubbleCard } from "@/types/chat";
@@ -32,7 +24,8 @@ import { AgentWindowShell } from "@/components/agent/AgentWindowShell";
 import { TaskDetail } from "@/components/agent/TaskDetail";
 import { resolveMoodText } from "@/data/agentTasks";
 import {
-  TASK_ENTRY_FILE_COUNT,
+  TASK_ENTRY_COMMANDS,
+  TASK_ENTRY_LISTENING_TEXT,
   TASK_ENTRY_RECORDING_TEXT,
   TASK_ENTRY_TASKS,
   type TaskEntryMode,
@@ -74,16 +67,15 @@ interface YuanbaoSidebarProps {
 }
 
 /**
- * 元宝 personal agent 窗口（Figma 215:19035 / 215:21463）
- * 外壳是纯白面板（圆角 12），与会议并排。
- * 方案 A：头部胶囊里放「头像 + 元宝 › + 正在记笔记…」，点胶囊进状态页概览；
- * 方案 B：头部只留「元宝 ›」，输入框上方放任务胶囊（元宝笔记中… / 待办捕捉中…）和文件夹，分别进概览 / 资料库。
+ * 元宝 personal agent 窗口（Figma 215:19034 / 215:21463）
+ * 外壳与会议窗一样是毛玻璃（#F0F2F7F2、圆角 12），两扇窗并排、中间一条白缝。
+ * 方案 A：头部胶囊「头像 + 元宝 › + 正在记笔记…」，点胶囊进状态页概览；底部只有输入框。
+ * 方案 B：头部副标题改成「正在听...」，输入框上方放指令大全和任务胶囊（元宝笔记 +16 / 会议待办 +5）。
  *
  * 长程任务详情仍占用对话区；快捷指令仍在窗口外的演示按钮条上。
  */
 export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
   chat,
-  artifacts,
   dock,
   agent,
   taskEntry,
@@ -96,9 +88,6 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
   noteTopics,
 }) => {
   const { toast, showToast } = useToast();
-  /** 对话区阅读偏好：字号 / 字体，实时下发到侧栏根节点上的 CSS 变量 */
-  const [fontSize, setFontSize] = useState<ChatFontSizeKey>(DEFAULT_CHAT_FONT_SIZE);
-  const [fontFamily, setFontFamily] = useState<ChatFontFamilyKey>(DEFAULT_CHAT_FONT_FAMILY);
   /** 正在看详情的长程任务；为空时对话区显示对话 */
   const [detailTaskId, setDetailTaskId] = useState<string | null>(null);
   /**
@@ -149,27 +138,22 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
     listening: isListening,
   });
   /*
-   * 头部胶囊状态：没有运行中的任务时按 Figma 215:19432 显示「正在记笔记...」；
-   * 演示任务状态跑起来后仍沿用任务文案，状态机不变。
+   * 方案 A：没有运行中的任务时显示「正在记笔记...」（Figma 215:19432），
+   * 演示任务状态跑起来后仍沿用任务文案。
+   * 方案 B：任务已经落到下方胶囊，头部固定「正在听...」（Figma 294:37038）。
    */
   const headerStatus =
-    agent.tasks.length > 0 ? resolveMoodText(mood, agent.tasks) : TASK_ENTRY_RECORDING_TEXT;
+    taskEntry === "footer"
+      ? TASK_ENTRY_LISTENING_TEXT
+      : agent.tasks.length > 0
+        ? resolveMoodText(mood, agent.tasks)
+        : TASK_ENTRY_RECORDING_TEXT;
   const detailTask = agent.tasks.find((task) => task.id === detailTaskId);
 
-  // 对话区字号 / 字体：挂在侧栏根节点上，对话里的样式统一引用这三个变量
-  const sizeOption = findChatFontSize(fontSize);
-  const familyOption = findChatFontFamily(fontFamily);
-  const chatStyle = {
-    "--chat-font-size": sizeOption.fontSize,
-    "--chat-line-height": sizeOption.lineHeight,
-    "--chat-font-family": familyOption.stack,
-  } as CSSProperties;
-
   return (
-    <AgentWindowShell toast={toast} dock={dock} rootStyle={chatStyle}>
+    <AgentWindowShell toast={toast} dock={dock}>
       <AgentTitleBar
         dock={dock}
-        taskEntry={taskEntry}
         mood={mood}
         statusText={headerStatus}
         replayKey={replayKey}
@@ -177,10 +161,6 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
         onTouch={touch}
         onOpenStatus={() => onOpenStatus('overview')}
         onClose={onClose}
-        fontSize={fontSize}
-        fontFamily={fontFamily}
-        onFontSizeChange={setFontSize}
-        onFontFamilyChange={setFontFamily}
       />
 
       {/* 消息流与底栏叠在一起：对话可以滚到底栏后面，被渐进模糊一点点糊掉 */}
@@ -225,18 +205,19 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
           </MessageStream>
         )}
 
-        <ProgressiveBlur className={styles.blur} tint="var(--wm-color-blur-tint-agent)" />
+        <ProgressiveBlur className={styles.blur} maxBlur={8} tint="var(--wm-color-blur-tint-agent)" />
 
         <div className={`${styles.footer} ${taskEntry === "footer" ? styles.footerWithTasks : ""}`} ref={footerRef}>
           {/*
-          方案 B：输入框上方一排任务胶囊（元宝笔记中… / 待办捕捉中…）+ 右侧文件夹 + 数字；
-          方案 A 不出现这一行，任务状态全部收进头部胶囊。
-        */}
+            方案 B：输入框上方一排毛玻璃胶囊（指令大全 / 元宝笔记 +16 / 会议待办 +5）；
+            方案 A 不出现这一行，任务状态全部收进头部胶囊。
+          */}
           {taskEntry === "footer" && (
             <TaskEntryBar
               tasks={TASK_ENTRY_TASKS}
-              fileCount={Math.max(TASK_ENTRY_FILE_COUNT, artifacts.length)}
+              commands={TASK_ENTRY_COMMANDS}
               onOpen={onOpenStatus}
+              onCommand={send}
             />
           )}
           <ChatInput

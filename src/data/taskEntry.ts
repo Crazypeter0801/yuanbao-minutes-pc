@@ -15,22 +15,36 @@ export interface TaskEntryTask {
   key: string;
   /** 胶囊文案，与 Figma 一致 */
   label: string;
-  icon: 'pen' | 'list';
+  /** 绿色增量，例如 +16 */
+  count?: string;
+  icon: 'pen' | 'file-plus';
   /** 点胶囊进入的 Tab */
   tab: TaskEntryTab;
 }
 
-/** 方案 B 输入框上方的两枚任务胶囊（Figma 215:22019 / 268:25271） */
+/** 方案 B 输入框上方的两枚任务胶囊（Figma 215:22016 / 268:25268） */
 export const TASK_ENTRY_TASKS: TaskEntryTask[] = [
-  { key: 'notes', label: '元宝笔记中...', icon: 'pen', tab: 'overview' },
-  { key: 'todos', label: '待办捕捉中...', icon: 'list', tab: 'overview' },
+  { key: 'notes', label: '元宝笔记', count: '+16', icon: 'pen', tab: 'overview' },
+  { key: 'todos', label: '会议待办', count: '+5', icon: 'file-plus', tab: 'overview' },
 ];
 
-/** 文件夹里显示的文件数（Figma 215:22034 为 7）；实际文件更多时以实际为准 */
-export const TASK_ENTRY_FILE_COUNT = 7;
+/**
+ * 指令大全（Figma 215:22028 只有图标，文件里没有展开态）
+ * 点一项等同用户把这句话发出去，走现有 ask 链路。
+ */
+export const TASK_ENTRY_COMMANDS = [
+  '总结前面说了什么',
+  '记下我的待办',
+  '总结刚刚发生的事情',
+  '说得更具体些',
+  '列出我的待办',
+];
 
 /** 方案 A 头部胶囊的状态文案（Figma 215:19432） */
 export const TASK_ENTRY_RECORDING_TEXT = '正在记笔记...';
+
+/** 方案 B 头部副标题：任务状态已经落到下方胶囊，这里只表示在听（Figma 294:37038） */
+export const TASK_ENTRY_LISTENING_TEXT = '正在听...';
 
 /** Figma 演示对话的时间：今天 17:22 */
 function taskEntryTime(): number {

@@ -1,57 +1,110 @@
-import type { FC } from 'react';
-import IconTaskEntryIconFolder from '@/assets/d2c/icons/task-entry/icon-task-entry-icon-folder';
-import IconTaskEntryIconList from '@/assets/d2c/icons/task-entry/icon-task-entry-icon-list';
+import { useEffect, useRef, useState, type FC } from 'react';
+import IconTaskEntryIconBook from '@/assets/d2c/icons/task-entry/icon-task-entry-icon-book';
+import IconTaskEntryIconFilePlus from '@/assets/d2c/icons/task-entry/icon-task-entry-icon-file-plus';
 import IconTaskEntryIconPen from '@/assets/d2c/icons/task-entry/icon-task-entry-icon-pen';
 import { Pressable } from '@/components/common/Pressable';
 import type { TaskEntryTab, TaskEntryTask } from '@/data/taskEntry';
 import styles from './index.module.scss';
 
 interface TaskEntryBarProps {
-  /** 输入框上方的一排任务胶囊（Figma 215:22019 / 268:25271） */
+  /** 输入框上方的任务胶囊（Figma 215:22016 / 268:25268） */
   tasks: TaskEntryTask[];
-  /** 文件夹里显示的文件数（Figma 215:22034） */
-  fileCount: number;
-  /** 点任务胶囊 / 文件夹：进入状态页对应 Tab */
+  /** 指令大全里的基础指令，点一项等同用户发出这句话 */
+  commands: string[];
+  /** 点任务胶囊：进入状态页对应 Tab（笔记 / 待办都进概览） */
   onOpen: (tab: TaskEntryTab) => void;
+  /** 点指令：走现有提问链路 */
+  onCommand: (text: string) => void;
 }
+
+const TASK_ICONS = {
+  pen: IconTaskEntryIconPen,
+  'file-plus': IconTaskEntryIconFilePlus,
+} as const;
 
 /**
  * 输入框上方的任务入口（方案 B，Figma 215:22015）
- * 左边两枚白底胶囊：「元宝笔记中...」「待办捕捉中...」，点击都进状态页「概览」；
- * 右侧是文件夹胶囊（图标 + 文件数），点击进「资料库」。
- * 尺寸：高 36、圆角 18、白底 + 0.5px 描边 + 0 4 24 的落影；图标 16、文字 12/18。
+ * 从左到右：指令大全（只有书本图标）、元宝笔记 +16、会议待办 +5。
+ * 三枚都是高 32、圆角 16 的毛玻璃胶囊，间距 4；不再放右侧文件夹数字。
  */
-export const TaskEntryBar: FC<TaskEntryBarProps> = ({ tasks, fileCount, onOpen }) => (
-  <div className={styles.row}>
-    <div className={styles.tasks}>
+export const TaskEntryBar: FC<TaskEntryBarProps> = ({ tasks, commands, onOpen, onCommand }) => {
+  const [commandsOpen, setCommandsOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!commandsOpen) {
+      return undefined;
+    }
+    const onPointerDown = (event: MouseEvent) => {
+      if (rootRef.current && !rootRef.current.contains(event.target as Node)) {
+        setCommandsOpen(false);
+      }
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setCommandsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', onPointerDown);
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', onPointerDown);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [commandsOpen]);
+
+  return (
+    <div className={styles.row} ref={rootRef}>
+      <div className={styles.commandSlot}>
+        {commandsOpen && (
+          <div className={styles.menu} role="menu" aria-label="指令大全">
+            {commands.map((text) => (
+              <Pressable
+                key={text}
+                className={styles.menuItem}
+                onClick={() => {
+                  setCommandsOpen(false);
+                  onCommand(text);
+                }}
+                ariaLabel={text}
+              >
+                {text}
+              </Pressable>
+            ))}
+          </div>
+        )}
+        <Pressable
+          className={`${styles.pill} ${styles.iconPill}`}
+          onClick={() => setCommandsOpen((open) => !open)}
+          title="指令大全"
+          ariaLabel="指令大全"
+          ariaExpanded={commandsOpen}
+        >
+          <span className={styles.icon} aria-hidden="true">
+            <IconTaskEntryIconBook />
+          </span>
+        </Pressable>
+      </div>
+
       {tasks.map((task) => {
-        const Icon = task.icon === 'pen' ? IconTaskEntryIconPen : IconTaskEntryIconList;
+        const Icon = TASK_ICONS[task.icon];
+        const spoken = task.count ? `${task.label} ${task.count}` : task.label;
         return (
           <Pressable
             key={task.key}
             className={styles.pill}
             onClick={() => onOpen(task.tab)}
-            title={task.label}
-            ariaLabel={task.label}
+            title={spoken}
+            ariaLabel={spoken}
           >
             <span className={styles.icon} aria-hidden="true">
               <Icon />
             </span>
             <span className={styles.label}>{task.label}</span>
+            {task.count && <span className={styles.count}>{task.count}</span>}
           </Pressable>
         );
       })}
     </div>
-    <Pressable
-      className={`${styles.pill} ${styles.filePill}`}
-      onClick={() => onOpen('library')}
-      title="打开资料库"
-      ariaLabel="打开资料库"
-    >
-      <span className={styles.icon} aria-hidden="true">
-        <IconTaskEntryIconFolder />
-      </span>
-      <span className={`${styles.label} ${styles.count}`}>{fileCount}</span>
-    </Pressable>
-  </div>
-);
+  );
+};

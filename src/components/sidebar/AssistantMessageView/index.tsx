@@ -1,4 +1,5 @@
 import type { FC } from 'react';
+import IconFollowUpNext from '@/assets/d2c/icons/chat/icon-follow-up-next';
 import IconSideLink from '@/assets/d2c/icons/v1/icon-side-link';
 import { Pressable } from '@/components/common/Pressable';
 import { ArtifactCard } from '@/components/sidebar/ArtifactCard';
@@ -132,11 +133,10 @@ export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
         <div className={styles.followUps}>
           {message.followUps.map((text) => (
             <Pressable className={styles.followUp} key={text} onClick={() => onFollowUp?.(text)}>
-              <span className={styles.followUpText}>{text}</span>
-              {/* 右侧 ↗ 是设计稿里的文字符号（Figma 215:16877） */}
-              <span className={styles.followUpArrow} aria-hidden="true">
-                ↗
+              <span className={styles.followUpIcon} aria-hidden="true">
+                <IconFollowUpNext width={16} height={16} />
               </span>
+              <span className={styles.followUpText}>{text}</span>
             </Pressable>
           ))}
         </div>

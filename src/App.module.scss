@@ -1,5 +1,6 @@
 /*
- * 页面：Tahoe 壁纸铺满，1368×760 窗口在正中（Figma 215:16455：会议 960 + 缝隙 8 + 元宝 400）；四周各留 80，最小 1600×920。
+ * 页面：渐变风景壁纸铺满，1368×760 的两扇窗在正中（Figma 215:21463：会议 960 + 缝 2 + 白条 4 + 缝 2 + 元宝 400）；
+ * 四周至少留 80，水平垂直居中，最小 1600×920。根底 #EEF1F6。
  * 壁纸画在 .page 自身（不用 fixed），导入 Figma code layer 时也能完整显示。
  */
 .page {
@@ -10,7 +11,7 @@
   min-height: 100%;
   padding: 80px;
   background-color: var(--wm-color-stage-background);
-  background-image: url('./assets/background/tahoe-light.jpg');
+  background-image: url('./assets/background/stage-afternoon.jpg');
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -33,7 +34,7 @@
 }
 
 /*
- * 会议窗口（Figma 215:16458）：圆角 12，#F0F2F7 90% + 背景模糊 4，不投影；
+ * 会议窗口（Figma 215:21466）：圆角 12，#F0F2F7F2 + 背景模糊 4，不投影；
  * 投票弹窗以它为定位基准，只覆盖会议、不盖元宝。
  */
 .meetingArea {
@@ -50,7 +51,7 @@
 
 /*
  * 窗口布局容器 1368×760：本身不画底、不裁切、不投影。
- * 吸附态里会议（960）和元宝（400）是两个各自完整的圆角窗口并排（中间 8：2 + 拖拽条 4 + 2，Figma 215:16457）；
+ * 会议（960）和元宝（400）是两块各自完整的圆角浮层（Figma 215:21465，中间 8 = 缝 2 + 白条 4 + 缝 2）；
  * 元宝关闭或分离后，会议窗口撑满整个 1368。
  */
 .window {
