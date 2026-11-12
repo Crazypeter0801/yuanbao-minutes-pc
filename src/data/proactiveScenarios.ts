@@ -294,7 +294,7 @@ export const proactiveScenarios: ProactiveScenario[] = [
         },
       ],
       source: '对照 · 会议议程',
-      followUps: ['先不用', '记到笔记里'],
+      followUps: ['记到笔记里'],
     }),
   },
   {
@@ -429,7 +429,7 @@ export const proactiveScenarios: ProactiveScenario[] = [
           ],
         },
       ],
-      followUps: ['开启 AI 同传', '先不用'],
+      followUps: ['开启 AI 同传'],
     }),
   },
   {
@@ -452,7 +452,7 @@ export const proactiveScenarios: ProactiveScenario[] = [
         },
       ],
       source: '识别 · 共享屏幕',
-      followUps: ['开启屏幕翻译', '先不用'],
+      followUps: ['开启屏幕翻译'],
     }),
   },
   {
@@ -477,7 +477,7 @@ export const proactiveScenarios: ProactiveScenario[] = [
         },
       ],
       source: '回忆 · 你上周问过',
-      followUps: ['结合现在讲讲', '先不用'],
+      followUps: ['结合现在讲讲'],
     }),
   },
   {
