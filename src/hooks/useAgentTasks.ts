@@ -35,6 +35,10 @@ export interface AgentTasksControl {
   runDemo: () => void;
   /** 长程任务详情里的「停止任务」：已完成的步骤保留 */
   stopTask: (id: string) => void;
+  /** 按 id 写入一条任务，不冲掉旁边已有的任务 */
+  setTask: (task: AgentTask) => void;
+  /** 收起一条已经展示完的任务 */
+  removeTask: (id: string) => void;
 }
 
 /**
@@ -122,5 +126,21 @@ export function useAgentTasks(): AgentTasksControl {
 
   const finishGreeting = useCallback(() => setGreeted(true), []);
 
-  return { tasks, greeted, celebrating, finishGreeting, reaction, react, runDemo, stopTask };
+  const setTask = useCallback((task: AgentTask) => {
+    setTasks((previous) => {
+      const index = previous.findIndex((item) => item.id === task.id);
+      if (index === -1) {
+        return [task, ...previous];
+      }
+      const next = previous.slice();
+      next[index] = task;
+      return next;
+    });
+  }, []);
+
+  const removeTask = useCallback((id: string) => {
+    setTasks((previous) => previous.filter((task) => task.id !== id));
+  }, []);
+
+  return { tasks, greeted, celebrating, finishGreeting, reaction, react, runDemo, stopTask, setTask, removeTask };
 }

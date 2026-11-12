@@ -14,7 +14,7 @@ import { ProgressiveBlur } from "@/components/common/ProgressiveBlur";
 import { ChatInput } from "@/components/sidebar/ChatInput";
 import { ChatList } from "@/components/sidebar/ChatList";
 import { MessageStream } from "@/components/sidebar/MessageStream";
-import { TaskEntryBar } from "@/components/sidebar/TaskEntryBar";
+import { BoardProgressPill, TaskEntryBar } from "@/components/sidebar/TaskEntryBar";
 import { AgentTitleBar } from "@/components/agent/AgentTitleBar";
 import {
   AgentStatusPage,
@@ -22,7 +22,7 @@ import {
 } from "@/components/agent/AgentStatusPage";
 import { AgentWindowShell } from "@/components/agent/AgentWindowShell";
 import { TaskDetail } from "@/components/agent/TaskDetail";
-import { resolveMoodText } from "@/data/agentTasks";
+import { WHITEBOARD_TASK_ID } from "@/data/agentTasks";
 import {
   TASK_ENTRY_LISTENING_TEXT,
   TASK_ENTRY_RECORDING_TEXT,
@@ -137,16 +137,22 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
     listening: isListening,
   });
   /*
-   * 方案 A：没有运行中的任务时显示「正在记笔记...」（Figma 215:19432），
-   * 演示任务状态跑起来后仍沿用任务文案。
-   * 方案 B：任务已经落到下方胶囊，头部固定「正在听...」（Figma 294:37038）。
+   * 顶上是此刻的动作：画板进行中用任务自己的 activity（正在控制画板...）。
+   * 画完或没有这条任务时，方案 B 回到「正在听...」，方案 A 回到「正在记笔记...」；
+   * 若当时还有别的进行中任务，用那条的 activity。
    */
+  const boardTask = agent.tasks.find((task) => task.id === WHITEBOARD_TASK_ID);
+  const otherRunning = agent.tasks.find(
+    (task) => task.status === "running" && task.id !== WHITEBOARD_TASK_ID,
+  );
   const headerStatus =
-    taskEntry === "footer"
-      ? TASK_ENTRY_LISTENING_TEXT
-      : agent.tasks.length > 0
-        ? resolveMoodText(mood, agent.tasks)
-        : TASK_ENTRY_RECORDING_TEXT;
+    boardTask?.status === "running"
+      ? boardTask.activity
+      : otherRunning
+        ? otherRunning.activity
+        : taskEntry === "footer"
+          ? TASK_ENTRY_LISTENING_TEXT
+          : TASK_ENTRY_RECORDING_TEXT;
   const detailTask = agent.tasks.find((task) => task.id === detailTaskId);
 
   return (
@@ -211,12 +217,15 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
             方案 B：输入框上方一排毛玻璃胶囊（指令大全 / 元宝笔记 +16 / 会议待办 +5）；
             方案 A 不出现这一行，任务状态全部收进头部胶囊。
           */}
-          {taskEntry === "footer" && (
+          {taskEntry === "footer" ? (
             <TaskEntryBar
               tasks={TASK_ENTRY_TASKS}
+              boardTask={boardTask}
               onOpen={onOpenStatus}
               onCommand={send}
             />
+          ) : (
+            boardTask && <BoardProgressPill task={boardTask} />
           )}
           <ChatInput
             placeholder="和元宝聊聊"

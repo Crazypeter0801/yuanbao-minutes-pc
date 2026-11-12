@@ -47,7 +47,7 @@ export const MOOD_PREVIEW_HOLD = 6_000;
  * - minutes 会议纪要（记笔记）/ pdf PDF 报告：对着电脑敲键盘；
  * - markup 共享画面批注 / 识别：一口口吞下画面内容。
  */
-export type AgentTaskKind = 'minutes' | 'pdf' | 'markup';
+export type AgentTaskKind = 'minutes' | 'pdf' | 'markup' | 'board';
 
 /** 任务状态：进行中 / 排队中 / 待确认 / 已完成 / 已停止 */
 export type AgentTaskStatus = 'running' | 'queued' | 'confirm' | 'done' | 'stopped';
@@ -99,7 +99,27 @@ const WORKING_MOOD_BY_KIND: Record<AgentTaskKind, YuanbaoMood> = {
   minutes: 'working',
   pdf: 'working',
   markup: 'scanning',
+  board: 'working',
 };
+
+/** 画彩虹原理：上面 activity、下面任务名分开写 */
+export const WHITEBOARD_TASK_ID = 'task-whiteboard-rainbow';
+export const WHITEBOARD_ACTIVITY = '正在控制画板...';
+export const WHITEBOARD_TASK_TITLE = '画彩虹原理';
+export const WHITEBOARD_TASK_DONE_TITLE = '彩虹原理已画好';
+
+export function whiteboardBoardTask(status: 'running' | 'done'): AgentTask {
+  const done = status === 'done';
+  return {
+    id: WHITEBOARD_TASK_ID,
+    kind: 'board',
+    title: done ? WHITEBOARD_TASK_DONE_TITLE : WHITEBOARD_TASK_TITLE,
+    desc: done ? '已画好' : '正在白板上画',
+    status,
+    progress: done ? 100 : undefined,
+    activity: WHITEBOARD_ACTIVITY,
+  };
+}
 
 /** 还没收尾的任务（进行中 / 排队中 / 待确认）：任务条上的「N 个任务进行中」数的就是它们 */
 export const isActiveTask = (task: AgentTask) =>

@@ -17,7 +17,7 @@ import {
   resolveArtifactTitle,
   type ArtifactKind,
 } from "@/data/artifacts";
-import { MOOD_DEMO_ITEMS } from "@/data/agentTasks";
+import { MOOD_DEMO_ITEMS, WHITEBOARD_TASK_ID, whiteboardBoardTask } from "@/data/agentTasks";
 import { buildAutoNote } from "@/data/autoNotes";
 import type { CommandItem } from "@/data/commands";
 import { buildPollPostedMessage, teamBuildingPoll } from "@/data/polls";
@@ -87,6 +87,8 @@ export default function App() {
   /** 元宝画白板：非空时主讲人画面上盖一层批注白板；runKey 每次 +1 重播 */
   const [whiteboard, setWhiteboard] = useState<{ runKey: number; mode: WhiteboardMode } | null>(null);
   const whiteboardRun = useRef(0);
+  /** 画完后完成态停留一会儿再收起，避免一直占着进行中 */
+  const boardHold = useRef<number>();
 
   /** 关闭元宝窗口：状态页一起收起，下次打开回到对话 */
   const closeSidebar = () => {
@@ -133,7 +135,23 @@ export default function App() {
    * 回复落地时把白板盖到主讲人画面上——逐笔绘制（draw）或一次生成（instant），
    * 两种模式的文案一致，鼠标淡出后往对话里补一句「已画好」。
    */
+  const beginBoardTask = () => {
+    if (boardHold.current) {
+      window.clearTimeout(boardHold.current);
+    }
+    agent.setTask(whiteboardBoardTask("running"));
+  };
+
+  const finishBoardTask = () => {
+    agent.setTask(whiteboardBoardTask("done"));
+    boardHold.current = window.setTimeout(() => {
+      agent.removeTask(WHITEBOARD_TASK_ID);
+    }, 4500);
+  };
+
   const startWhiteboard = (text: string, mode: WhiteboardMode = "draw") => {
+    // 用户一开口就挂上两层状态，不要等画完才出现
+    beginBoardTask();
     chat.runTask(text, () => {
       whiteboardRun.current += 1;
       setWhiteboard({ runKey: whiteboardRun.current, mode });
@@ -242,6 +260,7 @@ export default function App() {
                     <WhiteboardGenerateOverlay
                       runKey={whiteboard.runKey}
                       onComplete={() => {
+                        finishBoardTask();
                         chat.push(buildWhiteboardDoneMessage());
                         agent.react("cheer");
                       }}
@@ -250,6 +269,7 @@ export default function App() {
                     <WhiteboardOverlay
                       runKey={whiteboard.runKey}
                       onComplete={() => {
+                        finishBoardTask();
                         chat.push(buildWhiteboardDoneMessage());
                         agent.react("cheer");
                       }}
