@@ -1,4 +1,4 @@
-/* 任务区：方案一任务卡 / 方案二最近任务行 */
+/* 任务区：分区标题 + 白底任务卡（Figma 250:1324 / 254:1282） */
 .section {
   display: flex;
   flex-direction: column;
@@ -7,27 +7,17 @@
 .sectionHeader {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   padding: 2px 0;
 }
 
 .sectionTitle {
   font-size: 14px;
-  line-height: 20px;
+  line-height: normal;
   font-weight: 600;
   color: var(--wm-color-task-title);
 }
 
-.sectionAction {
-  flex: 0 0 auto;
-  margin-left: 12px;
-  font-size: 12px;
-  line-height: 17px;
-  color: var(--wm-color-status-text-muted);
-  white-space: nowrap;
-}
-
-/* 方案一：白底任务卡，内边距 12 */
+/* 白底任务卡，内边距 12，圆角 12 */
 .taskCard {
   margin-top: 8px;
   padding: 12px;
@@ -35,10 +25,15 @@
   background-color: var(--wm-color-card-background);
 }
 
+/* 分组标题：高 24，左缩进 8，12 号次文字 */
 .groupTitle {
+  display: flex;
+  align-items: center;
+  height: 24px;
   padding-left: 8px;
   font-size: 12px;
-  line-height: 17px;
+  line-height: normal;
+  font-weight: 400;
   color: var(--wm-color-text-tertiary);
 }
 
@@ -61,13 +56,14 @@
   min-width: 0;
   overflow: hidden;
   font-size: 14px;
-  line-height: 20px;
+  line-height: normal;
+  font-weight: 400;
   color: var(--wm-color-task-title);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* 已完成：按要求只保留一行标题 */
+/* 已完成：只保留一行标题 */
 .doneRow {
   display: flex;
   align-items: center;
@@ -75,19 +71,21 @@
   padding: 0 8px;
   overflow: hidden;
   font-size: 14px;
-  line-height: 20px;
+  line-height: normal;
+  font-weight: 400;
   color: var(--wm-color-task-title);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+/* 分隔线：上下 6、左右 8，0.5px */
 .divider {
-  height: 1px;
+  height: 0.5px;
   margin: 6px 8px;
   background-color: var(--wm-color-line);
 }
 
-/* 右侧 24×24：默认转圈，悬停换成停止按钮 */
+/* 右侧 24×24：默认 16px 转圈，悬停换成停止按钮 */
 .stopSlot {
   position: relative;
   flex: 0 0 auto;
@@ -99,6 +97,9 @@
 }
 
 .spinner {
+  position: absolute;
+  top: 4px;
+  left: 4px;
   animation: status-spin 1s linear infinite;
 }
 
@@ -107,116 +108,13 @@
 }
 
 .stopSlot:hover .spinner,
-.runningRow:hover .spinner,
-.flowRow:hover .spinner {
+.runningRow:hover .spinner {
   display: none;
 }
 
 .stopSlot:hover .stopIcon,
-.runningRow:hover .stopIcon,
-.flowRow:hover .stopIcon {
+.runningRow:hover .stopIcon {
   display: block;
-}
-
-/* 方案二：每行一张 12 圆角白卡，行间距 8 */
-.flowList {
-  display: flex;
-  flex-direction: column;
-  margin-top: 8px;
-
-  & > * + * {
-    margin-top: 8px;
-  }
-}
-
-.flowRow {
-  display: flex;
-  align-items: center;
-  padding: 12px 14px;
-  border-radius: 12px;
-  background-color: var(--wm-color-card-background);
-  transition: background-color 120ms ease-in-out;
-
-  &:hover {
-    background-color: var(--wm-color-status-task-hover);
-  }
-}
-
-/* 状态图标 20×20 */
-.flowRow > svg:first-child,
-.flowCollapsed > svg:first-child {
-  flex: 0 0 auto;
-}
-
-.flowText {
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  min-width: 0;
-  margin-left: 10px;
-}
-
-.flowTitle {
-  overflow: hidden;
-  font-size: 14px;
-  line-height: 20px;
-  font-weight: 500;
-  color: var(--wm-color-task-title);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.flowMeta {
-  overflow: hidden;
-  font-size: 12px;
-  line-height: 17px;
-  color: var(--wm-color-text-tertiary);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.flowTrailing {
-  flex: 0 0 auto;
-  margin-left: 12px;
-  font-size: 12px;
-  line-height: 17px;
-  font-weight: 500;
-  color: var(--wm-color-status-green);
-  white-space: nowrap;
-}
-
-.confirmPill {
-  flex: 0 0 auto;
-  margin-left: 12px;
-  padding: 4px 10px;
-  border-radius: 12.5px;
-  background-color: var(--wm-color-status-confirm-fill);
-  font-size: 12px;
-  line-height: 17px;
-  font-weight: 500;
-  color: var(--wm-color-status-confirm-text);
-  white-space: nowrap;
-}
-
-/* 停止后的任务：只留一行标题 */
-.flowCollapsed {
-  display: flex;
-  align-items: center;
-  padding: 12px 14px;
-  border-radius: 12px;
-  background-color: var(--wm-color-card-background);
-}
-
-.flowCollapsedTitle {
-  flex: 1 1 auto;
-  min-width: 0;
-  margin-left: 10px;
-  overflow: hidden;
-  font-size: 14px;
-  line-height: 20px;
-  color: var(--wm-color-task-title);
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 @keyframes status-spin {
@@ -234,8 +132,7 @@
     animation: none;
   }
 
-  .runningRow,
-  .flowRow {
+  .runningRow {
     transition: none;
   }
 }

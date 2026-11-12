@@ -1,6 +1,6 @@
 /*
- * Agent 状态页（Figma 243:1054 / 243:1222 / 243:1376）
- * 整页 400×760，浅灰底、白色卡片；顶部栏 + 元宝状态头部固定，下方内容独立滚动。
+ * Agent 状态页（Figma 243:1054 / 243:1222）
+ * 整页 400×760，浅灰底、白色卡片；顶部栏 + 元宝状态头部 + Tab 固定，下方内容独立滚动。
  */
 .page {
   display: flex;
@@ -62,7 +62,7 @@
   }
 }
 
-/* 头部：元宝形象 + 名称 / 状态，padding 4 24 14 */
+/* 头部：元宝形象 + 名称 / 状态，padding 4 24 14，形象与文字间距 12 */
 .hero {
   flex: 0 0 auto;
   display: flex;
@@ -75,6 +75,8 @@
   flex: 0 0 auto;
   align-items: center;
   justify-content: center;
+  width: 48px;
+  height: 48px;
 }
 
 .heroText {
@@ -86,7 +88,7 @@
 
 .name {
   font-size: 19px;
-  line-height: 27px;
+  line-height: normal;
   font-weight: 600;
   color: var(--wm-color-task-title);
   white-space: nowrap;
@@ -95,72 +97,65 @@
 .subtitle {
   font-size: 14px;
   line-height: 20px;
+  font-weight: 400;
   color: var(--wm-color-text-tertiary);
   white-space: nowrap;
 }
 
-/* 方案二：名称下的绿点状态行 */
-.liveRow {
-  display: flex;
-  align-items: center;
-  margin-top: 4px;
-}
-
-.liveDot {
+/*
+ * Tab 栏（Figma 258:24665）：左右 24、上下 4。
+ * 轨道（Figma 258:24666）：宽 366、底 rgba(0,0,0,0.04)、内边距 2、圆角 24。
+ */
+.tabBar {
   flex: 0 0 auto;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background-color: var(--wm-color-status-online);
+  display: flex;
+  align-items: flex-start;
+  padding: 4px 24px;
 }
 
-.liveText {
-  margin-left: 6px;
-  overflow: hidden;
-  font-size: 12px;
-  line-height: 17px;
-  color: var(--wm-color-text-tertiary);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* 胶囊 Tab：366×44，内轨 6 26，选中白底胶囊 */
 .tabs {
   display: flex;
   flex: 0 0 auto;
   align-items: center;
-  align-self: center;
   width: 366px;
-  padding: 6px 26px;
-  border-radius: 18px;
+  padding: 2px;
+  border-radius: 24px;
   background-color: var(--wm-color-status-tab-track);
 }
 
+/*
+ * .tab/item（Figma 258:24615 / 258:24616）
+ * 等分轨道；高 32、水平 padding 16、圆角 999。
+ * 未选中：透明底、Regular 14/20、次文字色。
+ * 1px 透明描边与选中项的白描边占位一致，切换时两项宽度不变。
+ */
 .tab {
   display: flex;
   flex: 1 1 0;
   align-items: center;
   justify-content: center;
+  min-width: 0;
   height: 32px;
-  border-radius: 16px;
+  padding: 10px 16px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background-color: transparent;
   font-size: 14px;
   line-height: 20px;
   font-weight: 400;
   color: var(--wm-color-status-tab-text);
   cursor: pointer;
   outline: none;
-  transition:
-    background-color 140ms ease-in-out,
-    color 140ms ease-in-out;
 
   &:focus-visible {
     box-shadow: inset 0 0 0 1.5px var(--wm-color-line);
   }
 }
 
+/* 选中：白胶囊 + 白描边，PingFang SC Medium 14/20，主文字色 */
 .tabActive {
+  border-color: var(--wm-color-background-quaternary);
   background-color: var(--wm-color-background-quaternary);
-  box-shadow: var(--wm-shadow-segment);
   font-weight: 500;
   color: var(--wm-color-text-extra-primary);
 }
@@ -181,8 +176,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .iconButton,
-  .tab {
+  .iconButton {
     transition: none;
   }
 }

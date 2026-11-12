@@ -1,6 +1,6 @@
 /**
  * Agent 状态页 · 资料库数据
- * 文案取自 Figma 241:1413（方案一 · 资料库）与 243:1376（方案二 · 资料库）。
+ * 文案取自 Figma 241:1413（概览 Tab 旁的资料库）。
  * filter 是筛选标签真正使用的分类，fileKind 决定列表左侧的文件图标。
  */
 
@@ -8,32 +8,20 @@
 export type AgentLibraryFilter = 'all' | 'note' | 'file' | 'media' | 'link';
 
 /** 文件图标类型，对应 Figma 252:1315 文件图标组件集 */
-export type AgentFileKind =
-  | 'note'
-  | 'pptx'
-  | 'pdf'
-  | 'xlsx'
-  | 'docx'
-  | 'txt'
-  | 'ocr'
-  | 'translate'
-  | 'link'
-  | 'media';
+export type AgentFileKind = 'note' | 'pptx' | 'pdf' | 'xlsx' | 'docx' | 'txt' | 'link' | 'media';
 
 export interface AgentLibraryItem {
   id: string;
   title: string;
-  /** 方案一显示在右侧，方案二显示在标题下方 */
+  /** 显示在行右侧的整合副标题 */
   meta?: string;
   filter: Exclude<AgentLibraryFilter, 'all'>;
   fileKind: AgentFileKind;
-  /** 方案一按「本场会议 / 更早」分组；方案二不使用 */
+  /** 按「本场会议 / 更早」分组 */
   group: 'current' | 'earlier';
-  /** 方案二右侧的页数 / 字数等信息 */
-  trailing?: string;
 }
 
-/** 方案一筛选标签顺序（Figma 243:1295） */
+/** 筛选标签顺序（Figma 243:1295） */
 export const AGENT_LIBRARY_FILTERS: { key: AgentLibraryFilter; label: string }[] = [
   { key: 'all', label: '全部' },
   { key: 'note', label: '笔记' },
@@ -42,14 +30,7 @@ export const AGENT_LIBRARY_FILTERS: { key: AgentLibraryFilter; label: string }[]
   { key: 'link', label: '链接' },
 ];
 
-/** 方案二筛选标签顺序（Figma 243:1472） */
-export const AGENT_FLOW_LIBRARY_FILTERS: { key: AgentLibraryFilter; label: string }[] = [
-  { key: 'all', label: '全部' },
-  { key: 'media', label: '媒体' },
-  { key: 'file', label: '文件' },
-];
-
-/** 方案一「资料库」Tab（Figma 241:1413，文件行组件 252:1315） */
+/** 「资料库」Tab（Figma 241:1413，文件行组件 252:1315） */
 export const AGENT_STATUS_LIBRARY: AgentLibraryItem[] = [
   {
     id: 'lib-note',
@@ -122,36 +103,5 @@ export const AGENT_STATUS_LIBRARY: AgentLibraryItem[] = [
     filter: 'file',
     fileKind: 'xlsx',
     group: 'earlier',
-  },
-];
-
-/** 方案二「资料库」（Figma 243:1376） */
-export const AGENT_FLOW_LIBRARY: AgentLibraryItem[] = [
-  {
-    id: 'flow-lib-ppt',
-    title: '设计评审.pptx',
-    meta: '本场 · 共享文件',
-    filter: 'file',
-    fileKind: 'pptx',
-    group: 'current',
-    trailing: '18 页',
-  },
-  {
-    id: 'flow-lib-ocr',
-    title: 'PPT 第 12 页识别结果',
-    meta: '本场 · 刚刚',
-    filter: 'media',
-    fileKind: 'ocr',
-    group: 'current',
-    trailing: '86 字',
-  },
-  {
-    id: 'flow-lib-translate',
-    title: '翻译记录（中→英）',
-    meta: '本场 · 进行中',
-    filter: 'media',
-    fileKind: 'translate',
-    group: 'current',
-    trailing: '128 句',
   },
 ];

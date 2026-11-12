@@ -169,18 +169,18 @@
   --wm-color-task-card-stroke: #e5e6eb;
   --wm-shadow-task-card: 0 8px 24px rgba(0, 0, 0, 0.12);
 
-  /* Agent 状态页（Figma 243:1054 / 243:1222 / 243:1376） */
+  /* Agent 状态页（Figma 243:1054 / 243:1222） */
   --wm-color-status-background: #f6f6f6;
+  /* Tab 轨道（Figma 258:24666） */
   --wm-color-status-tab-track: rgba(0, 0, 0, 0.04);
+  /* 未选中 Tab：basic/text/quaternary */
   --wm-color-status-tab-text: #707070;
   --wm-color-status-filter-text: #4e5461;
   --wm-color-status-filter-active: #ececec;
   --wm-color-status-task-hover: #e9eaee;
   --wm-color-status-text-muted: #9298a5;
-  --wm-color-status-green: #00a864;
-  --wm-color-status-online: #00c37a;
-  --wm-color-status-confirm-fill: #fff1db;
-  --wm-color-status-confirm-text: #e8820c;
+  /* 设置列表分隔线（Figma 243:1196） */
+  --wm-color-status-setting-line: #eef0f3;
 
   /* 字体 */
   --wm-font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial,

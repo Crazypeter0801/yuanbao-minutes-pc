@@ -25,7 +25,7 @@ import { ChatList } from "@/components/sidebar/ChatList";
 import { MessageStream } from "@/components/sidebar/MessageStream";
 import { NotePill } from "@/components/sidebar/NotePill";
 import { AgentTitleBar } from "@/components/agent/AgentTitleBar";
-import { AgentStatusPage, type AgentStatusScheme } from "@/components/agent/AgentStatusPage";
+import { AgentStatusPage } from "@/components/agent/AgentStatusPage";
 import { AgentWindowShell } from "@/components/agent/AgentWindowShell";
 import { TaskDetail } from "@/components/agent/TaskDetail";
 import { TaskTray } from "@/components/agent/TaskTray";
@@ -53,8 +53,6 @@ interface YuanbaoSidebarProps {
   onClose: () => void;
   /** 是否显示 Agent 状态页（覆盖对话区） */
   statusOpen: boolean;
-  /** 当前状态页方案 */
-  statusScheme: AgentStatusScheme;
   /** 点击头部头像 / 名字进入状态页 */
   onOpenStatus: () => void;
   /** 状态页左上角返回聊天 */
@@ -81,7 +79,6 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
   agent,
   onClose,
   statusOpen,
-  statusScheme,
   onOpenStatus,
   onCloseStatus,
   onSubmit,
@@ -291,7 +288,6 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
       {statusOpen && (
         <div className={styles.statusOverlay}>
           <AgentStatusPage
-            scheme={statusScheme}
             dock={dock}
             onBack={onCloseStatus}
             onClose={onClose}

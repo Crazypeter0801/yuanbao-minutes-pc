@@ -4,7 +4,6 @@ import { useAgentTasks } from "@/hooks/useAgentTasks";
 import { MeetingWindow } from "@/components/meeting/MeetingWindow";
 import { PollComposer } from "@/components/poll/PollComposer";
 import { DemoToolbar } from "@/components/demo/DemoToolbar";
-import type { AgentStatusScheme } from "@/components/agent/AgentStatusPage";
 import { YuanbaoSidebar } from "@/components/YuanbaoSidebar";
 import {
   buildArtifact,
@@ -43,8 +42,6 @@ export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   /** Agent 状态页是否覆盖在元宝对话区之上 */
   const [statusOpen, setStatusOpen] = useState(false);
-  /** 状态页两个方案：Tab 切换 / 自上而下 */
-  const [statusScheme, setStatusScheme] = useState<AgentStatusScheme>("tabs");
   const [pollOpen, setPollOpen] = useState(false);
   /** 会中文件：一开始只有「元宝笔记」（来源），生成文件、记录画面后再往里加 */
   const [artifacts, setArtifacts] = useState<ArtifactItem[]>([noteArtifact]);
@@ -80,13 +77,6 @@ export default function App() {
 
   /** 点头像 / 名字进入状态页 */
   const openStatus = () => {
-    setSidebarOpen(true);
-    setStatusOpen(true);
-  };
-
-  /** 窗口外演示菜单切换状态页方案；没打开时直接打开对应方案 */
-  const openStatusScheme = (scheme: AgentStatusScheme) => {
-    setStatusScheme(scheme);
     setSidebarOpen(true);
     setStatusOpen(true);
   };
@@ -230,7 +220,6 @@ export default function App() {
             agent={agent}
             onClose={closeSidebar}
             statusOpen={statusOpen}
-            statusScheme={statusScheme}
             onOpenStatus={openStatus}
             onCloseStatus={() => setStatusOpen(false)}
             onSubmit={handleSubmit}
@@ -265,23 +254,6 @@ export default function App() {
                     agent.react(mood, { force: true });
                   },
                 })),
-              },
-              {
-                key: "agent-status-scheme",
-                label: "状态页方案",
-                // 随时切换两个状态页方案；状态页没开时直接打开所选方案
-                items: [
-                  {
-                    key: "tabs",
-                    label: `方案一 · Tab 切换${statusScheme === "tabs" ? "（当前）" : ""}`,
-                    onClick: () => openStatusScheme("tabs"),
-                  },
-                  {
-                    key: "flow",
-                    label: `方案二 · 自上而下${statusScheme === "flow" ? "（当前）" : ""}`,
-                    onClick: () => openStatusScheme("flow"),
-                  },
-                ],
               },
             ]}
           />

@@ -8,7 +8,7 @@ import { Pressable } from '@/components/common/Pressable';
 import type { AgentSettingIcon, AgentSettingItem } from '@/data/agentStatusSettings';
 import styles from './index.module.scss';
 
-/** 方案一的设置行图标（Figma 242:1147 Icon Kit） */
+/** 设置行图标（Figma 242:1147 Icon Kit） */
 const SETTING_ICONS: Record<AgentSettingIcon, ReactNode> = {
   apps: <IconStatusSettingApps />,
   personal: <IconStatusSettingPersonal />,
@@ -17,18 +17,13 @@ const SETTING_ICONS: Record<AgentSettingIcon, ReactNode> = {
 };
 
 interface SettingsSectionProps {
-  variant: 'tabs' | 'flow';
   settings: AgentSettingItem[];
   /** 打开设置项（演示） */
   onOpenSetting: (setting: AgentSettingItem) => void;
 }
 
-/** 状态页 Agent 设置：方案一带图标，方案二按设计稿只保留文字 */
-export const SettingsSection: FC<SettingsSectionProps> = ({
-  variant,
-  settings,
-  onOpenSetting,
-}) => (
+/** 状态页 Agent 设置（Figma 243:1185）：图标 + 标题 + 右侧值 + 箭头 */
+export const SettingsSection: FC<SettingsSectionProps> = ({ settings, onOpenSetting }) => (
   <section className={styles.section} aria-label="Agent 设置">
     <div className={styles.sectionHeader}>
       <h2 className={styles.sectionTitle}>Agent 设置</h2>
@@ -41,18 +36,14 @@ export const SettingsSection: FC<SettingsSectionProps> = ({
             onClick={() => onOpenSetting(setting)}
             ariaLabel={`${setting.label}，${setting.value}`}
           >
-            {variant === 'tabs' && setting.icon && (
-              <span className={styles.icon}>{SETTING_ICONS[setting.icon]}</span>
-            )}
+            <span className={styles.icon}>{SETTING_ICONS[setting.icon]}</span>
             <span className={styles.label}>{setting.label}</span>
             <span className={styles.value}>{setting.value}</span>
             <span className={styles.chevron}>
               <IconStatusChevron />
             </span>
           </Pressable>
-          {index < settings.length - 1 && (
-            <div className={`${styles.divider} ${variant === 'flow' ? styles.dividerFlow : ''}`} />
-          )}
+          {index < settings.length - 1 && <div className={styles.divider} />}
         </Fragment>
       ))}
     </div>
