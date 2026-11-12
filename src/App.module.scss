@@ -81,14 +81,14 @@
   right: 1px;
 }
 
-/* 两窗之间的拖拽条：2×48 白、圆角 1，落在 4 的缝隙正中、垂直居中 */
+/* 两窗之间的拖拽条：2×32 白、圆角 1，落在 4 的缝隙正中、垂直居中 */
 .handle {
   position: absolute;
   top: 50%;
   left: 1px;
   width: 2px;
-  height: 48px;
-  margin-top: -24px;
+  height: 32px;
+  margin-top: -16px;
   border-radius: 1px;
   background-color: var(--wm-color-window-handle);
 }
