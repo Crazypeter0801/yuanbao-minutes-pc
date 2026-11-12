@@ -28,18 +28,6 @@ export const TASK_ENTRY_TASKS: TaskEntryTask[] = [
   { key: 'todos', label: '会议待办', count: '+5', icon: 'file-plus', tab: 'overview' },
 ];
 
-/**
- * 指令大全（Figma 215:22028 只有图标，文件里没有展开态）
- * 点一项等同用户把这句话发出去，走现有 ask 链路。
- */
-export const TASK_ENTRY_COMMANDS = [
-  '总结前面说了什么',
-  '记下我的待办',
-  '总结刚刚发生的事情',
-  '说得更具体些',
-  '列出我的待办',
-];
-
 /** 方案 A 头部胶囊的状态文案（Figma 215:19432） */
 export const TASK_ENTRY_RECORDING_TEXT = '正在记笔记...';
 

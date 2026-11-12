@@ -1,6 +1,7 @@
 /*
  * 底栏胶囊 ↔ 浮层面板
- * 收起：36 高胶囊，宽度由 ghost 按内容撑开；展开：同一张卡片向左对齐到行首、向上长成面板。
+ * 收起：默认 36 高胶囊（产物入口）；任务入口的书本胶囊用 32 高、圆角 16。
+ * 宽度由 ghost 按内容撑开。展开：同一张卡片向左对齐到行首、向上长成面板。
  */
 
 /* 与最早的记笔记面板同一条曲线与时长 */
@@ -11,7 +12,7 @@ $duration: 380ms;
   position: relative;
   z-index: 2;
   flex: 0 0 auto;
-  height: 36px;
+  height: var(--morph-collapsed-height, 36px);
   transition: opacity 120ms ease-out;
 }
 
@@ -33,7 +34,7 @@ $duration: 380ms;
 .ghost {
   display: flex;
   align-items: center;
-  height: 36px;
+  height: var(--morph-collapsed-height, 36px);
   padding: 0 var(--morph-collapsed-padding-x);
   visibility: hidden;
   pointer-events: none;
@@ -43,7 +44,7 @@ $duration: 380ms;
   }
 }
 
-/* 收起：白底、0.5px 内描边 + 浮层阴影、圆角 18（Figma 36:2475 / 36:2280） */
+/* 收起：白底、0.5px 内描边 + 浮层阴影、圆角 18（Figma 36:2280）。垂直 padding 把 24 的标题行收进胶囊高度 */
 .card {
   position: absolute;
   left: 0;
@@ -51,10 +52,10 @@ $duration: 380ms;
   display: flex;
   flex-direction: column;
   width: var(--morph-collapsed-width);
-  height: 36px;
-  padding: 6px var(--morph-collapsed-padding-x);
+  height: var(--morph-collapsed-height, 36px);
+  padding: calc((var(--morph-collapsed-height, 36px) - 24px) / 2) var(--morph-collapsed-padding-x);
   overflow: hidden;
-  border-radius: 18px;
+  border-radius: var(--morph-collapsed-radius, 18px);
   background-color: var(--wm-color-background-bubble);
   box-shadow: inset 0 0 0 0.5px var(--wm-color-line), var(--wm-shadow-float);
   cursor: pointer;
@@ -64,10 +65,22 @@ $duration: 380ms;
     height $duration $ease-out,
     padding $duration $ease-out,
     border-radius $duration $ease-out,
+    background-color $duration $ease-out,
     box-shadow 160ms ease-out;
 }
 
-.card:not(.cardExpanded):hover {
+/* 下午新稿的书本胶囊：#FFFFFF99、1px 白描边、0 4 30。展开后回到上面的白底面板 */
+.cardGlass:not(.cardExpanded) {
+  background-color: var(--wm-color-task-entry-fill);
+  box-shadow: inset 0 0 0 1px var(--wm-color-task-entry-line), var(--wm-shadow-task-entry);
+}
+
+.cardGlass:not(.cardExpanded):hover {
+  background-color: var(--wm-color-task-entry-fill-hover);
+  box-shadow: inset 0 0 0 1px var(--wm-color-task-entry-line), var(--wm-shadow-task-entry);
+}
+
+.card:not(.cardGlass):not(.cardExpanded):hover {
   box-shadow: inset 0 0 0 0.5px var(--wm-color-line), var(--wm-shadow-hover);
 }
 

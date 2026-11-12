@@ -24,7 +24,6 @@ import { AgentWindowShell } from "@/components/agent/AgentWindowShell";
 import { TaskDetail } from "@/components/agent/TaskDetail";
 import { resolveMoodText } from "@/data/agentTasks";
 import {
-  TASK_ENTRY_COMMANDS,
   TASK_ENTRY_LISTENING_TEXT,
   TASK_ENTRY_RECORDING_TEXT,
   TASK_ENTRY_TASKS,
@@ -215,7 +214,6 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
           {taskEntry === "footer" && (
             <TaskEntryBar
               tasks={TASK_ENTRY_TASKS}
-              commands={TASK_ENTRY_COMMANDS}
               onOpen={onOpenStatus}
               onCommand={send}
             />

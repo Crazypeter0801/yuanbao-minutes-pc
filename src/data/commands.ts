@@ -30,6 +30,19 @@ export interface CommandGroup {
   items: CommandItem[];
 }
 
+/**
+ * 会内快捷指令（b821f243 里 commandGroups 的第一组）
+ * 只有产品问法；「模拟 ·」演示入口留在窗口外的演示按钮里。
+ */
+export const quickCommands: CommandItem[] = [
+  { label: '总结刚刚发生的事情', kind: 'ask' },
+  { label: '突出关键决策', kind: 'ask' },
+  { label: '主要收获是什么？', kind: 'ask' },
+  { label: '还有哪些没定论？', kind: 'ask' },
+  { label: '我有哪些待办？', kind: 'ask' },
+  { label: '下一步该做什么？', kind: 'ask' },
+];
+
 export interface DemoMenu {
   key: 'yuanbao' | 'user' | 'feature';
   /** 按钮文案 */

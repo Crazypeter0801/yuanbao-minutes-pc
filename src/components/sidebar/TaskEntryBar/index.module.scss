@@ -10,13 +10,8 @@
   width: 100%;
 }
 
-.commandSlot {
-  position: relative;
-  flex: 0 0 auto;
-}
-
 /*
- * 三枚胶囊共用（Figma 215:22028 / 215:22016 / 268:25268）
+ * 任务胶囊（Figma 215:22016 / 268:25268）。书本入口是 MorphPanel，样式在那边。
  * 高 32、水平 padding 12、圆角 16；#FFFFFF99 + 1px 白描边 + 0 4 30 的落影。
  * 稿里的垂直 padding 16 在 32 高里收成垂直居中。
  * 图标、文案、增量之间是内部 frame 的 4。
@@ -82,50 +77,8 @@
   font-variant-numeric: tabular-nums;
 }
 
-/*
- * 指令浮层：同一套毛玻璃胶囊语言，往上展开。
- * 文件里没有展开态，按胶囊的白底、白描边、16 圆角和落影来做，不做成窗外的演示按钮。
- */
-.menu {
-  position: absolute;
-  bottom: calc(100% + 8px);
-  left: 0;
-  z-index: 8;
-  display: flex;
-  flex-direction: column;
-  min-width: 196px;
-  padding: 6px;
-  border: 1px solid var(--wm-color-task-entry-line);
-  border-radius: 16px;
-  background-color: var(--wm-color-command-menu);
-  box-shadow: var(--wm-shadow-task-entry);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-}
-
-.menuItem {
-  padding: 8px 12px;
-  border-radius: 10px;
-  font-size: 14px;
-  line-height: 20px;
-  color: var(--wm-color-text-primary);
-  white-space: nowrap;
-  cursor: pointer;
-  outline: none;
-  transition: background-color 120ms ease-in-out;
-
-  &:hover {
-    background-color: var(--wm-color-input-menu-hover);
-  }
-
-  &:focus-visible {
-    box-shadow: inset 0 0 0 1.5px var(--wm-color-task-entry-line);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .pill,
-  .menuItem {
+  .pill {
     transition: none;
   }
 }
