@@ -24,10 +24,23 @@ import { SHARE_TO_GROUP_LABEL } from "@/data/meetingSession";
 import { topicAt } from "@/data/meetingTopics";
 import { matchScenario } from "@/data/proactiveScenarios";
 import type { TaskEntryMode } from "@/data/taskEntry";
+import {
+  buildWhiteboardDoneMessage,
+  buildWhiteboardIntroMessage,
+  isWhiteboardDrawRequest,
+} from "@/data/whiteboardScenario";
 import { buildScreenshotNote, meetingShotSrc } from "@/data/yuanbaoContent";
 import { useYuanbaoSession } from "@/hooks/useYuanbaoSession";
+import { WhiteboardGenerateOverlay } from "@/components/whiteboard/WhiteboardGenerateOverlay";
+import { WhiteboardOverlay } from "@/components/whiteboard/WhiteboardOverlay";
 import type { ArtifactItem } from "@/types/artifact";
 import styles from "./App.module.scss";
+
+/** 演示条里「元宝画白板」用的示例说法：本身就带触发词 */
+const WHITEBOARD_DEMO_TEXT = "帮我在白板上画一下彩虹形成的原理，给同学们讲讲";
+
+/** 白板的两种画法：逐笔绘制 / 一次生成 */
+type WhiteboardMode = "draw" | "instant";
 
 /** 「建一个 PDF / PPT / 文件」这类说法都算要生成产物 */
 const CREATE_FILE_PATTERN = /创建|建个|生成|做一?份|出一份/;
@@ -68,6 +81,9 @@ export default function App() {
    */
   const [topicCount, setTopicCount] = useState(2);
   const noteTopics = Array.from({ length: topicCount }, (_, index) => topicAt(index));
+  /** 元宝画白板：非空时主讲人画面上盖一层批注白板；runKey 每次 +1 重播 */
+  const [whiteboard, setWhiteboard] = useState<{ runKey: number; mode: WhiteboardMode } | null>(null);
+  const whiteboardRun = useRef(0);
 
   /** 关闭元宝窗口：状态页一起收起，下次打开回到对话 */
   const closeSidebar = () => {
@@ -110,14 +126,32 @@ export default function App() {
   };
 
   /**
+   * 元宝画白板：先按普通任务出用户气泡、元宝想一下再回；
+   * 回复落地时把白板盖到主讲人画面上——逐笔绘制（draw）或一次生成（instant），
+   * 两种模式的文案一致，鼠标淡出后往对话里补一句「已画好」。
+   */
+  const startWhiteboard = (text: string, mode: WhiteboardMode = "draw") => {
+    chat.runTask(text, () => {
+      whiteboardRun.current += 1;
+      setWhiteboard({ runKey: whiteboardRun.current, mode });
+      chat.push(buildWhiteboardIntroMessage());
+    });
+  };
+
+  /**
    * 输入框提交：先看是不是要生成文件，再过一遍演示场景，都没命中才当普通提问。
    * 主动开口的场景（刚入会 / 别人提到 / 会议将结束）只追加元宝消息，不出现用户气泡；
    * 投票这类任务场景用场景自带的 userText 提问，同时把确认弹窗摊开。
    */
-  const handleSubmit = (text: string) => {
+  const handleSubmit = (text: string, options?: { whiteboardMode?: WhiteboardMode }) => {
     const shared = lastArtifact.current;
     if (text === SHARE_TO_GROUP_LABEL && shared) {
       chat.runTask(text, () => chat.push(buildArtifactSharedMessage(shared)));
+      return;
+    }
+
+    if (isWhiteboardDrawRequest(text)) {
+      startWhiteboard(text, options?.whiteboardMode ?? "draw");
       return;
     }
 
@@ -196,6 +230,26 @@ export default function App() {
             <MeetingWindow
               yuanbaoOpen={sidebarOpen}
               onToggleYuanbao={toggleSidebar}
+              stageOverlay={
+                whiteboard &&
+                (whiteboard.mode === "instant" ? (
+                  <WhiteboardGenerateOverlay
+                    runKey={whiteboard.runKey}
+                    onComplete={() => {
+                      chat.push(buildWhiteboardDoneMessage());
+                      agent.react("cheer");
+                    }}
+                  />
+                ) : (
+                  <WhiteboardOverlay
+                    runKey={whiteboard.runKey}
+                    onComplete={() => {
+                      chat.push(buildWhiteboardDoneMessage());
+                      agent.react("cheer");
+                    }}
+                  />
+                ))
+              }
             />
             {pollOpen && (
               <PollComposer
@@ -268,6 +322,29 @@ export default function App() {
                     key: "footer",
                     label: "输入框上方（方案 B）",
                     onClick: () => setTaskEntry("footer"),
+                  },
+                ],
+              },
+              {
+                key: "whiteboard",
+                label: "元宝画白板",
+                // 两种画法：逐笔绘制（默认）/ 一次生成；示例说法本身就带触发词，走同一条链路
+                items: [
+                  {
+                    key: "draw",
+                    label: "逐笔绘制",
+                    onClick: () => {
+                      setSidebarOpen(true);
+                      handleSubmit(WHITEBOARD_DEMO_TEXT, { whiteboardMode: "draw" });
+                    },
+                  },
+                  {
+                    key: "instant",
+                    label: "一次生成",
+                    onClick: () => {
+                      setSidebarOpen(true);
+                      handleSubmit(WHITEBOARD_DEMO_TEXT, { whiteboardMode: "instant" });
+                    },
                   },
                 ],
               },

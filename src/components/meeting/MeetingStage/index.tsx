@@ -1,4 +1,4 @@
-import type { FC } from 'react';
+import type { FC, ReactNode } from 'react';
 import IconVideoNameMic from '@/assets/d2c/icons/v1/icon-video-name-mic';
 import avatarJenny from '@/assets/d2c/images/v1/avatar-jenny@2x.png';
 import avatarJony from '@/assets/d2c/images/v1/avatar-jony@2x.png';
@@ -29,13 +29,18 @@ const PARTICIPANTS: Participant[] = [
 
 const SPEAKER_NAME = '艾慧慧Taylor';
 
+interface MeetingStageProps {
+  /** 盖在主讲人画面上的图层（演示用：元宝画白板）；不传时画面保持原样 */
+  overlay?: ReactNode;
+}
+
 /**
  * 会议画面：演讲者视图（Figma 257:1966）
  * 上：参会人头像条（317:5308，5 块 210×118、间距 12，右缘渐隐）
  * 下：主讲人大画面（316:2002，圆角 8，左下角名字水牌）
  * 说明：本期仅做视觉还原，不挂交互。
  */
-export const MeetingStage: FC = () => (
+export const MeetingStage: FC<MeetingStageProps> = ({ overlay }) => (
   <div className={styles.stage}>
     <div className={styles.strip}>
       <div className={styles.stripTrack}>
@@ -68,6 +73,7 @@ export const MeetingStage: FC = () => (
         <IconVideoNameMic />
         <span className={styles.name}>{SPEAKER_NAME}</span>
       </div>
+      {overlay}
     </div>
   </div>
 );

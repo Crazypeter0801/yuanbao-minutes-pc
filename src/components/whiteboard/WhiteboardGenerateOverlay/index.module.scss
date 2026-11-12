@@ -1,0 +1,49 @@
+/*
+ * 「一次生成」白板：白底 + 整张图（切成小 SVG 由 transitions.dev 描点阵）+ 工具栏 / 缩放条 / 鼠标。
+ * 板的框架和逐笔版一致，只是内容层换成生成动画的载体。
+ */
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity calc(320ms * var(--wb-speed-scale, 1)) ease-out;
+}
+
+.overlayStarted {
+  opacity: 1;
+}
+
+.board {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  background-color: var(--wm-color-whiteboard-board);
+}
+
+/* 生成动画的载体：范围就是整张图的包围盒 */
+.scene {
+  position: absolute;
+}
+
+/* 每一小段笔画一个小 SVG：尺寸都控制在 120px 内，generate 才会按 icon 逐个描出来 */
+.chunk {
+  position: absolute;
+  overflow: visible;
+  display: block;
+}
+
+.title,
+.label {
+  position: absolute;
+  margin: 0;
+  color: var(--wm-color-whiteboard-crayon-ink);
+  font-family: var(--wm-font-hand);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}

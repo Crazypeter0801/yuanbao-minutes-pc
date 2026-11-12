@@ -1,0 +1,30 @@
+/*
+ * 右上角窗口控件（Figma 221:30111）：右缘 5px、顶部 8px，图标间距 6，整组 60% 不透明。
+ */
+.controls {
+  position: absolute;
+  top: 8px;
+  right: 5px;
+  display: flex;
+  align-items: center;
+  padding: 2px 4px;
+  opacity: 0.6;
+  color: var(--wm-color-text-secondary);
+}
+
+.controls > * + * {
+  margin-left: 6px;
+}
+
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+}
+
+.divider {
+  display: block;
+  color: var(--wm-color-outline-secondary);
+}

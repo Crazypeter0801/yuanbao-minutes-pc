@@ -1,0 +1,36 @@
+/*
+ * 板书内容层：一整块 SVG 按设计坐标排版，再等比缩放到白板上。
+ * 位置和尺寸由 getSceneTransform 算，和鼠标坐标换算共用同一份变换。
+ */
+.canvas {
+  position: absolute;
+  display: block;
+  overflow: visible;
+}
+
+/* 手写标注：楷体优先，退回系统手写体 */
+.label {
+  fill: var(--wm-color-whiteboard-crayon-ink);
+  font-family: var(--wm-font-hand);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+/* 文字工具点下后的输入光标 */
+.caret {
+  position: absolute;
+  width: 1.5px;
+  background-color: var(--wm-color-whiteboard-crayon-ink);
+  animation: whiteboard-caret 1s steps(2, start) infinite;
+}
+
+@keyframes whiteboard-caret {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0.1;
+  }
+}

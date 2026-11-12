@@ -1,0 +1,51 @@
+/*
+ * 元宝画白板：盖在主讲人画面上的一层白板（Figma 221:30082）。
+ * 结构：白底画布 + 内容 SVG + 右上窗口控件 + 左侧工具栏 + 右下缩放条 + AI 鼠标。
+ * 整层不接收鼠标事件，会议区本身的交互不受影响。
+ */
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity calc(320ms * var(--wb-speed-scale, 1)) ease-out;
+}
+
+.overlayStarted {
+  opacity: 1;
+}
+
+/* 白板本体：纯白（设计稿 221:30083 波点层在导出里是隐藏的，实际画面是纯白） */
+.board {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  background-color: var(--wm-color-whiteboard-board);
+}
+
+/* 点击涟漪：从指针尖向外扩一圈再淡出 */
+.ripple {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border: 1.5px solid var(--wm-color-whiteboard-ripple-line);
+  border-radius: 50%;
+  background-color: var(--wm-color-whiteboard-ripple-fill);
+  animation: whiteboard-ripple calc(520ms * var(--wb-speed-scale, 1)) ease-out forwards;
+}
+
+@keyframes whiteboard-ripple {
+  from {
+    opacity: 0.9;
+    transform: scale(0.2);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.55);
+  }
+}

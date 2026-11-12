@@ -1,0 +1,73 @@
+/*
+ * 右下角工具条（Figma 221:30084）：白底、1px 描边、圆角 12、内边距 8、元素间距 8。
+ * 高度 40 = 1px 描边 + 7px 内边距 + 24px 内容 + 7px + 1px。
+ */
+.bar {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  height: 40px;
+  padding: 7px;
+  border: 1px solid var(--wm-color-outline-tertiary);
+  border-radius: 12px;
+  background-color: var(--wm-color-background-quaternary);
+  box-shadow: var(--wm-shadow-whiteboard-panel);
+  color: var(--wm-color-icon-strong);
+}
+
+.bar > * + * {
+  margin-left: 8px;
+}
+
+/* 缩放组：－ 100% ^ ＋ */
+.zoom {
+  display: flex;
+  align-items: center;
+  padding: 2px 4px;
+}
+
+.zoom > * + * {
+  margin-left: 6px;
+}
+
+.zoomButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  height: 12px;
+}
+
+.divider {
+  display: block;
+}
+
+.ratio {
+  display: flex;
+  align-items: center;
+}
+
+.percent {
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 500;
+  color: var(--wm-color-icon-strong);
+}
+
+.chevron {
+  display: block;
+  margin-left: 6px;
+}
+
+/* 画板 / 背景：24×24 热区，图标本身 16 */
+.entry {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+}
