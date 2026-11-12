@@ -2,6 +2,7 @@ import { useId, type FC } from 'react';
 import {
   BOARD_FONT,
   boxRectOf,
+  isBoardBox,
   toBoardPx,
   whiteboardScenario,
   type BoardBoxElement,
@@ -79,13 +80,14 @@ const cornersOf = (rect: { x: number; y: number; width: number; height: number }
 
 /** 判断菱形：包围盒内接菱形 */
 const BoxShape: FC<{
-  kind: 'box' | 'decision';
+  kind: BoardBoxElement['kind'];
   rect: { x: number; y: number; width: number; height: number };
   className?: string;
 }> = ({ kind, rect, className }) => {
   if (kind === 'decision') {
     return <polygon points={polylineAttr(cornersOf(rect))} className={className ?? styles.shape} />;
   }
+  // 注释框：虚线边框 + 浅底，和主流程的实线框区分
   return (
     <rect
       x={rect.x}
@@ -93,7 +95,7 @@ const BoxShape: FC<{
       width={rect.width}
       height={rect.height}
       rx={8}
-      className={className ?? styles.shape}
+      className={className ?? (kind === 'note' ? styles.note : styles.shape)}
     />
   );
 };
@@ -105,7 +107,8 @@ const RevealText: FC<{
   fontSize: number;
   centered: boolean;
   revealed: number;
-}> = ({ element, anchor, fontSize, centered, revealed }) => {
+  muted?: boolean;
+}> = ({ element, anchor, fontSize, centered, revealed, muted = false }) => {
   const lines = element.text.split('\n');
   const lineHeight = fontSize * LINE_HEIGHT_RATIO;
   const firstBaseline = anchor.y - ((lines.length - 1) * lineHeight) / 2 + fontSize * 0.34;
@@ -117,7 +120,7 @@ const RevealText: FC<{
       y={firstBaseline}
       textAnchor={centered ? 'middle' : 'start'}
       fontSize={fontSize}
-      className={styles.label}
+      className={muted ? styles.labelMuted : styles.label}
       opacity={revealed > 0 ? 1 : 0}
     >
       {lines.map((line, lineIndex) => (
@@ -144,9 +147,7 @@ const RevealText: FC<{
 export const WhiteboardScene: FC<WhiteboardSceneProps> = ({ size, frame, shapes, dragBox, edges, chars, caret }) => {
   const markerId = `whiteboard-arrow-${useId().replace(/:/g, '')}`;
   const elements = whiteboardScenario.elements;
-  const boxes = elements.filter(
-    (element): element is BoardBoxElement => element.kind === 'box' || element.kind === 'decision',
-  );
+  const boxes = elements.filter((element): element is BoardBoxElement => isBoardBox(element));
   const edgeList = elements.filter((element): element is BoardEdgeElement => element.kind === 'edge');
   const texts = elements.filter((element): element is BoardTextElement => element.kind === 'text');
 
@@ -195,7 +196,7 @@ export const WhiteboardScene: FC<WhiteboardSceneProps> = ({ size, frame, shapes,
             <polyline
               points={polylineAttr(trimPolyline(points, progress))}
               markerEnd={progress >= 1 ? `url(#${markerId})` : undefined}
-              className={styles.edge}
+              className={edge.dashed ? styles.edgeDashed : styles.edge}
             />
             {edge.label && edge.labelAt && (
               <text
@@ -216,14 +217,14 @@ export const WhiteboardScene: FC<WhiteboardSceneProps> = ({ size, frame, shapes,
       {/* 框里的字 */}
       {boxes.map((element) => {
         const rect = boxRectOf(element, frame);
-        const fontSize = element.kind === 'decision' ? BOARD_FONT.decision : BOARD_FONT.box;
         return (
           <RevealText
             key={`${element.id}-label`}
             element={element}
             anchor={{ x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 }}
-            fontSize={fontSize}
+            fontSize={BOARD_FONT[element.kind]}
             centered
+            muted={element.kind === 'note'}
             revealed={chars[element.id] ?? 0}
           />
         );

@@ -246,7 +246,7 @@ export default function App() {
                 // 示例说法本身就带触发词，走和输入框一样的链路
                 onClick: () => {
                   setSidebarOpen(true);
-                  handleSubmit("帮我在白板上画一个灰度放量的原理流程图");
+                  handleSubmit("帮我在白板上画一下彩虹形成的原理，给同学们讲讲");
                 },
               },
               {

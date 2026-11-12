@@ -5,6 +5,7 @@ import {
   BOARD_TOOLBAR_TOOLS,
   boxRectOf,
   findBoardElement,
+  isBoardBox,
   getBoardFrame,
   toBoardPx,
   whiteboardScenario,
@@ -65,7 +66,7 @@ export interface WhiteboardRipple {
 /** 正在拖拽的方框：宽高跟着鼠标走 */
 export interface BoardDragBox {
   id: string;
-  kind: 'box' | 'decision';
+  kind: BoardBoxElement['kind'];
   x: number;
   y: number;
   width: number;
@@ -430,7 +431,7 @@ export function useWhiteboardDraw({ size, runKey, onComplete }: WhiteboardDrawOp
     const writeInBox = async (element: BoardBoxElement) => {
       const frame = getBoardFrame(currentSize());
       const rect = boxRectOf(element, frame);
-      const fontSize = element.kind === 'decision' ? BOARD_FONT.decision : BOARD_FONT.box;
+      const fontSize = BOARD_FONT[element.kind];
       const center = { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
       await typeText(element, center, fontSize, true);
     };
@@ -458,12 +459,12 @@ export function useWhiteboardDraw({ size, runKey, onComplete }: WhiteboardDrawOp
           const element = findBoardElement(step.id);
           if (element?.kind === 'edge') {
             await dragEdge(element);
-          } else if (element && (element.kind === 'box' || element.kind === 'decision')) {
+          } else if (element && isBoardBox(element)) {
             await dragShape(element);
           }
         } else if (step.action === 'write') {
           const element = findBoardElement(step.id);
-          if (element && (element.kind === 'box' || element.kind === 'decision')) {
+          if (element && isBoardBox(element)) {
             await writeInBox(element);
           } else if (element?.kind === 'text') {
             await writeText(element);

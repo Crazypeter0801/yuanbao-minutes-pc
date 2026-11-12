@@ -4,8 +4,8 @@ import type { AssistantMessage } from '@/types/chat';
 /**
  * 元宝画白板（演示用）
  *
- * 用户在侧栏说一句「帮我在白板上画一个灰度放量的原理流程图」，元宝接管共享画面上
- * 的白板批注工具（Figma 221:30082）：先去左侧工具栏点「文本 / 形状 / AI 画笔」，
+ * 会议里老师上课讲彩虹的原理，用户在侧栏说一句「帮我在白板上画一下彩虹形成的原理，给同学们讲讲」，
+ * 元宝接管共享画面上的白板批注工具（Figma 221:30082）：先去左侧工具栏点「文本 / 形状 / AI 画笔」，
  * 再像人一样按下拖拽把图形落在白板上。这里只放「画什么、按什么顺序画、用哪个工具」，
  * 鼠标缓动、拖拽尺寸插值、逐字输入这些表现交给 useWhiteboardDraw。
  *
@@ -49,9 +49,9 @@ interface BoardElementBase {
   id: string;
 }
 
-/** 方框 / 判断菱形：由「左上角拖到右下角」画出 */
+/** 方框 / 判断菱形 / 注释框：由「左上角拖到右下角」画出 */
 export interface BoardBoxElement extends BoardElementBase {
-  kind: 'box' | 'decision';
+  kind: 'box' | 'decision' | 'note';
   /** 拖拽起点：包围盒左上角（归一化） */
   from: BoardPoint;
   /** 拖拽终点：包围盒右下角（归一化） */
@@ -75,9 +75,16 @@ export interface BoardEdgeElement extends BoardElementBase {
   points: BoardPoint[];
   label?: string;
   labelAt?: BoardPoint;
+  /** 注释引线用虚线，和主流程的实线箭头区分开 */
+  dashed?: boolean;
 }
 
 export type BoardElement = BoardBoxElement | BoardTextElement | BoardEdgeElement;
+
+/** 会被「拖出来」的元素：方框 / 判断菱形 / 注释框 */
+export function isBoardBox(element: BoardElement): element is BoardBoxElement {
+  return element.kind === 'box' || element.kind === 'decision' || element.kind === 'note';
+}
 
 /** 一步操作：选工具 / 拖一个框 / 敲一段字 / 停顿 */
 export type BoardStep =
@@ -96,10 +103,11 @@ export const WHITEBOARD_SPEED = 2;
 /** 白板内容区内边距（px）：左边留出工具栏，下边留出缩放条 */
 export const BOARD_CONTENT_INSET = { left: 72, top: 28, right: 28, bottom: 76 };
 
-/** 白板上文字字号（px）：方框、判断菱形分开，判断框里字多一点要小一号 */
+/** 白板上文字字号（px）：方框、判断菱形、注释框分开，字多的框小一号 */
 export const BOARD_FONT = {
   box: 13,
   decision: 12,
+  note: 12,
 };
 
 export interface BoardSize {
@@ -143,126 +151,148 @@ export function boxRectOf(element: BoardBoxElement, frame: BoardFrame) {
 
 /** 「画面」指的是共享画面本身，不是绘画意图，不能把 OCR 这类演示场景抢走 */
 export function isWhiteboardDrawRequest(text: string): boolean {
-  if (text.includes('流程图')) {
+  if (text.includes('流程图') || text.includes('彩虹')) {
     return true;
   }
   return text.includes('画') && !text.includes('画面');
 }
 
+/**
+ * 彩虹形成原理（老师在会议里上课）
+ * 七步主链路蛇形排两行：第一行从左往右「阳光 → 雨滴 → 折射 → 内反射」，
+ * 掉头后第二行从右往左「再次折射射出 → 七色光分开 → 看到彩虹」，
+ * 再从「七色光按角度分开」拉一条虚线到注释框，说明看彩虹要背对太阳、约 42° 角。
+ */
 const ELEMENTS: BoardElement[] = [
   {
     id: 'title',
     kind: 'text',
-    at: { x: 0.035, y: 0.045 },
-    text: '灰度放量的原理流程图',
+    at: { x: 0.03, y: 0.045 },
+    text: '彩虹是怎么形成的',
     fontSize: 22,
     anchor: 'start',
   },
+  // 第一行：太阳 → 雨滴 → 折射 → 内反射
   {
-    id: 'release',
+    id: 'sunlight',
     kind: 'box',
-    from: { x: 0.05, y: 0.235 },
-    to: { x: 0.23, y: 0.365 },
-    text: '发布新版本',
+    from: { x: 0.03, y: 0.16 },
+    to: { x: 0.2, y: 0.29 },
+    text: '阳光（白光）',
   },
   {
-    id: 'canary',
+    id: 'raindrop',
     kind: 'box',
-    from: { x: 0.3, y: 0.235 },
-    to: { x: 0.48, y: 0.365 },
-    text: '1% 灰度',
+    from: { x: 0.25, y: 0.16 },
+    to: { x: 0.42, y: 0.29 },
+    text: '射入雨滴',
   },
   {
-    id: 'monitor',
+    id: 'refract',
     kind: 'box',
-    from: { x: 0.55, y: 0.235 },
-    to: { x: 0.73, y: 0.365 },
-    text: '监控指标',
+    from: { x: 0.47, y: 0.16 },
+    to: { x: 0.64, y: 0.29 },
+    text: '折射（分光）',
   },
   {
-    id: 'check',
-    kind: 'decision',
-    from: { x: 0.77, y: 0.165 },
-    to: { x: 0.96, y: 0.435 },
-    text: '指标是否\n异常？',
-  },
-  {
-    id: 'expand',
+    id: 'reflect',
     kind: 'box',
-    from: { x: 0.47, y: 0.607 },
-    to: { x: 0.73, y: 0.752 },
-    text: '扩大到 10% → 50% → 100%',
+    from: { x: 0.69, y: 0.16 },
+    to: { x: 0.86, y: 0.29 },
+    text: '雨滴内反射',
   },
+  // 第二行（从右往左）：再次折射 → 七色光分开 → 看到彩虹
   {
-    id: 'rollback',
+    id: 'exit',
     kind: 'box',
-    from: { x: 0.775, y: 0.635 },
-    to: { x: 0.955, y: 0.765 },
-    text: '回滚上一版本',
+    from: { x: 0.69, y: 0.58 },
+    to: { x: 0.86, y: 0.71 },
+    text: '再次折射射出',
   },
   {
-    id: 'release-to-canary',
+    id: 'split',
+    kind: 'box',
+    from: { x: 0.4, y: 0.58 },
+    to: { x: 0.6, y: 0.71 },
+    text: '七色光按角度分开',
+  },
+  {
+    id: 'see',
+    kind: 'box',
+    from: { x: 0.08, y: 0.58 },
+    to: { x: 0.26, y: 0.71 },
+    text: '看到彩虹',
+  },
+  // 注释框：挂在「七色光按角度分开」下方
+  {
+    id: 'see-note',
+    kind: 'note',
+    from: { x: 0.36, y: 0.83 },
+    to: { x: 0.64, y: 0.95 },
+    text: '背对太阳、约 42° 角',
+  },
+  {
+    id: 'sunlight-to-raindrop',
     kind: 'edge',
     points: [
-      { x: 0.23, y: 0.3 },
-      { x: 0.3, y: 0.3 },
+      { x: 0.2, y: 0.225 },
+      { x: 0.25, y: 0.225 },
     ],
   },
   {
-    id: 'canary-to-monitor',
+    id: 'raindrop-to-refract',
     kind: 'edge',
     points: [
-      { x: 0.48, y: 0.3 },
-      { x: 0.55, y: 0.3 },
+      { x: 0.42, y: 0.225 },
+      { x: 0.47, y: 0.225 },
     ],
   },
   {
-    id: 'monitor-to-check',
+    id: 'refract-to-reflect',
     kind: 'edge',
     points: [
-      { x: 0.73, y: 0.3 },
-      { x: 0.77, y: 0.3 },
+      { x: 0.64, y: 0.225 },
+      { x: 0.69, y: 0.225 },
     ],
   },
   {
-    id: 'check-to-rollback',
+    id: 'reflect-to-exit',
     kind: 'edge',
     points: [
-      { x: 0.865, y: 0.435 },
-      { x: 0.865, y: 0.635 },
+      { x: 0.775, y: 0.29 },
+      { x: 0.775, y: 0.58 },
     ],
-    label: '是',
-    labelAt: { x: 0.89, y: 0.53 },
   },
   {
-    id: 'check-to-expand',
+    id: 'exit-to-split',
     kind: 'edge',
     points: [
-      { x: 0.865, y: 0.435 },
-      { x: 0.865, y: 0.5 },
-      { x: 0.7, y: 0.5 },
-      { x: 0.7, y: 0.605 },
+      { x: 0.69, y: 0.645 },
+      { x: 0.6, y: 0.645 },
     ],
-    label: '否',
-    labelAt: { x: 0.8, y: 0.468 },
   },
   {
-    id: 'expand-to-canary',
+    id: 'split-to-see',
     kind: 'edge',
     points: [
-      { x: 0.47, y: 0.68 },
-      { x: 0.3, y: 0.68 },
-      { x: 0.3, y: 0.368 },
+      { x: 0.4, y: 0.645 },
+      { x: 0.26, y: 0.645 },
     ],
-    label: '继续观察',
-    labelAt: { x: 0.24, y: 0.56 },
+  },
+  {
+    id: 'split-to-note',
+    kind: 'edge',
+    points: [
+      { x: 0.5, y: 0.71 },
+      { x: 0.5, y: 0.83 },
+    ],
+    dashed: true,
   },
 ];
 
 /**
  * 绘制脚本：和真人用白板工具的顺序一致
- * 写标题 → 形状工具拖四个框（框里直接打字）→ AI 画笔连五条线。
- * 工具只切换三次：文本 / 形状 / AI 画笔，和人在白板上的习惯一致。
+ * 写标题 → 形状工具拖七个框（框里直接打字）→ AI 画笔连主流程、再补注释的虚线。
  */
 const STEPS: BoardStep[] = [
   // 白板铺开后先停一拍，让观众看清工具栏，再开始动鼠标
@@ -273,39 +303,44 @@ const STEPS: BoardStep[] = [
   { action: 'pause', ms: 220 },
 
   { action: 'select-tool', tool: 'shape' },
-  { action: 'draw', id: 'release' },
-  { action: 'write', id: 'release' },
-  { action: 'draw', id: 'canary' },
-  { action: 'write', id: 'canary' },
-  { action: 'draw', id: 'monitor' },
-  { action: 'write', id: 'monitor' },
+  { action: 'draw', id: 'sunlight' },
+  { action: 'write', id: 'sunlight' },
+  { action: 'draw', id: 'raindrop' },
+  { action: 'write', id: 'raindrop' },
+  { action: 'draw', id: 'refract' },
+  { action: 'write', id: 'refract' },
+  { action: 'draw', id: 'reflect' },
+  { action: 'write', id: 'reflect' },
   { action: 'pause', ms: 160 },
 
-  { action: 'draw', id: 'check' },
-  { action: 'write', id: 'check' },
+  { action: 'draw', id: 'exit' },
+  { action: 'write', id: 'exit' },
+  { action: 'draw', id: 'split' },
+  { action: 'write', id: 'split' },
+  { action: 'draw', id: 'see' },
+  { action: 'write', id: 'see' },
   { action: 'pause', ms: 200 },
 
-  { action: 'draw', id: 'expand' },
-  { action: 'write', id: 'expand' },
-  { action: 'draw', id: 'rollback' },
-  { action: 'write', id: 'rollback' },
+  { action: 'draw', id: 'see-note' },
+  { action: 'write', id: 'see-note' },
   { action: 'pause', ms: 220 },
 
   { action: 'select-tool', tool: 'ai-pen' },
-  { action: 'draw', id: 'release-to-canary' },
-  { action: 'draw', id: 'canary-to-monitor' },
-  { action: 'draw', id: 'monitor-to-check' },
-  { action: 'draw', id: 'check-to-rollback' },
-  { action: 'draw', id: 'check-to-expand' },
-  { action: 'draw', id: 'expand-to-canary' },
+  { action: 'draw', id: 'sunlight-to-raindrop' },
+  { action: 'draw', id: 'raindrop-to-refract' },
+  { action: 'draw', id: 'refract-to-reflect' },
+  { action: 'draw', id: 'reflect-to-exit' },
+  { action: 'draw', id: 'exit-to-split' },
+  { action: 'draw', id: 'split-to-see' },
+  { action: 'draw', id: 'split-to-note' },
   { action: 'pause', ms: 700 },
 ];
 
 export const whiteboardScenario = {
   elements: ELEMENTS,
   steps: STEPS,
-  intro: '好，我来画。借你的白板工具用一下，把灰度放量的主链路和异常回滚都标出来。',
-  done: '已画好。流程是：发布新版本 → 1% 灰度 → 监控指标 → 判断是否异常；异常就回滚，正常就按 10% / 50% / 100% 继续放量。',
+  intro: '好的，我来给同学们画一下彩虹的形成过程～',
+  done: '已画好，同学们可以看白板～阳光射进雨滴后折射、内部反射、再折射出来，七色光按角度散开，背对太阳、约 42° 角就能看到彩虹。',
 };
 
 export function findBoardElement(id: string): BoardElement | undefined {

@@ -162,6 +162,8 @@
   --wm-color-whiteboard-ink-soft: rgba(55, 60, 72, 0.62);
   /* 拖拽中的半成品：浅蓝底 + 虚线 */
   --wm-color-whiteboard-drag-fill: rgba(0, 102, 255, 0.04);
+  /* 注释框底：几乎看不见的一层灰，只用来压住穿过来的引线 */
+  --wm-color-whiteboard-note-fill: rgba(55, 60, 72, 0.04);
   /* 工具栏选中 / 按下：设计稿未给，沿用品牌蓝的 12% / 24% */
   --wm-color-whiteboard-tool-active: rgba(0, 102, 255, 0.12);
   --wm-color-whiteboard-tool-pressed: rgba(0, 102, 255, 0.24);

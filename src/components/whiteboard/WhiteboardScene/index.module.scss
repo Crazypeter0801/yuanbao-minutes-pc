@@ -18,6 +18,15 @@
   stroke-linejoin: round;
 }
 
+/* 注释框：虚线边框 + 极浅底，视觉上弱于主流程 */
+.note {
+  fill: var(--wm-color-whiteboard-note-fill);
+  stroke: var(--wm-color-whiteboard-ink-soft);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 4;
+  stroke-linejoin: round;
+}
+
 /* 拖拽中的半成品：先给浅一点的描边，定型后回到正常色 */
 .shapeDragging {
   fill: var(--wm-color-whiteboard-drag-fill);
@@ -36,12 +45,28 @@
   stroke-linejoin: round;
 }
 
+/* 注释引线：虚线细箭头，和主流程的粗实线分开 */
+.edgeDashed {
+  fill: none;
+  stroke: var(--wm-color-whiteboard-ink-soft);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .arrowHead {
   fill: var(--wm-color-whiteboard-ink);
 }
 
 .label {
   fill: var(--wm-color-whiteboard-ink);
+  font-family: var(--wm-font-family);
+  font-weight: 500;
+}
+
+.labelMuted {
+  fill: var(--wm-color-whiteboard-ink-soft);
   font-family: var(--wm-font-family);
   font-weight: 500;
 }
