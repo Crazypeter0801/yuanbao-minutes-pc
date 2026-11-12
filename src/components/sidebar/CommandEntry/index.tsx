@@ -32,14 +32,15 @@ export const CommandEntry: FC<CommandEntryProps> = ({ onCommand }) => {
           <IconTaskEntryIconBook />
         </span>
       }
-      expandedLabel="快捷指令"
+      expandedLabel="推荐指令"
       collapsedPaddingX={12}
       collapsedHeight={32}
       collapsedRadius={16}
+      expandedRadius={20}
       appearance="glass"
       panelWidth={PANEL_WIDTH}
       maxHeight={PANEL_MAX_HEIGHT}
-      name="快捷指令"
+      name="推荐指令"
     >
       <div className={styles.list}>
         {quickCommands.map((item) => (

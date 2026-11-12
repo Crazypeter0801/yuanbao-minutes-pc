@@ -31,6 +31,8 @@ interface MorphPanelProps {
   collapsedHeight?: number;
   /** 收起圆角，默认 18。书本胶囊是 16 */
   collapsedRadius?: number;
+  /** 展开圆角，默认 12。快捷指令面板单独用 20，产物列表仍是 12 */
+  expandedRadius?: number;
   /** glass：收起态用下午新稿的半透明白胶囊；展开后仍回到原来的白底面板 */
   appearance?: 'solid' | 'glass';
   /** 展开宽度：数字为固定 px，'full' 为撑满底栏这一行 */
@@ -69,6 +71,7 @@ export const MorphPanel: FC<MorphPanelProps> = ({
   collapsedPaddingX,
   collapsedHeight = 36,
   collapsedRadius = 18,
+  expandedRadius = 12,
   appearance = 'solid',
   panelWidth,
   name,
@@ -188,6 +191,7 @@ export const MorphPanel: FC<MorphPanelProps> = ({
     '--morph-collapsed-padding-x': `${collapsedPaddingX}px`,
     '--morph-collapsed-height': `${collapsedHeight}px`,
     '--morph-collapsed-radius': `${collapsedRadius}px`,
+    '--morph-expanded-radius': `${expandedRadius}px`,
     '--morph-expanded-width': `${expandedWidth}px`,
     '--morph-expanded-left': `${-offsetLeft}px`,
     '--morph-panel-height': `${panelHeight}px`,
