@@ -58,6 +58,15 @@
   }
 }
 
+/* 方案 A：画板胶囊单独一行，不换行 */
+.boardRow {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  min-width: 0;
+  overflow: hidden;
+}
+
 /* 方案 B：任务胶囊在输入框上方，间距 10；顶部 40 用来做那层淡入的乳白遮罩 */
 .footerWithTasks {
   padding-top: 40px;

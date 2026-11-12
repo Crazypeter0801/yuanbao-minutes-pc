@@ -1,32 +1,23 @@
-/* 任务区：分区标题 + 白底任务卡（Figma 250:1324 / 254:1282） */
 .section {
   display: flex;
   flex-direction: column;
 }
 
-.sectionHeader {
-  display: flex;
-  align-items: center;
-  padding: 2px 0;
-}
-
 .sectionTitle {
+  padding: 2px 0;
   font-size: 14px;
   line-height: normal;
   font-weight: 600;
-  color: var(--wm-color-task-title);
+  color: #1f2329;
 }
 
-/* 白底任务卡，内边距 12，圆角 12；白面板上加 1px 描边保持边界 */
 .taskCard {
   margin-top: 8px;
   padding: 12px;
   border-radius: 12px;
-  background-color: var(--wm-color-card-background);
-  box-shadow: inset 0 0 0 1px var(--wm-color-panel-card-border);
+  background-color: #fff;
 }
 
-/* 分组标题：高 24，左缩进 8，12 号次文字 */
 .groupTitle {
   display: flex;
   align-items: center;
@@ -35,20 +26,23 @@
   font-size: 12px;
   line-height: normal;
   font-weight: 400;
-  color: var(--wm-color-text-tertiary);
+  color: #7b8190;
 }
 
-/* 进行中行：高 36，左标题右状态；悬停整行出现停止按钮 */
-.runningRow {
+.row {
   display: flex;
   align-items: center;
+  width: 100%;
   height: 36px;
   padding: 0 8px;
   border-radius: 12px;
-  transition: background-color 120ms ease-in-out;
+  background: transparent;
+  color: inherit;
+  cursor: default;
+  outline: none;
 
   &:hover {
-    background-color: var(--wm-color-status-task-hover);
+    background-color: rgba(0, 0, 0, 0.03);
   }
 }
 
@@ -59,66 +53,39 @@
   font-size: 14px;
   line-height: normal;
   font-weight: 400;
-  color: var(--wm-color-task-title);
+  color: #1f2329;
+  text-align: left;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* 已完成：只保留一行标题 */
-.doneRow {
+.spinner,
+.taskIcon {
   display: flex;
+  flex: 0 0 auto;
   align-items: center;
-  height: 36px;
-  padding: 0 8px;
-  overflow: hidden;
-  font-size: 14px;
-  line-height: normal;
-  font-weight: 400;
-  color: var(--wm-color-task-title);
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin-right: 4px;
 }
 
-/* 分隔线：上下 6、左右 8，0.5px */
+.spinner img {
+  animation: detail-spin 1s linear infinite;
+}
+
+.chevron {
+  flex: 0 0 auto;
+  margin-left: 12px;
+}
+
 .divider {
   height: 0.5px;
   margin: 6px 8px;
-  background-color: var(--wm-color-line);
+  background-color: rgba(0, 0, 0, 0.08);
 }
 
-/* 右侧 24×24：默认 16px 转圈，悬停换成停止按钮 */
-.stopSlot {
-  position: relative;
-  flex: 0 0 auto;
-  width: 24px;
-  height: 24px;
-  margin-left: 12px;
-  border-radius: 12px;
-  cursor: pointer;
-}
-
-.spinner {
-  position: absolute;
-  top: 4px;
-  left: 4px;
-  animation: status-spin 1s linear infinite;
-}
-
-.stopIcon {
-  display: none;
-}
-
-.stopSlot:hover .spinner,
-.runningRow:hover .spinner {
-  display: none;
-}
-
-.stopSlot:hover .stopIcon,
-.runningRow:hover .stopIcon {
-  display: block;
-}
-
-@keyframes status-spin {
+@keyframes detail-spin {
   from {
     transform: rotate(0deg);
   }
@@ -129,11 +96,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .spinner {
+  .spinner img {
     animation: none;
-  }
-
-  .runningRow {
-    transition: none;
   }
 }

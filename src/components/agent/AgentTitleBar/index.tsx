@@ -21,6 +21,8 @@ interface AgentTitleBarProps {
   onOnceEnd: () => void;
   /** 点一下头像：摸摸元宝 */
   onTouch: () => void;
+  /** 详情页设置过的形象。有值时替换雪碧图 */
+  portrait?: string | null;
   /** 点击头像或名字：进入 Agent 状态页 */
   onOpenStatus: () => void;
   /** 关闭元宝窗口（和底部元宝按钮是同一个开关） */
@@ -44,6 +46,7 @@ export const AgentTitleBar: FC<AgentTitleBarProps> = ({
   onTouch,
   onOpenStatus,
   onClose,
+  portrait,
 }) => {
   const floating = dock.mode === 'floating';
 
@@ -66,7 +69,11 @@ export const AgentTitleBar: FC<AgentTitleBarProps> = ({
           title="查看元宝状态"
         >
           <span className={styles.avatarSlot} aria-hidden="true">
-            <YuanbaoAvatar className={styles.avatar} mood={mood} replayKey={replayKey} onOnceEnd={onOnceEnd} />
+            {portrait ? (
+              <img className={styles.portrait} src={portrait} alt="" />
+            ) : (
+              <YuanbaoAvatar className={styles.avatar} mood={mood} replayKey={replayKey} onOnceEnd={onOnceEnd} />
+            )}
           </span>
           <span className={styles.pillText}>
             <span className={styles.nameRow}>

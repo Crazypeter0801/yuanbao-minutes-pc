@@ -1,4 +1,4 @@
-import type { FC } from 'react';
+import { useEffect, useRef, type FC, type PointerEvent as ReactPointerEvent, type MouseEvent as ReactMouseEvent } from 'react';
 import IconTaskEntryIconFilePlus from '@/assets/d2c/icons/task-entry/icon-task-entry-icon-file-plus';
 import IconTaskEntryIconPen from '@/assets/d2c/icons/task-entry/icon-task-entry-icon-pen';
 import { Pressable } from '@/components/common/Pressable';
@@ -36,32 +36,110 @@ const TASK_ICONS = {
 
 /**
  * 输入框上方的任务入口（方案 B，Figma 215:22015）
- * 从左到右：书本胶囊（点开长成快捷指令面板）、元宝笔记 +16、会议待办 +5。
- * 三枚都是高 32、圆角 16 的毛玻璃胶囊，间距 4。
+ * 书本胶囊固定在最左。右边的任务永远单行：新任务贴着书本，老任务往右顶，
+ * 装不下就滑出可见区域，拖动、触控板横滑或 Shift+滚轮可以再看回来。
  */
-export const TaskEntryBar: FC<TaskEntryBarProps> = ({ tasks, boardTask, onOpen, onCommand }) => (
-  <div className={styles.row}>
-    <CommandEntry onCommand={onCommand} />
-    {boardTask && <BoardProgressPill task={boardTask} />}
+export const TaskEntryBar: FC<TaskEntryBarProps> = ({ tasks, boardTask, onOpen, onCommand }) => {
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const dragRef = useRef({ pointer: -1, x: 0, left: 0, moved: false });
 
-    {tasks.map((task) => {
-      const Icon = TASK_ICONS[task.icon];
-      const spoken = task.count ? `${task.label} ${task.count}` : task.label;
-      return (
-        <Pressable
-          key={task.key}
-          className={styles.pill}
-          onClick={() => onOpen(task.tab)}
-          title={spoken}
-          ariaLabel={spoken}
-        >
-          <span className={styles.icon} aria-hidden="true">
-            <Icon />
-          </span>
-          <span className={styles.label}>{task.label}</span>
-          {task.count && <span className={styles.count}>{task.count}</span>}
-        </Pressable>
-      );
-    })}
-  </div>
-);
+  useEffect(() => {
+    const node = scrollerRef.current;
+    if (!node) {
+      return undefined;
+    }
+    const onWheel = (event: WheelEvent) => {
+      if (node.scrollWidth <= node.clientWidth + 1) {
+        return;
+      }
+      const horizontal = Math.abs(event.deltaX) > Math.abs(event.deltaY);
+      const delta = horizontal ? event.deltaX : event.shiftKey ? event.deltaY : 0;
+      if (!delta) {
+        return;
+      }
+      event.preventDefault();
+      node.scrollLeft += delta;
+    };
+    node.addEventListener('wheel', onWheel, { passive: false });
+    return () => node.removeEventListener('wheel', onWheel);
+  }, []);
+
+  const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.button !== 0) {
+      return;
+    }
+    const node = scrollerRef.current;
+    if (!node) {
+      return;
+    }
+    dragRef.current = { pointer: event.pointerId, x: event.clientX, left: node.scrollLeft, moved: false };
+    node.setPointerCapture(event.pointerId);
+  };
+
+  const onPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const drag = dragRef.current;
+    if (drag.pointer !== event.pointerId) {
+      return;
+    }
+    const dx = event.clientX - drag.x;
+    if (Math.abs(dx) > 4) {
+      drag.moved = true;
+    }
+    const node = scrollerRef.current;
+    if (node && drag.moved) {
+      node.scrollLeft = drag.left - dx;
+    }
+  };
+
+  const endDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (dragRef.current.pointer !== event.pointerId) {
+      return;
+    }
+    dragRef.current.pointer = -1;
+  };
+
+  const onClickCapture = (event: ReactMouseEvent<HTMLDivElement>) => {
+    if (!dragRef.current.moved) {
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    dragRef.current.moved = false;
+  };
+
+  return (
+    <div className={styles.row}>
+      <CommandEntry onCommand={onCommand} />
+      <div
+        className={styles.scroller}
+        ref={scrollerRef}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+        onClickCapture={onClickCapture}
+      >
+        {boardTask && <BoardProgressPill task={boardTask} />}
+        {tasks.map((task) => {
+          const Icon = TASK_ICONS[task.icon];
+          const spoken = task.count ? `${task.label} ${task.count}` : task.label;
+          return (
+            <Pressable
+              key={task.key}
+              className={styles.pill}
+              onClick={() => onOpen(task.tab)}
+              title={spoken}
+              ariaLabel={spoken}
+            >
+              <span className={styles.icon} aria-hidden="true">
+                <Icon />
+              </span>
+              <span className={styles.label}>{task.label}</span>
+              {task.count && <span className={styles.count}>{task.count}</span>}
+            </Pressable>
+          );
+        })}
+      </div>
+    </div>
+  );
+};

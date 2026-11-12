@@ -32,6 +32,7 @@ import {
 } from "@/data/whiteboardScenario";
 import { buildScreenshotNote, meetingShotSrc } from "@/data/yuanbaoContent";
 import { useYuanbaoSession } from "@/hooks/useYuanbaoSession";
+import { FileViewer } from "@/components/agent/FileViewer";
 import { WhiteboardGenerateOverlay } from "@/components/whiteboard/WhiteboardGenerateOverlay";
 import { WhiteboardOverlay } from "@/components/whiteboard/WhiteboardOverlay";
 import type { ArtifactItem } from "@/types/artifact";
@@ -58,6 +59,10 @@ export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   /** Agent 状态页是否覆盖在元宝对话区之上 */
   const [statusOpen, setStatusOpen] = useState(false);
+  /** 详情页「设置头像」之后，顶部胶囊和详情头部共用这一张 */
+  const [portrait, setPortrait] = useState<string | null>(null);
+  /** 资料库点开的文件查看器，浮在两扇窗之外 */
+  const [fileViewerOpen, setFileViewerOpen] = useState(false);
   /** 状态页打开时落在哪个 Tab：任务胶囊进概览，文件夹进资料库 */
   const [statusTab, setStatusTab] = useState<AgentStatusTab>("overview");
   /** 任务入口方案：A 顶部胶囊 / B 输入框上方胶囊（演示面板可随时切换） */
@@ -317,10 +322,14 @@ export default function App() {
             statusOpen={statusOpen}
             onOpenStatus={openStatus}
             onCloseStatus={() => setStatusOpen(false)}
+            portrait={portrait}
+            onApplyPortrait={setPortrait}
+            onOpenFile={() => setFileViewerOpen(true)}
             onSubmit={handleSubmit}
             noteTopics={noteTopics}
           />
         )}
+        {fileViewerOpen && <FileViewer onClose={() => setFileViewerOpen(false)} />}
         {/* 窗口外：演示按钮，浮在窗口下方的壁纸上 */}
         <div className={styles.demoBar}>
           <DemoToolbar

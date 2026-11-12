@@ -33,6 +33,7 @@ import { buildCardResult } from "@/data/interactiveCards";
 import { useListening } from "@/hooks/useListening";
 import { useToast } from "@/hooks/useToast";
 import { useYuanbaoMood } from "@/hooks/useYuanbaoMood";
+import type { DetailLibraryItem } from "@/data/detailLibrary";
 import type { AgentDockControl } from "@/hooks/useAgentDock";
 import type { AgentTasksControl } from "@/hooks/useAgentTasks";
 import type { YuanbaoSession } from "@/hooks/useYuanbaoSession";
@@ -59,6 +60,10 @@ interface YuanbaoSidebarProps {
   onOpenStatus: (tab: AgentStatusTab) => void;
   /** 状态页左上角返回聊天 */
   onCloseStatus: () => void;
+  /** 详情页设置过的形象，同步到顶部胶囊 */
+  portrait: string | null;
+  onApplyPortrait: (src: string) => void;
+  onOpenFile: (item: DetailLibraryItem) => void;
   /** 输入框提交：App 层会先匹配生成文件与演示场景，未命中才走普通提问 */
   onSubmit?: (text: string) => void;
   /** 会中已识别出的话题（最后一条是当前正在聊的），显示在「正在帮你记」卡片里 */
@@ -85,6 +90,9 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
   onCloseStatus,
   onSubmit,
   noteTopics,
+  portrait,
+  onApplyPortrait,
+  onOpenFile,
 }) => {
   const { toast, showToast } = useToast();
   /** 正在看详情的长程任务；为空时对话区显示对话 */
@@ -166,6 +174,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
         onTouch={touch}
         onOpenStatus={() => onOpenStatus('overview')}
         onClose={onClose}
+        portrait={portrait}
       />
 
       {/* 消息流与底栏叠在一起：对话可以滚到底栏后面，被渐进模糊一点点糊掉 */}
@@ -225,7 +234,11 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
               onCommand={send}
             />
           ) : (
-            boardTask && <BoardProgressPill task={boardTask} />
+            boardTask && (
+              <div className={styles.boardRow}>
+                <BoardProgressPill task={boardTask} />
+              </div>
+            )
           )}
           <ChatInput
             placeholder="和元宝聊聊"
@@ -241,10 +254,13 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
           <AgentStatusPage
             dock={dock}
             initialTab={statusTab}
+            portrait={portrait}
             onBack={onCloseStatus}
             onClose={onClose}
-            onOpenSetting={(setting) => showToast(`打开「${setting.label}」设置（演示）`)}
-            onOpenLibraryItem={(item) => showToast(`打开「${item.title}」（演示）`)}
+            onApplyPortrait={onApplyPortrait}
+            onOpenFile={onOpenFile}
+            onCreateAuto={() => showToast('创建自动任务（演示）')}
+            onOpenSettings={() => showToast('设置（演示）')}
           />
         </div>
       )}

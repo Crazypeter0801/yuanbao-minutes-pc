@@ -239,10 +239,11 @@
   --wm-shadow-header-pill: 0 4px 30px rgba(0, 0, 0, 0.08);
   /*
    * 输入框上方任务胶囊（Figma 215:22016 / 268:25268 / 215:22028）
-   * 填充 #FFFFFF99，描边 wm_color_primary_ondisable = #FFFFFF，落影 0 4 30 / 8%。
+   * 填充从 #FFFFFF99 加深到 #FFFFFFE6，后面的对话不再透出来。
+   * 描边仍是白，落影仍是 0 4 30 / 8%。
    */
-  --wm-color-task-entry-fill: rgba(255, 255, 255, 0.6);
-  --wm-color-task-entry-fill-hover: rgba(255, 255, 255, 0.82);
+  --wm-color-task-entry-fill: #ffffffe6;
+  --wm-color-task-entry-fill-hover: #fffffff5;
   --wm-color-task-entry-line: #ffffff;
   --wm-color-task-entry-text: #4e5461;
   --wm-color-task-entry-count: #00be68;

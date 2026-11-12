@@ -66,6 +66,13 @@
   left: -7px;
 }
 
+.portrait {
+  display: block;
+  width: 33px;
+  height: 36px;
+  object-fit: contain;
+}
+
 /* 文字列：名称行（元宝 + ›）+ 可选的状态行，整体垂直居中 */
 .pillText {
   display: flex;
