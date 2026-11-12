@@ -10,11 +10,11 @@
 }
 
 /*
- * 消息区 padding 16 16 20（Figma 215:16836）
+ * 消息区左右 16、顶部不额外留白（Figma 215:19447：首条「内容由 AI 生成」紧接头部），
  * 底栏浮在上面，所以底部再加上底栏高度：滚到底时最后一条仍停在底栏上方 20，往上翻时才从底栏后面经过。
  */
 .stream {
-  padding: 16px 16px calc(var(--yb-footer-height, 122px) + 20px);
+  padding: 0 16px calc(var(--yb-footer-height, 122px) + 20px);
 }
 
 /* 长程任务详情的滚动容器：和消息流同样撑满、同样的内边距（内层复用 .stream） */
@@ -58,40 +58,15 @@
   }
 }
 
-/*
- * 输入框上方一行（Figma 36:2250）：左边长程任务从左往右排，右边固定是文件夹。
- * 文件夹展开时以这一行为基线、向左长成整行面板（MorphPanel 量的是这一行的宽度和自己的偏移）。
- */
-.statusRow {
-  position: relative;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  height: 36px;
+/* 方案 B：任务胶囊与输入框之间按设计稿收紧到 4 */
+.footerWithTasks > * + * {
+  margin-top: 4px;
 }
 
-/* 长程任务区：占满左侧剩余宽度，任务之间间距 8，放不下时横向截在这一区里 */
-.tasks {
-  flex: 1 1 auto;
-  display: flex;
-  align-items: flex-end;
-  min-width: 0;
-  margin-right: 8px;
-
-  & > * + * {
-    margin-left: 8px;
-  }
-}
-
-/* 文件夹面板展开时整块让位（胶囊自己也会淡出，这里只防止误点） */
-.tasksHidden {
-  pointer-events: none;
-}
-
-/* Agent 状态页：绝对铺满元宝窗口，盖住对话区；对话组件不卸载 */
+/* Agent 状态页：绝对铺满元宝窗口，和对话页共用侧栏面板底色；对话组件不卸载 */
 .statusOverlay {
   position: absolute;
   inset: 0;
   z-index: 10;
-  background-color: var(--wm-color-status-background);
+  background-color: var(--wm-color-sidebar-panel);
 }

@@ -16,15 +16,17 @@
   white-space: pre-wrap;
 }
 
-/* 品牌蓝 8% 底、近黑字（Figma 215:16840） */
+/* 深灰底、白字（Figma 215:19494 wm_color_chat_bubble_send_normal_v2 = #5E6270） */
 .round {
   border-radius: 16px 1px 16px 16px;
   background-color: var(--wm-color-background-user-bubble);
+  color: var(--wm-color-text-on-user-bubble);
 }
 
 .compact {
   border-radius: 8px 1px 8px 8px;
   background-color: var(--wm-color-background-user-bubble);
+  color: var(--wm-color-text-on-user-bubble);
 }
 
 .plain {

@@ -1,59 +1,30 @@
-/* 资料库：筛选标签 + 本场 / 更早列表（方案一）或单列文件列表（方案二） */
+/* 资料库：筛选标签 + 本场 / 更早列表（Figma 243:1295 / 252:1413） */
 .section {
   display: flex;
   flex-direction: column;
-}
-
-.sectionHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 2px 0;
-}
-
-.sectionTitle {
-  font-size: 14px;
-  line-height: 20px;
-  font-weight: 600;
-  color: var(--wm-color-task-title);
-}
-
-.sectionAction {
-  flex: 0 0 auto;
-  margin-left: 12px;
-  font-size: 12px;
-  line-height: 17px;
-  color: var(--wm-color-status-text-muted);
-  white-space: nowrap;
 }
 
 /* 筛选行：标签间距 8 */
 .filters {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
 
   & > * + * {
     margin-left: 8px;
   }
 }
 
-.filtersFlow {
-  margin-top: 8px;
-}
-
+/* 未选中：透明底，Medium 12，次文字 #4e5461；圆角 100 */
 .filterPill {
   padding: 4px 12px;
-  border-radius: 12.5px;
+  border-radius: 100px;
   font-size: 12px;
-  line-height: 17px;
+  line-height: normal;
   font-weight: 500;
   color: var(--wm-color-status-filter-text);
   cursor: pointer;
   outline: none;
-  transition:
-    background-color 120ms ease-in-out,
-    color 120ms ease-in-out;
+  transition: background-color 120ms ease-in-out;
 
   &:hover {
     background-color: var(--wm-color-control-fill);
@@ -64,13 +35,7 @@
   }
 }
 
-.filterPillFlow {
-  padding: 6px 14px;
-  border-radius: 14.5px;
-  background-color: var(--wm-color-card-background);
-}
-
-/* 方案一：选中是浅灰胶囊；方案二：选中是近黑胶囊 */
+/* 选中：浅灰胶囊 #ececec，主文字 #1f2329 */
 .filterPillActive {
   background-color: var(--wm-color-status-filter-active);
   color: var(--wm-color-task-title);
@@ -80,34 +45,32 @@
   }
 }
 
-.filterPillActiveFlow {
-  background-color: var(--wm-color-task-title);
-  color: var(--wm-color-text-senary);
-
-  &:hover {
-    background-color: var(--wm-color-task-title);
-  }
-}
-
-/* 方案一：筛选标签与白色列表卡之间 16 */
-.tabCard {
+/* 筛选标签与白色列表卡之间 16；白面板上加 1px 描边保持边界 */
+.card {
   margin-top: 16px;
   padding: 12px;
   border-radius: 12px;
   background-color: var(--wm-color-card-background);
+  box-shadow: inset 0 0 0 1px var(--wm-color-panel-card-border);
 }
 
+/* 分组标题：高 24，左缩进 8 */
 .groupTitle {
+  display: flex;
+  align-items: center;
+  height: 24px;
   padding-left: 8px;
   font-size: 12px;
-  line-height: 17px;
+  line-height: normal;
+  font-weight: 400;
   color: var(--wm-color-text-tertiary);
 }
 
-/* 方案一资料行：24 图标 + 标题 + 右侧说明，高 36 */
-.tabRow {
+/* 资料行：24 图标 + 标题 + 右侧说明，间距 10，内边距 8 6，圆角 8 */
+.row {
   display: flex;
   align-items: center;
+  gap: 10px;
   min-height: 36px;
   padding: 6px 8px;
   border-radius: 8px;
@@ -124,125 +87,48 @@
   }
 }
 
-.tabRow > img,
-.tabRow > svg {
-  flex: 0 0 auto;
-}
-
 .fileImage {
   flex: 0 0 auto;
   object-fit: contain;
 }
 
-.tabTitle {
+.title {
   flex: 1 1 auto;
   min-width: 0;
-  margin-left: 10px;
   overflow: hidden;
   font-size: 14px;
-  line-height: 20px;
+  line-height: normal;
+  font-weight: 400;
   color: var(--wm-color-text-primary);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.tabMeta {
+.meta {
   flex: 0 0 auto;
-  margin-left: 12px;
   font-size: 12px;
-  line-height: 17px;
+  line-height: normal;
+  font-weight: 400;
   color: var(--wm-color-text-quaternary);
   white-space: nowrap;
 }
 
 .divider {
-  height: 1px;
+  height: 0.5px;
   margin: 6px 8px;
-  background-color: var(--wm-color-line);
-}
-
-/* 方案二：单张白色卡，3 行资料 */
-.flowCard {
-  margin-top: 8px;
-  border-radius: 12px;
-  background-color: var(--wm-color-card-background);
-}
-
-.flowRow {
-  display: flex;
-  align-items: center;
-  padding: 10px 12px;
-  border-radius: 12px;
-  cursor: pointer;
-  outline: none;
-  transition: background-color 120ms ease-in-out;
-
-  &:hover {
-    background-color: var(--wm-color-background-septenary);
-  }
-
-  &:focus-visible {
-    box-shadow: inset 0 0 0 1.5px var(--wm-color-line);
-  }
-}
-
-.flowRow > img,
-.flowRow > svg {
-  flex: 0 0 auto;
-}
-
-.flowText {
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  min-width: 0;
-  margin-left: 12px;
-}
-
-.flowTitle {
-  overflow: hidden;
-  font-size: 14px;
-  line-height: 20px;
-  color: var(--wm-color-text-primary);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.flowMeta {
-  overflow: hidden;
-  font-size: 12px;
-  line-height: 17px;
-  color: var(--wm-color-text-tertiary);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.flowTrailing {
-  flex: 0 0 auto;
-  margin-left: 12px;
-  font-size: 12px;
-  line-height: 17px;
-  color: var(--wm-color-status-text-muted);
-  white-space: nowrap;
-}
-
-.flowDivider {
-  height: 1px;
-  margin-left: 60px;
   background-color: var(--wm-color-line);
 }
 
 .empty {
   padding: 10px 8px;
   font-size: 12px;
-  line-height: 17px;
+  line-height: normal;
   color: var(--wm-color-text-tertiary);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .filterPill,
-  .tabRow,
-  .flowRow {
+  .row {
     transition: none;
   }
 }

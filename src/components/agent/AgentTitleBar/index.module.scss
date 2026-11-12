@@ -16,40 +16,48 @@
   cursor: grabbing;
 }
 
-/* 标题：头像槽 + 文字列，垂直居中（Figma 215:16959：无底、无描边） */
-.title {
+/*
+ * 头部胶囊（Figma 215:19391 / 215:21820）
+ * 140×44（方案 A）/ 103×44（方案 B）：#FAFAFA 底、1px 白描边、圆角 22、0 4 30 的柔和落影 + 10 背景模糊。
+ * 文字列 padding 4 18 4 52，给左侧 33×36 的头像让位；头像按 Figma 约束贴左 7、垂直中心 +1。
+ */
+.pillSlot {
   display: flex;
-  align-items: center;
   min-width: 0;
 }
 
-/*
- * 头像槽 33×36（Figma 215:17019）。雪碧图一帧 48×48，每段动画按自己的 scale / offset 缩放居中，
- * 形象统一落在槽里；帧四周的透明边和动作余量留在槽外，不影响右侧按钮。
- */
-.avatarSlot {
+.pill {
   position: relative;
-  z-index: 3;
-  flex: 0 0 auto;
-  width: 33px;
-  height: 36px;
-  margin-left: 3px;
-}
-
-/* 点一下摸头：热区就是形象本身，不出 hover 底，也不画焦点环以外的样式 */
-.avatarTouch {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 33px;
-  height: 36px;
-  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 4px 18px 4px 52px;
+  border-radius: 22px;
+  background-color: var(--wm-color-header-pill);
+  box-shadow:
+    inset 0 0 0 1px var(--wm-color-header-pill-line),
+    var(--wm-shadow-header-pill);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   cursor: pointer;
   outline: none;
 
   &:focus-visible {
-    box-shadow: 0 0 0 1.5px var(--wm-color-line);
+    box-shadow:
+      inset 0 0 0 1px var(--wm-color-header-pill-line),
+      0 0 0 1.5px var(--wm-color-line),
+      var(--wm-shadow-header-pill);
   }
+}
+
+/* 头像槽 33×36（Figma 215:19395）：雪碧图一帧 48×48，按自身 scale / offset 缩放居中 */
+.avatarSlot {
+  position: absolute;
+  top: 5px;
+  left: 7px;
+  z-index: 3;
+  width: 33px;
+  height: 36px;
 }
 
 .avatar {
@@ -58,23 +66,20 @@
   left: -7px;
 }
 
-/* 文字列：名称 + 状态文字两行，与头像相距 8；整块可进入状态页 */
-.titleText {
+/* 文字列：名称行（元宝 + ›）+ 可选的状态行，整体垂直居中 */
+.pillText {
   display: flex;
   flex-direction: column;
   justify-content: center;
   min-width: 0;
-  margin-left: 8px;
-  border-radius: 6px;
-  cursor: pointer;
-  outline: none;
-
-  &:focus-visible {
-    box-shadow: 0 0 0 1.5px var(--wm-color-line);
-  }
 }
 
-/* 13/18 600，#1F2329（Figma 215:16998） */
+.nameRow {
+  display: flex;
+  align-items: center;
+}
+
+/* 13/18 600，#1F2329（Figma 215:19430） */
 .name {
   font-size: 13px;
   line-height: 18px;
@@ -83,7 +88,14 @@
   white-space: nowrap;
 }
 
-/* 12/18 400 secondary（Figma 215:16999）；超长截断 */
+/* 3×8 右箭头，与名称间距 4（Figma 215:19429） */
+.chevron {
+  display: flex;
+  flex: 0 0 auto;
+  margin-left: 4px;
+}
+
+/* 12/18 400 secondary（Figma 215:19432）；超长截断 */
 .status {
   max-width: 200px;
   overflow: hidden;

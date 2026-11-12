@@ -1,4 +1,4 @@
-/* Agent 设置：白底列表，行高 48，分隔线按方案缩进 */
+/* Agent 设置：白底列表，行内间距 8，分隔线从标题处开始（Figma 243:1189） */
 .section {
   display: flex;
   flex-direction: column;
@@ -12,23 +12,25 @@
 
 .sectionTitle {
   font-size: 14px;
-  line-height: 20px;
+  line-height: normal;
   font-weight: 600;
   color: var(--wm-color-task-title);
 }
 
 .card {
   margin-top: 8px;
+  overflow: hidden;
   border-radius: 12px;
   background-color: var(--wm-color-card-background);
+  box-shadow: inset 0 0 0 1px var(--wm-color-panel-card-border);
 }
 
 .row {
   display: flex;
   align-items: center;
+  gap: 8px;
   min-height: 48px;
   padding: 14px 12px 14px 14px;
-  border-radius: 12px;
   cursor: pointer;
   outline: none;
   transition: background-color 120ms ease-in-out;
@@ -55,26 +57,20 @@
 .label {
   flex: 1 1 auto;
   min-width: 0;
-  margin-left: 8px;
   overflow: hidden;
   font-size: 14px;
-  line-height: 20px;
+  line-height: normal;
   font-weight: 500;
   color: var(--wm-color-task-title);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* 方案二没有图标，标题从行首开始 */
-.row > .label:first-child {
-  margin-left: 0;
-}
-
 .value {
   flex: 0 0 auto;
-  margin-left: 12px;
   font-size: 13px;
-  line-height: 18px;
+  line-height: normal;
+  font-weight: 400;
   color: var(--wm-color-status-text-muted);
   white-space: nowrap;
 }
@@ -83,19 +79,14 @@
   display: flex;
   flex: 0 0 auto;
   align-items: center;
-  margin-left: 4px;
 }
 
-/* 方案一：分隔线从标题处开始（14 + 20 + 8 = 42） */
+/* 分隔线从标题处开始（14 + 20 + 8 = 42），右侧留 14，颜色 #eef0f3 */
 .divider {
-  height: 1px;
+  height: 0.5px;
+  margin-right: 14px;
   margin-left: 42px;
-  background-color: var(--wm-color-line);
-}
-
-/* 方案二：无图标，分隔线从 14 开始 */
-.dividerFlow {
-  margin-left: 14px;
+  background-color: var(--wm-color-status-setting-line);
 }
 
 @media (prefers-reduced-motion: reduce) {

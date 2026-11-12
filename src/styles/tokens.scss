@@ -26,8 +26,18 @@
   --wm-color-background-twenty-third: rgba(0, 102, 255, 0.15);
   --wm-color-background-septenary: #f3f3f4;
   --wm-color-background-bubble: #ffffff;
-  /* 用户提问气泡（设计稿未给，取品牌蓝 8% 与助手灰泡区分） */
-  --wm-color-background-user-bubble: rgba(0, 102, 255, 0.08);
+  /*
+   * 元宝侧栏面板（Figma 215:19388 / 215:21817）
+   * 纯白 #FFFFFF，圆角 12；对话页和 Agent 状态页共用同一个容器。
+   * 面板变白后，落在上面的卡片 / 气泡用 --wm-color-panel-surface 或细描边拉开层次。
+   */
+  --wm-color-sidebar-panel: #ffffff;
+  --wm-color-panel-surface: #f5f6f7;
+  --wm-color-panel-card-border: #e5e6eb;
+  --wm-radius-sidebar-panel: 12px;
+  /* 用户提问气泡（Figma 215:19494 wm_color_chat_bubble_send_normal_v2）：深灰底、白字 */
+  --wm-color-background-user-bubble: #5e6270;
+  --wm-color-text-on-user-bubble: #ffffff;
   /* 人名胶囊底：正文中间出现，比 @ 胶囊淡一档，避免抢读 */
   --wm-color-background-mention: rgba(0, 102, 255, 0.08);
   --wm-color-background-link-badge: #e6e8eb;
@@ -141,19 +151,19 @@
   --wm-color-note-topic-dot: #c3c7cf;
   --wm-color-note-topic-line: #dfe1e6;
 
-  /* 会议窗口材质（Figma 215:16458）：#F0F2F7 90% + 背景模糊 4；元宝窗口是纯白实底（--wm-color-background-quaternary） */
+  /* 会议窗口材质（Figma 215:16458）：#F0F2F7 90% + 背景模糊 4；元宝窗口是近白实底（--wm-color-sidebar-panel） */
   --wm-color-window-glass: rgba(240, 242, 247, 0.9);
-  /* 渐进模糊带的着色：会议底栏跟着会议窗口的色，元宝底栏跟着白底 */
+  /* 渐进模糊带的着色：会议底栏跟着会议窗口的色，元宝底栏跟着侧栏面板（Figma 215:19534 / 215:22014） */
   --wm-color-blur-tint-meeting: rgba(240, 242, 247, 0.28);
-  --wm-color-blur-tint-agent: rgba(255, 255, 255, 0.4);
+  --wm-color-blur-tint-agent: rgba(255, 255, 255, 0.55);
   /* 两窗之间的拖拽条 4×48（Figma 215:16809） */
   --wm-color-window-handle: #ffffff;
 
-  /* 对话气泡（Figma 215:16840 / 215:16849）：用户气泡品牌蓝 8%、文字近黑；元宝气泡 #F3F3F4 */
-  --wm-color-background-assistant-bubble: #f3f3f4;
-  /* 追问胶囊（Figma 215:16873）：白底 + 1px #EBEDF2 内描边 */
-  --wm-color-follow-up-fill: #ffffff;
-  --wm-color-follow-up-fill-hover: #f3f3f4;
+  /* 对话气泡（Figma 215:19455 / 215:19494）：元宝气泡浅灰，落在纯白侧栏面板上 */
+  --wm-color-background-assistant-bubble: var(--wm-color-panel-surface);
+  /* 追问胶囊（Figma 215:16873）：浅灰底 + 1px 细描边，白面板上仍能看出胶囊边界 */
+  --wm-color-follow-up-fill: var(--wm-color-panel-surface);
+  --wm-color-follow-up-fill-hover: #eceef1;
 
   /* 任务条 / 任务列表 / 长程任务详情（Figma 197:42 方案稿） */
   --wm-color-task-title: #1f2329;
@@ -169,18 +179,28 @@
   --wm-color-task-card-stroke: #e5e6eb;
   --wm-shadow-task-card: 0 8px 24px rgba(0, 0, 0, 0.12);
 
-  /* Agent 状态页（Figma 243:1054 / 243:1222 / 243:1376） */
-  --wm-color-status-background: #f6f6f6;
+  /* Agent 状态页（Figma 243:1054 / 243:1222） */
+  --wm-color-status-background: #ffffff;
+  /* Tab 轨道（Figma 258:24666） */
   --wm-color-status-tab-track: rgba(0, 0, 0, 0.04);
+  /* 未选中 Tab：basic/text/quaternary */
   --wm-color-status-tab-text: #707070;
   --wm-color-status-filter-text: #4e5461;
   --wm-color-status-filter-active: #ececec;
   --wm-color-status-task-hover: #e9eaee;
   --wm-color-status-text-muted: #9298a5;
-  --wm-color-status-green: #00a864;
-  --wm-color-status-online: #00c37a;
-  --wm-color-status-confirm-fill: #fff1db;
-  --wm-color-status-confirm-text: #e8820c;
+  /* 设置列表分隔线（Figma 243:1196） */
+  --wm-color-status-setting-line: #eef0f3;
+
+  /* 顶部任务胶囊（Figma 215:19392 / 215:21821）：浅灰底 + 1px 白描边 + 柔和落影 */
+  --wm-color-header-pill: var(--wm-color-panel-surface);
+  --wm-color-header-pill-line: #ffffff;
+  --wm-shadow-header-pill: 0 4px 30px rgba(0, 0, 0, 0.08);
+  /* 输入框上方任务胶囊（Figma 215:22016 / 268:25268 / 215:22028）：浅灰底 + 0.5px 描边 + 落影 */
+  --wm-color-task-entry-fill: var(--wm-color-panel-surface);
+  --wm-color-task-entry-line: rgba(0, 0, 0, 0.08);
+  --wm-color-task-entry-text: #4e5461;
+  --wm-shadow-task-entry: 0 4px 24px rgba(0, 0, 0, 0.06);
 
   /* 字体 */
   --wm-font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial,
