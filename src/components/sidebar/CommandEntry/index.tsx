@@ -37,6 +37,7 @@ export const CommandEntry: FC<CommandEntryProps> = ({ onCommand }) => {
       collapsedHeight={32}
       collapsedRadius={16}
       expandedRadius={20}
+      alignLabelWithItems
       appearance="glass"
       panelWidth={PANEL_WIDTH}
       maxHeight={PANEL_MAX_HEIGHT}

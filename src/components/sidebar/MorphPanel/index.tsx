@@ -33,6 +33,11 @@ interface MorphPanelProps {
   collapsedRadius?: number;
   /** 展开圆角，默认 12。快捷指令面板单独用 20，产物列表仍是 12 */
   expandedRadius?: number;
+  /**
+   * 展开后让标题文字（不是前面的图标）和列表文案左对齐。
+   * 图标留在标题行，退到卡片左内边距里。只给推荐指令用，产物列表不传。
+   */
+  alignLabelWithItems?: boolean;
   /** glass：收起态用下午新稿的半透明白胶囊；展开后仍回到原来的白底面板 */
   appearance?: 'solid' | 'glass';
   /** 展开宽度：数字为固定 px，'full' 为撑满底栏这一行 */
@@ -72,6 +77,7 @@ export const MorphPanel: FC<MorphPanelProps> = ({
   collapsedHeight = 36,
   collapsedRadius = 18,
   expandedRadius = 12,
+  alignLabelWithItems = false,
   appearance = 'solid',
   panelWidth,
   name,
@@ -216,6 +222,7 @@ export const MorphPanel: FC<MorphPanelProps> = ({
           expanded ? styles.cardExpanded : '',
           appearance === 'glass' ? styles.cardGlass : '',
           alignHeaderToContent ? styles.cardAligned : '',
+          alignLabelWithItems ? styles.cardLabelAligned : '',
         ]
           .filter(Boolean)
           .join(' ')}

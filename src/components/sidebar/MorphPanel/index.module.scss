@@ -162,6 +162,19 @@ $duration: 380ms;
   padding-left: 6px;
 }
 
+/*
+ * 推荐指令：标题文字和列表文案对齐到同一条线。
+ * 列表文案在卡片 padding 12 之外还有 8；图标 16 + 间距 4，所以整行左移 12，
+ * 图标落进左内边距，文字从 20 起笔。收起态不移动。
+ */
+.cardLabelAligned .summary {
+  transition: margin-left $duration $ease-out;
+}
+
+.cardLabelAligned.cardExpanded .summary {
+  margin-left: -12px;
+}
+
 .cardAligned.cardExpanded .headerAction {
   right: 2px;
 }
@@ -211,7 +224,8 @@ $duration: 380ms;
   .card,
   .label,
   .headerAction,
-  .body {
+  .body,
+  .cardLabelAligned .summary {
     transition: none;
   }
 }
