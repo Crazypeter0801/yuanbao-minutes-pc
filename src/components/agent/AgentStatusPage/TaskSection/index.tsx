@@ -1,6 +1,5 @@
 import type { FC } from 'react';
 import iconChevron from '@/assets/detail/icon-chevron.svg';
-import iconSpinner from '@/assets/detail/icon-spinner.svg';
 import iconTask from '@/assets/detail/icon-task.svg';
 import { Pressable } from '@/components/common/Pressable';
 import type { AgentStatusTask } from '@/data/agentStatusTasks';
@@ -11,9 +10,64 @@ interface TaskSectionProps {
   onCreateAuto: () => void;
 }
 
+/** 2×2 圆角方点，顺时针依次亮起，表示这条任务还在跑 */
+const RunningDots: FC = () => (
+  <span className={styles.dots} aria-hidden="true">
+    <i />
+    <i />
+    <i />
+    <i />
+  </span>
+);
+
+const DoneCheck: FC = () => (
+  <svg className={styles.check} width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+    <path
+      d="M3.1 7.3 5.7 9.9 11 4.4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+const TaskItem: FC<{ task: AgentStatusTask }> = ({ task }) => {
+  const running = task.state === 'running';
+  return (
+    <div className={styles.item}>
+      <div className={styles.titleRow}>
+        {!running && <DoneCheck />}
+        <span className={styles.taskTitle}>{task.title}</span>
+        <img className={styles.chevron} src={iconChevron} width={16} height={16} alt="" />
+      </div>
+      {running ? (
+        <div className={styles.statusRow}>
+          <RunningDots />
+          <span className={styles.status}>{task.status}</span>
+        </div>
+      ) : (
+        task.status && <p className={styles.doneNote}>{task.status}</p>
+      )}
+      {task.details && task.details.length > 0 && (
+        <ul className={styles.details}>
+          {task.details.map((detail) => (
+            <li key={detail.text} className={detail.active ? styles.detailActive : undefined}>
+              <span className={detail.active ? styles.detailDot : styles.detailMark} aria-hidden="true" />
+              <span>{detail.text}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+};
+
 /**
  * 详情页任务区（Figma 289:30737）
- * 进行中左侧圆环、已完成只有标题，行尾都是 chevron。下面另有「自动任务」。
+ * 进行中：标题、奔跑的点阵和当前说明，下面是更浅的细项。
+ * 已完成：标题左侧静态勾，下面一句结果。分组和自动任务卡片保持原样。
  */
 export const TaskSection: FC<TaskSectionProps> = ({ tasks, onCreateAuto }) => {
   const running = tasks.filter((task) => task.state === 'running');
@@ -26,21 +80,12 @@ export const TaskSection: FC<TaskSectionProps> = ({ tasks, onCreateAuto }) => {
         <div className={styles.taskCard}>
           {running.length > 0 && <p className={styles.groupTitle}>进行中 · {running.length}</p>}
           {running.map((task) => (
-            <div className={styles.row} key={task.id}>
-              <span className={styles.spinner} aria-hidden="true">
-                <img src={iconSpinner} width={16} height={16} alt="" />
-              </span>
-              <span className={styles.taskTitle}>{task.title}</span>
-              <img className={styles.chevron} src={iconChevron} width={16} height={16} alt="" />
-            </div>
+            <TaskItem key={task.id} task={task} />
           ))}
           <div className={styles.divider} role="separator" />
           <p className={styles.groupTitle}>已完成</p>
           {done.map((task) => (
-            <div className={styles.row} key={task.id}>
-              <span className={styles.taskTitle}>{task.title}</span>
-              <img className={styles.chevron} src={iconChevron} width={16} height={16} alt="" />
-            </div>
+            <TaskItem key={task.id} task={task} />
           ))}
         </div>
       </section>

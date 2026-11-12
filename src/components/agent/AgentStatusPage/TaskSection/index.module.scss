@@ -29,10 +29,23 @@
   color: #7b8190;
 }
 
+.item {
+  padding: 6px 8px 8px;
+  border-radius: 12px;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+  }
+}
+
+.titleRow,
 .row {
   display: flex;
   align-items: center;
   width: 100%;
+}
+
+.row {
   height: 36px;
   padding: 0 8px;
   border-radius: 12px;
@@ -51,15 +64,116 @@
   min-width: 0;
   overflow: hidden;
   font-size: 14px;
-  line-height: normal;
-  font-weight: 400;
+  line-height: 20px;
+  font-weight: 500;
   color: #1f2329;
   text-align: left;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.spinner,
+.statusRow {
+  display: flex;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.status,
+.doneNote {
+  margin: 0;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 400;
+  color: #7b8190;
+}
+
+.doneNote {
+  margin-top: 2px;
+  padding-left: 22px;
+}
+
+/* 约 12px 的小方块：2×2 圆角方点，顺时针依次从 0.3 亮到 1 */
+.dots {
+  display: grid;
+  flex: 0 0 auto;
+  grid-template-columns: 3.5px 3.5px;
+  gap: 2px;
+  width: 12px;
+  height: 12px;
+  margin-right: 7px;
+  place-content: center;
+
+  i {
+    display: block;
+    width: 3.5px;
+    height: 3.5px;
+    border-radius: 1px;
+    background-color: #6d8b7c;
+    opacity: 0.3;
+    animation: task-dot 1s ease-in-out infinite;
+  }
+
+  i:nth-child(2) {
+    animation-delay: 0.25s;
+  }
+
+  /* 第三格在左下，第四格在右下：顺时针是左上 → 右上 → 右下 → 左下 */
+  i:nth-child(3) {
+    animation-delay: 0.75s;
+  }
+
+  i:nth-child(4) {
+    animation-delay: 0.5s;
+  }
+}
+
+.check {
+  flex: 0 0 auto;
+  margin-right: 8px;
+  color: #6d8b7c;
+}
+
+.details {
+  margin: 4px 0 0;
+  padding: 0 0 0 19px;
+  list-style: none;
+}
+
+.details li {
+  display: flex;
+  align-items: flex-start;
+  font-size: 12px;
+  line-height: 18px;
+  color: #9298a5;
+}
+
+.details li + li {
+  margin-top: 2px;
+}
+
+.detailMark,
+.detailDot {
+  flex: 0 0 auto;
+  width: 8px;
+  height: 18px;
+  margin-right: 6px;
+}
+
+.detailMark {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='18' viewBox='0 0 8 18'%3E%3Cpath d='M1.2 9.2 3.1 11.1 6.8 7' fill='none' stroke='%23b7bec8' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+    center / 8px 18px no-repeat;
+}
+
+.detailDot {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='18' viewBox='0 0 8 18'%3E%3Ccircle cx='4' cy='9' r='1.6' fill='%239298a5'/%3E%3C/svg%3E")
+    center / 8px 18px no-repeat;
+}
+
+.chevron {
+  flex: 0 0 auto;
+  margin-left: 12px;
+}
+
 .taskIcon {
   display: flex;
   flex: 0 0 auto;
@@ -70,33 +184,34 @@
   margin-right: 4px;
 }
 
-.spinner img {
-  animation: detail-spin 1s linear infinite;
-}
-
-.chevron {
-  flex: 0 0 auto;
-  margin-left: 12px;
-}
-
 .divider {
   height: 0.5px;
   margin: 6px 8px;
   background-color: rgba(0, 0, 0, 0.08);
 }
 
-@keyframes detail-spin {
-  from {
-    transform: rotate(0deg);
+@keyframes task-dot {
+  0%,
+  100% {
+    opacity: 0.3;
   }
 
-  to {
-    transform: rotate(360deg);
+  18% {
+    opacity: 1;
+  }
+
+  42% {
+    opacity: 0.45;
+  }
+
+  68% {
+    opacity: 0.3;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .spinner img {
+  .dots i {
     animation: none;
+    opacity: 0.72;
   }
 }
