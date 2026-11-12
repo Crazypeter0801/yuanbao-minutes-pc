@@ -18,8 +18,13 @@ import styles from './index.module.scss';
 /** 速度系数透给 CSS（光标淡入淡出等过渡） */
 const speedStyle = { '--wb-speed-scale': 1 / WHITEBOARD_SPEED } as CSSProperties;
 
-/** 绘制时长（transitions.dev 的 duration），整段约 × 1.09 */
-const GEN_DURATION = 2400;
+/**
+ * 绘制时长（transitions.dev 的 duration），整段实际跑 duration × 1.09。
+ * 2400 → 5200：比官方建议的上限（3600）长，是刻意让骨架线框多停、扫描揭示更慢。
+ * 多画的 2800ms 乘上 1.09 的收尾，墙钟总时长正好多约 3s。
+ * 这个值是「真实毫秒」，不参与全局 2 倍速（WHITEBOARD_SPEED）缩放。
+ */
+const GEN_DURATION = 5200;
 /** 先把成品亮出来，再开始「生成」 */
 const PRE_ROLL = 560;
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
