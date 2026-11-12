@@ -1,22 +1,49 @@
 import { useEffect, useRef, useState } from 'react';
 import {
-  BOARD_DESIGN,
   BOARD_FONT,
-  BOARD_TOOL_ORDER,
-  BOARD_TOOLBAR,
+  BOARD_TOOLBAR_TOOLS,
+  boxRectOf,
   findBoardElement,
-  getBoardTransform,
+  getBoardFrame,
+  toBoardPx,
   whiteboardScenario,
   type BoardBoxElement,
   type BoardEdgeElement,
-  type BoardPoint,
+  type BoardSize,
   type BoardTextElement,
-  type BoardTool,
+  type BoardToolbarTool,
 } from '@/data/whiteboardScenario';
 
-export interface BoardSize {
-  width: number;
-  height: number;
+export type { BoardSize };
+
+/** 左侧工具栏量出来的几何（px）：和 WhiteboardToolbar 的样式一一对应 */
+export const TOOLBAR_METRICS = {
+  /** 距白板左缘 */
+  offset: 8,
+  width: 44,
+  paddingTop: 16,
+  paddingBottom: 10,
+  button: 28,
+  gap: 4,
+};
+
+/** 工具栏面板高度：10 个按钮 + 间距 + 上下内边距 */
+const toolbarHeight = () =>
+  TOOLBAR_METRICS.paddingTop +
+  TOOLBAR_METRICS.paddingBottom +
+  BOARD_TOOLBAR_TOOLS.length * TOOLBAR_METRICS.button +
+  (BOARD_TOOLBAR_TOOLS.length - 1) * TOOLBAR_METRICS.gap;
+
+/** 第 index 个按钮的中心点（白板像素坐标） */
+function toolbarButtonCenter(index: number, size: BoardSize) {
+  return {
+    x: TOOLBAR_METRICS.offset + TOOLBAR_METRICS.width / 2,
+    y:
+      (size.height - toolbarHeight()) / 2 +
+      TOOLBAR_METRICS.paddingTop +
+      index * (TOOLBAR_METRICS.button + TOOLBAR_METRICS.gap) +
+      TOOLBAR_METRICS.button / 2,
+  };
 }
 
 export interface WhiteboardCursor {
@@ -34,16 +61,39 @@ export interface WhiteboardRipple {
   key: number;
 }
 
+/** 正在拖拽的方框：宽高跟着鼠标走 */
+export interface BoardDragBox {
+  id: string;
+  kind: 'box' | 'decision';
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+/** 文字工具点下后出现的输入光标 */
+export interface BoardCaret {
+  x: number;
+  y: number;
+  height: number;
+  visible: boolean;
+}
+
 export interface WhiteboardDrawState {
-  activeTool: BoardTool | null;
+  activeTool: BoardToolbarTool | null;
   /** 点选工具时短暂按下的按钮，松手后回到 activeTool */
-  pressedTool: BoardTool | null;
+  pressedTool: BoardToolbarTool | null;
   cursor: WhiteboardCursor;
   ripple: WhiteboardRipple | null;
-  /** 元素画到几成：0～1，方框描边 / 连线用它做逐笔绘制 */
-  progress: Record<string, number>;
+  /** 正在拖拽的方框（实时尺寸）；松手后转进 shapes */
+  dragBox: BoardDragBox | null;
+  /** 已经画完的方框 / 菱形 id */
+  shapes: string[];
+  /** 连线绘制进度 0～1 */
+  edges: Record<string, number>;
   /** 文字已经写出几个字 */
   chars: Record<string, number>;
+  caret: BoardCaret | null;
   /** 白板已经出现（元宝开始接管） */
   started: boolean;
 }
@@ -61,13 +111,7 @@ const clamp = (value: number, min: number, max: number) => Math.min(max, Math.ma
 /** 缓入缓出：鼠标起步和收尾都慢一点，中段快 */
 const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
 
-const quadAt = (from: Point, control: Point, to: Point, t: number): Point => {
-  const rest = 1 - t;
-  return {
-    x: rest * rest * from.x + 2 * rest * t * control.x + t * t * to.x,
-    y: rest * rest * from.y + 2 * rest * t * control.y + t * t * to.y,
-  };
-};
+const lerp = (from: number, to: number, t: number) => from + (to - from) * t;
 
 const distance = (points: Point[]) =>
   points.slice(1).reduce((total, point, index) => {
@@ -92,6 +136,12 @@ const pointAlong = (points: Point[], t: number): Point => {
   return points[points.length - 1];
 };
 
+/** 单字宽度估算：中文按字号，西文按 0.56 倍，够用来排光标和推字 */
+const glyphWidth = (glyph: string, fontSize: number) => (/[\u4e00-\u9fa5]/.test(glyph) ? fontSize : fontSize * 0.56);
+
+const textWidth = (text: string, fontSize: number) =>
+  Array.from(text).reduce((total, glyph) => total + glyphWidth(glyph, fontSize), 0);
+
 interface WhiteboardDrawOptions {
   /** 白板实际像素尺寸；量到之后才开始画 */
   size: BoardSize | null;
@@ -104,17 +154,23 @@ interface WhiteboardDrawOptions {
 /**
  * 白板绘制引擎
  *
- * 按 whiteboardScenario.steps 的顺序执行：把鼠标沿二次贝塞尔曲线缓动到工具栏、
- * 点击（涟漪 + 工具按下态）、再贴着图形轮廓拖动。图形进度 0～1 直接驱动 strokeDashoffset，
- * 文字按字递增；整个过程用 requestAnimationFrame，重播时通过取消信号中断上一轮。
+ * 按 whiteboardScenario.steps 顺序模拟真人操作：鼠标沿弧线移到左侧工具栏点按钮（按下态 + 涟漪），
+ * 再用对应工具作画——
+ * - 形状：在起点按下，拖到终点，包围盒宽高跟着鼠标实时变化，松开定型；
+ * - AI 画笔：从起点拖到终点，折线随鼠标延伸，松手后才补上箭头；
+ * - 文本：点一下出现输入光标，逐字出现。
+ * 全程 requestAnimationFrame，重播时通过取消信号中断上一轮。
  */
 export function useWhiteboardDraw({ size, runKey, onComplete }: WhiteboardDrawOptions): WhiteboardDrawState {
-  const [activeTool, setActiveTool] = useState<BoardTool | null>(null);
-  const [pressedTool, setPressedTool] = useState<BoardTool | null>(null);
+  const [activeTool, setActiveTool] = useState<BoardToolbarTool | null>(null);
+  const [pressedTool, setPressedTool] = useState<BoardToolbarTool | null>(null);
   const [cursor, setCursor] = useState<WhiteboardCursor>({ x: 0, y: 0, visible: false, pressing: false });
   const [ripple, setRipple] = useState<WhiteboardRipple | null>(null);
-  const [progress, setProgress] = useState<Record<string, number>>({});
+  const [dragBox, setDragBox] = useState<BoardDragBox | null>(null);
+  const [shapes, setShapes] = useState<string[]>([]);
+  const [edges, setEdges] = useState<Record<string, number>>({});
   const [chars, setChars] = useState<Record<string, number>>({});
+  const [caret, setCaret] = useState<BoardCaret | null>(null);
   const [started, setStarted] = useState(false);
 
   const cursorRef = useRef<Point>({ x: 0, y: 0 });
@@ -193,14 +249,6 @@ export function useWhiteboardDraw({ size, runKey, onComplete }: WhiteboardDrawOp
         rafs.add(handle);
       });
 
-    const currentTransform = () => getBoardTransform(currentSize());
-    const toPx = (point: BoardPoint): Point => {
-      const transform = currentTransform();
-      return {
-        x: transform.offsetX + point.x * BOARD_DESIGN.width * transform.scale,
-        y: transform.offsetY + point.y * BOARD_DESIGN.height * transform.scale,
-      };
-    };
     const moveCursorTo = (point: Point) => {
       cursorRef.current = point;
       setCursor((previous) => ({ ...previous, x: point.x, y: point.y }));
@@ -222,12 +270,19 @@ export function useWhiteboardDraw({ size, runKey, onComplete }: WhiteboardDrawOp
         y: (from.y + target.y) / 2 + (dx / length) * bend,
       };
       const ms = duration ?? clamp(length * 1.15, 260, 820);
-      await tween(ms, (t) => moveCursorTo(quadAt(from, control, target, easeInOut(t))));
-      await sleep(90);
+      await tween(ms, (t) => {
+        const k = easeInOut(t);
+        const rest = 1 - k;
+        moveCursorTo({
+          x: rest * rest * from.x + 2 * rest * k * control.x + k * k * target.x,
+          y: rest * rest * from.y + 2 * rest * k * control.y + k * k * target.y,
+        });
+      });
+      await sleep(80);
     };
 
     /** 点一下：按下、涟漪、松手；传 tool 时同时点亮工具栏按钮 */
-    const clickAt = async (point: Point, tool?: BoardTool) => {
+    const clickAt = async (point: Point, tool?: BoardToolbarTool) => {
       setCursor((previous) => ({ ...previous, pressing: true }));
       if (tool) {
         setPressedTool(tool);
@@ -241,112 +296,156 @@ export function useWhiteboardDraw({ size, runKey, onComplete }: WhiteboardDrawOp
       await sleep(170);
       setPressedTool(null);
       setCursor((previous) => ({ ...previous, pressing: false }));
-      await sleep(220);
+      await sleep(200);
     };
 
-    const selectTool = async (tool: BoardTool) => {
-      const index = BOARD_TOOL_ORDER.indexOf(tool);
-      const board = currentSize();
-      const buttonY =
-        board.height - BOARD_TOOLBAR.bottom - BOARD_TOOLBAR.padding - BOARD_TOOLBAR.button / 2;
-      const buttonX = board.width / 2 + (index - 1) * (BOARD_TOOLBAR.button + BOARD_TOOLBAR.gap);
-      const target = { x: buttonX, y: buttonY };
+    /** 移到左侧工具栏点按钮：先把鼠标挪到按钮中心，再按下 */
+    const selectTool = async (tool: BoardToolbarTool) => {
+      const index = BOARD_TOOLBAR_TOOLS.indexOf(tool);
+      const target = toolbarButtonCenter(index, currentSize());
       await moveTo(target);
       await clickAt(target, tool);
     };
 
-    const boxRect = (element: BoardBoxElement) => {
-      const transform = currentTransform();
-      const scale = transform.scale;
-      return {
-        x: transform.offsetX + (element.center.x - element.width / 2) * BOARD_DESIGN.width * scale,
-        y: transform.offsetY + (element.center.y - element.height / 2) * BOARD_DESIGN.height * scale,
-        w: element.width * BOARD_DESIGN.width * scale,
-        h: element.height * BOARD_DESIGN.height * scale,
-      };
-    };
+    /** 拖拽方框：左上角按下，右下角松开，宽高跟着鼠标走 */
+    const dragShape = async (element: BoardBoxElement) => {
+      const frame = getBoardFrame(currentSize());
+      const rect = boxRectOf(element, frame);
+      const start = { x: rect.x, y: rect.y };
+      const end = { x: rect.x + rect.width, y: rect.y + rect.height };
+      const span = Math.hypot(rect.width, rect.height);
 
-    /** 矩形从左上角顺时针；菱形从顶点顺时针；末尾重复起点方便按周长取点 */
-    const outlineOf = (element: BoardBoxElement): Point[] => {
-      const rect = boxRect(element);
-      if (element.kind === 'decision') {
-        return [
-          { x: rect.x + rect.w / 2, y: rect.y },
-          { x: rect.x + rect.w, y: rect.y + rect.h / 2 },
-          { x: rect.x + rect.w / 2, y: rect.y + rect.h },
-          { x: rect.x, y: rect.y + rect.h / 2 },
-          { x: rect.x + rect.w / 2, y: rect.y },
-        ];
-      }
-      return [
-        { x: rect.x, y: rect.y },
-        { x: rect.x + rect.w, y: rect.y },
-        { x: rect.x + rect.w, y: rect.y + rect.h },
-        { x: rect.x, y: rect.y + rect.h },
-        { x: rect.x, y: rect.y },
-      ];
-    };
-
-    const drawShape = async (element: BoardBoxElement) => {
-      const outline = outlineOf(element);
-      await moveTo(outline[0]);
-      await clickAt(outline[0]);
+      await moveTo(start);
       setCursor((previous) => ({ ...previous, pressing: true }));
-      await tween(700, (t) => {
-        setProgress((previous) => ({ ...previous, [element.id]: t }));
-        moveCursorTo(pointAlong(outline, t));
+      await sleep(90);
+      rippleSeq.current += 1;
+      setRipple({ x: start.x, y: start.y, key: rippleSeq.current });
+      setDragBox({ id: element.id, kind: element.kind, x: start.x, y: start.y, width: 0, height: 0 });
+      await sleep(70);
+
+      await tween(clamp(span * 1.35, 420, 820), (t) => {
+        const k = easeInOut(t);
+        const point = { x: lerp(start.x, end.x, k), y: lerp(start.y, end.y, k) };
+        moveCursorTo(point);
+        // 宽高按鼠标当前位置反推：左上角固定，右下角跟着指针
+        setDragBox({
+          id: element.id,
+          kind: element.kind,
+          x: Math.min(start.x, point.x),
+          y: Math.min(start.y, point.y),
+          width: Math.abs(point.x - start.x),
+          height: Math.abs(point.y - start.y),
+        });
       });
+
+      // 松开：定型（和拖拽最后一帧同一个矩形，不会跳）
       setCursor((previous) => ({ ...previous, pressing: false }));
+      setDragBox(null);
+      setShapes((previous) => (previous.includes(element.id) ? previous : [...previous, element.id]));
       await sleep(120);
     };
 
-    const drawEdge = async (element: BoardEdgeElement) => {
-      const points = element.points.map(toPx);
+    /** 拖连线：从起点拖到终点，线条随鼠标延伸；松手后才出现箭头 */
+    const dragEdge = async (element: BoardEdgeElement) => {
+      const frame = getBoardFrame(currentSize());
+      const points = element.points.map((point) => toBoardPx(point, frame));
+      const length = distance(points);
+
       await moveTo(points[0]);
-      await clickAt(points[0]);
       setCursor((previous) => ({ ...previous, pressing: true }));
-      await tween(560, (t) => {
-        setProgress((previous) => ({ ...previous, [element.id]: t }));
-        moveCursorTo(pointAlong(points, t));
+      await sleep(80);
+      rippleSeq.current += 1;
+      setRipple({ x: points[0].x, y: points[0].y, key: rippleSeq.current });
+      await sleep(50);
+
+      await tween(clamp(length * 1.6, 340, 700), (t) => {
+        const k = easeInOut(t);
+        setEdges((previous) => ({ ...previous, [element.id]: k }));
+        moveCursorTo(pointAlong(points, k));
       });
+
       setCursor((previous) => ({ ...previous, pressing: false }));
+      setEdges((previous) => ({ ...previous, [element.id]: 1 }));
       await sleep(110);
     };
 
-    /** 文字逐字出现，鼠标沿着这一行从左往右走 */
-    const writeText = async (element: BoardBoxElement | BoardTextElement) => {
-      const fontSize = element.kind === 'text' ? element.fontSize : BOARD_FONT[element.kind];
-      const glyphs = Array.from(element.text.replace(/\n/g, ''));
-      const transform = currentTransform();
-      const approxWidth =
-        glyphs.length * fontSize * (element.kind === 'text' ? 1 : 0.95) * transform.scale;
-      const anchorX = transform.offsetX + element.center.x * BOARD_DESIGN.width * transform.scale;
-      const centerX =
-        element.kind === 'text' && element.anchor === 'start' ? anchorX : anchorX - approxWidth / 2;
-      const baseline =
-        transform.offsetY +
-        element.center.y * BOARD_DESIGN.height * transform.scale +
-        fontSize * 0.34 * transform.scale;
-      await moveTo({ x: centerX, y: baseline });
-      await clickAt({ x: centerX, y: baseline });
+    /** 文本工具：点一下出现光标，然后逐字打出来，光标跟着走（多行文字换行时回到下一行行首） */
+    const typeText = async (
+      element: BoardBoxElement | BoardTextElement,
+      anchor: Point,
+      fontSize: number,
+      centered: boolean,
+    ) => {
+      const lines = element.text.split('\n');
+      const glyphs = Array.from(lines.join(''));
+      const lineWidths = lines.map((line) => textWidth(line, fontSize));
+      const blockWidth = Math.max(...lineWidths);
+      const lineHeight = fontSize * 1.55;
+      const firstX = centered ? anchor.x - blockWidth / 2 : anchor.x;
+      const caretTop = anchor.y - ((lines.length - 1) * lineHeight) / 2 - fontSize * 0.62;
+
+      await moveTo({ x: firstX, y: anchor.y });
       setCursor((previous) => ({ ...previous, pressing: true }));
+      await sleep(70);
+      rippleSeq.current += 1;
+      setRipple({ x: firstX, y: anchor.y, key: rippleSeq.current });
+      setCaret({ x: firstX, y: caretTop, height: fontSize * 1.24, visible: true });
+      setCursor((previous) => ({ ...previous, pressing: false }));
+      await sleep(180);
+
+      let line = 0;
+      let inLine = 0;
+      let typedWidth = 0;
+      const caretAt = () => ({
+        x: (centered ? anchor.x - lineWidths[line] / 2 : firstX) + typedWidth,
+        y: caretTop + line * lineHeight,
+        height: fontSize * 1.24,
+        visible: true,
+      });
+
       for (let index = 1; index <= glyphs.length; index += 1) {
         guard();
+        const glyph = glyphs[index - 1];
+        if (inLine >= lines[line].length && line < lines.length - 1) {
+          line += 1;
+          inLine = 0;
+          typedWidth = 0;
+        }
+        typedWidth += glyphWidth(glyph, fontSize);
+        inLine += 1;
         setChars((previous) => ({ ...previous, [element.id]: index }));
-        moveCursorTo({ x: centerX + (approxWidth * index) / glyphs.length, y: baseline });
-        await sleep(48);
+        setCaret(caretAt());
+        await sleep(glyph === ' ' ? 40 : 62);
       }
-      setCursor((previous) => ({ ...previous, pressing: false }));
-      await sleep(110);
+
+      await sleep(160);
+      setCaret(null);
+      await sleep(90);
+    };
+
+    /** 方框里的字：点一下框内进入编辑，居中排版 */
+    const writeInBox = async (element: BoardBoxElement) => {
+      const frame = getBoardFrame(currentSize());
+      const rect = boxRectOf(element, frame);
+      const fontSize = element.kind === 'decision' ? BOARD_FONT.decision : BOARD_FONT.box;
+      const center = { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
+      await typeText(element, center, fontSize, true);
+    };
+
+    /** 独立文字（标题）：点一下出光标，左对齐逐字出现 */
+    const writeText = async (element: BoardTextElement) => {
+      const frame = getBoardFrame(currentSize());
+      const anchor = toBoardPx(element.at, frame);
+      await typeText(element, anchor, element.fontSize, element.anchor !== 'start');
     };
 
     const run = async () => {
       // 从白板左上角外侧进入，像人把鼠标移进画布
-      const board = currentSize();
-      moveCursorTo({ x: board.width * 0.035, y: board.height * 0.14 });
-      setCursor({ x: board.width * 0.035, y: board.height * 0.14, visible: true, pressing: false });
+      const startPoint = { x: 4, y: 12 };
+      cursorRef.current = startPoint;
+      setCursor({ x: startPoint.x, y: startPoint.y, visible: true, pressing: false });
       setStarted(true);
-      await sleep(120);
+      await sleep(200);
 
       for (const step of whiteboardScenario.steps) {
         guard();
@@ -355,13 +454,15 @@ export function useWhiteboardDraw({ size, runKey, onComplete }: WhiteboardDrawOp
         } else if (step.action === 'draw') {
           const element = findBoardElement(step.id);
           if (element?.kind === 'edge') {
-            await drawEdge(element);
+            await dragEdge(element);
           } else if (element && (element.kind === 'box' || element.kind === 'decision')) {
-            await drawShape(element);
+            await dragShape(element);
           }
         } else if (step.action === 'write') {
           const element = findBoardElement(step.id);
-          if (element && element.kind !== 'edge') {
+          if (element && (element.kind === 'box' || element.kind === 'decision')) {
+            await writeInBox(element);
+          } else if (element?.kind === 'text') {
             await writeText(element);
           }
         } else {
@@ -369,15 +470,19 @@ export function useWhiteboardDraw({ size, runKey, onComplete }: WhiteboardDrawOp
         }
       }
 
-      await sleep(600);
+      await sleep(620);
+      setCaret(null);
       setCursor((previous) => ({ ...previous, visible: false, pressing: false }));
       await sleep(520);
       guard();
       completeRef.current?.();
     };
 
-    setProgress({});
+    setShapes([]);
+    setEdges({});
     setChars({});
+    setCaret(null);
+    setDragBox(null);
     setActiveTool(null);
     setPressedTool(null);
     setRipple(null);
@@ -398,5 +503,5 @@ export function useWhiteboardDraw({ size, runKey, onComplete }: WhiteboardDrawOp
     };
   }, [ready, runKey]);
 
-  return { activeTool, pressedTool, cursor, ripple, progress, chars, started };
+  return { activeTool, pressedTool, cursor, ripple, dragBox, shapes, edges, chars, caret, started };
 }

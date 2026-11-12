@@ -1,6 +1,6 @@
 /*
- * 元宝画白板：盖在主讲人画面上的一层批注白板。
- * 白底点阵 + 底部工具栏 + SVG 逐笔绘制的流程图 + 带元宝头像的 AI 鼠标。
+ * 元宝画白板：盖在主讲人画面上的一层白板（Figma 221:30082）。
+ * 结构：白底画布 + 内容 SVG + 右上窗口控件 + 左侧工具栏 + 右下缩放条 + AI 鼠标。
  * 整层不接收鼠标事件，会议区本身的交互不受影响。
  */
 .overlay {
@@ -18,104 +18,13 @@
   opacity: 1;
 }
 
-/* 共享画面的白板底：24 的点阵网格，像常见的在线白板 */
+/* 白板本体：纯白（设计稿 221:30083 波点层在导出里是隐藏的，实际画面是纯白） */
 .board {
   position: absolute;
   inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
   background-color: var(--wm-color-whiteboard-board);
-  background-image: radial-gradient(
-    circle,
-    var(--wm-color-whiteboard-grid) 1px,
-    var(--wm-color-whiteboard-grid-fade) 1.4px
-  );
-  background-size: 24px 24px;
-  background-position: -4px -4px;
-}
-
-.canvas {
-  position: absolute;
-  inset: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-/* ---------- 流程图 ---------- */
-
-.shape {
-  fill: var(--wm-color-whiteboard-fill);
-  stroke: var(--wm-color-whiteboard-ink);
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.edge {
-  fill: none;
-  stroke: var(--wm-color-whiteboard-ink);
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.arrowHead {
-  fill: var(--wm-color-whiteboard-ink);
-}
-
-.label {
-  fill: var(--wm-color-whiteboard-ink);
-  font-family: var(--wm-font-family);
-  font-weight: 500;
-}
-
-.edgeLabel {
-  fill: var(--wm-color-whiteboard-ink-soft);
-  font-family: var(--wm-font-family);
-  font-weight: 500;
-  letter-spacing: 0.5px;
-}
-
-/* ---------- 批注工具栏 ---------- */
-
-.toolbar {
-  position: absolute;
-  bottom: 18px;
-  left: 50%;
-  display: flex;
-  padding: 5px;
-  border-radius: 12px;
-  background-color: var(--wm-color-whiteboard-tool-fill);
-  box-shadow: var(--wm-shadow-whiteboard-tool);
-  transform: translateX(-50%);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-}
-
-.tool {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 8px;
-  color: var(--wm-color-whiteboard-tool-icon);
-  transition: background-color 120ms ease-out, color 120ms ease-out, transform 90ms ease-out;
-}
-
-.tool + .tool {
-  margin-left: 6px;
-}
-
-/* 被选中的工具：浅蓝底 + 品牌蓝图标 */
-.toolActive {
-  background-color: var(--wm-color-whiteboard-tool-active);
-  color: var(--wm-color-brand-primary);
-}
-
-/* AI 鼠标按下的那一下 */
-.toolPressed {
-  background-color: var(--wm-color-whiteboard-tool-pressed);
-  transform: scale(0.9);
 }
 
 /* 点击涟漪：从指针尖向外扩一圈再淡出 */

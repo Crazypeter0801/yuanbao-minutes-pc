@@ -4,16 +4,41 @@ import type { AssistantMessage } from '@/types/chat';
 /**
  * 元宝画白板（演示用）
  *
- * 用户在侧栏说一句「帮我在白板上画一个灰度放量的原理流程图」，元宝接管共享画面上的批注工具，
- * 先选工具、再一笔一笔把流程图落在白板上。这里只放「画什么、按什么顺序画」，
- * 鼠标缓动、点击涟漪、逐字出现这些表现交给 useWhiteboardDraw。
+ * 用户在侧栏说一句「帮我在白板上画一个灰度放量的原理流程图」，元宝接管共享画面上
+ * 的白板批注工具（Figma 221:30082）：先去左侧工具栏点「文本 / 形状 / AI 画笔」，
+ * 再像人一样按下拖拽把图形落在白板上。这里只放「画什么、按什么顺序画、用哪个工具」，
+ * 鼠标缓动、拖拽尺寸插值、逐字输入这些表现交给 useWhiteboardDraw。
  *
- * 坐标都是归一化的：x / y 取 0～1，相对白板宽高；
- * 这样侧栏收起、会议区变宽时，流程图仍然按比例落在画面里。
+ * 坐标都是归一化的：x / y 取 0～1，相对白板「内容区」（避开工具栏与右下角缩放条）；
+ * 侧栏收起、会议区变宽时，流程图仍然按比例铺在画面里。
  */
 
-/** 批注工具栏里的工具（顺序与工具栏按钮一致） */
-export type BoardTool = 'rect' | 'arrow' | 'text';
+/** 左侧工具栏的十个按钮，顺序与设计稿一致（Figma 白板工具栏｜主体） */
+export type BoardToolbarTool =
+  | 'select'
+  | 'ai-pen'
+  | 'laser'
+  | 'shape'
+  | 'text'
+  | 'eraser'
+  | 'undo'
+  | 'redo'
+  | 'save'
+  | 'add';
+
+/** 工具栏按钮顺序：选中工具时用它算鼠标落点 */
+export const BOARD_TOOLBAR_TOOLS: BoardToolbarTool[] = [
+  'select',
+  'ai-pen',
+  'laser',
+  'shape',
+  'text',
+  'eraser',
+  'undo',
+  'redo',
+  'save',
+  'add',
+];
 
 export interface BoardPoint {
   x: number;
@@ -24,22 +49,22 @@ interface BoardElementBase {
   id: string;
 }
 
-/** 方框 / 判断菱形：文字居中放在框内 */
+/** 方框 / 判断菱形：由「左上角拖到右下角」画出 */
 export interface BoardBoxElement extends BoardElementBase {
   kind: 'box' | 'decision';
-  center: BoardPoint;
-  /** 归一化宽度、高度（相对白板宽 / 高） */
-  width: number;
-  height: number;
+  /** 拖拽起点：包围盒左上角（归一化） */
+  from: BoardPoint;
+  /** 拖拽终点：包围盒右下角（归一化） */
+  to: BoardPoint;
   text: string;
 }
 
 /** 独立文字（标题）：anchor 为 start 时 x 是左端，否则是中心 */
 export interface BoardTextElement extends BoardElementBase {
   kind: 'text';
-  center: BoardPoint;
+  at: BoardPoint;
   text: string;
-  /** px 字号（白板按 1:1 像素绘制，不随窗口缩放） */
+  /** px 字号：白板按 1:1 像素绘制，不随窗口缩放 */
   fontSize: number;
   anchor: 'start' | 'middle';
 }
@@ -54,52 +79,60 @@ export interface BoardEdgeElement extends BoardElementBase {
 
 export type BoardElement = BoardBoxElement | BoardTextElement | BoardEdgeElement;
 
-/** 一步操作：选工具 / 画框 / 写字 / 停顿 */
+/** 一步操作：选工具 / 拖一个框 / 敲一段字 / 停顿 */
 export type BoardStep =
-  | { action: 'select-tool'; tool: BoardTool }
+  | { action: 'select-tool'; tool: BoardToolbarTool }
   | { action: 'draw'; id: string }
   | { action: 'write'; id: string }
   | { action: 'pause'; ms: number };
 
-/** 工具箱按钮顺序，选中工具时用来算鼠标要落在哪一格 */
-export const BOARD_TOOL_ORDER: BoardTool[] = ['rect', 'arrow', 'text'];
-
-/** 白板的设计尺寸（px）：流程图按它排版，实际白板等比缩放并居中，窗口变宽时框不会被拉扁 */
-export const BOARD_DESIGN = { width: 928, height: 512 };
-
-export interface BoardTransform {
-  scale: number;
-  offsetX: number;
-  offsetY: number;
-}
-
-/** 归一化坐标 → 白板像素：等比缩放，多出来的宽度平均分到左右 */
-export function getBoardTransform(size: { width: number; height: number }): BoardTransform {
-  const scale = Math.min(size.width / BOARD_DESIGN.width, size.height / BOARD_DESIGN.height);
-  return {
-    scale,
-    offsetX: (size.width - BOARD_DESIGN.width * scale) / 2,
-    offsetY: (size.height - BOARD_DESIGN.height * scale) / 2,
-  };
-}
-
-/** 批注工具栏尺寸（px）：白板底边居中的胶囊，鼠标落点由它推算 */
-export const BOARD_TOOLBAR = {
-  /** 距白板底边 */
-  bottom: 18,
-  /** 胶囊内边距 */
-  padding: 5,
-  /** 按钮边长 */
-  button: 38,
-  /** 按钮间距 */
-  gap: 6,
-};
+/** 白板内容区内边距（px）：左边留出工具栏，下边留出缩放条 */
+export const BOARD_CONTENT_INSET = { left: 72, top: 28, right: 28, bottom: 76 };
 
 /** 白板上文字字号（px）：方框、判断菱形分开，判断框里字多一点要小一号 */
 export const BOARD_FONT = {
   box: 13,
   decision: 12,
 };
+
+export interface BoardSize {
+  width: number;
+  height: number;
+}
+
+export interface BoardFrame {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+/** 内容区（px）：流程图按归一化坐标铺在这块区域里 */
+export function getBoardFrame(size: BoardSize): BoardFrame {
+  return {
+    x: BOARD_CONTENT_INSET.left,
+    y: BOARD_CONTENT_INSET.top,
+    width: Math.max(1, size.width - BOARD_CONTENT_INSET.left - BOARD_CONTENT_INSET.right),
+    height: Math.max(1, size.height - BOARD_CONTENT_INSET.top - BOARD_CONTENT_INSET.bottom),
+  };
+}
+
+/** 归一化坐标 → 白板像素 */
+export function toBoardPx(point: BoardPoint, frame: BoardFrame): BoardPoint {
+  return { x: frame.x + point.x * frame.width, y: frame.y + point.y * frame.height };
+}
+
+/** 方框 / 菱形的像素包围盒 */
+export function boxRectOf(element: BoardBoxElement, frame: BoardFrame) {
+  const from = toBoardPx(element.from, frame);
+  const to = toBoardPx(element.to, frame);
+  return {
+    x: Math.min(from.x, to.x),
+    y: Math.min(from.y, to.y),
+    width: Math.abs(to.x - from.x),
+    height: Math.abs(to.y - from.y),
+  };
+}
 
 /** 「画面」指的是共享画面本身，不是绘画意图，不能把 OCR 这类演示场景抢走 */
 export function isWhiteboardDrawRequest(text: string): boolean {
@@ -113,7 +146,7 @@ const ELEMENTS: BoardElement[] = [
   {
     id: 'title',
     kind: 'text',
-    center: { x: 0.055, y: 0.105 },
+    at: { x: 0.035, y: 0.045 },
     text: '灰度放量的原理流程图',
     fontSize: 22,
     anchor: 'start',
@@ -121,49 +154,43 @@ const ELEMENTS: BoardElement[] = [
   {
     id: 'release',
     kind: 'box',
-    center: { x: 0.14, y: 0.3 },
-    width: 0.18,
-    height: 0.13,
+    from: { x: 0.05, y: 0.235 },
+    to: { x: 0.23, y: 0.365 },
     text: '发布新版本',
   },
   {
     id: 'canary',
     kind: 'box',
-    center: { x: 0.39, y: 0.3 },
-    width: 0.18,
-    height: 0.13,
+    from: { x: 0.3, y: 0.235 },
+    to: { x: 0.48, y: 0.365 },
     text: '1% 灰度',
   },
   {
     id: 'monitor',
     kind: 'box',
-    center: { x: 0.64, y: 0.3 },
-    width: 0.18,
-    height: 0.13,
+    from: { x: 0.55, y: 0.235 },
+    to: { x: 0.73, y: 0.365 },
     text: '监控指标',
   },
   {
     id: 'check',
     kind: 'decision',
-    center: { x: 0.865, y: 0.3 },
-    width: 0.19,
-    height: 0.27,
+    from: { x: 0.77, y: 0.165 },
+    to: { x: 0.96, y: 0.435 },
     text: '指标是否\n异常？',
   },
   {
     id: 'expand',
     kind: 'box',
-    center: { x: 0.6, y: 0.68 },
-    width: 0.26,
-    height: 0.145,
+    from: { x: 0.47, y: 0.607 },
+    to: { x: 0.73, y: 0.752 },
     text: '扩大到 10% → 50% → 100%',
   },
   {
     id: 'rollback',
     kind: 'box',
-    center: { x: 0.865, y: 0.7 },
-    width: 0.18,
-    height: 0.13,
+    from: { x: 0.775, y: 0.635 },
+    to: { x: 0.955, y: 0.765 },
     text: '回滚上一版本',
   },
   {
@@ -198,7 +225,7 @@ const ELEMENTS: BoardElement[] = [
       { x: 0.865, y: 0.635 },
     ],
     label: '是',
-    labelAt: { x: 0.89, y: 0.535 },
+    labelAt: { x: 0.89, y: 0.53 },
   },
   {
     id: 'check-to-expand',
@@ -206,8 +233,8 @@ const ELEMENTS: BoardElement[] = [
     points: [
       { x: 0.865, y: 0.435 },
       { x: 0.865, y: 0.5 },
-      { x: 0.73, y: 0.5 },
-      { x: 0.73, y: 0.608 },
+      { x: 0.7, y: 0.5 },
+      { x: 0.7, y: 0.605 },
     ],
     label: '否',
     labelAt: { x: 0.8, y: 0.468 },
@@ -217,43 +244,39 @@ const ELEMENTS: BoardElement[] = [
     kind: 'edge',
     points: [
       { x: 0.47, y: 0.68 },
-      { x: 0.39, y: 0.68 },
-      { x: 0.39, y: 0.368 },
+      { x: 0.3, y: 0.68 },
+      { x: 0.3, y: 0.368 },
     ],
     label: '继续观察',
-    labelAt: { x: 0.352, y: 0.555 },
+    labelAt: { x: 0.24, y: 0.56 },
   },
 ];
 
 /**
- * 绘制脚本：和真人用批注工具的顺序一致
- * 写标题 → 矩形画三个方框 → 箭头连线 → 画判断菱形 → 否 / 是 两条分支 → 回流箭头。
+ * 绘制脚本：和真人用白板工具的顺序一致
+ * 写标题 → 形状工具拖四个框（框里直接打字）→ AI 画笔连五条线。
+ * 工具只切换三次：文本 / 形状 / AI 画笔，和人在白板上的习惯一致。
  */
 const STEPS: BoardStep[] = [
-  { action: 'pause', ms: 420 },
+  // 白板铺开后先停一拍，让观众看清工具栏，再开始动鼠标
+  { action: 'pause', ms: 820 },
+
   { action: 'select-tool', tool: 'text' },
   { action: 'write', id: 'title' },
-  { action: 'pause', ms: 260 },
+  { action: 'pause', ms: 220 },
 
-  { action: 'select-tool', tool: 'rect' },
+  { action: 'select-tool', tool: 'shape' },
   { action: 'draw', id: 'release' },
   { action: 'write', id: 'release' },
   { action: 'draw', id: 'canary' },
   { action: 'write', id: 'canary' },
   { action: 'draw', id: 'monitor' },
   { action: 'write', id: 'monitor' },
-  { action: 'pause', ms: 220 },
+  { action: 'pause', ms: 160 },
 
-  { action: 'select-tool', tool: 'arrow' },
-  { action: 'draw', id: 'release-to-canary' },
-  { action: 'draw', id: 'canary-to-monitor' },
-  { action: 'draw', id: 'monitor-to-check' },
-  { action: 'pause', ms: 200 },
-
-  { action: 'select-tool', tool: 'rect' },
   { action: 'draw', id: 'check' },
   { action: 'write', id: 'check' },
-  { action: 'pause', ms: 180 },
+  { action: 'pause', ms: 200 },
 
   { action: 'draw', id: 'expand' },
   { action: 'write', id: 'expand' },
@@ -261,7 +284,10 @@ const STEPS: BoardStep[] = [
   { action: 'write', id: 'rollback' },
   { action: 'pause', ms: 220 },
 
-  { action: 'select-tool', tool: 'arrow' },
+  { action: 'select-tool', tool: 'ai-pen' },
+  { action: 'draw', id: 'release-to-canary' },
+  { action: 'draw', id: 'canary-to-monitor' },
+  { action: 'draw', id: 'monitor-to-check' },
   { action: 'draw', id: 'check-to-rollback' },
   { action: 'draw', id: 'check-to-expand' },
   { action: 'draw', id: 'expand-to-canary' },
@@ -269,10 +295,9 @@ const STEPS: BoardStep[] = [
 ];
 
 export const whiteboardScenario = {
-  /** 白板相对共享画面留一圈内边距，流程图不贴着窗沿 */
   elements: ELEMENTS,
   steps: STEPS,
-  intro: '好，我来画。借你的批注工具用一下，把灰度放量的主链路和异常回滚都标出来。',
+  intro: '好，我来画。借你的白板工具用一下，把灰度放量的主链路和异常回滚都标出来。',
   done: '已画好。流程是：发布新版本 → 1% 灰度 → 监控指标 → 判断是否异常；异常就回滚，正常就按 10% / 50% / 100% 继续放量。',
 };
 

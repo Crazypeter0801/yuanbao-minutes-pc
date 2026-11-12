@@ -1,0 +1,73 @@
+/*
+ * 白板工具栏（Figma 221:30127）：左侧竖排胶囊 + 右侧收起把手。
+ * 尺寸严格按设计稿：胶囊 44 宽、10 个 28×28 按钮、间距 4、内边距 16/8/10、圆角 16、1px 描边。
+ * 描边在 Figma 里是 INSIDE，所以 CSS 的 padding 各减 1px，保证内容区还是 28 宽。
+ */
+.wrapper {
+  position: absolute;
+  top: 50%;
+  left: 8px;
+  display: flex;
+  align-items: center;
+  transform: translateY(-50%);
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 44px;
+  padding: 15px 7px 9px;
+  border: 1px solid var(--wm-color-outline-tertiary);
+  border-radius: 16px;
+  background-color: var(--wm-color-background-quaternary);
+  box-shadow: var(--wm-shadow-whiteboard-panel);
+}
+
+.tool {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 5px;
+  color: var(--wm-color-icon-strong);
+  transition: background-color 120ms ease-out, color 120ms ease-out, transform 90ms ease-out;
+}
+
+.tool + .tool {
+  margin-top: 4px;
+}
+
+/* 撤销 / 重做：空白板上不可用，设计稿给的是灰色图标 */
+.toolDisabled {
+  color: var(--wm-color-text-tertiary);
+}
+
+/* 被 AI 选中的工具：浅蓝底 + 品牌蓝图标 */
+.toolActive {
+  background-color: var(--wm-color-whiteboard-tool-active);
+  color: var(--wm-color-brand-primary);
+}
+
+/* AI 鼠标按下的那一下 */
+.toolPressed {
+  background-color: var(--wm-color-whiteboard-tool-pressed);
+  transform: scale(0.9);
+}
+
+/* 收起把手：凸在胶囊右侧中部（实测 22×64），圆角 0 11 11 0 */
+.collapse {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 64px;
+  margin-left: -1px;
+  border: 1px solid var(--wm-color-outline-tertiary);
+  border-left: none;
+  border-radius: 0 11px 11px 0;
+  background-color: var(--wm-color-background-quaternary);
+  box-shadow: var(--wm-shadow-whiteboard-panel);
+  color: var(--wm-color-text-tertiary);
+}

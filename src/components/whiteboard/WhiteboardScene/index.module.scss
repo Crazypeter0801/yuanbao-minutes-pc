@@ -1,0 +1,71 @@
+/*
+ * 白板内容层：SVG 铺满白板，图形与文字都按白板实际像素绘制。
+ * 只负责画面，不接收鼠标事件。
+ */
+.canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* 方框 / 判断菱形：白底 + 2px 深色描边，和常见白板的形状工具一致 */
+.shape {
+  fill: var(--wm-color-background-quaternary);
+  stroke: var(--wm-color-whiteboard-ink);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+/* 拖拽中的半成品：先给浅一点的描边，定型后回到正常色 */
+.shapeDragging {
+  fill: var(--wm-color-whiteboard-drag-fill);
+  stroke: var(--wm-color-whiteboard-ink);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  /* 虚线表示「还没松手」：定型后回到实线 */
+  stroke-dasharray: 5 4;
+}
+
+.edge {
+  fill: none;
+  stroke: var(--wm-color-whiteboard-ink);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.arrowHead {
+  fill: var(--wm-color-whiteboard-ink);
+}
+
+.label {
+  fill: var(--wm-color-whiteboard-ink);
+  font-family: var(--wm-font-family);
+  font-weight: 500;
+}
+
+.edgeLabel {
+  fill: var(--wm-color-whiteboard-ink-soft);
+  font-family: var(--wm-font-family);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+/* 输入光标：1.5px 竖线，缓慢闪烁 */
+.caret {
+  fill: var(--wm-color-whiteboard-ink);
+  animation: whiteboard-caret 1s steps(2, start) infinite;
+}
+
+@keyframes whiteboard-caret {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0.1;
+  }
+}
