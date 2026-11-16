@@ -1,4 +1,7 @@
-/* 标题栏（Figma 215:16958）：padding 16 12 12 16，左标题、右操作，两端对齐、顶部对齐 */
+/*
+ * 标题栏（Figma 215:19389 / 406:17110）
+ * padding 16 12 12 16；左标题胶囊、右操作胶囊，两端对齐。
+ */
 .header {
   position: relative;
   z-index: 6;
@@ -16,29 +19,30 @@
   cursor: grabbing;
 }
 
-/*
- * 头部胶囊（Figma 215:19391 / 215:21820）
- * 140×44（方案 A）/ 103×44（方案 B）：#FAFAFA 底、1px 白描边、圆角 22、0 4 30 的柔和落影 + 10 背景模糊。
- * 文字列 padding 4 18 4 52，给左侧 33×36 的头像让位；头像按 Figma 约束贴左 7、垂直中心 +1。
- */
 .pillSlot {
   display: flex;
   min-width: 0;
 }
 
+/*
+ * 标题胶囊（Figma 399:16703 / 406:17111）
+ * 默认紧凑：高 36、白底、白描边、圆角 100、落影 0 4 15 / 8%。
+ * 带状态文案时加高，给副标题一行。
+ */
 .pill {
   position: relative;
   display: flex;
   align-items: center;
-  min-height: 44px;
-  padding: 4px 18px 4px 52px;
-  border-radius: 22px;
+  gap: 4px;
+  min-height: 36px;
+  padding: 4px 12px 4px 8px;
+  border-radius: 100px;
   background-color: var(--wm-color-header-pill);
   box-shadow:
     inset 0 0 0 1px var(--wm-color-header-pill-line),
     var(--wm-shadow-header-pill);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
   cursor: pointer;
   outline: none;
 
@@ -50,30 +54,35 @@
   }
 }
 
-/* 头像槽 33×36（Figma 215:19395）：雪碧图一帧 48×48，按自身 scale / offset 缩放居中 */
+.pillWithStatus {
+  min-height: 44px;
+  padding: 4px 18px 4px 8px;
+}
+
 .avatarSlot {
-  position: absolute;
-  top: 5px;
-  left: 7px;
+  position: relative;
   z-index: 3;
-  width: 33px;
-  height: 36px;
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .avatar {
   position: absolute;
-  top: -6px;
-  left: -7px;
+  top: -11px;
+  left: -11px;
 }
 
 .portrait {
   display: block;
-  width: 33px;
-  height: 36px;
+  width: 26px;
+  height: 26px;
   object-fit: contain;
 }
 
-/* 文字列：名称行（元宝 + ›）+ 可选的状态行，整体垂直居中 */
 .pillText {
   display: flex;
   flex-direction: column;
@@ -86,23 +95,21 @@
   align-items: center;
 }
 
-/* 13/18 600，#1F2329（Figma 215:19430） */
+/* Figma：12 Semibold #1F2329 */
 .name {
-  font-size: 13px;
-  line-height: 18px;
+  font-size: 12px;
+  line-height: normal;
   font-weight: 600;
   color: var(--wm-color-task-title);
   white-space: nowrap;
 }
 
-/* 3×8 右箭头，与名称间距 4（Figma 215:19429） */
 .chevron {
   display: flex;
   flex: 0 0 auto;
   margin-left: 4px;
 }
 
-/* 12/18 400 secondary（Figma 215:19432）；超长截断 */
 .status {
   max-width: 200px;
   overflow: hidden;
@@ -126,58 +133,41 @@
   }
 }
 
-/* 操作按钮（Figma 215:17000）：20×20，关闭自带左侧 4 的间距 */
+/*
+ * 右上角操作胶囊（Figma 399:14520 / 406:17124）
+ * 白底、白描边、圆角 100、内边距 12 6、图标间距 8。
+ */
 .actions {
   display: flex;
   flex: 0 0 auto;
   align-items: center;
+  gap: 8px;
   margin-left: 12px;
+  padding: 6px 12px;
+  border-radius: 100px;
+  background-color: var(--wm-color-header-pill);
+  box-shadow:
+    inset 0 0 0 1px var(--wm-color-header-pill-line),
+    var(--wm-shadow-header-pill);
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
   cursor: default;
 }
 
-/* 中性灰图标按钮：hover 才出一块浅灰底（圆角 6） */
 .iconButton {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
-  border-radius: 6px;
+  width: 24px;
+  height: 24px;
+  border-radius: 7.2px;
   color: var(--wm-color-text-secondary);
   cursor: pointer;
   transition: background-color 120ms ease-in-out;
 
   &:hover {
     background-color: var(--wm-color-control-fill);
-  }
-}
-
-/* 图标画布 24×20（左侧含 4 的间距）：按钮本身不出底色，用伪元素只在右侧 20×20 上铺 hover 底 */
-.iconButtonMargin {
-  width: 24px;
-
-  &::before {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 20px;
-    height: 20px;
-    border-radius: 6px;
-    content: '';
-    transition: background-color 120ms ease-in-out;
-  }
-
-  &:hover {
-    background-color: transparent;
-  }
-
-  &:hover::before {
-    background-color: var(--wm-color-control-fill);
-  }
-
-  & > svg {
-    position: relative;
   }
 }
 

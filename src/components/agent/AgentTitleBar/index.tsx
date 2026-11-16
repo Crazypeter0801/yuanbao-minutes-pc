@@ -13,7 +13,7 @@ interface AgentTitleBarProps {
   dock: AgentDockControl;
   /** 头像状态（雪碧图动画） */
   mood: YuanbaoMood;
-  /** 名称下方的状态文字：待命 / 正在生成会议纪要… / 等你确认 / 任务已完成 / 休息中 */
+  /** 名称下方的状态文字；空字符串时不渲染副标题（入会稿 Figma 215/406 默认态） */
   statusText: string;
   /** 同一个状态要重播时递增（连续摸头） */
   replayKey: number;
@@ -30,12 +30,9 @@ interface AgentTitleBarProps {
 }
 
 /**
- * 元宝窗口标题栏（Figma 215:19389 / 215:21818）
- * 左侧是胶囊（Figma 215:19391 / 294:36996）：头像 +「元宝 ›」+ 副标题。
- * 方案 A 副标题是「正在记笔记...」，方案 B 是「正在听...」；
- * 点胶囊进入 Agent 状态页。右侧只有独立窗口和关闭（Figma 215:21862），中性灰图标。
- * 按住标题栏空白处（按钮和胶囊除外）拖动即可把元宝从会议窗口分离出来，拖到会议左 / 右缘松手再吸附回去。
- * 头像用雪碧图跟着任务状态动（Figma 197:42 方案 A：顶部头像集成）。
+ * 元宝窗口标题栏（Figma 215:19389 / 406:17110）
+ * 左侧胶囊：头像 +「元宝」（有状态时再加 › 与副标题）；点胶囊进状态页。
+ * 右侧操作胶囊：独立窗口 + 关闭。按住空白处可拖出；浮出时会议区不自动变宽（App 预留位）。
  */
 export const AgentTitleBar: FC<AgentTitleBarProps> = ({
   dock,
@@ -49,6 +46,7 @@ export const AgentTitleBar: FC<AgentTitleBarProps> = ({
   portrait,
 }) => {
   const floating = dock.mode === 'floating';
+  const showStatus = Boolean(statusText);
 
   return (
     <header
@@ -56,12 +54,10 @@ export const AgentTitleBar: FC<AgentTitleBarProps> = ({
       onPointerDown={dock.onTitlePointerDown}
       title="按住拖动，可把元宝从会议窗口分离出来"
     >
-      {/* 头部胶囊：头像 +「元宝 ›」（方案 A 再带一行状态），整块可进入状态页 */}
       <span className={styles.pillSlot} data-nodrag>
         <Pressable
-          className={styles.pill}
+          className={`${styles.pill} ${showStatus ? styles.pillWithStatus : ''}`}
           onClick={() => {
-            // 保留摸头反馈；状态页会盖住对话区，动画在返回后继续按状态机收尾
             onTouch();
             onOpenStatus();
           }}
@@ -78,14 +74,17 @@ export const AgentTitleBar: FC<AgentTitleBarProps> = ({
           <span className={styles.pillText}>
             <span className={styles.nameRow}>
               <span className={styles.name}>元宝</span>
-              <span className={styles.chevron} aria-hidden="true">
-                <IconTaskEntryIconChevron />
+              {showStatus && (
+                <span className={styles.chevron} aria-hidden="true">
+                  <IconTaskEntryIconChevron />
+                </span>
+              )}
+            </span>
+            {showStatus && (
+              <span className={styles.status} key={statusText} role="status">
+                {statusText}
               </span>
-            </span>
-            {/* key 跟着文案变：换状态时淡入一次。两套方案都有副标题 */}
-            <span className={styles.status} key={statusText} role="status">
-              {statusText}
-            </span>
+            )}
           </span>
         </Pressable>
       </span>
@@ -98,7 +97,6 @@ export const AgentTitleBar: FC<AgentTitleBarProps> = ({
           ariaLabel={floating ? '吸附回会议' : '独立窗口打开'}
         >
           {floating ? (
-            /* 吸附：窗口 + 右侧并列栏 */
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <rect x="2" y="3" width="12" height="10" rx="2" stroke="currentColor" strokeWidth="1.2" />
               <path d="M10 3v10" stroke="currentColor" strokeWidth="1.2" />
@@ -107,13 +105,7 @@ export const AgentTitleBar: FC<AgentTitleBarProps> = ({
             <IconAgentPip />
           )}
         </Pressable>
-        {/* 关闭图标左侧自带 4 的间距（Figma 215:21871），按钮宽 24、hover 底只铺右侧 20 */}
-        <Pressable
-          className={`${styles.iconButton} ${styles.iconButtonMargin}`}
-          onClick={onClose}
-          title="关闭元宝"
-          ariaLabel="关闭元宝"
-        >
+        <Pressable className={styles.iconButton} onClick={onClose} title="关闭元宝" ariaLabel="关闭元宝">
           <IconAgentClose />
         </Pressable>
       </div>

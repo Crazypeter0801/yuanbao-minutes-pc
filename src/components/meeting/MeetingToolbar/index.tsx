@@ -23,14 +23,23 @@ interface MeetingToolbarProps {
   yuanbaoOpen: boolean;
   /** 点击胶囊里的元宝按钮：收起时打开侧栏，展开时收起 */
   onToggleYuanbao: () => void;
+  /** 「管理成员」是否打开 */
+  membersOpen: boolean;
+  /** 成员按钮：与元宝并存，打开管理成员不关掉元宝 */
+  onToggleMembers: () => void;
 }
 
 /**
- * 会议底部工具栏（Figma 215:16706）
+ * 会议底部工具栏（Figma 215:16706 / 406:16873）
  * 左：表情 / 聊天；中：麦克风 / 摄像头 / 共享 / 成员 / 录制 / 元宝 / 更多（无底色）；右：离开会议。
- * 说明：仅「元宝」按钮可点（开关元宝 personal agent 窗口，打开时图标不变，Figma 215 稿里元宝图标始终是深色常态），其余按钮只做视觉还原。
+ * 「元宝」「成员」可点；成员与元宝互不挤掉（三栏 OK）。
  */
-export const MeetingToolbar: FC<MeetingToolbarProps> = ({ yuanbaoOpen, onToggleYuanbao }) => (
+export const MeetingToolbar: FC<MeetingToolbarProps> = ({
+  yuanbaoOpen,
+  onToggleYuanbao,
+  membersOpen,
+  onToggleMembers,
+}) => (
   <div className={styles.toolbar}>
     <div className={styles.blurBase} aria-hidden="true" />
     <ProgressiveBlur className={styles.blur} tint="var(--wm-color-blur-tint-meeting)" />
@@ -50,7 +59,14 @@ export const MeetingToolbar: FC<MeetingToolbarProps> = ({ yuanbaoOpen, onToggleY
       <span className={styles.slot}>
         <IconTbShare />
       </span>
-      <span className={styles.slot}>
+      <Pressable
+        as="span"
+        className={`${styles.slot} ${styles.slotAction} ${membersOpen ? styles.slotActive : ''}`}
+        onClick={onToggleMembers}
+        ariaLabel={membersOpen ? '关闭管理成员' : '打开管理成员'}
+        ariaExpanded={membersOpen}
+        title={membersOpen ? '关闭管理成员' : '打开管理成员'}
+      >
         <span className={styles.invite} aria-hidden="true">
           <span className={styles.inviteHead} />
           <span className={styles.inviteFriendHead}>
@@ -64,7 +80,7 @@ export const MeetingToolbar: FC<MeetingToolbarProps> = ({ yuanbaoOpen, onToggleY
         <span className={styles.arrow}>
           <IconTbArrow />
         </span>
-      </span>
+      </Pressable>
       <span className={`${styles.slot} ${styles.slotNarrow}`}>
         <IconTbRecord />
       </span>

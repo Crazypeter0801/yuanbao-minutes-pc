@@ -24,7 +24,6 @@ import { AgentWindowShell } from "@/components/agent/AgentWindowShell";
 import { TaskDetail } from "@/components/agent/TaskDetail";
 import { WHITEBOARD_TASK_ID } from "@/data/agentTasks";
 import {
-  TASK_ENTRY_LISTENING_TEXT,
   TASK_ENTRY_RECORDING_TEXT,
   TASK_ENTRY_TASKS,
   type TaskEntryMode,
@@ -71,10 +70,11 @@ interface YuanbaoSidebarProps {
 }
 
 /**
- * 元宝 personal agent 窗口（Figma 215:19034 / 215:21463）
- * 外壳与会议窗一样是毛玻璃（#F0F2F7F2、圆角 12），两扇窗并排、中间一条白缝。
- * 方案 A：头部胶囊「头像 + 元宝 › + 正在记笔记…」，点胶囊进状态页概览；底部只有输入框。
- * 方案 B：头部副标题改成「正在听...」，输入框上方放指令大全和任务胶囊（元宝笔记 +16 / 会议待办 +5）。
+ * 元宝 personal agent 窗口（Figma 215:19035 / 406:16873）
+ * 外壳毛玻璃 rgba(243,243,244,0.98)、圆角 16，与会议窗并排、中间白缝；可与「管理成员」三栏并存。
+ * 方案 A：头部胶囊带状态副标题，点胶囊进状态页；底部只有输入框。
+ * 方案 B（入会稿默认）：头部仅「元宝」，输入框上方任务胶囊。
+ * 浮出时会议区预留位不收回（立昌：左边不自动变宽）。
  *
  * 长程任务详情仍占用对话区；快捷指令仍在窗口外的演示按钮条上。
  */
@@ -153,13 +153,17 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
   const otherRunning = agent.tasks.find(
     (task) => task.status === "running" && task.id !== WHITEBOARD_TASK_ID,
   );
+  /**
+   * 头部副标题：有进行中任务时外露 activity；
+   * 方案 A 空闲时「正在记笔记…」；方案 B / 入会稿空闲时不显示副标题（对齐 Figma 215/406）。
+   */
   const headerStatus =
     boardTask?.status === "running"
       ? boardTask.activity
       : otherRunning
         ? otherRunning.activity
         : taskEntry === "footer"
-          ? TASK_ENTRY_LISTENING_TEXT
+          ? ""
           : TASK_ENTRY_RECORDING_TEXT;
   const detailTask = agent.tasks.find((task) => task.id === detailTaskId);
 

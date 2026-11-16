@@ -1,0 +1,237 @@
+/*
+ * 会中「管理成员」侧栏（Figma 406:17107）
+ * 嵌在会议窗右侧：宽 376、圆角 16、白底；与元宝窗并存（三栏），互不挤掉。
+ */
+.panel {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  width: 376px;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 16px;
+  background-color: var(--wm-color-background-quaternary);
+}
+
+.header {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  padding: 0 20px;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+  color: var(--wm-color-text-primary);
+}
+
+.titleIcon {
+  display: flex;
+  width: 20px;
+  height: 20px;
+}
+
+.actions {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.iconButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  outline: none;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--wm-color-control-fill);
+  }
+
+  img {
+    display: block;
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+  padding: 0 20px;
+}
+
+.tabsRow {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.tabs {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  min-width: 0;
+  padding: 2px;
+  border-radius: 32px;
+  background-color: var(--wm-color-background-septenary);
+}
+
+.tab {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 27px;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--wm-color-text-secondary);
+  cursor: default;
+}
+
+.tabActive {
+  color: var(--wm-color-text-primary);
+  background-color: var(--wm-color-background-quaternary);
+  box-shadow: 0 0 2px rgba(0, 9, 95, 0.05);
+}
+
+.search {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 26px;
+  background-color: var(--wm-color-background-septenary);
+
+  img {
+    display: block;
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.list {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.identity {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.avatarWrap {
+  position: relative;
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+}
+
+.avatar {
+  display: block;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.avatarRing {
+  position: absolute;
+  inset: -3.57%;
+  pointer-events: none;
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 12px;
+  line-height: 20px;
+}
+
+.name {
+  color: var(--wm-color-text-primary);
+  white-space: nowrap;
+}
+
+.org {
+  overflow: hidden;
+  color: var(--wm-color-text-tertiary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.device {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-left: 8px;
+
+  img {
+    display: block;
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.footer {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px;
+}
+
+.footerButton {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  border-radius: 33px;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--wm-color-text-primary);
+  background-color: var(--wm-color-background-septenary);
+  cursor: default;
+}
+
+.footerPrimary {
+  color: var(--wm-color-text-senary);
+  background-color: var(--wm-color-text-primary);
+}

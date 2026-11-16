@@ -1,7 +1,13 @@
 /*
- * 页面：渐变风景壁纸铺满，1364×760 的两扇窗在正中（会议 960 + 缝 1 + 白条 2 + 缝 1 + 元宝 400）；
+ * 页面：渐变风景壁纸铺满，两扇/三栏窗在正中；
+ * 两栏（Figma 215:19035）：会议 960 + 缝 4 + 元宝 400 = 1364；
+ * 三栏（Figma 406:16873）：会议舞台 + 管理成员 376 + 缝 4 + 元宝 400。
  * 四周至少留 80，水平垂直居中，最小 1600×920。根底 #EEF1F6。
- * 壁纸画在 .page 自身（不用 fixed），导入 Figma code layer 时也能完整显示。
+ *
+ * 立昌约束：元宝浮出时，左边会议区不自动变宽。
+ * 做法：
+ * 1) 会议区用固定宽度（.meetingLocked*），不靠 flex 吃预留位；
+ * 2) 元宝仍打开时预留位保留（浮出也保留），避免整框变窄后被 page 重新水平居中。
  */
 .page {
   display: flex;
@@ -34,8 +40,8 @@
 }
 
 /*
- * 会议窗口（Figma 215:21466）：圆角 12，#F0F2F7F2 + 背景模糊 4，不投影；
- * 投票弹窗以它为定位基准，只覆盖会议、不盖元宝。
+ * 会议窗口玻璃层：默认 flex 占满 .window；
+ * 元宝仍打开时改用固定宽（.meetingLocked / .meetingLockedMembers），浮出也不变宽。
  */
 .meetingArea {
   position: relative;
@@ -45,14 +51,31 @@
   overflow: hidden;
   border-radius: 12px;
   background-color: var(--wm-color-window-glass);
-  -webkit-backdrop-filter: blur(4px);
-  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  transition: width 200ms cubic-bezier(0.22, 0.8, 0.3, 1);
+}
+
+/* 元宝打开（吸附或浮出）：锁 960，不吃掉右侧空位 */
+.meetingLocked {
+  flex: 0 0 auto;
+  width: 960px;
+  min-width: 960px;
+  max-width: 960px;
+}
+
+/* 三栏：舞台 960 + 管理成员 376 */
+.meetingLockedMembers {
+  flex: 0 0 auto;
+  width: 1336px;
+  min-width: 1336px;
+  max-width: 1336px;
 }
 
 /*
- * 窗口布局容器 1364×760：本身不画底、不裁切、不投影。
- * 会议（960）和元宝（400）是两块各自完整的圆角浮层，中间 4 = 缝 1 + 白条 2 + 缝 1；
- * 元宝关闭或分离后，会议窗口撑满整个 1364。
+ * 窗口布局容器：宽度跟内容走（会议固定宽 ± 吸附预留）。
+ * 浮出：无预留，窗口 = 会议锁定宽；吸附：会议锁定宽 + 404。
+ * 元宝关掉：会议改回 flex 撑满 1364（单独开会视图）。
  */
 .window {
   position: relative;
@@ -60,9 +83,24 @@
   flex: 0 0 auto;
   width: 1364px;
   height: 760px;
+  transition: width 200ms cubic-bezier(0.22, 0.8, 0.3, 1);
 }
 
-/* 元宝吸附在一侧时留给它的空间：元宝 400 + 缝隙 4，会议窗口仍是 960 */
+/* 元宝仍打开：窗口 hug 内容，不再写死 1364（浮出时才会缩到会议宽） */
+.windowAgentOpen {
+  width: auto;
+}
+
+.windowWithMembers {
+  /* 仅元宝关掉、成员仍开时的兜底；元宝打开时由 meetingLocked* + reserve 决定 */
+  width: 1740px;
+}
+
+.windowAgentOpen.windowWithMembers {
+  width: auto;
+}
+
+/* 元宝仍打开时的槽位：400 + 缝 4；浮出时空着，会议宽靠 .meetingLocked* 锁死 */
 .reserve {
   position: relative;
   flex: 0 0 auto;
@@ -104,7 +142,7 @@
   bottom: 0;
   z-index: 55; /* 盖在浮动小窗（50）之上，占位框的轮廓才看得清 */
   width: 400px;
-  border-radius: 12px;
+  border-radius: 16px;
   background-color: rgba(110, 120, 140, 0.08);
   box-shadow:
     inset 0 0 0 1.5px rgba(255, 255, 255, 0.9),
@@ -128,7 +166,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .reserve {
+  .window,
+  .reserve,
+  .meetingArea {
     transition: none;
   }
 

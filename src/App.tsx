@@ -57,6 +57,11 @@ const FILE_KIND_PATTERN = /pdf|ppt|幻灯片|文件|纪要文档/i;
  */
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  /**
+   * 会中「管理成员」侧栏：与元宝窗并存（Figma 406:16873 三栏），互不挤掉。
+   * 打开成员不关元宝；关元宝也不关成员。
+   */
+  const [membersOpen, setMembersOpen] = useState(false);
   /** Agent 状态页是否覆盖在元宝对话区之上 */
   const [statusOpen, setStatusOpen] = useState(false);
   /** 详情页「设置头像」之后，顶部胶囊和详情头部共用这一张 */
@@ -101,13 +106,18 @@ export default function App() {
     setStatusOpen(false);
   };
 
-  /** 工具栏元宝按钮：保持原有开关行为，关闭时顺带退出状态页 */
+  /** 工具栏元宝按钮：保持原有开关行为，关闭时顺带退出状态页；不关掉管理成员 */
   const toggleSidebar = () => {
     if (sidebarOpen) {
       closeSidebar();
       return;
     }
     setSidebarOpen(true);
+  };
+
+  /** 工具栏成员按钮：开关管理成员；与元宝互不挤掉 */
+  const toggleMembers = () => {
+    setMembersOpen((open) => !open);
   };
 
   /** 点头部胶囊 / 任务胶囊 / 文件夹进入状态页，并指定默认 Tab */
@@ -243,22 +253,51 @@ export default function App() {
     handleSubmit(item.prompt ?? item.label);
   };
 
+  /**
+   * 立昌：浮出时左边不自动变宽（也不因窗口变窄而整框重居中）。
+   * - 会议区在元宝仍打开时用固定宽（960 / 1336），绝不靠 flex 吃空位；
+   * - 预留位在元宝仍打开时保留（吸附或浮出），浮出只是元宝离开槽位，会议宽/位置都不变；
+   * - 白条只在吸附态显示。
+   */
+  const agentOpen = sidebarOpen;
+  const agentDocked = agentOpen && dock.mode === "docked";
+  const agentReservesLeft = agentOpen && dock.side === "left";
+  const agentReservesRight = agentOpen && dock.side === "right";
+  const meetingWidthClass = agentOpen
+    ? membersOpen
+      ? styles.meetingLockedMembers
+      : styles.meetingLocked
+    : "";
+
   return (
     <div className={styles.page}>
       <div className={styles.frame} ref={frameRef}>
-        <div className={styles.window}>
-          {/* 元宝吸附在左侧时，同样的空位让在会议窗口左边（镜像） */}
+        <div
+          className={[
+            styles.window,
+            agentOpen ? styles.windowAgentOpen : "",
+            membersOpen ? styles.windowWithMembers : "",
+          ]
+            .filter(Boolean)
+            .join(" ")}
+        >
+          {/* 元宝仍打开时保留左侧槽位（浮出也不收回，避免会议重居中/变宽） */}
           <div
-            className={`${styles.reserve} ${styles.reserveLeft} ${sidebarOpen && dock.mode === "docked" && dock.side === "left" ? styles.reserveOpen : ""}`}
+            className={`${styles.reserve} ${styles.reserveLeft} ${agentReservesLeft ? styles.reserveOpen : ""}`}
             aria-hidden="true"
           >
-            {sidebarOpen && dock.mode === "docked" && dock.side === "left" && <span className={`${styles.handle} ${styles.handleLeft}`} />}
+            {agentDocked && dock.side === "left" && (
+              <span className={`${styles.handle} ${styles.handleLeft}`} />
+            )}
           </div>
           {/* 投票弹窗只盖会议区，元宝说的话仍然看得见 */}
-          <div className={styles.meetingArea}>
+          <div className={`${styles.meetingArea} ${meetingWidthClass}`}>
             <MeetingWindow
               yuanbaoOpen={sidebarOpen}
               onToggleYuanbao={toggleSidebar}
+              membersOpen={membersOpen}
+              onToggleMembers={toggleMembers}
+              onCloseMembers={() => setMembersOpen(false)}
               stageOverlay={
                 whiteboard ? (
                   whiteboard.mode === "instant" ? (
@@ -297,12 +336,12 @@ export default function App() {
               />
             )}
           </div>
-          {/* 元宝吸附在右侧时，会议窗口让出 404（元宝 400 + 缝隙 4，缝隙正中是 2×32 的白条） */}
+          {/* 元宝仍打开时保留右侧槽位；浮出时空槽仍在，会议固定宽不会撑开 */}
           <div
-            className={`${styles.reserve} ${sidebarOpen && dock.mode === "docked" && dock.side === "right" ? styles.reserveOpen : ""}`}
+            className={`${styles.reserve} ${agentReservesRight ? styles.reserveOpen : ""}`}
             aria-hidden="true"
           >
-            {sidebarOpen && dock.mode === "docked" && dock.side === "right" && <span className={styles.handle} />}
+            {agentDocked && dock.side === "right" && <span className={styles.handle} />}
           </div>
         </div>
         {/* 拖回会议右缘时的吸附提示：右缘一个浅色描边的玻璃占位框（无文字），松手后元宝落在这里 */}
