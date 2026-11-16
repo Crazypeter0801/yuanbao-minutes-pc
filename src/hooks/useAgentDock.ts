@@ -37,9 +37,9 @@ const clamp = (value: number, min: number, max: number) => Math.min(Math.max(val
 
 /**
  * 元宝窗口的吸附 / 分离逻辑
- * - 吸附态：贴在会议窗口右缘，会议区让出 400 宽（App 预留位）；
+ * - 吸附态：贴在会议窗口右缘，App 预留 404 并锁定会议宽；
  * - 按住标题栏拖动超过 DETACH_DISTANCE 就分离成浮动小窗；
- * - 立昌约束：浮出时会议区预留位不收回、左边不自动变宽（由 App 的 reserve 控制，本 hook 只改 mode/position）；
+ * - 立昌约束：浮出时左边不自动变宽——App 用固定会议宽（非 flex 吃空位）；本 hook 只改 mode/position；
  * - 拖动中浮动窗右缘离会议窗口右缘小于 DOCK_THRESHOLD，出现吸附提示，松手即吸附回去；
  * - 从吸附态刚拖出时窗口右缘仍贴着会议右缘，需先远离一次再靠近才提示，否则一拖出来就闪提示。
  */
@@ -141,8 +141,13 @@ export function useAgentDock(frameRef: RefObject<HTMLElement>): AgentDockControl
     }
     const frame = frameRef.current;
     const rect = frame?.getBoundingClientRect();
+    // 浮出时挪开一点，方便看出会议宽未撑开（仍可由用户再拖）
     setPosition({
-      x: rect ? (sideRef.current === 'left' ? rect.left + 24 : rect.right - FLOAT_WIDTH - 24) : 24,
+      x: rect
+        ? sideRef.current === 'left'
+          ? Math.max(16, rect.left - FLOAT_WIDTH - 24)
+          : Math.min(window.innerWidth - FLOAT_WIDTH - 16, rect.right + 24)
+        : 24,
       y: rect ? rect.top + 40 : 40,
     });
     setMode('floating');

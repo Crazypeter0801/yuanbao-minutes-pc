@@ -3,10 +3,11 @@
  * 两栏（Figma 215:19035）：会议 960 + 缝 4 + 元宝 400 = 1364；
  * 三栏（Figma 406:16873）：会议舞台 + 管理成员 376 + 缝 4 + 元宝 400。
  * 四周至少留 80，水平垂直居中，最小 1600×920。根底 #EEF1F6。
- * 壁纸画在 .page 自身（不用 fixed），导入 Figma code layer 时也能完整显示。
  *
- * 立昌约束：元宝窗口浮出时，左边会议区不自动变宽——预留位随「元宝仍打开」保留，
- * 不因 dock.mode === floating 而收回（见 .reserveOpen 与 App.tsx agentReserves*）。
+ * 立昌约束：元宝浮出时，左边会议区不自动变宽。
+ * 做法：
+ * 1) 会议区用固定宽度（.meetingLocked*），不靠 flex 吃预留位；
+ * 2) 元宝仍打开时预留位保留（浮出也保留），避免整框变窄后被 page 重新水平居中。
  */
 .page {
   display: flex;
@@ -39,8 +40,8 @@
 }
 
 /*
- * 会议窗口（Figma 215:21466 / 406:16875）：圆角 12，毛玻璃；
- * 投票弹窗以它为定位基准，只覆盖会议、不盖元宝。
+ * 会议窗口玻璃层：默认 flex 占满 .window；
+ * 元宝仍打开时改用固定宽（.meetingLocked / .meetingLockedMembers），浮出也不变宽。
  */
 .meetingArea {
   position: relative;
@@ -52,12 +53,29 @@
   background-color: var(--wm-color-window-glass);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
+  transition: width 200ms cubic-bezier(0.22, 0.8, 0.3, 1);
+}
+
+/* 元宝打开（吸附或浮出）：锁 960，不吃掉右侧空位 */
+.meetingLocked {
+  flex: 0 0 auto;
+  width: 960px;
+  min-width: 960px;
+  max-width: 960px;
+}
+
+/* 三栏：舞台 960 + 管理成员 376 */
+.meetingLockedMembers {
+  flex: 0 0 auto;
+  width: 1336px;
+  min-width: 1336px;
+  max-width: 1336px;
 }
 
 /*
- * 窗口布局容器：本身不画底、不裁切、不投影。
- * 默认 1364×760（会议 + 元宝预留）；打开管理成员时再加 376（三栏）。
- * 元宝关掉才收回预留；浮出时预留仍在，左边不自动变宽（立昌）。
+ * 窗口布局容器：宽度跟内容走（会议固定宽 ± 吸附预留）。
+ * 浮出：无预留，窗口 = 会议锁定宽；吸附：会议锁定宽 + 404。
+ * 元宝关掉：会议改回 flex 撑满 1364（单独开会视图）。
  */
 .window {
   position: relative;
@@ -68,11 +86,21 @@
   transition: width 200ms cubic-bezier(0.22, 0.8, 0.3, 1);
 }
 
+/* 元宝仍打开：窗口 hug 内容，不再写死 1364（浮出时才会缩到会议宽） */
+.windowAgentOpen {
+  width: auto;
+}
+
 .windowWithMembers {
+  /* 仅元宝关掉、成员仍开时的兜底；元宝打开时由 meetingLocked* + reserve 决定 */
   width: 1740px;
 }
 
-/* 元宝仍打开时留给它的空间：元宝 400 + 缝隙 4；浮出时同样保留，会议区不撑开 */
+.windowAgentOpen.windowWithMembers {
+  width: auto;
+}
+
+/* 元宝仍打开时的槽位：400 + 缝 4；浮出时空着，会议宽靠 .meetingLocked* 锁死 */
 .reserve {
   position: relative;
   flex: 0 0 auto;
@@ -139,7 +167,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .window,
-  .reserve {
+  .reserve,
+  .meetingArea {
     transition: none;
   }
 

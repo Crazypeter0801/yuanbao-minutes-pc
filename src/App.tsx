@@ -254,27 +254,44 @@ export default function App() {
   };
 
   /**
-   * 元宝仍打开时（吸附或浮出），会议区左侧预留位保持：
-   * 立昌约束——浮出时左边不自动变宽；关掉元宝才收回预留。
+   * 立昌：浮出时左边不自动变宽（也不因窗口变窄而整框重居中）。
+   * - 会议区在元宝仍打开时用固定宽（960 / 1336），绝不靠 flex 吃空位；
+   * - 预留位在元宝仍打开时保留（吸附或浮出），浮出只是元宝离开槽位，会议宽/位置都不变；
+   * - 白条只在吸附态显示。
    */
-  const agentReservesLeft = sidebarOpen && dock.side === "left";
-  const agentReservesRight = sidebarOpen && dock.side === "right";
-  const showLeftHandle = agentReservesLeft && dock.mode === "docked";
-  const showRightHandle = agentReservesRight && dock.mode === "docked";
+  const agentOpen = sidebarOpen;
+  const agentDocked = agentOpen && dock.mode === "docked";
+  const agentReservesLeft = agentOpen && dock.side === "left";
+  const agentReservesRight = agentOpen && dock.side === "right";
+  const meetingWidthClass = agentOpen
+    ? membersOpen
+      ? styles.meetingLockedMembers
+      : styles.meetingLocked
+    : "";
 
   return (
     <div className={styles.page}>
       <div className={styles.frame} ref={frameRef}>
-        <div className={`${styles.window} ${membersOpen ? styles.windowWithMembers : ""}`}>
-          {/* 元宝吸附/浮出在左侧时，同样的空位让在会议窗口左边（镜像）；浮出也不收回 */}
+        <div
+          className={[
+            styles.window,
+            agentOpen ? styles.windowAgentOpen : "",
+            membersOpen ? styles.windowWithMembers : "",
+          ]
+            .filter(Boolean)
+            .join(" ")}
+        >
+          {/* 元宝仍打开时保留左侧槽位（浮出也不收回，避免会议重居中/变宽） */}
           <div
             className={`${styles.reserve} ${styles.reserveLeft} ${agentReservesLeft ? styles.reserveOpen : ""}`}
             aria-hidden="true"
           >
-            {showLeftHandle && <span className={`${styles.handle} ${styles.handleLeft}`} />}
+            {agentDocked && dock.side === "left" && (
+              <span className={`${styles.handle} ${styles.handleLeft}`} />
+            )}
           </div>
           {/* 投票弹窗只盖会议区，元宝说的话仍然看得见 */}
-          <div className={styles.meetingArea}>
+          <div className={`${styles.meetingArea} ${meetingWidthClass}`}>
             <MeetingWindow
               yuanbaoOpen={sidebarOpen}
               onToggleYuanbao={toggleSidebar}
@@ -319,12 +336,12 @@ export default function App() {
               />
             )}
           </div>
-          {/* 元宝打开时（吸附或浮出）会议窗口让出 404；浮出不撑开左边（立昌） */}
+          {/* 元宝仍打开时保留右侧槽位；浮出时空槽仍在，会议固定宽不会撑开 */}
           <div
             className={`${styles.reserve} ${agentReservesRight ? styles.reserveOpen : ""}`}
             aria-hidden="true"
           >
-            {showRightHandle && <span className={styles.handle} />}
+            {agentDocked && dock.side === "right" && <span className={styles.handle} />}
           </div>
         </div>
         {/* 拖回会议右缘时的吸附提示：右缘一个浅色描边的玻璃占位框（无文字），松手后元宝落在这里 */}
