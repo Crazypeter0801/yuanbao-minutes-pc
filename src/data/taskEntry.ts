@@ -1,38 +1,8 @@
 import { createId } from '@/data/yuanbaoContent';
 import type { ChatMessage, RichBlock } from '@/types/chat';
 
-/**
- * 任务入口两套方案（Figma 215:19035 / 215:21463）
- * - header：任务状态收进头部胶囊（方案 A）；
- * - footer：头部只留「元宝 ›」，任务胶囊排到输入框上方（方案 B）。
- */
-export type TaskEntryMode = 'header' | 'footer';
-
-/** 任务胶囊点进去对应的状态页 Tab */
-export type TaskEntryTab = 'overview' | 'library';
-
-export interface TaskEntryTask {
-  key: string;
-  /** 胶囊文案，与 Figma 一致 */
-  label: string;
-  /** 绿色增量，例如 +16 */
-  count?: string;
-  icon: 'pen' | 'file-plus';
-  /** 点胶囊进入的 Tab */
-  tab: TaskEntryTab;
-}
-
-/** 方案 B 输入框上方的两枚任务胶囊（Figma 215:22016 / 268:25268） */
-export const TASK_ENTRY_TASKS: TaskEntryTask[] = [
-  { key: 'notes', label: '元宝笔记', count: '+16', icon: 'pen', tab: 'overview' },
-  { key: 'todos', label: '会议待办', count: '+5', icon: 'file-plus', tab: 'overview' },
-];
-
-/** 方案 A 头部胶囊的状态文案（Figma 215:19432） */
+/** 头部胶囊的状态文案（Figma 215:19432，方案 A） */
 export const TASK_ENTRY_RECORDING_TEXT = '正在记笔记...';
-
-/** 方案 B 头部副标题：任务状态已经落到下方胶囊，这里只表示在听（Figma 294:37038） */
-export const TASK_ENTRY_LISTENING_TEXT = '正在听...';
 
 /** Figma 演示对话的时间：今天 17:22 */
 function taskEntryTime(): number {
@@ -47,7 +17,7 @@ const paragraph = (...texts: string[]): RichBlock => ({
 });
 
 /**
- * 演示初始对话（Figma 215:19035 / 215:21463）
+ * 演示初始对话（Figma 215:19035）
  * 依次是：开始记录 + 元宝笔记卡片 → 用户「总结刚刚发生的事情」→ 元宝的两件事小结 + 追问建议。
  * 三条消息共用 17:22，和设计稿一样只出现一次时间分割。
  */

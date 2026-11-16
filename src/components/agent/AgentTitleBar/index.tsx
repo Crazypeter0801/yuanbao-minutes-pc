@@ -30,12 +30,11 @@ interface AgentTitleBarProps {
 }
 
 /**
- * 元宝窗口标题栏（Figma 215:19389 / 215:21818）
- * 左侧是胶囊（Figma 215:19391 / 294:36996）：头像 +「元宝 ›」+ 副标题。
- * 方案 A 副标题是「正在记笔记...」，方案 B 是「正在听...」；
+ * 元宝窗口标题栏（Figma 215:19389）
+ * 左侧是胶囊（Figma 215:19391）：头像 +「元宝 ›」+ 副标题（正在记笔记... / 任务 activity）；
  * 点胶囊进入 Agent 状态页。右侧只有独立窗口和关闭（Figma 215:21862），中性灰图标。
  * 按住标题栏空白处（按钮和胶囊除外）拖动即可把元宝从会议窗口分离出来，拖到会议左 / 右缘松手再吸附回去。
- * 头像用雪碧图跟着任务状态动（Figma 197:42 方案 A：顶部头像集成）。
+ * 头像用雪碧图跟着任务状态动（Figma 197:42 顶部头像集成）。
  */
 export const AgentTitleBar: FC<AgentTitleBarProps> = ({
   dock,
@@ -56,7 +55,7 @@ export const AgentTitleBar: FC<AgentTitleBarProps> = ({
       onPointerDown={dock.onTitlePointerDown}
       title="按住拖动，可把元宝从会议窗口分离出来"
     >
-      {/* 头部胶囊：头像 +「元宝 ›」（方案 A 再带一行状态），整块可进入状态页 */}
+      {/* 头部胶囊：头像 +「元宝 ›」+ 状态副标题，整块可进入状态页 */}
       <span className={styles.pillSlot} data-nodrag>
         <Pressable
           className={styles.pill}
@@ -82,7 +81,7 @@ export const AgentTitleBar: FC<AgentTitleBarProps> = ({
                 <IconTaskEntryIconChevron />
               </span>
             </span>
-            {/* key 跟着文案变：换状态时淡入一次。两套方案都有副标题 */}
+            {/* key 跟着文案变：换状态时淡入一次 */}
             <span className={styles.status} key={statusText} role="status">
               {statusText}
             </span>

@@ -14,7 +14,7 @@ import { ProgressiveBlur } from "@/components/common/ProgressiveBlur";
 import { ChatInput } from "@/components/sidebar/ChatInput";
 import { ChatList } from "@/components/sidebar/ChatList";
 import { MessageStream } from "@/components/sidebar/MessageStream";
-import { BoardProgressPill, TaskEntryBar } from "@/components/sidebar/TaskEntryBar";
+import { BoardProgressPill } from "@/components/sidebar/TaskEntryBar";
 import { AgentTitleBar } from "@/components/agent/AgentTitleBar";
 import {
   AgentStatusPage,
@@ -23,12 +23,7 @@ import {
 import { AgentWindowShell } from "@/components/agent/AgentWindowShell";
 import { TaskDetail } from "@/components/agent/TaskDetail";
 import { WHITEBOARD_TASK_ID } from "@/data/agentTasks";
-import {
-  TASK_ENTRY_LISTENING_TEXT,
-  TASK_ENTRY_RECORDING_TEXT,
-  TASK_ENTRY_TASKS,
-  type TaskEntryMode,
-} from "@/data/taskEntry";
+import { TASK_ENTRY_RECORDING_TEXT } from "@/data/taskEntry";
 import { buildCardResult } from "@/data/interactiveCards";
 import { useListening } from "@/hooks/useListening";
 import { useToast } from "@/hooks/useToast";
@@ -48,15 +43,13 @@ interface YuanbaoSidebarProps {
   dock: AgentDockControl;
   /** 元宝的任务（由 App 持有）：头像状态、任务条、长程任务详情都从这里推出来 */
   agent: AgentTasksControl;
-  /** 任务入口方案：顶部胶囊（A）/ 输入框上方（B） */
-  taskEntry: TaskEntryMode;
   /** 打开状态页时默认停留的 Tab */
   statusTab: AgentStatusTab;
   /** 关闭侧栏 */
   onClose: () => void;
   /** 是否显示 Agent 状态页（覆盖对话区） */
   statusOpen: boolean;
-  /** 点击头部胶囊 / 任务胶囊 / 文件夹进入状态页，并指定 Tab */
+  /** 点击头部胶囊进入状态页，并指定 Tab */
   onOpenStatus: (tab: AgentStatusTab) => void;
   /** 状态页左上角返回聊天 */
   onCloseStatus: () => void;
@@ -71,10 +64,10 @@ interface YuanbaoSidebarProps {
 }
 
 /**
- * 元宝 personal agent 窗口（Figma 215:19034 / 215:21463）
+ * 元宝 personal agent 窗口（Figma 215:19034）
  * 外壳与会议窗一样是毛玻璃（#F0F2F7F2、圆角 12），两扇窗并排、中间一条白缝。
- * 方案 A：头部胶囊「头像 + 元宝 › + 正在记笔记…」，点胶囊进状态页概览；底部只有输入框。
- * 方案 B：头部副标题改成「正在听...」，输入框上方放指令大全和任务胶囊（元宝笔记 +16 / 会议待办 +5）。
+ * 任务入口固定在顶部：头部胶囊「头像 + 元宝 › + 正在记笔记…」，点胶囊进状态页概览；
+ * 底部只有输入框（画板进行中时多一枚进度胶囊）。
  *
  * 长程任务详情仍占用对话区；快捷指令仍在窗口外的演示按钮条上。
  */
@@ -82,7 +75,6 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
   chat,
   dock,
   agent,
-  taskEntry,
   statusTab,
   onClose,
   statusOpen,
@@ -146,8 +138,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
   });
   /*
    * 顶上是此刻的动作：画板进行中用任务自己的 activity（正在控制画板...）。
-   * 画完或没有这条任务时，方案 B 回到「正在听...」，方案 A 回到「正在记笔记...」；
-   * 若当时还有别的进行中任务，用那条的 activity。
+   * 画完或没有这条任务时回到「正在记笔记...」；若当时还有别的进行中任务，用那条的 activity。
    */
   const boardTask = agent.tasks.find((task) => task.id === WHITEBOARD_TASK_ID);
   const otherRunning = agent.tasks.find(
@@ -158,9 +149,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
       ? boardTask.activity
       : otherRunning
         ? otherRunning.activity
-        : taskEntry === "footer"
-          ? TASK_ENTRY_LISTENING_TEXT
-          : TASK_ENTRY_RECORDING_TEXT;
+        : TASK_ENTRY_RECORDING_TEXT;
   const detailTask = agent.tasks.find((task) => task.id === detailTaskId);
 
   return (
@@ -221,24 +210,12 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
 
         <ProgressiveBlur className={styles.blur} maxBlur={8} tint="var(--wm-color-blur-tint-agent)" />
 
-        <div className={`${styles.footer} ${taskEntry === "footer" ? styles.footerWithTasks : ""}`} ref={footerRef}>
-          {/*
-            方案 B：输入框上方一排毛玻璃胶囊（指令大全 / 元宝笔记 +16 / 会议待办 +5）；
-            方案 A 不出现这一行，任务状态全部收进头部胶囊。
-          */}
-          {taskEntry === "footer" ? (
-            <TaskEntryBar
-              tasks={TASK_ENTRY_TASKS}
-              boardTask={boardTask}
-              onOpen={onOpenStatus}
-              onCommand={send}
-            />
-          ) : (
-            boardTask && (
-              <div className={styles.boardRow}>
-                <BoardProgressPill task={boardTask} />
-              </div>
-            )
+        <div className={styles.footer} ref={footerRef}>
+          {/* 任务状态收进头部胶囊；画板进行中时在输入框上方留一枚进度胶囊 */}
+          {boardTask && (
+            <div className={styles.boardRow}>
+              <BoardProgressPill task={boardTask} />
+            </div>
           )}
           <ChatInput
             placeholder="和元宝聊聊"
