@@ -3,7 +3,7 @@ import { Pressable } from '@/components/common/Pressable';
 import { demoMenus, type CommandItem, type DemoMenu } from '@/data/commands';
 import styles from './index.module.scss';
 
-/** 不带菜单、点一下就执行的演示按钮（如「演示任务状态」） */
+/** 不带菜单、点一下就执行的演示按钮 */
 export interface DemoAction {
   key: string;
   label: string;
@@ -27,7 +27,7 @@ interface DemoToolbarProps {
 }
 
 /**
- * 窗口外的演示按钮条：模拟元宝发言 / 模拟用户发言 / 模拟交互功能 + 直接动作（演示任务状态）+ 动作菜单（元宝表情）
+ * 窗口外的演示按钮条：模拟元宝发言 / 模拟用户发言 / 模拟交互功能 + 动作菜单（元宝画白板 / 元宝表情）
  * 快捷指令从会议窗口里整体拿出来放到这里，窗口内只保留真实产品界面。
  * 点按钮向上弹出指令菜单，同一时间只开一个；点外面或按 Esc 收起，点指令后自动收起。
  */

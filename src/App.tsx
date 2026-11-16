@@ -24,7 +24,6 @@ import { buildPollPostedMessage, teamBuildingPoll } from "@/data/polls";
 import { SHARE_TO_GROUP_LABEL } from "@/data/meetingSession";
 import { topicAt } from "@/data/meetingTopics";
 import { matchScenario } from "@/data/proactiveScenarios";
-import type { TaskEntryMode } from "@/data/taskEntry";
 import {
   buildWhiteboardDoneMessage,
   buildWhiteboardIntroMessage,
@@ -52,8 +51,9 @@ const FILE_KIND_PATTERN = /pdf|ppt|幻灯片|文件|纪要文档/i;
  * 腾讯会议 PC + 元宝 Agent 对话区（Figma 257:1540）· Figma 导入版
  *
  * 1. Tahoe 壁纸铺满页面，1440×760 主窗口（会议区 + 元宝侧栏）居中，窗口内不放任何演示入口；
- * 2. 窗口下方的壁纸上浮着演示按钮：模拟元宝发言 / 模拟用户发言 / 模拟交互功能 / 演示任务状态；
+ * 2. 窗口下方的壁纸上浮着演示按钮：模拟元宝发言 / 模拟用户发言 / 模拟交互功能；
  * 3. 输入框里直接打「刚入会」「建个投票」这类词也能触发演示场景。
+ * 4. 任务入口固定顶部（方案 A）；输入框上方不再出现任务胶囊。
  */
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -68,10 +68,8 @@ export default function App() {
   const [portrait, setPortrait] = useState<string | null>(null);
   /** 资料库点开的文件查看器，浮在两扇窗之外 */
   const [fileViewerOpen, setFileViewerOpen] = useState(false);
-  /** 状态页打开时落在哪个 Tab：任务胶囊进概览，文件夹进资料库 */
+  /** 状态页打开时落在哪个 Tab：头部胶囊进概览，资料库入口进资料库 */
   const [statusTab, setStatusTab] = useState<AgentStatusTab>("overview");
-  /** 任务入口方案：默认输入框上方（方案 B）。演示面板仍可切回顶部，刷新后回到输入框上方 */
-  const [taskEntry, setTaskEntry] = useState<TaskEntryMode>("footer");
   /** 接受「开启屏幕翻译」后，主讲画面底部叠一层只有自己能看到的中文 */
   const [screenTranslation, setScreenTranslation] = useState(false);
   const [pollOpen, setPollOpen] = useState(false);
@@ -120,7 +118,7 @@ export default function App() {
     setMembersOpen((open) => !open);
   };
 
-  /** 点头部胶囊 / 任务胶囊 / 文件夹进入状态页，并指定默认 Tab */
+  /** 点头部胶囊进入状态页，并指定默认 Tab */
   const openStatus = (tab: AgentStatusTab = "overview") => {
     setSidebarOpen(true);
     setStatusTab(tab);
@@ -355,7 +353,6 @@ export default function App() {
             artifacts={artifacts}
             dock={dock}
             agent={agent}
-            taskEntry={taskEntry}
             statusTab={statusTab}
             onClose={closeSidebar}
             statusOpen={statusOpen}
@@ -373,35 +370,7 @@ export default function App() {
         <div className={styles.demoBar}>
           <DemoToolbar
             onCommand={runCommand}
-            actions={[
-              {
-                key: "task-states",
-                label: "演示任务状态",
-                // 元宝依次走一遍：空闲 → 工作中 → 待确认 → 已完成；侧栏关着就先打开
-                onClick: () => {
-                  setSidebarOpen(true);
-                  agent.runDemo();
-                },
-              },
-            ]}
             actionMenus={[
-              {
-                key: "task-entry",
-                label: `任务入口：${taskEntry === "header" ? "顶部" : "输入框上方"}`,
-                // 随时切 A / B：A 任务状态在头部胶囊，B 任务胶囊在输入框上方
-                items: [
-                  {
-                    key: "header",
-                    label: "顶部（方案 A）",
-                    onClick: () => setTaskEntry("header"),
-                  },
-                  {
-                    key: "footer",
-                    label: "输入框上方（方案 B）",
-                    onClick: () => setTaskEntry("footer"),
-                  },
-                ],
-              },
               {
                 key: "whiteboard",
                 label: "元宝画白板",

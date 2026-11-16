@@ -13,7 +13,7 @@ interface AgentTitleBarProps {
   dock: AgentDockControl;
   /** 头像状态（雪碧图动画） */
   mood: YuanbaoMood;
-  /** 名称下方的状态文字；空字符串时不渲染副标题（入会稿 Figma 215/406 默认态） */
+  /** 名称下方的状态文字；空字符串时不渲染副标题 */
   statusText: string;
   /** 同一个状态要重播时递增（连续摸头） */
   replayKey: number;
@@ -31,8 +31,9 @@ interface AgentTitleBarProps {
 
 /**
  * 元宝窗口标题栏（Figma 215:19389 / 406:17110）
- * 左侧胶囊：头像 +「元宝」（有状态时再加 › 与副标题）；点胶囊进状态页。
+ * 左侧胶囊：头像 +「元宝 ›」+ 状态副标题（正在记笔记... / 任务 activity）；点胶囊进状态页。
  * 右侧操作胶囊：独立窗口 + 关闭。按住空白处可拖出；浮出时会议区不自动变宽（App 预留位）。
+ * 头像用雪碧图跟着任务状态动（Figma 197:42 顶部头像集成）。
  */
 export const AgentTitleBar: FC<AgentTitleBarProps> = ({
   dock,
@@ -54,6 +55,7 @@ export const AgentTitleBar: FC<AgentTitleBarProps> = ({
       onPointerDown={dock.onTitlePointerDown}
       title="按住拖动，可把元宝从会议窗口分离出来"
     >
+      {/* 头部胶囊：头像 +「元宝 ›」+ 状态副标题，整块可进入状态页 */}
       <span className={styles.pillSlot} data-nodrag>
         <Pressable
           className={`${styles.pill} ${showStatus ? styles.pillWithStatus : ''}`}
