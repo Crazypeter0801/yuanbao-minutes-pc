@@ -1,8 +1,10 @@
 /*
- * 元宝窗口外壳（Figma 215:21817）
- * 吸附态：和会议并排的完整圆角窗口（12），#F0F2F7F2 + 背景模糊 4，和会议窗同一块毛玻璃；
+ * 元宝窗口外壳（Figma 215:19388 / 406:17109）
+ * 吸附态：和会议并排的完整圆角窗口（16），rgba(243,243,244,0.98) + 背景模糊 10；
  * 分离态：矮一点的浮动窗（400×580，圆角 22），沿同一材质。
  * 同一个节点两种形态只换样式，对话滚动位置、输入内容不会丢。
+ *
+ * 立昌：浮出时会议区预留位不收回（见 App.module.scss），本壳只换定位/阴影。
  */
 .shell {
   display: flex;
@@ -17,7 +19,7 @@
 /*
  * 吸附态：相对会议窗口外框（.frame）贴右、上下撑满（760），宽 400；
  * 与会议窗口之间留 8（缝隙 2 + 白条 4 + 缝隙 2，Figma 215:21465）；两个窗口平级，都不投影。
- * 底色与会议窗相同：#F0F2F7F2 + blur(4px)，圆角 12。
+ * 底色：#F3F3F4FA + blur(10px)，圆角 16（Figma --r16）。
  */
 .docked {
   position: absolute;
@@ -25,10 +27,10 @@
   right: 0;
   bottom: 0;
   z-index: 20;
-  border-radius: var(--wm-radius-sidebar-panel);
-  background-color: var(--wm-color-window-glass);
-  -webkit-backdrop-filter: blur(4px);
-  backdrop-filter: blur(4px);
+  border-radius: var(--wm-radius-agent-panel);
+  background-color: var(--wm-color-agent-glass);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
 }
 
 /* 吸附在左侧：布局镜像，贴左、其余（圆角、磨砂、间距）与右侧一致 */
@@ -45,9 +47,9 @@
   height: 580px;
   max-height: calc(100vh - 16px);
   border-radius: 22px;
-  background-color: var(--wm-color-window-glass);
-  -webkit-backdrop-filter: blur(4px);
-  backdrop-filter: blur(4px);
+  background-color: var(--wm-color-agent-glass);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   box-shadow:
     0 8px 30px rgba(0, 0, 0, 0.1),
     0 1px 2px rgba(0, 0, 0, 0.04),

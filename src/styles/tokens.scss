@@ -34,6 +34,8 @@
   --wm-color-panel-surface: #f5f6f7;
   --wm-color-panel-card-border: #e5e6eb;
   --wm-radius-sidebar-panel: 12px;
+  /* 元宝窗圆角（Figma 215:19388 / 406:17109 --r16） */
+  --wm-radius-agent-panel: 16px;
   /* 用户提问气泡（Figma 215:19494 wm_color_chat_bubble_send_normal_v2）：深灰底、白字 */
   --wm-color-background-user-bubble: #5e6270;
   --wm-color-text-on-user-bubble: #ffffff;
@@ -150,11 +152,13 @@
   --wm-color-note-topic-dot: #c3c7cf;
   --wm-color-note-topic-line: #dfe1e6;
 
-  /* 会议窗与元宝窗共用材质（Figma 215:21466 / 215:21817）：#F0F2F7F2 + 背景模糊 4 */
-  --wm-color-window-glass: rgba(240, 242, 247, 0.95);
+  /* 会议窗材质（Figma 215:19035 / 406:16875）：浅灰毛玻璃 */
+  --wm-color-window-glass: rgba(243, 243, 244, 0.98);
+  /* 元宝窗材质（Figma 215:19388 / 406:17109）：同色 + blur 10 */
+  --wm-color-agent-glass: rgba(243, 243, 244, 0.98);
   /* 渐进模糊带的着色：跟着毛玻璃，不要再铺一层纯白（Figma 215:19534 / 215:21963） */
-  --wm-color-blur-tint-meeting: rgba(240, 242, 247, 0.28);
-  --wm-color-blur-tint-agent: rgba(244, 244, 245, 0.12);
+  --wm-color-blur-tint-meeting: rgba(243, 243, 244, 0.28);
+  --wm-color-blur-tint-agent: rgba(243, 243, 244, 0.12);
   /*
    * 方案 B 底栏遮罩（Figma 215:22014）
    * 渐变向量只有容器高度的 12.7%（gradientHandles h2.y = 0.127），
@@ -233,10 +237,10 @@
   /* 设置列表分隔线（Figma 243:1196） */
   --wm-color-status-setting-line: #eef0f3;
 
-  /* 顶部任务胶囊（Figma 294:36998）：#FAFAFA + 1px 白描边 + 0 4 30 */
-  --wm-color-header-pill: #fafafa;
+  /* 顶部标题/操作胶囊（Figma 399:16703 / 406:17111）：白底 + 1px 白描边 + 0 4 15 / 8% */
+  --wm-color-header-pill: #ffffff;
   --wm-color-header-pill-line: #ffffff;
-  --wm-shadow-header-pill: 0 4px 30px rgba(0, 0, 0, 0.08);
+  --wm-shadow-header-pill: 0 4px 15px rgba(0, 0, 0, 0.08);
   /*
    * 输入框上方任务胶囊（Figma 215:22016 / 268:25268 / 215:22028）
    * 填充从 #FFFFFF99 加深到 #FFFFFFE6，后面的对话不再透出来。

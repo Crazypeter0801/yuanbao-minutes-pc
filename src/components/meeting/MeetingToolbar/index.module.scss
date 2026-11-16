@@ -75,7 +75,7 @@
   width: 56px;
 }
 
-/* 可点击的按钮（元宝）：hover 叠一层浅灰，圆角 6 与设计稿 hover 态一致 */
+/* 可点击的按钮（元宝 / 成员）：hover 叠一层浅灰，圆角 6 与设计稿 hover 态一致 */
 .slotAction {
   border-radius: 6px;
   cursor: pointer;
@@ -85,6 +85,11 @@
   &:focus-visible {
     background-color: var(--wm-color-control-hover);
   }
+}
+
+/* 管理成员打开时：蓝色点亮（Figma 406:16873 底栏成员态） */
+.slotActive {
+  background-color: var(--wm-color-brand-primary-soft);
 }
 
 /* ---------- 成员按钮：图标含数字，需拆开实现（Figma 316:2088） ---------- */
