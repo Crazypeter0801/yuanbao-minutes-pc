@@ -1,3 +1,4 @@
+import { OPENUI_MEETING_SUMMARY } from '@/openui/demoPrograms';
 import { createId } from '@/data/yuanbaoContent';
 import type { ChatMessage, RichBlock } from '@/types/chat';
 
@@ -18,7 +19,8 @@ const paragraph = (...texts: string[]): RichBlock => ({
 
 /**
  * 演示初始对话（Figma 215:19035）
- * 依次是：开始记录 + 元宝笔记卡片 → 用户「总结刚刚发生的事情」→ 元宝的两件事小结 + 追问建议。
+ * 依次是：开始记录 + 元宝笔记卡片 → 用户「总结刚刚发生的事情」→
+ * 元宝小结改走 OpenUI Lang（Intelligent UI）+ 追问建议。
  * 三条消息共用 17:22，和设计稿一样只出现一次时间分割。
  */
 export function buildTaskEntryConversation(): ChatMessage[] {
@@ -47,28 +49,9 @@ export function buildTaskEntryConversation(): ChatMessage[] {
       id: createId('task-entry-summary'),
       role: 'assistant',
       createdAt,
-      bubbles: [
-        {
-          id: createId('task-entry-summary-bubble'),
-          blocks: [
-            paragraph('到目前为止主要聊了两件事：'),
-            {
-              type: 'list',
-              items: [
-                [{ text: '竞品偏“以面为主”的布局，当前产品更偏线性结构，会上做了对照。' }],
-                [{ text: '登录页需要更亲和、有趣。' }],
-              ],
-            },
-            {
-              type: 'paragraph',
-              runs: [
-                { text: '还没定：', bold: true },
-                { text: '是否保留现有主题色、竖向布局怎么改。' },
-              ],
-            },
-          ],
-        },
-      ],
+      // 生成式主输出：OpenUI 渲染；bubbles 留空以免双渲染
+      bubbles: [],
+      openui: OPENUI_MEETING_SUMMARY,
       followUps: ['说得更具体些', '列出我的待办'],
     },
   ];

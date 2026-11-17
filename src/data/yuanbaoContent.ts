@@ -3,6 +3,7 @@ import { meetingSession } from '@/data/meetingSession';
 
 /** 会议画面截图的图片源：对话里的小图和文件夹「来源」里的缩略图共用 */
 export const meetingShotSrc = videoSpeaker;
+import { OPENUI_TODO_BOARD } from '@/openui/demoPrograms';
 import type { AssistantMessage, ChatMessage, RichBlock, TextRun } from '@/types/chat';
 
 /**
@@ -359,8 +360,10 @@ const RULES: Rule[] = [
   {
     topic: 'todo',
     test: (q) => /待办|任务|todo|要做/i.test(q),
+    // Intelligent UI demo：待办改走 OpenUI Fact 原子，而不是硬编码列表气泡
     build: () =>
-      reply([p('目前记下 3 项待办：'), list(...TODO_ITEMS)], {
+      reply([], {
+        openui: OPENUI_TODO_BOARD,
         source: '引用 · 本场纪要',
         followUps: ['帮我同步到待办', '谁的待办最急？'],
       }),

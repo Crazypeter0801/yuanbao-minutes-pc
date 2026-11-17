@@ -1,0 +1,5 @@
+/* OpenUI 块落在助手气泡内：宽度跟内容，不撑破侧栏 */
+.shell {
+  max-width: 100%;
+  min-width: 0;
+}

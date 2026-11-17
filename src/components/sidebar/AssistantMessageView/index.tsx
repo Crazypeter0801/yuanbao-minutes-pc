@@ -5,6 +5,7 @@ import { Pressable } from '@/components/common/Pressable';
 import { ArtifactCard } from '@/components/sidebar/ArtifactCard';
 import { FoldCard } from '@/components/sidebar/FoldCard';
 import { MessageCard } from '@/components/sidebar/MessageCard';
+import { OpenUIBlock } from '@/components/sidebar/OpenUIBlock';
 import { RecordingCard } from '@/components/sidebar/RecordingCard';
 import { RichText } from '@/components/sidebar/RichText';
 import type { ArtifactItem } from '@/types/artifact';
@@ -58,58 +59,70 @@ export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
   const lastIndex = message.bubbles.length - 1;
   // 交互卡片独立在气泡外，一条消息最多一张
   const activeCard = message.bubbles.find((bubble) => bubble.card)?.card;
+  const openuiProgram = message.openui?.trim();
+  const bubbleShapeClass = isPlain
+    ? styles.plain
+    : [styles.bubble, shape === 'round' ? styles.round : styles.compact].filter(Boolean).join(' ');
 
   return (
     <div className={`${styles.group} ${isPlain ? styles.groupPlain : ''}`}>
-      <div className={styles.bubbles}>
-        {message.bubbles.map((bubble, index) => {
-          const shapeClass = isPlain
-            ? styles.plain
-            : [
-                styles.bubble,
-                shape === 'round' ? styles.round : styles.compact,
-                shape === 'compact' && index !== lastIndex ? styles.compactJoined : '',
-              ]
-                .filter(Boolean)
-                .join(' ');
+      {openuiProgram ? (
+        <div className={styles.bubbles}>
+          <div className={bubbleShapeClass}>
+            <OpenUIBlock response={openuiProgram} />
+          </div>
+        </div>
+      ) : (
+        <div className={styles.bubbles}>
+          {message.bubbles.map((bubble, index) => {
+            const shapeClass = isPlain
+              ? styles.plain
+              : [
+                  styles.bubble,
+                  shape === 'round' ? styles.round : styles.compact,
+                  shape === 'compact' && index !== lastIndex ? styles.compactJoined : '',
+                ]
+                  .filter(Boolean)
+                  .join(' ');
 
-          // 默认折叠的补充信息：不套气泡，独立一张轻卡片
-          if (bubble.fold) {
-            return <FoldCard fold={bubble.fold} key={bubble.id} />;
-          }
+            // 默认折叠的补充信息：不套气泡，独立一张轻卡片
+            if (bubble.fold) {
+              return <FoldCard fold={bubble.fold} key={bubble.id} />;
+            }
 
-          return (
-            <div className={shapeClass} key={bubble.id}>
-              <RichText
-                blocks={bubble.blocks}
-                trailing={
-                  bubble.withLink ? (
-                    <Pressable
-                      as="span"
-                      className={styles.linkBadge}
-                      onClick={onOpenSource}
-                      title="查看原文"
-                      ariaLabel="查看原文"
-                    >
-                      <IconSideLink />
-                    </Pressable>
-                  ) : undefined
-                }
-              />
-              {bubble.image && (
-                <img
-                  className={styles.image}
-                  src={bubble.image.src}
-                  alt={bubble.image.alt}
-                  width={bubble.image.width}
-                  height={bubble.image.height}
-                  draggable={false}
+            return (
+              <div className={shapeClass} key={bubble.id}>
+                <RichText
+                  blocks={bubble.blocks}
+                  trailing={
+                    bubble.withLink ? (
+                      <Pressable
+                        as="span"
+                        className={styles.linkBadge}
+                        onClick={onOpenSource}
+                        title="查看原文"
+                        ariaLabel="查看原文"
+                      >
+                        <IconSideLink />
+                      </Pressable>
+                    ) : undefined
+                  }
                 />
-              )}
-            </div>
-          );
-        })}
-      </div>
+                {bubble.image && (
+                  <img
+                    className={styles.image}
+                    src={bubble.image.src}
+                    alt={bubble.image.alt}
+                    width={bubble.image.width}
+                    height={bubble.image.height}
+                    draggable={false}
+                  />
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {activeCard && (
         <div className={styles.cardSlot}>

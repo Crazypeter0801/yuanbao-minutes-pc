@@ -1,0 +1,90 @@
+/*
+ * OpenUI 原子样式：对齐元宝对话 RichText / MessageCard token，
+ * 不引入第三方 chat chrome，只约束容器与原子外观。
+ */
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  font-family: var(--chat-font-family);
+  font-size: var(--chat-font-size);
+  line-height: var(--chat-line-height);
+  color: var(--wm-color-text-primary);
+  word-break: break-word;
+
+  & > * + * {
+    margin-top: 8px;
+  }
+}
+
+.text,
+.heading,
+.calloutTitle,
+.calloutBody {
+  margin: 0;
+}
+
+.heading {
+  font-weight: 600;
+}
+
+.bulletList {
+  margin: 0;
+  padding-left: 16px;
+
+  & > * + * {
+    margin-top: 4px;
+  }
+}
+
+.bullet {
+  list-style: disc;
+
+  &::marker {
+    color: var(--wm-color-text-disabled);
+  }
+}
+
+.fact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  align-items: baseline;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background-color: var(--wm-color-background-bubble);
+  box-shadow: inset 0 0 0 1px var(--wm-color-panel-card-border);
+}
+
+.factLabel {
+  flex: 0 0 auto;
+  font-weight: 600;
+  color: var(--wm-color-text-primary);
+}
+
+.factValue {
+  min-width: 0;
+  color: var(--wm-color-text-secondary);
+}
+
+.callout {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background-color: var(--wm-color-background-twenty-second);
+
+  & > * + * {
+    margin-top: 4px;
+  }
+}
+
+.calloutTitle {
+  font-weight: 600;
+  color: var(--wm-color-text-primary);
+}
+
+.calloutBody {
+  color: var(--wm-color-text-secondary);
+}

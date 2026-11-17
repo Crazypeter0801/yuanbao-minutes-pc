@@ -86,6 +86,11 @@ export interface AssistantMessage {
    */
   createdAt: number;
   bubbles: Bubble[];
+  /**
+   * OpenUI Lang 源码：有值时主输出走生成式 Renderer，不再渲染 bubbles 正文。
+   * 卡片 / 产物 / 追问等副作用字段仍可并存。
+   */
+  openui?: string;
   /** 回答依据，例如「引用 · 2分钟前 黄婷婷」 */
   source?: string;
   /** 这条回答生成的文件：在气泡下方显示可点击的产物卡片 */
