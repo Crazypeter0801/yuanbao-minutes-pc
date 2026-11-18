@@ -22,11 +22,12 @@
   flex: 0 0 auto;
 }
 
-/* 浮在窗口下方的壁纸上，水平居中，距窗口 14 */
+/* 演示控制台：吸在浏览器窗口底部、距底 60，水平居中，不随页面滚动 */
 .demoBar {
-  position: absolute;
-  top: calc(100% + 14px);
+  position: fixed;
+  bottom: 60px;
   left: 50%;
+  z-index: 100;
   transform: translateX(-50%);
   white-space: nowrap;
 }
