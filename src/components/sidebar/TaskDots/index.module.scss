@@ -1,0 +1,74 @@
+/*
+ * 进行中任务点阵（Figma 533:13569）
+ * 16×16 画布，九个 3.5×3.5、圆角 1 的方块，起点 1.75、步长 4.5（方块 3.5 + 间距 1）。
+ */
+
+/* 一轮 2.8s：0–60% 逐格亮起，60–80% 全亮停住，80–92% 一起淡回，92–100% 空闲 */
+$cycle: 2800ms;
+$step: 6.5%;
+$fade: 6%;
+
+.dots {
+  position: relative;
+  flex: 0 0 auto;
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+
+.cell {
+  position: absolute;
+  width: 3.5px;
+  height: 3.5px;
+  border-radius: 1px;
+  background-color: var(--wm-color-task-dot-idle);
+}
+
+@for $i from 0 through 8 {
+  $col: $i % 3;
+  $row: floor($i / 3);
+  $start: $i * $step;
+
+  .cell#{$i} {
+    top: 1.75px + $row * 4.5px;
+    left: 1.75px + $col * 4.5px;
+  }
+
+  /* 每格自己的关键帧：轮到它时由浅变深，全部亮完后一起淡回 */
+  @keyframes task-dot-#{$i} {
+    0%,
+    #{$start} {
+      background-color: var(--wm-color-task-dot-idle);
+    }
+    #{$start + $fade},
+    80% {
+      background-color: var(--wm-color-task-dot-active);
+    }
+    92%,
+    100% {
+      background-color: var(--wm-color-task-dot-idle);
+    }
+  }
+
+  .running .cell#{$i} {
+    animation: task-dot-#{$i} $cycle cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+}
+
+/* 减少动态效果：停在设计稿静帧（第一行亮、第二行第一格 70%） */
+@media (prefers-reduced-motion: reduce) {
+  .running .cell {
+    animation: none;
+  }
+
+  .running .cell0,
+  .running .cell1,
+  .running .cell2 {
+    background-color: var(--wm-color-task-dot-active);
+  }
+
+  .running .cell3 {
+    background-color: var(--wm-color-task-dot-active);
+    opacity: 0.7;
+  }
+}

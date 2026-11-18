@@ -1,7 +1,7 @@
 import type { FC } from 'react';
-import IconSide3Tasks from '@/assets/d2c/icons/v2/icon-side3-tasks';
 import { Pressable } from '@/components/common/Pressable';
 import { MorphPanel } from '@/components/sidebar/MorphPanel';
+import { TaskDots } from '@/components/sidebar/TaskDots';
 import type { AgentTask } from '@/data/agentTasks';
 import styles from './index.module.scss';
 
@@ -35,7 +35,7 @@ export const TaskEntry: FC<TaskEntryProps> = ({
     hidden={hidden}
     summary={
       <>
-        <IconSide3Tasks />
+        <TaskDots running={runningCount > 0} />
         <span className={styles.label}>进行中任务</span>
         <span className={styles.count}>{runningCount}</span>
       </>

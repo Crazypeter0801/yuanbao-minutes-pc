@@ -17,8 +17,8 @@
 
 /*
  * 底部 padding 16，卡片行与输入框间距 10，总高 122（Figma 489:10623）
- * 背景是 Figma 533:13549：透明 → 12.5% 处 54% 白 → 47.7% 起纯白，叠 15px 背景模糊，
- * 经过的对话在上沿渐渐被盖住。透明的渐变带不拦点击，按钮和输入框照常可点。
+ * 背景是 Figma 533:13549：白色渐变 + 背景模糊，经过的对话在上沿渐渐被盖住（见 .footerBlur 与 ::after）。
+ * 透明的渐变带不拦点击，按钮和输入框照常可点。
  */
 .footer {
   position: absolute;
@@ -32,38 +32,28 @@
   pointer-events: none;
 
   /*
-   * 底层两层（Figma 533:13549：376×122，渐变填充 + 15px 背景模糊）
-   * Figma 的背景模糊强度跟着填充透明度走：上沿透明处不糊，越往下越糊。
-   * CSS 的 backdrop-filter 是一刀切的，所以拆成两层：
-   * - ::before 只做 15px 模糊，mask 在上沿 12.5%（≈15px）内从 0 渐到满，之后全糊，上沿没有硬边；
-   * - ::after 叠白色渐变：透明 → 12.5% 处 54% 白 → 47.7% 起纯白。
+   * 白色渐变（Figma 533:13549：透明 → 12.5% 54% 白 → 47.7% 起纯白）。
+   * 线性插值在 12.5% 处有明显拐点，看着像一道台阶；改成缓入曲线、端点不变，过渡更顺。
+   * 底部两个角跟着侧栏卡片收 16 的圆角，否则会在卡片圆角外露出直角。
    */
-  &::before,
   &::after {
     position: absolute;
     inset: 0;
     z-index: -1;
     content: '';
-    pointer-events: none;
-  }
-
-  &::before {
-    backdrop-filter: blur(15px);
-    mask-image: linear-gradient(
-      180deg,
-      var(--wm-mask-clear) 0%,
-      var(--wm-mask-solid) 12.53%
-    );
-  }
-
-  &::after {
+    border-radius: 0 0 16px 16px;
     background-image: linear-gradient(
       180deg,
       var(--wm-color-footer-fade-start) 0%,
-      var(--wm-color-footer-fade-soft) 12.53%,
-      var(--wm-color-background-quaternary) 47.68%,
+      var(--wm-color-footer-fade-12) 6%,
+      var(--wm-color-footer-fade-32) 12%,
+      var(--wm-color-footer-fade-soft) 18%,
+      var(--wm-color-footer-fade-75) 27%,
+      var(--wm-color-footer-fade-92) 37%,
+      var(--wm-color-background-quaternary) 48%,
       var(--wm-color-background-quaternary) 100%
     );
+    pointer-events: none;
   }
 
   & > * {
@@ -73,6 +63,59 @@
   & > * + * {
     margin-top: 10px;
   }
+}
+
+/*
+ * 渐进模糊（Figma 533:13549 背景模糊 15）
+ * Figma 的背景模糊强度随填充透明度变化；CSS backdrop-filter 只有一个固定值，单层加遮罩会在遮罩过渡带里
+ * 出现「一半清楚一半糊」的分层感。拆成 3 层：2px / 6px / 15px，各自用遮罩错开出现的位置，
+ * 叠在一起就是从上往下连续变糊。每层底部同样收 16 圆角，避免 backdrop-filter 溢出侧栏圆角。
+ */
+.footerBlur {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+
+  & > span {
+    position: absolute;
+    inset: 0;
+    border-radius: 0 0 16px 16px;
+  }
+}
+
+.blurSoft {
+  backdrop-filter: blur(2px);
+  mask-image: linear-gradient(
+    180deg,
+    var(--wm-mask-clear) 0%,
+    var(--wm-mask-solid) 10%,
+    var(--wm-mask-solid) 100%
+  );
+}
+
+.blurMid {
+  backdrop-filter: blur(6px);
+  mask-image: linear-gradient(
+    180deg,
+    var(--wm-mask-clear) 6%,
+    var(--wm-mask-a40) 14%,
+    var(--wm-mask-solid) 24%,
+    var(--wm-mask-solid) 100%
+  );
+}
+
+.blurStrong {
+  backdrop-filter: blur(15px);
+  mask-image: linear-gradient(
+    180deg,
+    var(--wm-mask-clear) 14%,
+    var(--wm-mask-a15) 20%,
+    var(--wm-mask-a70) 30%,
+    var(--wm-mask-a90) 36%,
+    var(--wm-mask-solid) 42%,
+    var(--wm-mask-solid) 100%
+  );
 }
 
 /*

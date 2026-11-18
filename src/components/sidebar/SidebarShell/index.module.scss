@@ -10,6 +10,9 @@
   width: 376px;
   margin: 8px 0;
   overflow: hidden;
+  /* backdrop-filter 的子层在 Chrome 里不吃父级 overflow 的圆角裁切，加 isolation + clip-path 兜底 */
+  isolation: isolate;
+  clip-path: inset(0 round 16px);
   border-radius: 16px;
   background-color: var(--wm-color-background-quaternary);
 }
