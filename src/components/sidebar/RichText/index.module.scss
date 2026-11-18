@@ -10,8 +10,9 @@
   color: var(--wm-color-text-primary);
   word-break: break-word;
 
+  /* 段落与列表紧贴（Figma 416:20685：标题句、列表、「还没定」三段之间不留空） */
   & > * + * {
-    margin-top: 8px;
+    margin-top: 0;
   }
 }
 

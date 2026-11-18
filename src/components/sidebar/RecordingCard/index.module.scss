@@ -254,3 +254,31 @@
     transition: none;
   }
 }
+
+/*
+ * 单行卡片（Figma 416:20791）：宽度随内容、高 42、圆角 16、1px #EBEDF2 内描边。
+ * 标题行 padding 12：图标 18 → 4 → 标题 14/18 500 → 10 → 箭头 18。
+ */
+.cardCompact {
+  width: fit-content;
+  align-self: flex-start;
+  border-radius: 16px;
+
+  .header {
+    padding: 12px;
+  }
+
+  .title {
+    flex: 0 1 auto;
+    margin-left: 4px;
+    line-height: 18px;
+    font-weight: 500;
+    color: var(--wm-color-text-primary);
+  }
+
+  .chevron {
+    width: 18px;
+    height: 18px;
+    margin-left: 10px;
+  }
+}

@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState, type FC } from 'react';
-import IconNoteChevron from '@/assets/d2c/icons/v2/icon-note-chevron';
-import IconNoteFile from '@/assets/d2c/icons/v2/icon-note-file';
+import IconNoteChevron from '@/assets/d2c/icons/v2/icon-side3-note-chevron';
+import IconNoteFile from '@/assets/d2c/icons/v2/icon-side3-note-file';
 import { Pressable } from '@/components/common/Pressable';
 import { recognizingIdle, recognizingSteps } from '@/data/meetingTopics';
 import styles from './index.module.scss';
@@ -85,7 +85,11 @@ export const RecordingCard: FC<RecordingCardProps> = ({
   const hint = step < lastStep ? recognizingSteps[step] : recognizingIdle;
 
   return (
-    <Pressable className={styles.card} onClick={onOpen} ariaLabel={`打开${title}`}>
+    <Pressable
+      className={`${styles.card} ${compact ? styles.cardCompact : ''}`}
+      onClick={onOpen}
+      ariaLabel={`打开${title}`}
+    >
       <span className={styles.header}>
         <span className={styles.icon} aria-hidden="true">
           <IconNoteFile />

@@ -126,6 +126,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
       >
         <MessageStream
           className={styles.stream}
+          startAtTop
           scrollKey={`${chat.messages.length}-${chat.isThinking}`}
         >
           <ChatList

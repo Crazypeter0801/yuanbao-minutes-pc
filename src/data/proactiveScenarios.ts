@@ -1,7 +1,7 @@
 import { extractCard, summaryModeCard, taskConfirmCard } from '@/data/interactiveCards';
 import { parseMarkedText } from '@/data/richText';
 import { createId } from '@/data/yuanbaoContent';
-import type { AssistantMessage, RichBlock } from '@/types/chat';
+import type { AssistantMessage, ChatMessage, RichBlock } from '@/types/chat';
 
 /**
  * 主动触发场景（演示用）
@@ -76,7 +76,45 @@ export function buildRecordingStartMessage(): AssistantMessage {
       },
     ],
     recordingCard: true,
+    recordingTitle: '元宝笔记：产品方案评审',
   };
+}
+
+/**
+ * 入会稿里的小结问答（Figma 416:20680 / 416:20684，533:13495 / 533:13499，533:13523 / 533:13527）
+ * 稿里同一轮重复了三次，用来撑出可滚动的长度、演示对话滚到底栏下面被渐变盖住的效果。
+ */
+export function buildInitialSummaryRound(): ChatMessage[] {
+  return [0, 1, 2].flatMap(() => buildSummaryPair());
+}
+
+function buildSummaryPair(): ChatMessage[] {
+  const now = Date.now();
+  return [
+    { id: createId('init-user'), role: 'user', text: '总结刚刚发生的事情', createdAt: now },
+    {
+      id: createId('init-summary'),
+      role: 'assistant',
+      createdAt: now,
+      bubbles: [
+        {
+          id: createId('init-summary-bubble'),
+          blocks: [
+            paragraph('到目前为止主要聊了三件事：'),
+            {
+              type: 'list',
+              items: [
+                [{ text: '竞品偏“以面为主”的布局，当前产品更偏线性结构，会上做了对照。' }],
+                [{ text: '视觉方向暂定两版并行：线条／卡片版、少色大灰版。' }],
+                [{ text: '登录页需要更亲和、有趣。' }],
+              ],
+            },
+            { type: 'paragraph', runs: [{ text: '还没定：', bold: true }, { text: '是否保留现有主题色、竖向布局怎么改。' }] },
+          ],
+        },
+      ],
+    },
+  ];
 }
 
 export const proactiveScenarios: ProactiveScenario[] = [

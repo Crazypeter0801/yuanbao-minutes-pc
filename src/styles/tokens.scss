@@ -138,6 +138,11 @@
   /* 底栏渐变底（Figma 91:15671）：透明白 → 80% 白 → 纯白 */
   --wm-color-footer-fade-start: rgba(255, 255, 255, 0);
   --wm-color-footer-fade-mid: rgba(255, 255, 255, 0.8);
+  /* 渐进模糊用的遮罩不透明度（只取 alpha，颜色无关） */
+  --wm-mask-clear: rgba(0, 0, 0, 0);
+  --wm-mask-solid: rgba(0, 0, 0, 1);
+  /* 新版底栏渐变中段：白 54%（Figma 533:13549 #FFFFFF8A） */
+  --wm-color-footer-fade-soft: rgba(255, 255, 255, 0.54);
   --wm-color-follow-up-icon: #525252;
   /* 「正在帮你记」文字闪光：中灰字上扫过一道浅色亮带 */
   --wm-color-note-text-shimmer-base: #7b818f;
@@ -165,6 +170,8 @@
   --wm-color-name-tag-blur: rgba(255, 255, 255, 0.6);
   /* 底栏小卡片（1px 描边 + 微弱落影，Figma 489:10625） */
   --wm-shadow-chip: 0 4px 30px rgba(0, 0, 0, 0.08);
+  /* 侧栏标题字色（Figma 416:20890 #1F2329） */
+  --wm-color-text-title: #1f2329;
   /* 输入框落影（Figma 489:10655） */
   --wm-shadow-input: 0 4px 24px rgba(0, 0, 0, 0.06);
 

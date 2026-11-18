@@ -1,42 +1,38 @@
-/* 撑满侧栏宽度，高 64、左右 20（Figma 215:19035 侧栏顶部 416:20844） */
+/* 撑满侧栏宽度，高 64、padding 16 20（Figma 416:20844） */
 .header {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
   height: 64px;
-  padding: 0 20px;
+  padding: 16px 20px;
 }
 
-/* 标题胶囊：白底、圆角 18、高 36，左 8 右 12（Figma layout_YM1BD1） */
+/* 标题：padding 4 12 4 0、间距 4、圆角 16（Figma 416:20878，左侧不留白，元宝标贴着 20 的边线） */
 .title {
   display: flex;
   align-items: center;
-  height: 36px;
-  padding: 4px 12px 4px 8px;
-  border-radius: 18px;
-  background-color: var(--wm-color-background-quaternary);
+  padding: 4px 12px 4px 0;
+  border-radius: 16px;
 
   & > * + * {
     margin-left: 4px;
   }
 }
 
-/* 26px 元宝图形 */
+/* 24 元宝标（Figma 416:20879） */
 .logo {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  color: var(--wm-color-brand-yuanbao);
+  width: 24px;
+  height: 24px;
 }
 
+/* 12/17 600 #1F2329（Figma 416:20890） */
 .titleText {
   font-size: 12px;
   line-height: 17px;
   font-weight: 600;
-  color: var(--wm-color-text-primary);
+  color: var(--wm-color-text-title);
 }
 
 .actions {

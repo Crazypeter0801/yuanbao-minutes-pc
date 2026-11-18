@@ -16,10 +16,9 @@
 }
 
 /*
- * 底部 padding 16（Figma 489:10623）
- * 背景是 Figma 91:15671 的竖向渐变：顶端透明 → 61.7% 处 80% 白 → 底部纯白，
- * 渐变只占整个底栏的上 12.7%（≈ 顶部 padding 那一段），往下是纯白，经过的对话在这一段渐渐消失。
- * 透明的渐变带不拦点击，按钮和输入框照常可点。
+ * 底部 padding 16，卡片行与输入框间距 10，总高 122（Figma 489:10623）
+ * 背景是 Figma 533:13549：透明 → 12.5% 处 54% 白 → 47.7% 起纯白，叠 15px 背景模糊，
+ * 经过的对话在上沿渐渐被盖住。透明的渐变带不拦点击，按钮和输入框照常可点。
  */
 .footer {
   position: absolute;
@@ -30,20 +29,49 @@
   display: flex;
   flex-direction: column;
   padding: 16px;
-  background-image: linear-gradient(
-    180deg,
-    var(--wm-color-footer-fade-start) 0%,
-    var(--wm-color-footer-fade-mid) 7.84%,
-    var(--wm-color-background-quaternary) 12.7%
-  );
   pointer-events: none;
+
+  /*
+   * 底层两层（Figma 533:13549：376×122，渐变填充 + 15px 背景模糊）
+   * Figma 的背景模糊强度跟着填充透明度走：上沿透明处不糊，越往下越糊。
+   * CSS 的 backdrop-filter 是一刀切的，所以拆成两层：
+   * - ::before 只做 15px 模糊，mask 在上沿 12.5%（≈15px）内从 0 渐到满，之后全糊，上沿没有硬边；
+   * - ::after 叠白色渐变：透明 → 12.5% 处 54% 白 → 47.7% 起纯白。
+   */
+  &::before,
+  &::after {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    content: '';
+    pointer-events: none;
+  }
+
+  &::before {
+    backdrop-filter: blur(15px);
+    mask-image: linear-gradient(
+      180deg,
+      var(--wm-mask-clear) 0%,
+      var(--wm-mask-solid) 12.53%
+    );
+  }
+
+  &::after {
+    background-image: linear-gradient(
+      180deg,
+      var(--wm-color-footer-fade-start) 0%,
+      var(--wm-color-footer-fade-soft) 12.53%,
+      var(--wm-color-background-quaternary) 47.68%,
+      var(--wm-color-background-quaternary) 100%
+    );
+  }
 
   & > * {
     pointer-events: auto;
   }
 
   & > * + * {
-    margin-top: 4px;
+    margin-top: 10px;
   }
 }
 

@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import IconFootStar from '@/assets/d2c/icons/v2/icon-foot-star';
+import IconSide3Tasks from '@/assets/d2c/icons/v2/icon-side3-tasks';
 import { Pressable } from '@/components/common/Pressable';
 import { MorphPanel } from '@/components/sidebar/MorphPanel';
 import type { AgentTask } from '@/data/agentTasks';
@@ -18,7 +18,7 @@ interface TaskEntryProps {
 }
 
 /**
- * 进行中的任务入口（Figma 489:10632：星标 + 「进行中」+ 数字）
+ * 进行中任务入口（Figma 489:10632：点阵图标 533:13569 + 「进行中任务」+ 数字）
  * 展开后列出全部长程任务，点任意一条进任务详情。
  */
 export const TaskEntry: FC<TaskEntryProps> = ({
@@ -35,13 +35,13 @@ export const TaskEntry: FC<TaskEntryProps> = ({
     hidden={hidden}
     summary={
       <>
-        <IconFootStar />
-        <span className={styles.label}>进行中</span>
+        <IconSide3Tasks />
+        <span className={styles.label}>进行中任务</span>
         <span className={styles.count}>{runningCount}</span>
       </>
     }
     expandedLabel="个任务"
-    collapsedPaddingX={10}
+    collapsedPaddingX={12}
     panelWidth="full"
     name="进行中的任务"
     contentKey={`${tasks.length}-${runningCount}`}

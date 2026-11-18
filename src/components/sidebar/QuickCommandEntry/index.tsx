@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import IconFootBook from '@/assets/d2c/icons/v2/icon-foot-book';
+import IconSide3Book from '@/assets/d2c/icons/v2/icon-side3-book';
 import { Pressable } from '@/components/common/Pressable';
 import { MorphPanel } from '@/components/sidebar/MorphPanel';
 import { QUICK_COMMANDS } from '@/data/quickCommands';
@@ -29,7 +29,7 @@ export const QuickCommandEntry: FC<QuickCommandEntryProps> = ({
     expanded={expanded}
     onExpandedChange={onExpandedChange}
     hidden={hidden}
-    summary={<IconFootBook />}
+    summary={<IconSide3Book />}
     expandedLabel="推荐指令"
     collapsedPaddingX={12}
     panelWidth="full"

@@ -92,6 +92,8 @@ export interface AssistantMessage {
   artifact?: ArtifactItem;
   /** 刚入会且开启云笔记：在气泡下方显示「正在帮你记」卡片（话题是会中实时状态，由上层传入） */
   recordingCard?: boolean;
+  /** 笔记卡标题（如「元宝笔记：产品方案评审」），不填用默认「元宝笔记」 */
+  recordingTitle?: string;
   /** 追问建议 */
   followUps?: string[];
   /** 元宝主动记下的笔记（实时纪要、阶段小结、截图记录）；回答用户提问的消息不算 */
