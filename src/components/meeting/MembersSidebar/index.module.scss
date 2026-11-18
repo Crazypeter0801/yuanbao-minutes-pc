@@ -1,15 +1,14 @@
 /*
- * 会中「管理成员」侧栏（Figma 406:17107）
- * 嵌在会议窗右侧：宽 376、圆角 16、白底；与元宝窗并存（三栏），互不挤掉。
+ * 会中「管理成员」内容（Figma 489:10247）
+ * 嵌在右侧应用容器内：顶栏由 AppTabBar 提供，本层撑满容器。
  */
 .panel {
   display: flex;
-  flex: 0 0 auto;
+  flex: 1 1 auto;
   flex-direction: column;
-  width: 376px;
-  height: 100%;
+  width: 100%;
+  min-height: 0;
   overflow: hidden;
-  border-radius: 16px;
   background-color: var(--wm-color-background-quaternary);
 }
 
@@ -103,7 +102,8 @@
   font-size: 14px;
   line-height: 20px;
   color: var(--wm-color-text-secondary);
-  cursor: default;
+  cursor: pointer;
+  outline: none;
 }
 
 .tabActive {
@@ -228,10 +228,35 @@
   line-height: 18px;
   color: var(--wm-color-text-primary);
   background-color: var(--wm-color-background-septenary);
-  cursor: default;
+  cursor: pointer;
+  outline: none;
 }
 
 .footerPrimary {
   color: var(--wm-color-text-senary);
   background-color: var(--wm-color-text-primary);
+}
+
+.searchInput {
+  flex: 0 0 auto;
+  width: 120px;
+  height: 30px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 26px;
+  font-family: var(--wm-font-family);
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--wm-color-text-primary);
+  background-color: var(--wm-color-background-septenary);
+  outline: none;
+}
+
+.empty {
+  padding: 24px 0;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--wm-color-text-tertiary);
+  text-align: center;
+  list-style: none;
 }

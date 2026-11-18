@@ -73,3 +73,17 @@
   z-index: 10;
   background-color: var(--wm-color-sidebar-panel);
 }
+
+/* 成员 / 聊天应用页：撑满标题栏以下的空间 */
+.appPane {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  background-color: var(--wm-color-background-quaternary);
+}
+
+.appPane[hidden],
+.body[hidden] {
+  display: none;
+}

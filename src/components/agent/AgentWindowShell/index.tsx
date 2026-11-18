@@ -8,6 +8,12 @@ interface AgentWindowShellProps {
   /** 轻提示：在元宝窗口正中弹出（portal 到本窗口根节点） */
   toast: ToastState | null;
   dock: AgentDockControl;
+  /** 关闭时隐藏但仍挂载，保留输入草稿 */
+  visible?: boolean;
+  /** 读屏名称，随当前应用 Tab 变化 */
+  ariaLabel?: string;
+  /** 成员 / 聊天用白底，元宝仍用毛玻璃 */
+  solid?: boolean;
   /** 挂到侧栏根节点上的自定义属性（对话区字号 / 字体 CSS 变量） */
   rootStyle?: CSSProperties;
   children: ReactNode;
@@ -19,13 +25,15 @@ interface AgentWindowShellProps {
  * - 分离态：浮动小窗，轻阴影，位置由拖动决定。
  * 同一个节点在两种形态间只换样式，对话滚动位置、输入内容不会丢。
  */
-export const AgentWindowShell: FC<AgentWindowShellProps> = ({ toast, dock, rootStyle, children }) => {
+export const AgentWindowShell: FC<AgentWindowShellProps> = ({ toast, dock, visible = true, ariaLabel = "元宝", solid = false, rootStyle, children }) => {
   const floating = dock.mode === 'floating';
   const className = [
     styles.shell,
     floating ? styles.floating : dock.side === 'left' ? styles.dockedLeft : styles.docked,
     dock.dragging ? styles.dragging : '',
     floating && dock.dockHint ? styles.nearDock : '',
+    solid ? styles.solid : '',
+    visible ? '' : styles.hidden,
   ]
     .filter(Boolean)
     .join(' ');
@@ -41,7 +49,8 @@ export const AgentWindowShell: FC<AgentWindowShellProps> = ({ toast, dock, rootS
       id={WINDOW_TOAST_ROOT_ID}
       ref={dock.panelRef}
       data-dock-mode={dock.mode}
-      aria-label="元宝"
+      aria-label={ariaLabel}
+      hidden={!visible}
     >
       {children}
       <Toast toast={toast} placement="window" />

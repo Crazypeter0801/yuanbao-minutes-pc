@@ -1,0 +1,269 @@
+.panel {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.list {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0 20px 12px;
+  overflow-y: auto;
+}
+
+.notice,
+.time,
+.row,
+.composer {
+  flex: 0 0 auto;
+}
+
+.notice {
+  position: relative;
+  display: flex;
+  margin-top: 8px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  background-color: var(--wm-color-background-quaternary);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.noticeIcon {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+}
+
+.noticeText {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--wm-color-text-primary);
+}
+
+.noticeAttach {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  margin-top: auto;
+  margin-left: 8px;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--wm-color-text-tertiary);
+
+  span {
+    margin-left: 2px;
+  }
+}
+
+.time {
+  margin-top: 16px;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--wm-color-text-disabled);
+  text-align: center;
+}
+
+.row {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 16px;
+}
+
+.rowSelf {
+  justify-content: flex-end;
+}
+
+.rowPeer {
+  justify-content: flex-start;
+}
+
+.avatar {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 14px;
+  object-fit: cover;
+}
+
+.bubbleCol {
+  display: flex;
+  flex-direction: column;
+  max-width: 260px;
+  min-width: 0;
+}
+
+.rowSelf .bubbleCol {
+  align-items: flex-end;
+  margin-right: 8px;
+}
+
+.rowPeer .bubbleCol {
+  align-items: flex-start;
+  margin-left: 8px;
+}
+
+.sender {
+  margin-bottom: 4px;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--wm-color-text-secondary);
+}
+
+.rowSelf .sender {
+  text-align: right;
+}
+
+.bubbleSelf,
+.bubblePeer {
+  padding: 8px 12px;
+  font-size: 14px;
+  line-height: 20px;
+  word-break: break-word;
+}
+
+.bubbleSelf {
+  color: var(--wm-color-text-on-user-bubble);
+  background-color: var(--wm-color-background-user-bubble);
+  border-radius: 16px 4px 16px 16px;
+}
+
+.bubblePeer {
+  color: var(--wm-color-text-primary);
+  background-color: var(--wm-color-outline-tertiary);
+  border-radius: 4px 16px 16px 16px;
+}
+
+.infoCard {
+  padding: 12px;
+  background-color: var(--wm-color-background-quaternary);
+  border-radius: 16px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.infoHead {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--wm-color-text-primary);
+
+  span {
+    margin-left: 6px;
+  }
+}
+
+.infoBody {
+  margin: 6px 0 8px;
+  font-size: 14px;
+  line-height: 18px;
+  color: var(--wm-color-text-primary);
+}
+
+.file {
+  display: flex;
+  align-items: center;
+  padding: 6px 0;
+
+  span {
+    overflow: hidden;
+    margin-left: 6px;
+    font-size: 13px;
+    line-height: 20px;
+    color: var(--wm-color-text-primary);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.composer {
+  flex: 0 0 auto;
+  margin: 0 16px 16px;
+  padding: 12px 12px 8px;
+  border-radius: 12px;
+  background-color: var(--wm-color-background-septenary);
+}
+
+.input {
+  display: block;
+  width: 100%;
+  min-height: 46px;
+  padding: 0;
+  border: 0;
+  resize: none;
+  font-family: var(--wm-font-family);
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--wm-color-text-primary);
+  background: transparent;
+  outline: none;
+
+  &::placeholder {
+    color: var(--wm-color-text-disabled);
+  }
+}
+
+.composerBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+}
+
+.audience {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--wm-color-text-secondary);
+  cursor: pointer;
+  outline: none;
+
+  strong {
+    margin-left: 4px;
+    font-weight: 400;
+    color: var(--wm-color-text-primary);
+  }
+}
+
+.caret {
+  width: 0;
+  height: 0;
+  margin-left: 4px;
+  border-top: 4px solid var(--wm-color-text-tertiary);
+  border-right: 3px solid transparent;
+  border-left: 3px solid transparent;
+}
+
+.tools {
+  display: flex;
+  align-items: center;
+  color: var(--wm-color-text-secondary);
+}
+
+.tool {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  outline: none;
+
+  & + & {
+    margin-left: 4px;
+  }
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--wm-color-control-hover);
+  }
+}

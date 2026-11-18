@@ -31,6 +31,12 @@ import {
 } from "@/data/whiteboardScenario";
 import { buildScreenshotNote, meetingShotSrc } from "@/data/yuanbaoContent";
 import { useYuanbaoSession } from "@/hooks/useYuanbaoSession";
+import { useMeetingChat } from "@/hooks/useMeetingChat";
+import {
+  INITIAL_MEETING_APP_SIDEBAR,
+  reduceMeetingAppSidebar,
+  type MeetingAppTab,
+} from "@/lib/meetingAppTab";
 import { FileViewer } from "@/components/agent/FileViewer";
 import { WhiteboardGenerateOverlay } from "@/components/whiteboard/WhiteboardGenerateOverlay";
 import { WhiteboardOverlay } from "@/components/whiteboard/WhiteboardOverlay";
@@ -56,12 +62,10 @@ const FILE_KIND_PATTERN = /pdf|ppt|幻灯片|文件|纪要文档/i;
  * 4. 任务入口固定顶部（方案 A）；输入框上方不再出现任务胶囊。
  */
 export default function App() {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  /**
-   * 会中「管理成员」侧栏：与元宝窗并存（Figma 406:16873 三栏），互不挤掉。
-   * 打开成员不关元宝；关元宝也不关成员。
-   */
-  const [membersOpen, setMembersOpen] = useState(false);
+  const [sidebar, setSidebar] = useState(INITIAL_MEETING_APP_SIDEBAR);
+  const sidebarOpen = sidebar.open;
+  const appTab = sidebar.tab;
+  const meetingChat = useMeetingChat();
   /** Agent 状态页是否覆盖在元宝对话区之上 */
   const [statusOpen, setStatusOpen] = useState(false);
   /** 详情页「设置头像」之后，顶部胶囊和详情头部共用这一张 */
@@ -98,29 +102,31 @@ export default function App() {
   /** 画完后完成态停留一会儿再收起，避免一直占着进行中 */
   const boardHold = useRef<number>();
 
-  /** 关闭元宝窗口：状态页一起收起，下次打开回到对话 */
+  const setAppTab = (tab: MeetingAppTab) => {
+    setSidebar((current) => reduceMeetingAppSidebar(current, { type: "select", tab }));
+  };
+
+  /** 关闭右侧应用容器：状态页一起收起，下次打开仍回到上次 Tab；会话与草稿不卸载 */
   const closeSidebar = () => {
-    setSidebarOpen(false);
+    setSidebar((current) => reduceMeetingAppSidebar(current, { type: "close" }));
     setStatusOpen(false);
   };
 
-  /** 工具栏元宝按钮：保持原有开关行为，关闭时顺带退出状态页；不关掉管理成员 */
-  const toggleSidebar = () => {
-    if (sidebarOpen) {
-      closeSidebar();
-      return;
+  const toggleAppTab = (tab: MeetingAppTab) => {
+    setSidebar((current) => reduceMeetingAppSidebar(current, { type: "toggle", tab }));
+    if (sidebarOpen && appTab === tab) {
+      setStatusOpen(false);
     }
-    setSidebarOpen(true);
   };
 
-  /** 工具栏成员按钮：开关管理成员；与元宝互不挤掉 */
-  const toggleMembers = () => {
-    setMembersOpen((open) => !open);
-  };
+  /** 工具栏元宝按钮：关着打开元宝；已在元宝则关闭；在其他 Tab 则切回元宝 */
+  const toggleSidebar = () => toggleAppTab("yuanbao");
+  const toggleMembers = () => toggleAppTab("members");
+  const toggleChat = () => toggleAppTab("chat");
 
   /** 点头部胶囊进入状态页，并指定默认 Tab */
   const openStatus = (tab: AgentStatusTab = "overview") => {
-    setSidebarOpen(true);
+    setAppTab("yuanbao");
     setStatusTab(tab);
     setStatusOpen(true);
   };
@@ -227,7 +233,7 @@ export default function App() {
    * - 其余都走和输入框相同的链路（普通提问 / 生成文件 / 演示场景）。
    */
   const runCommand = (item: CommandItem) => {
-    setSidebarOpen(true);
+    setAppTab("yuanbao");
     // 演示指令都是给对话用的；状态页开着时先回到对话
     setStatusOpen(false);
     if (item.effect === "auto-note") {
@@ -253,19 +259,15 @@ export default function App() {
 
   /**
    * 立昌：浮出时左边不自动变宽（也不因窗口变窄而整框重居中）。
-   * - 会议区在元宝仍打开时用固定宽（960 / 1336），绝不靠 flex 吃空位；
-   * - 预留位在元宝仍打开时保留（吸附或浮出），浮出只是元宝离开槽位，会议宽/位置都不变；
+   * - 会议区在右侧容器仍打开时用固定宽 960，绝不靠 flex 吃空位；
+   * - 预留位在容器仍打开时保留（吸附或浮出），浮出只是侧栏离开槽位，会议宽/位置都不变；
    * - 白条只在吸附态显示。
    */
   const agentOpen = sidebarOpen;
   const agentDocked = agentOpen && dock.mode === "docked";
   const agentReservesLeft = agentOpen && dock.side === "left";
   const agentReservesRight = agentOpen && dock.side === "right";
-  const meetingWidthClass = agentOpen
-    ? membersOpen
-      ? styles.meetingLockedMembers
-      : styles.meetingLocked
-    : "";
+  const meetingWidthClass = agentOpen ? styles.meetingLocked : "";
 
   return (
     <div className={styles.page}>
@@ -274,7 +276,6 @@ export default function App() {
           className={[
             styles.window,
             agentOpen ? styles.windowAgentOpen : "",
-            membersOpen ? styles.windowWithMembers : "",
           ]
             .filter(Boolean)
             .join(" ")}
@@ -291,11 +292,12 @@ export default function App() {
           {/* 投票弹窗只盖会议区，元宝说的话仍然看得见 */}
           <div className={`${styles.meetingArea} ${meetingWidthClass}`}>
             <MeetingWindow
-              yuanbaoOpen={sidebarOpen}
+              yuanbaoOpen={sidebarOpen && appTab === "yuanbao"}
               onToggleYuanbao={toggleSidebar}
-              membersOpen={membersOpen}
+              sidebarOpen={sidebarOpen}
+              appTab={appTab}
               onToggleMembers={toggleMembers}
-              onCloseMembers={() => setMembersOpen(false)}
+              onToggleChat={toggleChat}
               stageOverlay={
                 whiteboard ? (
                   whiteboard.mode === "instant" ? (
@@ -347,24 +349,26 @@ export default function App() {
           <div className={`${styles.dockHint} ${dock.dockHint === "left" ? styles.dockHintLeft : ""}`} aria-hidden="true" />
         )}
         {/* 元宝 personal agent：默认吸附在会议窗口右缘并列；按住标题栏拖动可分离成浮动小窗 */}
-        {sidebarOpen && (
-          <YuanbaoSidebar
-            chat={chat}
-            artifacts={artifacts}
-            dock={dock}
-            agent={agent}
-            statusTab={statusTab}
-            onClose={closeSidebar}
-            statusOpen={statusOpen}
-            onOpenStatus={openStatus}
-            onCloseStatus={() => setStatusOpen(false)}
-            portrait={portrait}
-            onApplyPortrait={setPortrait}
-            onOpenFile={() => setFileViewerOpen(true)}
-            onSubmit={handleSubmit}
-            noteTopics={noteTopics}
-          />
-        )}
+        <YuanbaoSidebar
+          visible={sidebarOpen}
+          appTab={appTab}
+          onSelectTab={setAppTab}
+          meetingChat={meetingChat}
+          chat={chat}
+          artifacts={artifacts}
+          dock={dock}
+          agent={agent}
+          statusTab={statusTab}
+          onClose={closeSidebar}
+          statusOpen={statusOpen}
+          onOpenStatus={openStatus}
+          onCloseStatus={() => setStatusOpen(false)}
+          portrait={portrait}
+          onApplyPortrait={setPortrait}
+          onOpenFile={() => setFileViewerOpen(true)}
+          onSubmit={handleSubmit}
+          noteTopics={noteTopics}
+        />
         {fileViewerOpen && <FileViewer onClose={() => setFileViewerOpen(false)} />}
         {/* 窗口外：演示按钮，浮在窗口下方的壁纸上 */}
         <div className={styles.demoBar}>
@@ -380,7 +384,7 @@ export default function App() {
                     key: "draw",
                     label: "逐笔绘制",
                     onClick: () => {
-                      setSidebarOpen(true);
+                      setAppTab("yuanbao");
                       handleSubmit(WHITEBOARD_DEMO_TEXT, { whiteboardMode: "draw" });
                     },
                   },
@@ -388,7 +392,7 @@ export default function App() {
                     key: "instant",
                     label: "一次生成",
                     onClick: () => {
-                      setSidebarOpen(true);
+                      setAppTab("yuanbao");
                       handleSubmit(WHITEBOARD_DEMO_TEXT, { whiteboardMode: "instant" });
                     },
                   },
@@ -402,7 +406,7 @@ export default function App() {
                   key: mood,
                   label,
                   onClick: () => {
-                    setSidebarOpen(true);
+                    setAppTab("yuanbao");
                     agent.react(mood, { force: true });
                   },
                 })),
