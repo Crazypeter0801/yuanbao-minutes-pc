@@ -148,14 +148,15 @@
   user-select: none;
 }
 
-/* 名字水牌：宽 102、白 60% + 毛玻璃、圆角 8，距左 4、距底 5（Figma 215:19035 名字水牌-标准） */
+/* 主持人水牌：102×24、内边距 4、间距 2、圆角 8、白 60% + 毛玻璃（Figma 532:13478） */
 .nameTag {
   position: absolute;
-  left: 4px;
-  bottom: 5px;
+  left: 6px;
+  bottom: 6px;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   width: 102px;
+  height: 24px;
   padding: 4px;
   border-radius: 8px;
   background-color: var(--wm-color-name-tag-blur);

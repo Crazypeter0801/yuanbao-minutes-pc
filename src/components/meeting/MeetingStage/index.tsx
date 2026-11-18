@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import IconVideoNameMic from '@/assets/d2c/icons/v2/icon-video-name-mic';
+import IconVideoNameMic from '@/assets/d2c/icons/v2/icon-video-name-mic-v2';
 import avatarJenny from '@/assets/d2c/images/v1/avatar-jenny@2x.png';
 import avatarJony from '@/assets/d2c/images/v1/avatar-jony@2x.png';
 import avatarKanye from '@/assets/d2c/images/v1/avatar-kanye@2x.png';
