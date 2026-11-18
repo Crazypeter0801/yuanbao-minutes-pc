@@ -40,24 +40,16 @@
 }
 
 /*
- * 表情切图：两张 PNG 的透明留白不一样（内容占比 54% / 64%），
- * 按各自比例反推显示尺寸，让可见图形都落在设计稿的 20px 上。
+ * 表情切图按设计稿节点 1:1 还原：节点是 36×36，导出为 4 倍图（144×144），
+ * 这里就显示 36×36。图里的透明留白与节点一致，可见图形自然落在稿里的位置。
  */
 .emojiHi,
 .emojiSmile {
   display: block;
+  width: 36px;
+  height: 36px;
   object-fit: contain;
   user-select: none;
-}
-
-.emojiHi {
-  width: 38px;
-  height: 38px;
-}
-
-.emojiSmile {
-  width: 31px;
-  height: 31px;
 }
 
 /* 1×16 分隔线（Figma 520:13400） */
