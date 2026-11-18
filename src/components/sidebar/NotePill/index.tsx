@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import IconStatusNotes from '@/assets/d2c/icons/input/icon-status-notes';
+import IconFootBook from '@/assets/d2c/icons/v2/icon-foot-book';
 import IconNotePause from '@/assets/d2c/icons/v1/icon-note-pause';
 import IconNotePlay from '@/assets/d2c/icons/v1/icon-note-play';
 import { Pressable } from '@/components/common/Pressable';
@@ -25,7 +25,7 @@ export const NotePill: FC<NotePillProps> = ({ isListening, hidden = false, onOpe
   <div className={`${styles.slot} ${hidden ? styles.slotHidden : ''}`}>
     <Pressable className={styles.pill} onClick={onOpen} title="在浏览器打开元宝笔记" ariaLabel="在浏览器打开元宝笔记">
       <span className={styles.icon} aria-hidden="true">
-        <IconStatusNotes />
+        <IconFootBook />
       </span>
       {/* 暂停文案沿用 Figma 318:7200 原文「元宝休息中」 */}
       <span className={styles.text}>{isListening ? '元宝正在记笔记' : '元宝休息中'}</span>

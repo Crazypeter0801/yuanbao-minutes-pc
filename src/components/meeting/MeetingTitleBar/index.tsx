@@ -2,11 +2,11 @@ import type { FC } from 'react';
 import IconMeetAppLogo from '@/assets/d2c/icons/v1/icon-meet-app-logo';
 import IconMeetChevronDown from '@/assets/d2c/icons/v1/icon-meet-chevron-down';
 import IconMeetGrid from '@/assets/d2c/icons/v1/icon-meet-grid';
-import IconMeetHostTools from '@/assets/d2c/icons/v1/icon-meet-host-tools';
+import IconTitleLayout from '@/assets/d2c/icons/v2/icon-title-layout';
+import IconTitleMore from '@/assets/d2c/icons/v2/icon-title-more';
+import IconTitleSafety from '@/assets/d2c/icons/v2/icon-title-safety';
 import IconMeetNetwork from '@/assets/d2c/icons/v1/icon-meet-network';
-import IconMeetSettings from '@/assets/d2c/icons/v1/icon-meet-settings';
 import IconMeetShare from '@/assets/d2c/icons/v1/icon-meet-share';
-import IconMeetSidebar from '@/assets/d2c/icons/v1/icon-meet-sidebar';
 import { meetingSession } from '@/data/meetingSession';
 import styles from './index.module.scss';
 
@@ -43,15 +43,15 @@ export const MeetingTitleBar: FC = () => (
         <IconMeetChevronDown />
       </span>
       <span className={styles.tool}>
-        <IconMeetHostTools />
+        <IconTitleSafety />
         <IconMeetChevronDown />
       </span>
       <span className={styles.tool}>
-        <IconMeetSettings />
+        <IconTitleLayout />
         <IconMeetChevronDown />
       </span>
       <span className={styles.tool}>
-        <IconMeetSidebar />
+        <IconTitleMore />
       </span>
     </div>
   </div>

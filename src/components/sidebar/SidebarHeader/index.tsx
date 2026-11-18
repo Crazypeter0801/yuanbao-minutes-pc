@@ -1,8 +1,8 @@
 import { useState, type FC } from 'react';
-import IconSideClose from '@/assets/d2c/icons/v1/icon-side-close';
-import IconSideLogo from '@/assets/d2c/icons/v1/icon-side-logo';
-import IconSideMore from '@/assets/d2c/icons/v1/icon-side-more';
-import IconSidePip from '@/assets/d2c/icons/v1/icon-side-pip';
+import IconSideClose from '@/assets/d2c/icons/v2/icon-side-close';
+import IconSideMore from '@/assets/d2c/icons/v2/icon-side-more';
+import IconSidePip from '@/assets/d2c/icons/v2/icon-side-pip';
+import IconYbLogo from '@/assets/d2c/icons/v2/icon-yb-logo';
 import { PopMenu, type PopMenuItem } from '@/components/common/PopMenu';
 import { Pressable } from '@/components/common/Pressable';
 import styles from './index.module.scss';
@@ -24,7 +24,7 @@ export const SidebarHeader: FC<SidebarHeaderProps> = ({ onPip, menuItems, onClos
     <header className={styles.header}>
       <div className={styles.title}>
         <span className={styles.logo}>
-          <IconSideLogo width={26} height={26} />
+          <IconYbLogo width={26} height={26} />
         </span>
         <span className={styles.titleText}>元宝</span>
       </div>

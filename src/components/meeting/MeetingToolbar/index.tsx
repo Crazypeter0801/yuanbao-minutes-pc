@@ -3,6 +3,7 @@ import IconTbArrow from '@/assets/d2c/icons/v1/icon-tb-arrow';
 import IconTbCamera from '@/assets/d2c/icons/v1/icon-tb-camera';
 import IconTbChat from '@/assets/d2c/icons/v1/icon-tb-chat';
 import IconTbEmoji from '@/assets/d2c/icons/v1/icon-tb-emoji';
+import IconBarLight from '@/assets/d2c/icons/v2/icon-bar-light';
 import IconTbInviteBody from '@/assets/d2c/icons/v1/icon-tb-invite-body';
 import IconTbInviteHead from '@/assets/d2c/icons/v1/icon-tb-invite-head';
 import IconTbLeave from '@/assets/d2c/icons/v1/icon-tb-leave';
@@ -33,8 +34,9 @@ export const MeetingToolbar: FC<MeetingToolbarProps> = ({ yuanbaoOpen, onToggleY
   <div className={styles.toolbar}>
     <div className={styles.side}>
       <IconTbEmoji />
-      <span className={styles.divider} aria-hidden="true" />
       <IconTbChat />
+      <span className={styles.divider} aria-hidden="true" />
+      <IconBarLight />
     </div>
 
     <div className={styles.controls}>
