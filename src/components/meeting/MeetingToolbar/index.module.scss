@@ -1,4 +1,4 @@
-/* padding 0 16 16，三段 space-between（Figma 214:10935） */
+/* 底栏三段 space-between；水平间距由外壳 pad 承担，底部略留呼吸 */
 .toolbar {
   position: relative;
   flex: 0 0 auto;
@@ -6,7 +6,7 @@
   align-items: center;
   justify-content: space-between;
   height: 64px;
-  padding: 0 16px 16px;
+  padding: 0 8px 12px;
 }
 
 /*

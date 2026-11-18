@@ -1,9 +1,17 @@
-import type { FC } from 'react';
+import { useState, type FC } from 'react';
 import IconAgentClose from '@/assets/d2c/icons/agent/icon-agent-close';
+import IconAgentMore from '@/assets/d2c/icons/agent/icon-agent-more';
 import IconAgentPip from '@/assets/d2c/icons/agent/icon-agent-pip';
 import IconTaskEntryIconChevron from '@/assets/d2c/icons/task-entry/icon-task-entry-icon-chevron';
+import { PopMenu, type PopMenuItem } from '@/components/common/PopMenu';
 import { Pressable } from '@/components/common/Pressable';
 import { YuanbaoAvatar } from '@/components/agent/YuanbaoAvatar';
+import {
+  CHAT_FONT_FAMILIES,
+  CHAT_FONT_SIZES,
+  type ChatFontFamilyKey,
+  type ChatFontSizeKey,
+} from '@/data/chatPreferences';
 import type { YuanbaoMood } from '@/data/agentTasks';
 import type { AgentDockControl } from '@/hooks/useAgentDock';
 import styles from './index.module.scss';
@@ -27,13 +35,20 @@ interface AgentTitleBarProps {
   onOpenStatus: () => void;
   /** 关闭元宝窗口（和底部元宝按钮是同一个开关） */
   onClose: () => void;
+  /** 对话区当前字号 */
+  fontSize: ChatFontSizeKey;
+  /** 对话区当前字体 */
+  fontFamily: ChatFontFamilyKey;
+  /** 切换字号：实时改对话区 */
+  onFontSizeChange: (key: ChatFontSizeKey) => void;
+  /** 切换字体：实时改对话区 */
+  onFontFamilyChange: (key: ChatFontFamilyKey) => void;
 }
 
 /**
- * 元宝窗口标题栏（Figma 215:19389 / 406:17110）
+ * 元宝窗口标题栏（Figma 215:19035 / 416:20844）
  * 左侧胶囊：头像 +「元宝 ›」+ 状态副标题（正在记笔记... / 任务 activity）；点胶囊进状态页。
- * 右侧操作胶囊：独立窗口 + 关闭。按住空白处可拖出；浮出时会议区不自动变宽（App 预留位）。
- * 头像用雪碧图跟着任务状态动（Figma 197:42 顶部头像集成）。
+ * 右侧：更多 / 独立窗口 / 关闭（无白底胶囊，间距 4）。按住空白处可拖出；浮出时会议区不自动变宽。
  */
 export const AgentTitleBar: FC<AgentTitleBarProps> = ({
   dock,
@@ -45,9 +60,30 @@ export const AgentTitleBar: FC<AgentTitleBarProps> = ({
   onOpenStatus,
   onClose,
   portrait,
+  fontSize,
+  fontFamily,
+  onFontSizeChange,
+  onFontFamilyChange,
 }) => {
+  const [menuOpen, setMenuOpen] = useState(false);
   const floating = dock.mode === 'floating';
   const showStatus = Boolean(statusText);
+  const moreItems: PopMenuItem[] = [
+    ...CHAT_FONT_SIZES.map<PopMenuItem>((option) => ({
+      key: `size-${option.key}`,
+      group: '字号',
+      label: option.label,
+      active: option.key === fontSize,
+      onClick: () => onFontSizeChange(option.key),
+    })),
+    ...CHAT_FONT_FAMILIES.map<PopMenuItem>((option) => ({
+      key: `font-${option.key}`,
+      group: '字体',
+      label: option.label,
+      active: option.key === fontFamily,
+      onClick: () => onFontFamilyChange(option.key),
+    })),
+  ];
 
   return (
     <header
@@ -92,6 +128,17 @@ export const AgentTitleBar: FC<AgentTitleBarProps> = ({
       </span>
 
       <div className={styles.actions} data-nodrag>
+        <div className={styles.moreWrap}>
+          <Pressable
+            className={styles.iconButton}
+            onClick={() => setMenuOpen((open) => !open)}
+            title="更多"
+            ariaLabel="更多操作"
+          >
+            <IconAgentMore />
+          </Pressable>
+          {menuOpen && <PopMenu items={moreItems} onClose={() => setMenuOpen(false)} />}
+        </div>
         <Pressable
           className={styles.iconButton}
           onClick={dock.toggleDock}

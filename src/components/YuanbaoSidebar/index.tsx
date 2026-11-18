@@ -1,6 +1,7 @@
 import {
   useCallback,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
   type CSSProperties,
@@ -30,6 +31,14 @@ import { TaskDetail } from "@/components/agent/TaskDetail";
 import { WHITEBOARD_TASK_ID } from "@/data/agentTasks";
 import { TASK_ENTRY_RECORDING_TEXT } from "@/data/taskEntry";
 import { buildCardResult } from "@/data/interactiveCards";
+import {
+  DEFAULT_CHAT_FONT_FAMILY,
+  DEFAULT_CHAT_FONT_SIZE,
+  findChatFontFamily,
+  findChatFontSize,
+  type ChatFontFamilyKey,
+  type ChatFontSizeKey,
+} from "@/data/chatPreferences";
 import { useListening } from "@/hooks/useListening";
 import { useToast } from "@/hooks/useToast";
 import { useYuanbaoMood } from "@/hooks/useYuanbaoMood";
@@ -76,11 +85,11 @@ interface YuanbaoSidebarProps {
 }
 
 /**
- * 元宝 personal agent 窗口（Figma 215:19035 / 406:16873）
- * 外壳毛玻璃 rgba(243,243,244,0.98)、圆角 16，与会议窗并排、中间白缝。
+ * 元宝 personal agent 窗口（Figma 215:19035）
+ * 吸附在「极简模式」外壳右侧：白底、圆角 16、宽 376；与会议列缝 10。
  * 同一容器在元宝 / 管理成员 / 会议聊天之间切换，不再并排第三栏。
  * 任务入口固定顶部（方案 A）：头部胶囊带状态副标题，点胶囊进状态页；底部只有输入框
- * （画板进行中时多一枚进度胶囊）。输入框上方不再出现任务胶囊。
+ * （画板进行中时多一枚进度胶囊）。输入框上方不放「执行中」类入口。
  * 浮出时会议区预留位不收回（立昌：左边不自动变宽）。
  *
  * 长程任务详情仍占用对话区；快捷指令仍在窗口外的演示按钮条上。
@@ -107,6 +116,17 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
   const { toast, showToast } = useToast();
   /** 正在看详情的长程任务；为空时对话区显示对话 */
   const [detailTaskId, setDetailTaskId] = useState<string | null>(null);
+  const [fontSize, setFontSize] = useState<ChatFontSizeKey>(DEFAULT_CHAT_FONT_SIZE);
+  const [fontFamily, setFontFamily] = useState<ChatFontFamilyKey>(DEFAULT_CHAT_FONT_FAMILY);
+  const chatRootStyle = useMemo<CSSProperties>(() => {
+    const size = findChatFontSize(fontSize);
+    const family = findChatFontFamily(fontFamily);
+    return {
+      "--chat-font-size": size.fontSize,
+      "--chat-line-height": size.lineHeight,
+      "--chat-font-family": family.stack,
+    } as CSSProperties;
+  }, [fontFamily, fontSize]);
   /**
    * 底栏浮在消息流上方（Figma 91:15671 的渐变底），消息流底部要留出底栏的高度，
    * 否则最后一条会被压在输入框下面；输入框多行撑高时一起跟着变。
@@ -182,6 +202,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
       visible={visible}
       ariaLabel={appTab === "members" ? "管理成员" : appTab === "chat" ? "会议聊天" : "元宝"}
       solid={appTabActive}
+      rootStyle={chatRootStyle}
     >
       {appTab === "yuanbao" ? (
         <AgentTitleBar
@@ -194,6 +215,10 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
           onOpenStatus={() => onOpenStatus("overview")}
           onClose={onClose}
           portrait={portrait}
+          fontSize={fontSize}
+          fontFamily={fontFamily}
+          onFontSizeChange={setFontSize}
+          onFontFamilyChange={setFontFamily}
         />
       ) : (
         <AppTabBar
