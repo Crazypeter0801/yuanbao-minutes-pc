@@ -16,9 +16,6 @@ import barEmojiSmile from '@/assets/d2c/images/v2/bar-emoji-smile@2x.png';
 import { Pressable } from '@/components/common/Pressable';
 import styles from './index.module.scss';
 
-/** 参会人数（成员按钮右上角的数字） */
-const MEMBER_COUNT = 8;
-
 interface MeetingToolbarProps {
   /** 元宝侧栏当前是否展开 */
   yuanbaoOpen: boolean;
@@ -74,7 +71,6 @@ export const MeetingToolbar: FC<MeetingToolbarProps> = ({ yuanbaoOpen, onToggleY
           <span className={styles.inviteBody}>
             <IconTbInviteBody />
           </span>
-          <span className={styles.inviteCount}>{MEMBER_COUNT}</span>
         </span>
         <span className={styles.arrow}>
           <IconTbArrow />
