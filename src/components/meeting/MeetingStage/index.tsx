@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import IconVideoNameMic from '@/assets/d2c/icons/v1/icon-video-name-mic';
+import IconVideoNameMic from '@/assets/d2c/icons/v2/icon-video-name-mic';
 import avatarJenny from '@/assets/d2c/images/v1/avatar-jenny@2x.png';
 import avatarJony from '@/assets/d2c/images/v1/avatar-jony@2x.png';
 import avatarKanye from '@/assets/d2c/images/v1/avatar-kanye@2x.png';
@@ -16,15 +16,18 @@ interface Participant {
   glowStrong?: boolean;
   /** 正在说话：头像外加三圈绿色声波 */
   speaking?: boolean;
+  /** 头像块底色，取自设计稿 314:41435 起的 6 个实例 */
+  tint: string;
 }
 
 // TODO: 接入真实会议流后由参会人列表驱动
 const PARTICIPANTS: Participant[] = [
-  { id: 'jony', name: 'JonyZhang', avatar: avatarJony, glowStrong: true },
-  { id: 'tizze', name: 'TizzeHuang', avatar: avatarTizze, speaking: true },
-  { id: 'lisa', name: 'LisaWong', avatar: avatarLisa },
-  { id: 'kanye', name: 'KanyeWest', avatar: avatarKanye },
-  { id: 'jenny', name: 'JennyFa', avatar: avatarJenny },
+  { id: 'jony', name: 'JonyZhang', avatar: avatarJony, glowStrong: true, tint: 'var(--wm-color-tile-1)' },
+  { id: 'tizze', name: 'TizzeHuang', avatar: avatarTizze, speaking: true, tint: 'var(--wm-color-tile-2)' },
+  { id: 'lisa', name: 'LisaWong', avatar: avatarLisa, tint: 'var(--wm-color-tile-3)' },
+  { id: 'kanye', name: 'KanyeWest', avatar: avatarKanye, tint: 'var(--wm-color-tile-4)' },
+  { id: 'jenny', name: 'JennyFa', avatar: avatarJenny, tint: 'var(--wm-color-tile-5)' },
+  { id: 'yuki', name: 'YukiLin', avatar: avatarJenny, tint: 'var(--wm-color-tile-6)' },
 ];
 
 const SPEAKER_NAME = '艾慧慧Taylor';
@@ -40,7 +43,7 @@ export const MeetingStage: FC = () => (
     <div className={styles.strip}>
       <div className={styles.stripTrack}>
         {PARTICIPANTS.map((p) => (
-          <div className={styles.tile} key={p.id}>
+          <div className={styles.tile} key={p.id} style={{ backgroundColor: p.tint }}>
             {/* 头像下方的柔光：同一张图下移 10、模糊 20 */}
             <img
               className={`${styles.avatarGlow} ${p.glowStrong ? styles.avatarGlowStrong : ''}`}

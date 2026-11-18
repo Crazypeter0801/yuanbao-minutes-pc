@@ -1,16 +1,14 @@
 import type { FC } from 'react';
+import IconBarCamera from '@/assets/d2c/icons/v2/icon-bar-camera';
 import IconBarEmojiChat from '@/assets/d2c/icons/v2/icon-bar-emoji-chat';
+import IconBarExit from '@/assets/d2c/icons/v2/icon-bar-exit';
 import IconBarLight from '@/assets/d2c/icons/v2/icon-bar-light';
+import IconBarMembers from '@/assets/d2c/icons/v2/icon-bar-members';
+import IconBarMic from '@/assets/d2c/icons/v2/icon-bar-mic';
+import IconBarMore from '@/assets/d2c/icons/v2/icon-bar-more';
+import IconBarRecord from '@/assets/d2c/icons/v2/icon-bar-record';
+import IconBarShare from '@/assets/d2c/icons/v2/icon-bar-share';
 import IconBarYuanbaoActive from '@/assets/d2c/icons/v2/icon-bar-yuanbao-active';
-import IconTbArrow from '@/assets/d2c/icons/v1/icon-tb-arrow';
-import IconTbCamera from '@/assets/d2c/icons/v1/icon-tb-camera';
-import IconTbInviteBody from '@/assets/d2c/icons/v1/icon-tb-invite-body';
-import IconTbInviteHead from '@/assets/d2c/icons/v1/icon-tb-invite-head';
-import IconTbLeave from '@/assets/d2c/icons/v1/icon-tb-leave';
-import IconTbMic from '@/assets/d2c/icons/v1/icon-tb-mic';
-import IconTbMore from '@/assets/d2c/icons/v1/icon-tb-more';
-import IconTbRecord from '@/assets/d2c/icons/v1/icon-tb-record';
-import IconTbShare from '@/assets/d2c/icons/v1/icon-tb-share';
 import barEmojiHi from '@/assets/d2c/images/v2/bar-emoji-hi@2x.png';
 import barEmojiSmile from '@/assets/d2c/images/v2/bar-emoji-smile@2x.png';
 import { Pressable } from '@/components/common/Pressable';
@@ -52,32 +50,21 @@ export const MeetingToolbar: FC<MeetingToolbarProps> = ({ yuanbaoOpen, onToggleY
     </div>
 
     <div className={styles.controls}>
-      {/* 导出的按钮图含底部一块透明占位，按 64×30 / 56×30 裁出可见区域 */}
+      {/* 每个按钮都是设计稿原尺寸导出（64×30 / 56×30），图里已含下拉箭头 */}
       <span className={styles.slot}>
-        <IconTbMic />
+        <IconBarMic />
       </span>
       <span className={styles.slot}>
-        <IconTbCamera />
+        <IconBarCamera />
       </span>
       <span className={styles.slot}>
-        <IconTbShare />
+        <IconBarShare />
       </span>
       <span className={styles.slot}>
-        <span className={styles.invite} aria-hidden="true">
-          <span className={styles.inviteHead} />
-          <span className={styles.inviteFriendHead}>
-            <IconTbInviteHead />
-          </span>
-          <span className={styles.inviteBody}>
-            <IconTbInviteBody />
-          </span>
-        </span>
-        <span className={styles.arrow}>
-          <IconTbArrow />
-        </span>
+        <IconBarMembers />
       </span>
       <span className={`${styles.slot} ${styles.slotNarrow}`}>
-        <IconTbRecord />
+        <IconBarRecord />
       </span>
       <Pressable
         as="span"
@@ -91,12 +78,12 @@ export const MeetingToolbar: FC<MeetingToolbarProps> = ({ yuanbaoOpen, onToggleY
         </span>
       </Pressable>
       <span className={`${styles.slot} ${styles.slotNarrow}`}>
-        <IconTbMore />
+        <IconBarMore />
       </span>
     </div>
 
     <div className={styles.exit}>
-      <IconTbLeave />
+      <IconBarExit />
     </div>
   </div>
 );

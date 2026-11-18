@@ -51,6 +51,8 @@
   /* 顶部参会人条（Figma 317:5308） */
   --wm-color-participant-tile: #e2e3e8;
   --wm-color-participant-name-tag: rgba(255, 255, 255, 0.8);
+  /* 头像块上的名字胶囊：白 50%（Figma 292:38011 fill #FFFFFF80） */
+  --wm-color-tile-name-tag: rgba(255, 255, 255, 0.5);
   --wm-color-participant-name: #303440;
   --wm-color-speaking: #16d968;
   /* 胶囊按钮 hover（仅元宝按钮可点） */
@@ -151,6 +153,14 @@
   --wm-color-background-secondary-v2: #f6f6f6;
   /* 用户气泡（同稿 #5E6270），与助手灰泡区分开 */
   --wm-color-chat-bubble-send: #5e6270;
+  /* 参会人头像块底色（Figma 314:41435 起 6 个实例） */
+  --wm-color-tile-1: #e2e3e8;
+  --wm-color-tile-2: #e7e3da;
+  --wm-color-tile-3: #e8e8e8;
+  --wm-color-tile-4: #f1eae5;
+  --wm-color-tile-5: #e8eff4;
+  --wm-color-tile-6: #f1f1f1;
+
   /* 画面上的名字水牌：白 60% + 10px 模糊 */
   --wm-color-name-tag-blur: rgba(255, 255, 255, 0.6);
   /* 底栏小卡片（1px 描边 + 微弱落影，Figma 489:10625） */

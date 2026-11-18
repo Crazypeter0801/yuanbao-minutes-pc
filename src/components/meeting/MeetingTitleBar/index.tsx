@@ -1,9 +1,9 @@
 import type { FC } from 'react';
-import IconMeetAppLogo from '@/assets/d2c/icons/v1/icon-meet-app-logo';
-import IconMeetChevronDown from '@/assets/d2c/icons/v1/icon-meet-chevron-down';
-import IconMeetGrid from '@/assets/d2c/icons/v1/icon-meet-grid';
-import IconMeetNetwork from '@/assets/d2c/icons/v1/icon-meet-network';
-import IconMeetShare from '@/assets/d2c/icons/v1/icon-meet-share';
+import IconTopAppLogo from '@/assets/d2c/icons/v2/icon-top-app-logo';
+import IconTopChevron from '@/assets/d2c/icons/v2/icon-top-chevron';
+import IconTopGrid from '@/assets/d2c/icons/v2/icon-top-grid';
+import IconTopNetwork from '@/assets/d2c/icons/v2/icon-top-network';
+import IconTopShare from '@/assets/d2c/icons/v2/icon-top-share';
 import IconTitleLayout from '@/assets/d2c/icons/v2/icon-title-layout';
 import IconTitleMore from '@/assets/d2c/icons/v2/icon-title-more';
 import IconTitleSafety from '@/assets/d2c/icons/v2/icon-title-safety';
@@ -31,27 +31,27 @@ export const MeetingTitleBar: FC = () => (
         </div>
 
         <div className={styles.appTitle}>
-          <IconMeetAppLogo />
+          <IconTopAppLogo />
           <span className={styles.text}>{meetingSession.title}</span>
         </div>
       </div>
 
       <span className={styles.text}>{meetingSession.duration}</span>
-      <IconMeetNetwork />
+      <IconTopNetwork />
       <span className={styles.statusIcon}>
-        <IconMeetShare />
+        <IconTopShare />
       </span>
     </div>
 
     <div className={styles.right}>
       <div className={styles.tools}>
         <span className={styles.tool}>
-          <IconMeetGrid />
-          <IconMeetChevronDown />
+          <IconTopGrid />
+          <IconTopChevron />
         </span>
         <span className={styles.tool}>
           <IconTitleSafety />
-          <IconMeetChevronDown />
+          <IconTopChevron />
         </span>
         <span className={`${styles.tool} ${styles.toolLoose}`}>
           <IconTitleLayout />

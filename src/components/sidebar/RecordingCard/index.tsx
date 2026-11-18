@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState, type FC } from 'react';
-import IconNoteChevron from '@/assets/d2c/icons/note/icon-note-chevron';
-import IconNoteFile from '@/assets/d2c/icons/note/icon-note-file';
+import IconNoteChevron from '@/assets/d2c/icons/v2/icon-note-chevron';
+import IconNoteFile from '@/assets/d2c/icons/v2/icon-note-file';
 import { Pressable } from '@/components/common/Pressable';
 import { recognizingIdle, recognizingSteps } from '@/data/meetingTopics';
 import styles from './index.module.scss';
