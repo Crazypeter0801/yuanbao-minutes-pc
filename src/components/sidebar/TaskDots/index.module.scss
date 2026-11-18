@@ -1,12 +1,20 @@
 /*
- * 进行中任务点阵（Figma 533:13569）
- * 16×16 画布，九个 3.5×3.5、圆角 1 的方块，起点 1.75、步长 4.5（方块 3.5 + 间距 1）。
+ * 进行中任务点阵 · 帧动画（Frame-based Matrix Loader）
+ *
+ * 结构与参数沿用给定的 Matrix Loader：3×3、每格底色 off、上面叠一层 on 色的 ::after，
+ * 每一帧只改 ::after 的 opacity，帧间 0.05s 过渡；8 帧、7fps，一轮 1143ms。
+ * 帧数据是一条带拖尾的「蛇」沿外圈顺时针走：头 1、拖尾 0.767 / 0.533，中心格始终不亮。
+ * 原方案用 JS 驱动帧，这里把同一份帧数据编译成每格的 CSS 关键帧，效果一致、不触发 React 重渲染。
+ *
+ * 颜色按 Figma 533:13569 替换：off #E6E8EB、on #B0B6C3；尺寸按稿：16×16，格 3.5、间距 1、圆角 1。
+ * 原 CSS 的 drop-shadow 光晕在白底小卡片上会变成一圈灰雾，这里不用。
+ *
+ * ⚠️ 本文件由 scripts/gen-task-dots.py 生成，改帧请改脚本后重新执行，不要手改。
  */
 
-/* 一轮 2.8s：0–60% 逐格亮起，60–80% 全亮停住，80–92% 一起淡回，92–100% 空闲 */
-$cycle: 2800ms;
-$step: 6.5%;
-$fade: 6%;
+$cell: 3.5px;
+$gap: 1px;
+$inset: 1.75px;
 
 .dots {
   position: relative;
@@ -18,57 +26,209 @@ $fade: 6%;
 
 .cell {
   position: absolute;
-  width: 3.5px;
-  height: 3.5px;
+  width: $cell;
+  height: $cell;
   border-radius: 1px;
-  background-color: var(--wm-color-task-dot-idle);
+  background-color: var(--wm-color-task-dot-off);
+
+  &::after {
+    position: absolute;
+    inset: 0;
+    content: '';
+    border-radius: 1px;
+    background-color: var(--wm-color-task-dot-on);
+    opacity: 0;
+  }
 }
 
-@for $i from 0 through 8 {
-  $col: $i % 3;
-  $row: floor($i / 3);
-  $start: $i * $step;
+.cell0 {
+  top: calc($inset + 0 * ($cell + $gap));
+  left: calc($inset + 0 * ($cell + $gap));
+}
 
-  .cell#{$i} {
-    top: 1.75px + $row * 4.5px;
-    left: 1.75px + $col * 4.5px;
-  }
+.cell1 {
+  top: calc($inset + 0 * ($cell + $gap));
+  left: calc($inset + 1 * ($cell + $gap));
+}
 
-  /* 每格自己的关键帧：轮到它时由浅变深，全部亮完后一起淡回 */
-  @keyframes task-dot-#{$i} {
-    0%,
-    #{$start} {
-      background-color: var(--wm-color-task-dot-idle);
-    }
-    #{$start + $fade},
-    80% {
-      background-color: var(--wm-color-task-dot-active);
-    }
-    92%,
-    100% {
-      background-color: var(--wm-color-task-dot-idle);
-    }
-  }
+.cell2 {
+  top: calc($inset + 0 * ($cell + $gap));
+  left: calc($inset + 2 * ($cell + $gap));
+}
 
-  .running .cell#{$i} {
-    animation: task-dot-#{$i} $cycle cubic-bezier(0.4, 0, 0.2, 1) infinite;
-  }
+.cell3 {
+  top: calc($inset + 1 * ($cell + $gap));
+  left: calc($inset + 0 * ($cell + $gap));
+}
+
+.cell4 {
+  top: calc($inset + 1 * ($cell + $gap));
+  left: calc($inset + 1 * ($cell + $gap));
+}
+
+.cell5 {
+  top: calc($inset + 1 * ($cell + $gap));
+  left: calc($inset + 2 * ($cell + $gap));
+}
+
+.cell6 {
+  top: calc($inset + 2 * ($cell + $gap));
+  left: calc($inset + 0 * ($cell + $gap));
+}
+
+.cell7 {
+  top: calc($inset + 2 * ($cell + $gap));
+  left: calc($inset + 1 * ($cell + $gap));
+}
+
+.cell8 {
+  top: calc($inset + 2 * ($cell + $gap));
+  left: calc($inset + 2 * ($cell + $gap));
+}
+
+/* ---------- 每格的关键帧：第 n 帧从 n×12.5% 开始，0.05s 内淡到该帧的值，保持到下一帧 ---------- */
+
+@keyframes task-dot-0 {
+  0% { opacity: 0; }
+  4.374%, 12.5% { opacity: 1; }
+  16.874%, 25% { opacity: 0.767; }
+  29.374%, 37.5% { opacity: 0.533; }
+  41.874%, 50% { opacity: 0; }
+  54.374%, 62.5% { opacity: 0; }
+  66.874%, 75% { opacity: 0; }
+  79.374%, 87.5% { opacity: 0; }
+  91.874%, 100% { opacity: 0; }
+}
+
+.running .cell0::after {
+  animation: task-dot-0 1143ms linear infinite;
+}
+
+@keyframes task-dot-1 {
+  0% { opacity: 0; }
+  4.374%, 12.5% { opacity: 0; }
+  16.874%, 25% { opacity: 1; }
+  29.374%, 37.5% { opacity: 0.767; }
+  41.874%, 50% { opacity: 0.533; }
+  54.374%, 62.5% { opacity: 0; }
+  66.874%, 75% { opacity: 0; }
+  79.374%, 87.5% { opacity: 0; }
+  91.874%, 100% { opacity: 0; }
+}
+
+.running .cell1::after {
+  animation: task-dot-1 1143ms linear infinite;
+}
+
+@keyframes task-dot-2 {
+  0% { opacity: 0; }
+  4.374%, 12.5% { opacity: 0; }
+  16.874%, 25% { opacity: 0; }
+  29.374%, 37.5% { opacity: 1; }
+  41.874%, 50% { opacity: 0.767; }
+  54.374%, 62.5% { opacity: 0.533; }
+  66.874%, 75% { opacity: 0; }
+  79.374%, 87.5% { opacity: 0; }
+  91.874%, 100% { opacity: 0; }
+}
+
+.running .cell2::after {
+  animation: task-dot-2 1143ms linear infinite;
+}
+
+@keyframes task-dot-3 {
+  0% { opacity: 1; }
+  4.374%, 12.5% { opacity: 0.767; }
+  16.874%, 25% { opacity: 0.533; }
+  29.374%, 37.5% { opacity: 0; }
+  41.874%, 50% { opacity: 0; }
+  54.374%, 62.5% { opacity: 0; }
+  66.874%, 75% { opacity: 0; }
+  79.374%, 87.5% { opacity: 0; }
+  91.874%, 100% { opacity: 1; }
+}
+
+.running .cell3::after {
+  animation: task-dot-3 1143ms linear infinite;
+}
+
+@keyframes task-dot-5 {
+  0% { opacity: 0; }
+  4.374%, 12.5% { opacity: 0; }
+  16.874%, 25% { opacity: 0; }
+  29.374%, 37.5% { opacity: 0; }
+  41.874%, 50% { opacity: 1; }
+  54.374%, 62.5% { opacity: 0.767; }
+  66.874%, 75% { opacity: 0.533; }
+  79.374%, 87.5% { opacity: 0; }
+  91.874%, 100% { opacity: 0; }
+}
+
+.running .cell5::after {
+  animation: task-dot-5 1143ms linear infinite;
+}
+
+@keyframes task-dot-6 {
+  0% { opacity: 0.767; }
+  4.374%, 12.5% { opacity: 0.533; }
+  16.874%, 25% { opacity: 0; }
+  29.374%, 37.5% { opacity: 0; }
+  41.874%, 50% { opacity: 0; }
+  54.374%, 62.5% { opacity: 0; }
+  66.874%, 75% { opacity: 0; }
+  79.374%, 87.5% { opacity: 1; }
+  91.874%, 100% { opacity: 0.767; }
+}
+
+.running .cell6::after {
+  animation: task-dot-6 1143ms linear infinite;
+}
+
+@keyframes task-dot-7 {
+  0% { opacity: 0.533; }
+  4.374%, 12.5% { opacity: 0; }
+  16.874%, 25% { opacity: 0; }
+  29.374%, 37.5% { opacity: 0; }
+  41.874%, 50% { opacity: 0; }
+  54.374%, 62.5% { opacity: 0; }
+  66.874%, 75% { opacity: 1; }
+  79.374%, 87.5% { opacity: 0.767; }
+  91.874%, 100% { opacity: 0.533; }
+}
+
+.running .cell7::after {
+  animation: task-dot-7 1143ms linear infinite;
+}
+
+@keyframes task-dot-8 {
+  0% { opacity: 0; }
+  4.374%, 12.5% { opacity: 0; }
+  16.874%, 25% { opacity: 0; }
+  29.374%, 37.5% { opacity: 0; }
+  41.874%, 50% { opacity: 0; }
+  54.374%, 62.5% { opacity: 1; }
+  66.874%, 75% { opacity: 0.767; }
+  79.374%, 87.5% { opacity: 0.533; }
+  91.874%, 100% { opacity: 0; }
+}
+
+.running .cell8::after {
+  animation: task-dot-8 1143ms linear infinite;
 }
 
 /* 减少动态效果：停在设计稿静帧（第一行亮、第二行第一格 70%） */
 @media (prefers-reduced-motion: reduce) {
-  .running .cell {
+  .running .cell::after {
     animation: none;
   }
 
-  .running .cell0,
-  .running .cell1,
-  .running .cell2 {
-    background-color: var(--wm-color-task-dot-active);
+  .running .cell0::after,
+  .running .cell1::after,
+  .running .cell2::after {
+    opacity: 1;
   }
 
-  .running .cell3 {
-    background-color: var(--wm-color-task-dot-active);
+  .running .cell3::after {
     opacity: 0.7;
   }
 }

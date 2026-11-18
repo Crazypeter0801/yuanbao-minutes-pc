@@ -150,9 +150,9 @@
   --wm-color-footer-fade-32: rgba(255, 255, 255, 0.32);
   --wm-color-footer-fade-75: rgba(255, 255, 255, 0.75);
   --wm-color-footer-fade-92: rgba(255, 255, 255, 0.92);
-  /* 进行中任务点阵（Figma 533:13569）：未到 #E6E8EB、已到 #B0B6C3 */
-  --wm-color-task-dot-idle: #e6e8eb;
-  --wm-color-task-dot-active: #b0b6c3;
+  /* 进行中任务点阵（Figma 533:13569）：off #E6E8EB、on #B0B6C3 */
+  --wm-color-task-dot-off: #e6e8eb;
+  --wm-color-task-dot-on: #b0b6c3;
   /* 新版底栏渐变中段：白 54%（Figma 533:13549 #FFFFFF8A） */
   --wm-color-footer-fade-soft: rgba(255, 255, 255, 0.54);
   --wm-color-follow-up-icon: #525252;
