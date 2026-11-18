@@ -79,18 +79,20 @@
     #ffffff 50%
   );
 
-  /* macOS 窗口控制按钮：上深下浅的竖向渐变 = 果冻质感（取色自设计稿 4x 导出） */
+  /* macOS 窗口控制按钮（Figma 215:19035 操作栏）：实色 + 内阴影堆出果冻质感 */
+  --wm-color-traffic-close: #fa9891;
+  --wm-color-traffic-minimize: #ffda66;
+  --wm-color-traffic-zoom: #ade392;
+
+  /* 旧版渐变（其它页面仍在用） */
   --wm-gradient-traffic-close: linear-gradient(180deg, #ff6d62 0%, #fa9088 100%);
   --wm-gradient-traffic-minimize: linear-gradient(180deg, #ffbb0c 0%, #ffd558 100%);
   --wm-gradient-traffic-zoom: linear-gradient(180deg, #6acf37 0%, #a3df84 100%);
 
-  /* 细描边 + 同色系外晕，让 12px 的圆点有体积又不发灰 */
-  --wm-shadow-traffic-close: inset 0 0 0 0.5px rgba(183, 45, 37, 0.28),
-    0 1px 2px rgba(224, 72, 60, 0.3);
-  --wm-shadow-traffic-minimize: inset 0 0 0 0.5px rgba(163, 108, 0, 0.26),
-    0 1px 2px rgba(201, 142, 0, 0.28);
-  --wm-shadow-traffic-zoom: inset 0 0 0 0.5px rgba(43, 128, 22, 0.26),
-    0 1px 2px rgba(74, 168, 46, 0.28);
+  /* 12px 圆点上把设计稿的多层内阴影等比收到 0.5px 描边 + 一点点落影，才有稿里的柔和感 */
+  --wm-shadow-traffic-close: inset 0 0 0 0.5px rgba(196, 0, 0, 0.18), 0 1px 1.5px rgba(0, 0, 0, 0.06);
+  --wm-shadow-traffic-minimize: inset 0 0 0 0.5px rgba(158, 110, 0, 0.18), 0 1px 1.5px rgba(0, 0, 0, 0.06);
+  --wm-shadow-traffic-zoom: inset 0 0 0 0.5px rgba(0, 86, 0, 0.16), 0 1px 1.5px rgba(0, 0, 0, 0.06);
 
   /* 阴影 */
   --wm-shadow-float: 0 4px 24px rgba(0, 0, 0, 0.06);

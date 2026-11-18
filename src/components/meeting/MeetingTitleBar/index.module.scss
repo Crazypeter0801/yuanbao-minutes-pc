@@ -1,24 +1,42 @@
-/* 标题栏：左右两组 space-between，高 40（Figma 215:19035 操作栏 439:21021） */
+/* 操作栏：高 40、上下 10、左右不留白（Figma 439:21021，窗口自身左右各 8） */
 .titleBar {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
   height: 40px;
-  padding: 0 8px;
+  padding: 10px 0;
 }
 
 .left {
   display: flex;
   align-items: center;
-  padding-left: 4px;
 
   & > * + * {
     margin-left: 8px;
   }
 }
 
-/* macOS 窗口控制按钮 */
+/* 窗口控制 + 应用图标 + 标题：三者间距 4（Figma 439:21026） */
+.titleCluster {
+  display: flex;
+  align-items: center;
+
+  & > * + * {
+    margin-left: 4px;
+  }
+}
+
+/* 窗口控制外面一圈 2 的上下留白，6 圆角热区（Figma 439:21027） */
+.trafficWrap {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  padding: 2px 0;
+  border-radius: 6px;
+}
+
+/* Mac 窗口控制：64 宽、内边距 5 4、三个圆点间距 8（Figma 439:21028） */
 .traffic {
   flex: 0 0 auto;
   display: flex;
@@ -38,33 +56,33 @@
   }
 }
 
-/* 渐变 + 描边 + 色晕都来自设计稿，缺一层就会发灰、失去「果冻」立体感 */
+/* 实色 + 内阴影堆出「果冻」质感，数值取自设计稿 */
 .dotClose {
-  background-image: var(--wm-gradient-traffic-close);
+  background-color: var(--wm-color-traffic-close);
   box-shadow: var(--wm-shadow-traffic-close);
 }
 
 .dotMinimize {
-  background-image: var(--wm-gradient-traffic-minimize);
+  background-color: var(--wm-color-traffic-minimize);
   box-shadow: var(--wm-shadow-traffic-minimize);
 }
 
 .dotZoom {
-  background-image: var(--wm-gradient-traffic-zoom);
+  background-color: var(--wm-color-traffic-zoom);
   box-shadow: var(--wm-shadow-traffic-zoom);
 }
 
+/* 图标 + 标题：间距 4（Figma 439:21029 / 439:21031） */
 .appTitle {
   display: flex;
   align-items: center;
-  padding: 2px 4px;
-  border-radius: 6px;
 
   & > * + * {
     margin-left: 4px;
   }
 }
 
+/* 12/17，纯黑（Figma 439:21031 / 439:21032） */
 .text {
   font-size: 12px;
   line-height: 17px;
@@ -72,17 +90,26 @@
   white-space: nowrap;
 }
 
-/* 网络 / 分享两个 28px 图标，间距 2 */
-.metaIcons {
+/* 标题右侧 28 宽的图标位（Figma 439:21089） */
+.statusIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+}
+
+.right {
   display: flex;
   align-items: center;
 
   & > * + * {
-    margin-left: 2px;
+    margin-left: 8px;
   }
 }
 
-.right {
+/* 宫格 / 安全 / 布局三个按钮：间距 4（Figma 439:21095） */
+.tools {
   display: flex;
   align-items: center;
 
@@ -91,7 +118,7 @@
   }
 }
 
-/* 纯图标按钮：20px 图标 + 12px 下拉箭头，热区靠 padding 4 撑开（Figma layout_1CNNYS） */
+/* 纯图标按钮：20 图标 + 12 下拉箭头、间距 4、内边距 4、圆角 6（Figma 439:21096 / 439:21103 / 439:21115） */
 .tool {
   display: flex;
   align-items: center;
@@ -99,6 +126,19 @@
   border-radius: 6px;
 
   & > * + * {
-    margin-left: 2px;
+    margin-left: 4px;
   }
+}
+
+/* 布局按钮内边距 4 6（Figma 439:21115） */
+.toolLoose {
+  padding: 4px 6px;
+}
+
+/* 更多：单独的图标位，圆角 6（Figma 439:21218） */
+.more {
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  border-radius: 6px;
 }

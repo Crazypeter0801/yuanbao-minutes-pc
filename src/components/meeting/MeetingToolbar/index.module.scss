@@ -1,56 +1,73 @@
-/* padding 0 16 16，三段 space-between */
+/* 会中底栏：高 48、右侧留 4、左侧贴边（Figma 416:20031） */
 .toolbar {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   height: 48px;
-  padding: 0 16px;
+  padding: 0 4px 0 0;
 }
 
-/* 左侧工具栏：互动表情、表情、聊天 | 分割线 | 亮度（Figma 520:13382） */
+/* 左侧一组：三个图标 + 分隔线 + 亮度，整组右侧留 100（Figma 520:13382） */
 .side {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
-
-  & > * + * {
-    margin-left: 12px;
-  }
-}
-
-/* 表情切图：Figma 节点是 36 的框、内容 16，导出图按内容铺满，显示尺寸收到 24 才和旁边的图标一样大 */
-.sideIcon {
-  display: block;
-  width: 24px;
-  height: 24px;
-  object-fit: contain;
-  user-select: none;
-}
-
-/* 16 高的竖线，圆头，浅描边色 */
-.divider {
-  flex: 0 0 auto;
-  width: 1px;
-  height: 16px;
-  border-radius: 0.5px;
-  background-color: var(--wm-color-line);
-}
-
-.sideRight {
-  justify-content: flex-end;
-}
-
-/* 中间一组按钮：不再有灰底胶囊，直接排开，子项间距 8 */
-.controls {
-  display: flex;
-  align-items: center;
+  padding-right: 100px;
 
   & > * + * {
     margin-left: 8px;
   }
 }
 
+/* 三个 36×36 图标按钮，间距 4（Figma 520:13384） */
+.sideIcons {
+  display: flex;
+  align-items: center;
+
+  & > * + * {
+    margin-left: 4px;
+  }
+}
+
+/* 图标位：36×36、圆角 8，内容居中（Figma 520:13385 / 520:13391 / 520:13401） */
+.iconBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+}
+
+/* 表情切图：Figma 节点是 36 的框、内容 16，导出图按内容铺满，收到 20 才和旁边图标一样大 */
+.emoji {
+  display: block;
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  user-select: none;
+}
+
+/* 1×16 分隔线（Figma 520:13400） */
+.divider {
+  flex: 0 0 auto;
+  width: 1px;
+  height: 16px;
+  background-color: var(--wm-color-line);
+}
+
+/* 中间一组按钮：高 48、间距 8（Figma 416:20057） */
+.controls {
+  display: flex;
+  align-items: center;
+  height: 48px;
+
+  & > * + * {
+    margin-left: 8px;
+  }
+}
+
+/* 单个按钮位：宽 64 / 56、高 30；导出图底部有透明占位，所以裁掉 */
 .slot {
   position: relative;
   flex: 0 0 auto;
@@ -76,7 +93,17 @@
   }
 }
 
-/* ---------- 成员按钮：图标含数字，需拆开实现（Figma 316:2088） ---------- */
+/* 元宝（激活态）：绿色 24 图标居中在 56×30 的位子里（Figma 416:20117） */
+.yuanbaoIcon {
+  position: absolute;
+  top: 3px;
+  left: 16px;
+  display: flex;
+  width: 24px;
+  height: 24px;
+}
+
+/* ---------- 成员按钮：图标含数字，需拆开实现（Figma 416:20099） ---------- */
 .invite {
   position: absolute;
   top: 3px;
@@ -126,4 +153,14 @@
   top: 3px;
   left: 48px;
   display: flex;
+}
+
+/* 结束会议：占满剩余宽度、靠右（Figma 416:20131，里面是 44×44 的圆） */
+.exit {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 0;
+  padding-left: 8px;
 }
