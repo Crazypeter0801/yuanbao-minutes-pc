@@ -1,3 +1,12 @@
+/* 元宝面板：撑满侧栏卡片（或页签下方的区域），任务详情以它为定位基准盖住整块 */
+.panel {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
 /* 消息流 + 底栏的容器：底栏绝对定位浮在消息流下沿 */
 .body {
   position: relative;

@@ -18,7 +18,7 @@ import { QuickCommandEntry } from "@/components/sidebar/QuickCommandEntry";
 import { SidebarHeader } from "@/components/sidebar/SidebarHeader";
 import { TaskDetail } from "@/components/sidebar/TaskDetail";
 import { TaskEntry } from "@/components/sidebar/TaskEntry";
-import { SidebarShell } from "@/components/sidebar/SidebarShell";
+import { Toast } from "@/components/common/Toast";
 import { AGENT_TASKS, RUNNING_TASK_COUNT, type AgentTask } from "@/data/agentTasks";
 import { buildCardResult } from "@/data/interactiveCards";
 import { useToast } from "@/hooks/useToast";
@@ -36,6 +36,8 @@ interface YuanbaoSidebarProps {
   onSubmit?: (text: string) => void;
   /** 会中已识别出的话题（最后一条是当前正在聊的），显示在「正在帮你记」卡片里 */
   noteTopics?: string[];
+  /** 只开着元宝时显示自己的标题栏；多个应用并开时由侧栏页签代替 */
+  showHeader?: boolean;
 }
 
 /**
@@ -51,6 +53,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
   onClose,
   onSubmit,
   noteTopics,
+  showHeader = true,
 }) => {
   const { toast, showToast } = useToast();
   /** 底栏同一时刻只展开一个面板：推荐指令 / 进行中 */
@@ -112,12 +115,14 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
   const send = (text: string) => (onSubmit ? onSubmit(text) : chat.ask(text));
 
   return (
-    <SidebarShell toast={toast}>
-      <SidebarHeader
-        onPip={() => showToast("已在独立窗口打开（演示）")}
-        menuItems={menuItems}
-        onClose={onClose}
-      />
+    <div className={styles.panel}>
+      {showHeader && (
+        <SidebarHeader
+          onPip={() => showToast("已在独立窗口打开（演示）")}
+          menuItems={menuItems}
+          onClose={onClose}
+        />
+      )}
 
       {/* 消息流与底栏叠在一起：对话可以滚到底栏后面，被渐变底一点点盖掉 */}
       <div
@@ -170,6 +175,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
       </div>
 
       {activeTask && <TaskDetail task={activeTask} onBack={() => setActiveTask(null)} />}
-    </SidebarShell>
+      <Toast toast={toast} placement="window" />
+    </div>
   );
 };

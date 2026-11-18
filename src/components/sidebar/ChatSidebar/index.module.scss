@@ -1,0 +1,268 @@
+/* 撑满侧栏：标题栏 64 + 可滚动的聊天记录 + 底部输入 */
+.panel {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  color: var(--wm-color-text-primary);
+}
+
+.stream {
+  padding: 10px 20px 16px;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 置顶公告：白卡片 + 大落影，正文最多 3 行，右下角已读人数 */
+.notice {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  padding: 12px;
+  border-radius: 16px;
+  background-color: var(--wm-color-background-quaternary);
+  box-shadow: var(--wm-shadow-notice);
+  font-size: var(--wm-side-font-size, 14px);
+  line-height: calc(var(--wm-side-font-size, 14px) + 6px);
+}
+
+.noticeIcon {
+  flex: 0 0 auto;
+  margin-right: 6px;
+}
+
+.noticeText {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.noticeRead {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  align-items: center;
+  padding-left: 4px;
+  background-color: var(--wm-color-background-quaternary);
+  color: var(--wm-color-text-tertiary);
+  font-size: 12px;
+  line-height: 20px;
+}
+
+/* 时间分隔：上 28 下 18 */
+.time {
+  margin: 28px 0 18px;
+  text-align: center;
+  color: var(--wm-color-text-tertiary);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+/* 消息行：头像 28 + 名字 + 气泡，行距 16；自己的整行镜像到右边 */
+.row {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 16px;
+
+  & > * + * {
+    margin-left: 8px;
+  }
+}
+
+.rowSelf {
+  flex-direction: row-reverse;
+  text-align: right;
+
+  & > * + * {
+    margin-left: 0;
+    margin-right: 8px;
+  }
+}
+
+.avatar {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.rowBody {
+  min-width: 0;
+}
+
+.rowName {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--wm-color-text-secondary);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.bubble {
+  display: inline-block;
+  max-width: 100%;
+  margin: 0;
+  padding: 6px 10px;
+  border-radius: 18px;
+  background-color: var(--wm-color-chat-bubble-receive);
+  font-size: var(--wm-side-font-size, 14px);
+  line-height: calc(var(--wm-side-font-size, 14px) + 6px);
+  text-align: left;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+
+  .rowSelf & {
+    background-color: var(--wm-color-chat-bubble-send);
+    color: var(--wm-color-text-senary);
+  }
+}
+
+/* 会议信息卡：268 宽、1px 浅描边、圆角 16，描述最多 4 行，下面是附件 */
+.infoCard {
+  max-width: 268px;
+  padding: 10px 12px 12px;
+  border-radius: 16px;
+  box-shadow: inset 0 0 0 1px var(--wm-color-card-line);
+  text-align: left;
+  font-size: var(--wm-side-font-size, 14px);
+  line-height: 18px;
+}
+
+.infoTitle,
+.attachment {
+  display: flex;
+  align-items: center;
+
+  /* 图标后面直接跟文字节点，间距挂在图标上 */
+  & > img {
+    flex: 0 0 auto;
+    margin-right: 6px;
+  }
+}
+
+.infoTitle {
+  font-weight: 500;
+}
+
+.infoDescription {
+  display: -webkit-box;
+  margin: 8px 0;
+  overflow: hidden;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+}
+
+.attachments {
+  display: flex;
+  flex-direction: column;
+  padding-top: 8px;
+  border-top: 1px solid var(--wm-color-card-line);
+  color: var(--wm-color-text-secondary);
+  font-size: 13px;
+
+  & > * + * {
+    margin-top: 6px;
+  }
+}
+
+/* 底部输入：左右下各留 16，1px 描边、圆角 16，最低 94 */
+.compose {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 94px;
+  margin: 0 16px 16px;
+  padding: 8px 11px 5px;
+  border-radius: 16px;
+  box-shadow: inset 0 0 0 1px var(--wm-color-compose-line);
+
+  & > * + * {
+    margin-top: 6px;
+  }
+}
+
+.input {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 40px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: none;
+  resize: none;
+  background: transparent;
+  color: var(--wm-color-text-primary);
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 20px;
+
+  &::placeholder {
+    color: var(--wm-color-text-tertiary);
+  }
+}
+
+/* 工具行：发给 ▾ 靠左，四个工具 24×24 间距 14 靠右，弹幕设置前一条 12 高的竖线 */
+.actions {
+  display: flex;
+  align-items: center;
+  min-height: 24px;
+  color: var(--wm-color-text-secondary);
+  font-size: 14px;
+
+  & > * + * {
+    margin-left: 14px;
+  }
+}
+
+.receiver {
+  display: flex;
+  align-items: center;
+  margin-right: auto;
+  white-space: nowrap;
+}
+
+.receiverSelect {
+  margin-left: 4px;
+  padding: 0 18px 0 0;
+  border: 0;
+  outline: none;
+  appearance: none;
+  background: url('@/assets/ref/dawen/eac7f.svg') no-repeat right center / 16px;
+  color: var(--wm-color-text-primary);
+  font: inherit;
+  cursor: pointer;
+}
+
+.tool {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 5px;
+  cursor: pointer;
+  outline: none;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--wm-color-control-hover);
+  }
+}
+
+/* 弹幕关着：图标降到 45% */
+.toolOff {
+  opacity: 0.45;
+}
+
+.toolDivider {
+  width: 0;
+  height: 12px;
+  border-left: 1px solid var(--wm-color-line);
+}

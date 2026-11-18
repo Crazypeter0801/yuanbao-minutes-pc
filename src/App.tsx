@@ -1,9 +1,12 @@
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { MeetingWindow } from "@/components/meeting/MeetingWindow";
 import { PollComposer } from "@/components/poll/PollComposer";
 import { WINDOW_TOAST_ROOT_ID } from "@/components/common/Toast";
 import { DemoToolbar } from "@/components/demo/DemoToolbar";
 import { YuanbaoSidebar } from "@/components/YuanbaoSidebar";
+import { ChatSidebar } from "@/components/sidebar/ChatSidebar";
+import { MembersSidebar } from "@/components/sidebar/MembersSidebar";
+import { SideDock, type SideAppId } from "@/components/sidebar/SideDock";
 import {
   buildArtifact,
   buildArtifactCreatedMessage,
@@ -21,9 +24,38 @@ import { SHARE_TO_GROUP_LABEL } from "@/data/meetingSession";
 import { topicAt } from "@/data/meetingTopics";
 import { matchScenario } from "@/data/proactiveScenarios";
 import { buildScreenshotNote, meetingShotSrc } from "@/data/yuanbaoContent";
+import { useMeetingChat } from "@/hooks/useMeetingChat";
 import { useYuanbaoSession } from "@/hooks/useYuanbaoSession";
 import type { ArtifactItem } from "@/types/artifact";
 import styles from "./App.module.scss";
+
+/** 侧栏：已打开的应用（页签顺序）+ 正在看的那个；active 为 null 表示收起 */
+interface DockState {
+  apps: SideAppId[];
+  active: SideAppId | null;
+}
+
+/**
+ * 底栏按钮开合侧栏应用（参考 Demo sidebar-motion.js）
+ * - 正在看的就是它：关掉；还开着别的就切到相邻页签（优先右边），否则整个侧栏收起；
+ * - 侧栏收着：只打开它；
+ * - 侧栏开着别的：加一个页签（已开过就直接切过去）。
+ */
+function toggleDockApp({ apps, active }: DockState, app: SideAppId): DockState {
+  if (active === app) {
+    if (apps.length > 1) {
+      const index = apps.indexOf(app);
+      const rest = apps.filter((id) => id !== app);
+      return { apps: rest, active: apps[index + 1] ?? apps[index - 1] };
+    }
+    // 先只置空 active，卡片在收起动画里仍显示原内容，动画结束再清空 apps
+    return { apps, active: null };
+  }
+  if (active === null) {
+    return { apps: [app], active: app };
+  }
+  return { apps: apps.includes(app) ? apps : [...apps, app], active: app };
+}
 
 /** 「建一个 PDF / PPT / 文件」这类说法都算要生成产物 */
 const CREATE_FILE_PATTERN = /创建|建个|生成|做一?份|出一份/;
@@ -37,7 +69,29 @@ const FILE_KIND_PATTERN = /pdf|ppt|幻灯片|文件|纪要文档/i;
  * 3. 输入框里直接打「刚入会」「建个投票」这类词也能触发演示场景。
  */
 export default function App() {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [dock, setDock] = useState<DockState>({ apps: ["yuanbao"], active: "yuanbao" });
+  const meetingChat = useMeetingChat();
+  /** 从弹幕浮层「聊天 >」进来时，把焦点放进聊天输入框 */
+  const [chatFocusSignal, setChatFocusSignal] = useState(0);
+
+  const toggleApp = useCallback((app: SideAppId) => setDock((state) => toggleDockApp(state, app)), []);
+  /** 只打开 / 切到某个应用，已在看就不动（演示指令、「聊天 >」用） */
+  const openApp = useCallback(
+    (app: SideAppId) => setDock((state) => (state.active === app ? state : toggleDockApp(state, app))),
+    [],
+  );
+  const closeApp = useCallback(
+    (app: SideAppId) =>
+      setDock((state) =>
+        state.active === app ? toggleDockApp(state, app) : { ...state, apps: state.apps.filter((id) => id !== app) },
+      ),
+    [],
+  );
+  const closeAll = useCallback(() => setDock((state) => ({ ...state, active: null })), []);
+  const handleDockClosed = useCallback(
+    () => setDock((state) => (state.active === null ? { apps: [], active: null } : state)),
+    [],
+  );
   const [pollOpen, setPollOpen] = useState(false);
   /** 会中文件：一开始只有「元宝笔记」（来源），生成文件、记录画面后再往里加 */
   const [artifacts, setArtifacts] = useState<ArtifactItem[]>([noteArtifact]);
@@ -113,7 +167,7 @@ export default function App() {
    * - 其余都走和输入框相同的链路（普通提问 / 生成文件 / 演示场景）。
    */
   const runCommand = (item: CommandItem) => {
-    setSidebarOpen(true);
+    openApp("yuanbao");
     if (item.effect === "auto-note") {
       chat.push(buildAutoNote(noteIndex.current));
       noteIndex.current += 1;
@@ -142,8 +196,14 @@ export default function App() {
           {/* 投票弹窗只盖会议区，元宝说的话仍然看得见 */}
           <div className={styles.meetingArea}>
             <MeetingWindow
-              yuanbaoOpen={sidebarOpen}
-              onToggleYuanbao={() => setSidebarOpen((open) => !open)}
+              activeApp={dock.active}
+              onToggleApp={toggleApp}
+              barrage={meetingChat.barrage}
+              onSendBarrage={meetingChat.send}
+              onOpenChat={() => {
+                openApp("chat");
+                setChatFocusSignal((value) => value + 1);
+              }}
             />
             {pollOpen && (
               <PollComposer
@@ -156,15 +216,39 @@ export default function App() {
               />
             )}
           </div>
-          {sidebarOpen && (
-            <YuanbaoSidebar
-              chat={chat}
-              artifacts={artifacts}
-              onClose={() => setSidebarOpen(false)}
-              onSubmit={handleSubmit}
-              noteTopics={noteTopics}
-            />
-          )}
+          <SideDock
+            apps={dock.apps}
+            active={dock.active}
+            onSelect={openApp}
+            onCloseApp={closeApp}
+            onCloseAll={closeAll}
+            onClosed={handleDockClosed}
+            renderApp={(id, { showHeader }) => {
+              if (id === "chat") {
+                return (
+                  <ChatSidebar
+                    chat={meetingChat}
+                    showHeader={showHeader}
+                    onClose={() => closeApp("chat")}
+                    focusSignal={chatFocusSignal}
+                  />
+                );
+              }
+              if (id === "members") {
+                return <MembersSidebar showHeader={showHeader} onClose={() => closeApp("members")} />;
+              }
+              return (
+                <YuanbaoSidebar
+                  chat={chat}
+                  artifacts={artifacts}
+                  onClose={() => closeApp("yuanbao")}
+                  onSubmit={handleSubmit}
+                  noteTopics={noteTopics}
+                  showHeader={showHeader}
+                />
+              );
+            }}
+          />
         </div>
         {/* 窗口外：演示按钮，浮在窗口下方的壁纸上 */}
         <div className={styles.demoBar}>

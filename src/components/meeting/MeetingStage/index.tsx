@@ -6,6 +6,8 @@ import avatarKanye from '@/assets/d2c/images/v1/avatar-kanye@2x.png';
 import avatarLisa from '@/assets/d2c/images/v1/avatar-lisa@2x.png';
 import avatarTizze from '@/assets/d2c/images/v1/avatar-tizze@2x.png';
 import videoSpeaker from '@/assets/d2c/images/v1/video-speaker@2x.png';
+import { Barrage } from '@/components/meeting/Barrage';
+import type { BarrageItem } from '@/hooks/useMeetingChat';
 import styles from './index.module.scss';
 
 interface Participant {
@@ -36,9 +38,9 @@ const SPEAKER_NAME = '艾慧慧Taylor';
  * 会议画面：演讲者视图（Figma 257:1966）
  * 上：参会人头像条（317:5308，5 块 210×118、间距 12，右缘渐隐）
  * 下：主讲人大画面（316:2002，圆角 8，左下角名字水牌）
- * 说明：本期仅做视觉还原，不挂交互。
+ * 主画面左下角叠弹幕（底栏「发送弹幕」或聊天侧栏发出的消息）。
  */
-export const MeetingStage: FC = () => (
+export const MeetingStage: FC<{ barrage?: BarrageItem[] }> = ({ barrage = [] }) => (
   <div className={styles.stage}>
     <div className={styles.strip}>
       <div className={styles.stripTrack}>
@@ -71,6 +73,7 @@ export const MeetingStage: FC = () => (
         <IconVideoNameMic width={10} height={13} />
         <span className={styles.name}>{SPEAKER_NAME}</span>
       </div>
+      <Barrage items={barrage} />
     </div>
   </div>
 );

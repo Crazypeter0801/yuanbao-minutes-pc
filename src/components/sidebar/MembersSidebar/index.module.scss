@@ -1,0 +1,252 @@
+.panel {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 分段 + 搜索：左右 20、下 20，间距 8 */
+.toolbar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  padding: 0 20px 20px;
+
+  & > * + * {
+    margin-left: 8px;
+  }
+}
+
+/* 分段控件：#F3F3F4 胶囊底 + 2 内边距，选中项白底 */
+.segment {
+  flex: 1 1 auto;
+  display: flex;
+  padding: 2px;
+  border-radius: 29px;
+  background-color: var(--wm-color-segment-track);
+}
+
+.segmentItem {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  border-radius: 29px;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--wm-color-text-secondary);
+  cursor: pointer;
+  outline: none;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease;
+}
+
+.segmentItemActive {
+  background-color: var(--wm-color-background-quaternary);
+  color: var(--wm-color-text-primary);
+  box-shadow: var(--wm-shadow-segment);
+}
+
+.search {
+  flex: 1 1 auto;
+  height: 32px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 29px;
+  outline: none;
+  background-color: var(--wm-color-segment-track);
+  color: var(--wm-color-text-primary);
+  font-family: inherit;
+  font-size: 14px;
+
+  &::placeholder {
+    color: var(--wm-color-text-tertiary);
+  }
+}
+
+.searchButton {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--wm-color-segment-track);
+  cursor: pointer;
+  outline: none;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--wm-color-control-hover);
+  }
+}
+
+/* 成员列表：左右 20、行高 40、行距 16，可滚动 */
+.list {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 0 20px 20px;
+  overflow-y: auto;
+
+  & > * + * {
+    margin-top: 16px;
+  }
+}
+
+.member {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 40px;
+
+  & > * + * {
+    margin-left: 8px;
+  }
+}
+
+.person {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+
+  & > * + * {
+    margin-left: 8px;
+  }
+}
+
+.avatar {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  box-shadow: var(--wm-shadow-avatar);
+}
+
+.personText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.name,
+.department {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  /* 跟侧栏字号走，但比正文小一档（标准 14 → 12） */
+  font-size: calc(var(--wm-side-font-size, 14px) - 2px);
+  line-height: calc(var(--wm-side-font-size, 14px) + 6px);
+}
+
+.name {
+  font-weight: 400;
+  color: var(--wm-color-member-name);
+}
+
+.department {
+  font-size: 12px;
+  color: var(--wm-color-text-tertiary);
+}
+
+/* 麦克风 / 摄像头状态：16 图标、间距 12 */
+.devices {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+
+  & > * + * {
+    margin-left: 4px;
+  }
+}
+
+.device {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+}
+
+.device[role='button'] {
+  cursor: pointer;
+  outline: none;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--wm-color-control-hover);
+  }
+}
+
+.callButton {
+  flex: 0 0 auto;
+  padding: 2px 10px;
+  border-radius: 14px;
+  background-color: var(--wm-color-segment-track);
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--wm-color-text-secondary);
+  cursor: pointer;
+  outline: none;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--wm-color-control-hover);
+  }
+}
+
+.empty {
+  padding-top: 40px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--wm-color-text-tertiary);
+}
+
+/* 底部三颗按钮：padding 9 16 16、间距 12、高 32、胶囊 */
+.footer {
+  flex: 0 0 auto;
+  display: flex;
+  padding: 9px 16px 16px;
+
+  & > * + * {
+    margin-left: 12px;
+  }
+}
+
+.footerButton {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  border-radius: 18px;
+  background-color: var(--wm-color-segment-track);
+  font-size: 12px;
+  color: var(--wm-color-text-primary);
+  white-space: nowrap;
+  cursor: pointer;
+  outline: none;
+  transition: filter 120ms ease;
+
+  &:hover,
+  &:focus-visible {
+    filter: brightness(0.96);
+  }
+}
+
+.footerButtonStrong {
+  background-color: var(--wm-color-button-strong);
+  color: var(--wm-color-text-senary);
+
+  &:hover,
+  &:focus-visible {
+    filter: brightness(1.4);
+  }
+}

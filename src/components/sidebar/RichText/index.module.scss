@@ -5,8 +5,8 @@
  */
 
 .rich {
-  font-size: 14px;
-  line-height: 22px;
+  font-size: var(--wm-side-font-size, 14px);
+  line-height: calc(var(--wm-side-font-size, 14px) + 8px);
   color: var(--wm-color-text-primary);
   word-break: break-word;
 
