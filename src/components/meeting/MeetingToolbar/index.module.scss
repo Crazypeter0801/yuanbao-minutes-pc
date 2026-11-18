@@ -19,6 +19,15 @@
   }
 }
 
+/* 表情切图：Figma 节点是 36 的框、内容 16，导出图按内容铺满，显示尺寸收到 24 才和旁边的图标一样大 */
+.sideIcon {
+  display: block;
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  user-select: none;
+}
+
 /* 16 高的竖线，圆头，浅描边色 */
 .divider {
   flex: 0 0 auto;

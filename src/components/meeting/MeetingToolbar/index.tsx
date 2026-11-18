@@ -1,8 +1,8 @@
 import type { FC } from 'react';
 import IconTbArrow from '@/assets/d2c/icons/v1/icon-tb-arrow';
 import IconTbCamera from '@/assets/d2c/icons/v1/icon-tb-camera';
-import IconTbChat from '@/assets/d2c/icons/v1/icon-tb-chat';
-import IconTbEmoji from '@/assets/d2c/icons/v1/icon-tb-emoji';
+
+import IconBarEmojiChat from '@/assets/d2c/icons/v2/icon-bar-emoji-chat';
 import IconBarLight from '@/assets/d2c/icons/v2/icon-bar-light';
 import IconTbInviteBody from '@/assets/d2c/icons/v1/icon-tb-invite-body';
 import IconTbInviteHead from '@/assets/d2c/icons/v1/icon-tb-invite-head';
@@ -12,6 +12,8 @@ import IconTbMore from '@/assets/d2c/icons/v1/icon-tb-more';
 import IconTbRecord from '@/assets/d2c/icons/v1/icon-tb-record';
 import IconTbShare from '@/assets/d2c/icons/v1/icon-tb-share';
 import IconTbYuanbao from '@/assets/d2c/icons/v1/icon-tb-yuanbao';
+import barEmojiHi from '@/assets/d2c/images/v2/bar-emoji-hi@2x.png';
+import barEmojiSmile from '@/assets/d2c/images/v2/bar-emoji-smile@2x.png';
 import { Pressable } from '@/components/common/Pressable';
 import styles from './index.module.scss';
 
@@ -33,8 +35,9 @@ interface MeetingToolbarProps {
 export const MeetingToolbar: FC<MeetingToolbarProps> = ({ yuanbaoOpen, onToggleYuanbao }) => (
   <div className={styles.toolbar}>
     <div className={styles.side}>
-      <IconTbEmoji />
-      <IconTbChat />
+      <img className={styles.sideIcon} src={barEmojiHi} alt="互动表情" draggable={false} />
+      <img className={styles.sideIcon} src={barEmojiSmile} alt="表情" draggable={false} />
+      <IconBarEmojiChat />
       <span className={styles.divider} aria-hidden="true" />
       <IconBarLight />
     </div>

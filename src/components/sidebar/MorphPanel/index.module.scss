@@ -11,7 +11,7 @@ $duration: 380ms;
   position: relative;
   z-index: 2;
   flex: 0 0 auto;
-  height: 36px;
+  height: 32px;
   transition: opacity 120ms ease-out;
 }
 
@@ -33,7 +33,7 @@ $duration: 380ms;
 .ghost {
   display: flex;
   align-items: center;
-  height: 36px;
+  height: 32px;
   padding: 0 var(--morph-collapsed-padding-x);
   visibility: hidden;
   pointer-events: none;
@@ -64,7 +64,7 @@ $duration: 380ms;
   }
 }
 
-/* 收起：白底、0.5px 内描边 + 浮层阴影、圆角 18（Figma 36:2475 / 36:2280） */
+/* 收起：白底、1px 描边 + 轻阴影、圆角 12、高 32（Figma 489:10625） */
 .card {
   position: absolute;
   left: 0;
@@ -72,12 +72,12 @@ $duration: 380ms;
   display: flex;
   flex-direction: column;
   width: var(--morph-collapsed-width);
-  height: 36px;
-  padding: 6px var(--morph-collapsed-padding-x);
+  height: 32px;
+  padding: 4px var(--morph-collapsed-padding-x);
   overflow: hidden;
-  border-radius: 18px;
+  border-radius: 12px;
   background-color: var(--wm-color-background-bubble);
-  box-shadow: inset 0 0 0 0.5px var(--wm-color-line), var(--wm-shadow-float);
+  box-shadow: inset 0 0 0 1px var(--wm-color-outline-tertiary), var(--wm-shadow-chip);
   cursor: pointer;
   transition:
     left $duration $ease-out,
@@ -89,7 +89,7 @@ $duration: 380ms;
 }
 
 .card:not(.cardExpanded):hover {
-  box-shadow: inset 0 0 0 0.5px var(--wm-color-line), var(--wm-shadow-hover);
+  box-shadow: inset 0 0 0 1px var(--wm-color-outline-secondary), var(--wm-shadow-hover);
 }
 
 /* 展开：对齐到行首、圆角 12、上左右 padding 12；底部留白交给滚动区 */

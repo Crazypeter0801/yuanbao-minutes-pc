@@ -50,7 +50,6 @@ export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
   onOpenSource,
   onOpenArtifact,
   onOpenNote,
-  noteTopics,
   onCardSubmit,
   showFollowUps = true,
 }) => {
@@ -125,7 +124,7 @@ export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
 
       {message.recordingCard && (
         <div className={styles.cardSlot}>
-          <RecordingCard topics={noteTopics} onOpen={onOpenNote} />
+          <RecordingCard compact onOpen={onOpenNote} />
         </div>
       )}
 

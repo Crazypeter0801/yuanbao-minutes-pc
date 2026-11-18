@@ -1,0 +1,100 @@
+/* 收起态：星标 + 「进行中」+ 数字 */
+.label {
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--wm-color-text-secondary);
+  white-space: nowrap;
+}
+
+.count {
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--wm-color-text-tertiary);
+}
+
+/* 任务列表：每条两行（标题 + 一行说明），右侧状态 */
+.list {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0 10px;
+}
+
+.task {
+  display: flex;
+  align-items: flex-start;
+  padding: 8px;
+  border-radius: 8px;
+  text-align: left;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease-out;
+
+  & > * + * {
+    margin-left: 8px;
+  }
+
+  &:hover {
+    background-color: var(--wm-color-background-septenary);
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 1.5px var(--wm-color-line);
+  }
+}
+
+/* 任务前的小圆点：进行中绿、已完成灰 */
+.dot {
+  flex: 0 0 auto;
+  width: 6px;
+  height: 6px;
+  margin-top: 7px;
+  border-radius: 3px;
+  background-color: var(--wm-color-success-primary);
+}
+
+.body {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  overflow: hidden;
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--wm-color-text-primary);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.summary {
+  overflow: hidden;
+  margin-top: 2px;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--wm-color-text-tertiary);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.badgeRunning,
+.badgeDone {
+  flex: 0 0 auto;
+  margin-top: 2px;
+  padding: 1px 6px;
+  border-radius: 8px;
+  font-size: 11px;
+  line-height: 16px;
+  white-space: nowrap;
+}
+
+.badgeRunning {
+  color: var(--wm-color-brand-yuanbao);
+  background-color: var(--wm-color-brand-primary-soft);
+}
+
+.badgeDone {
+  color: var(--wm-color-text-tertiary);
+  background-color: var(--wm-color-background-septenary);
+}

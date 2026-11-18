@@ -17,6 +17,8 @@ interface RecordingCardProps {
   title?: string;
   /** 已识别出的话题，按时间顺序，最后一条是当前正在聊的；为空时显示识别中的过渡态 */
   topics?: string[];
+  /** 只显示标题行（Figma 215:19035 的单行卡片），不带下面的灰条 / 话题区 */
+  compact?: boolean;
   /** 点击整张卡片打开云笔记 */
   onOpen?: () => void;
 }
@@ -27,9 +29,15 @@ interface RecordingCardProps {
  * 识别中：灰条 36 高，阶段文案每 4 秒换一句，字上一道亮光扫过；走完一遍停在「识别到话题后会自动更新」。
  * 有话题后（Figma 91:15376）：灰底区展开，「当前正在聊」灰字单独一行，下面一行一条短话题；
  * 新话题追加在最下面，当前话题蓝点、之前的灰点，文字都是黑色，左侧一根竖线串起来。
+ * compact：只留标题行（入会稿 215:19035 就是这一种），不渲染下面的灰条与话题区。
  * 话题区最多露出 2.5 条（话题 14/20、行距 12），再多在列表里上下滚动，新话题出现时自动滚到底。
  */
-export const RecordingCard: FC<RecordingCardProps> = ({ title = '元宝笔记', topics = [], onOpen }) => {
+export const RecordingCard: FC<RecordingCardProps> = ({
+  title = '元宝笔记',
+  topics = [],
+  compact = false,
+  onOpen,
+}) => {
   // 0..n-1 = 第几句阶段文案；n = 停住的说明
   const [step, setStep] = useState(0);
   const [scrolled, setScrolled] = useState(false);
@@ -88,6 +96,7 @@ export const RecordingCard: FC<RecordingCardProps> = ({ title = '元宝笔记', 
         </span>
       </span>
 
+      {compact ? null : (
       <span className={`${styles.slot} ${hasTopics ? styles.slotTopics : ''}`}>
         {hasTopics ? (
           <span className={styles.topicPanel}>
@@ -121,6 +130,7 @@ export const RecordingCard: FC<RecordingCardProps> = ({ title = '元宝笔记', 
           </span>
         )}
       </span>
+      )}
     </Pressable>
   );
 };

@@ -11,17 +11,16 @@ import type { PopMenuItem } from "@/components/common/PopMenu";
 import { NOTE_ARTIFACT_ID } from "@/data/artifacts";
 import type { ArtifactItem } from "@/types/artifact";
 import type { BubbleCard } from "@/types/chat";
-import { AiDisclaimer } from "@/components/sidebar/AiDisclaimer";
-import { ArtifactEntry } from "@/components/sidebar/ArtifactEntry";
 import { ChatInput } from "@/components/sidebar/ChatInput";
 import { ChatList } from "@/components/sidebar/ChatList";
 import { MessageStream } from "@/components/sidebar/MessageStream";
-import { NotePill } from "@/components/sidebar/NotePill";
+import { QuickCommandEntry } from "@/components/sidebar/QuickCommandEntry";
 import { SidebarHeader } from "@/components/sidebar/SidebarHeader";
+import { TaskDetail } from "@/components/sidebar/TaskDetail";
+import { TaskEntry } from "@/components/sidebar/TaskEntry";
 import { SidebarShell } from "@/components/sidebar/SidebarShell";
+import { AGENT_TASKS, RUNNING_TASK_COUNT, type AgentTask } from "@/data/agentTasks";
 import { buildCardResult } from "@/data/interactiveCards";
-import { buildRecordingStateNote } from "@/data/yuanbaoContent";
-import { useListening } from "@/hooks/useListening";
 import { useToast } from "@/hooks/useToast";
 import type { YuanbaoSession } from "@/hooks/useYuanbaoSession";
 import styles from "./index.module.scss";
@@ -29,7 +28,7 @@ import styles from "./index.module.scss";
 interface YuanbaoSidebarProps {
   /** 元宝会话（消息流），由 App 持有 */
   chat: YuanbaoSession;
-  /** 元宝本轮产出的文件；为空时不出现产物入口 */
+  /** 元宝本轮产出的文件（对话里的产物卡片仍用它打开） */
   artifacts: ArtifactItem[];
   /** 关闭侧栏 */
   onClose: () => void;
@@ -49,13 +48,15 @@ interface YuanbaoSidebarProps {
  */
 export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
   chat,
-  artifacts,
   onClose,
   onSubmit,
   noteTopics,
 }) => {
   const { toast, showToast } = useToast();
-  const [artifactsOpen, setArtifactsOpen] = useState(false);
+  /** 底栏同一时刻只展开一个面板：推荐指令 / 进行中 */
+  const [openPanel, setOpenPanel] = useState<"commands" | "tasks" | null>(null);
+  /** 正在看的任务；有值时盖住侧栏显示任务详情 */
+  const [activeTask, setActiveTask] = useState<AgentTask | null>(null);
   /**
    * 底栏浮在消息流上方（Figma 91:15671 的渐变底），消息流底部要留出底栏的高度，
    * 否则最后一条会被压在输入框下面；输入框多行撑高时一起跟着变。
@@ -74,11 +75,6 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
     observer.observe(node);
     return () => observer.disconnect();
   }, []);
-
-  // 暂停 / 继续只在对话里留一条消息，不弹 Toast：反馈集中在一处
-  const { isListening, toggleListening } = useListening((listening) => {
-    chat.push(buildRecordingStateNote(listening));
-  });
 
   const menuItems = useMemo<PopMenuItem[]>(
     () => [
@@ -132,7 +128,6 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
           className={styles.stream}
           scrollKey={`${chat.messages.length}-${chat.isThinking}`}
         >
-          <AiDisclaimer />
           <ChatList
             messages={chat.messages}
             shape="round"
@@ -148,34 +143,22 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
         </MessageStream>
 
         <div className={styles.footer} ref={footerRef}>
-          {/*
-          输入框上方一行：左边是长程任务（元宝正在记笔记…），多个时从左往右排；
-          右边固定是文件夹，展开时向左长成整行面板
-        */}
+          {/* 输入框上方一行：左「推荐指令」、右「进行中」，按 Figma 489:10623 */}
           <div className={styles.statusRow}>
-            <div
-              className={`${styles.tasks} ${artifactsOpen ? styles.tasksHidden : ""}`}
-            >
-              <NotePill
-                isListening={isListening}
-                hidden={artifactsOpen}
-                onOpen={openNote}
-                onToggleListening={toggleListening}
-              />
-            </div>
-            {/* 元宝笔记本身就是一个文件，开启云笔记后这个入口一直都在 */}
-            {artifacts.length > 0 && (
-              <ArtifactEntry
-                artifacts={artifacts}
-                expanded={artifactsOpen}
-                onExpandedChange={setArtifactsOpen}
-                onOpen={openArtifact}
-                onOpenSide={() => {
-                  setArtifactsOpen(false);
-                  showToast("已在侧边打开文件列表（演示）");
-                }}
-              />
-            )}
+            <QuickCommandEntry
+              expanded={openPanel === "commands"}
+              onExpandedChange={(next) => setOpenPanel(next ? "commands" : null)}
+              hidden={openPanel === "tasks"}
+              onPick={send}
+            />
+            <TaskEntry
+              tasks={AGENT_TASKS}
+              runningCount={RUNNING_TASK_COUNT}
+              expanded={openPanel === "tasks"}
+              onExpandedChange={(next) => setOpenPanel(next ? "tasks" : null)}
+              hidden={openPanel === "commands"}
+              onOpenTask={setActiveTask}
+            />
           </div>
           <ChatInput
             placeholder="和元宝聊聊"
@@ -184,6 +167,8 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
           />
         </div>
       </div>
+
+      {activeTask && <TaskDetail task={activeTask} onBack={() => setActiveTask(null)} />}
     </SidebarShell>
   );
 };
