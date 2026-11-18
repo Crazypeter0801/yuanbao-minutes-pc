@@ -47,18 +47,18 @@ export const MeetingTitleBar: FC = () => (
       <div className={styles.tools}>
         <span className={styles.tool}>
           <IconTopGrid />
-          <IconTopChevron />
+          <IconTopChevron width={10} height={10} />
         </span>
         <span className={styles.tool}>
           <IconTitleSafety />
-          <IconTopChevron />
+          <IconTopChevron width={10} height={10} />
         </span>
         <span className={`${styles.tool} ${styles.toolLoose}`}>
-          <IconTitleLayout />
+          <IconTitleLayout width={16} height={16} />
         </span>
       </div>
       <span className={styles.more}>
-        <IconTitleMore />
+        <IconTitleMore width={28} height={28} />
       </span>
     </div>
   </div>

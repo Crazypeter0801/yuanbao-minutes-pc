@@ -39,13 +39,25 @@
   border-radius: 8px;
 }
 
-/* 表情切图：Figma 节点是 36 的框、内容 16，导出图按内容铺满，收到 20 才和旁边图标一样大 */
-.emoji {
+/*
+ * 表情切图：两张 PNG 的透明留白不一样（内容占比 54% / 64%），
+ * 按各自比例反推显示尺寸，让可见图形都落在设计稿的 16px 上。
+ */
+.emojiHi,
+.emojiSmile {
   display: block;
-  width: 20px;
-  height: 20px;
   object-fit: contain;
   user-select: none;
+}
+
+.emojiHi {
+  width: 30px;
+  height: 30px;
+}
+
+.emojiSmile {
+  width: 25px;
+  height: 25px;
 }
 
 /* 1×16 分隔线（Figma 520:13400） */
@@ -67,7 +79,7 @@
   }
 }
 
-/* 单个按钮位：宽 64 / 56、高 30；导出图底部有透明占位，所以裁掉 */
+/* 单个按钮位：宽 64 / 56、高 30；图标按画布真实高度（44）顶部对齐，下面多出的透明区裁掉 */
 .slot {
   position: relative;
   flex: 0 0 auto;
@@ -75,6 +87,11 @@
   width: 64px;
   height: 30px;
   overflow: hidden;
+
+  & > svg {
+    display: block;
+    margin-top: -3px;
+  }
 }
 
 .slotNarrow {

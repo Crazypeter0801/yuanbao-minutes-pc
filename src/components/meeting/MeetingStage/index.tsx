@@ -68,7 +68,7 @@ export const MeetingStage: FC = () => (
     <div className={styles.speaker}>
       <img className={styles.speakerVideo} src={videoSpeaker} alt={`${SPEAKER_NAME}的视频画面`} draggable={false} />
       <div className={styles.nameTag}>
-        <IconVideoNameMic />
+        <IconVideoNameMic width={10} height={13} />
         <span className={styles.name}>{SPEAKER_NAME}</span>
       </div>
     </div>

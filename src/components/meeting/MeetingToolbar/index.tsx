@@ -34,10 +34,10 @@ export const MeetingToolbar: FC<MeetingToolbarProps> = ({ yuanbaoOpen, onToggleY
     <div className={styles.side}>
       <div className={styles.sideIcons}>
         <span className={styles.iconBox}>
-          <img className={styles.emoji} src={barEmojiHi} alt="互动表情" draggable={false} />
+          <img className={styles.emojiHi} src={barEmojiHi} alt="互动表情" draggable={false} />
         </span>
         <span className={styles.iconBox}>
-          <img className={styles.emoji} src={barEmojiSmile} alt="表情" draggable={false} />
+          <img className={styles.emojiSmile} src={barEmojiSmile} alt="表情" draggable={false} />
         </span>
         <span className={styles.iconBox}>
           <IconBarEmojiChat />
@@ -52,19 +52,19 @@ export const MeetingToolbar: FC<MeetingToolbarProps> = ({ yuanbaoOpen, onToggleY
     <div className={styles.controls}>
       {/* 每个按钮都是设计稿原尺寸导出（64×30 / 56×30），图里已含下拉箭头 */}
       <span className={styles.slot}>
-        <IconBarMic />
+        <IconBarMic width={64} height={44} />
       </span>
       <span className={styles.slot}>
-        <IconBarCamera />
+        <IconBarCamera width={64} height={44} />
       </span>
       <span className={styles.slot}>
-        <IconBarShare />
+        <IconBarShare width={64} height={44} />
       </span>
       <span className={styles.slot}>
-        <IconBarMembers />
+        <IconBarMembers width={64} height={44} />
       </span>
       <span className={`${styles.slot} ${styles.slotNarrow}`}>
-        <IconBarRecord />
+        <IconBarRecord width={56} height={44} />
       </span>
       <Pressable
         as="span"
@@ -78,7 +78,7 @@ export const MeetingToolbar: FC<MeetingToolbarProps> = ({ yuanbaoOpen, onToggleY
         </span>
       </Pressable>
       <span className={`${styles.slot} ${styles.slotNarrow}`}>
-        <IconBarMore />
+        <IconBarMore width={56} height={31} />
       </span>
     </div>
 
