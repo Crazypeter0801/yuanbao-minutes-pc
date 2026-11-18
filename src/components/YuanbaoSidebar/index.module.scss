@@ -17,7 +17,7 @@
 
 /*
  * 底部 padding 16，卡片行与输入框间距 10，总高 122（Figma 489:10623）
- * 背景是 Figma 533:13549：白色渐变 + 背景模糊，经过的对话在上沿渐渐被盖住（见 .footerBlur 与 ::after）。
+ * 背景只保留 Figma 533:13549 的白色渐变（已按用户要求去掉背景模糊），经过的对话在上沿渐渐被盖住。
  * 透明的渐变带不拦点击，按钮和输入框照常可点。
  */
 .footer {
@@ -63,59 +63,6 @@
   & > * + * {
     margin-top: 10px;
   }
-}
-
-/*
- * 渐进模糊（Figma 533:13549 背景模糊 15）
- * Figma 的背景模糊强度随填充透明度变化；CSS backdrop-filter 只有一个固定值，单层加遮罩会在遮罩过渡带里
- * 出现「一半清楚一半糊」的分层感。拆成 3 层：2px / 6px / 15px，各自用遮罩错开出现的位置，
- * 叠在一起就是从上往下连续变糊。每层底部同样收 16 圆角，避免 backdrop-filter 溢出侧栏圆角。
- */
-.footerBlur {
-  position: absolute;
-  inset: 0;
-  z-index: -2;
-  pointer-events: none;
-
-  & > span {
-    position: absolute;
-    inset: 0;
-    border-radius: 0 0 16px 16px;
-  }
-}
-
-.blurSoft {
-  backdrop-filter: blur(2px);
-  mask-image: linear-gradient(
-    180deg,
-    var(--wm-mask-clear) 0%,
-    var(--wm-mask-solid) 10%,
-    var(--wm-mask-solid) 100%
-  );
-}
-
-.blurMid {
-  backdrop-filter: blur(6px);
-  mask-image: linear-gradient(
-    180deg,
-    var(--wm-mask-clear) 6%,
-    var(--wm-mask-a40) 14%,
-    var(--wm-mask-solid) 24%,
-    var(--wm-mask-solid) 100%
-  );
-}
-
-.blurStrong {
-  backdrop-filter: blur(15px);
-  mask-image: linear-gradient(
-    180deg,
-    var(--wm-mask-clear) 14%,
-    var(--wm-mask-a15) 20%,
-    var(--wm-mask-a70) 30%,
-    var(--wm-mask-a90) 36%,
-    var(--wm-mask-solid) 42%,
-    var(--wm-mask-solid) 100%
-  );
 }
 
 /*

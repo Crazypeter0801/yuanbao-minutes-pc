@@ -144,12 +144,6 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
         </MessageStream>
 
         <div className={styles.footer} ref={footerRef}>
-          {/* 渐进模糊：三层由浅到深错开出现，叠起来是一条连续变糊的过渡（Figma 533:13549） */}
-          <div className={styles.footerBlur} aria-hidden="true">
-            <span className={styles.blurSoft} />
-            <span className={styles.blurMid} />
-            <span className={styles.blurStrong} />
-          </div>
           {/* 输入框上方一行：左「推荐指令」、右「进行中」，按 Figma 489:10623 */}
           <div className={styles.statusRow}>
             <QuickCommandEntry

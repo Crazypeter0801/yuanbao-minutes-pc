@@ -138,13 +138,6 @@
   /* 底栏渐变底（Figma 91:15671）：透明白 → 80% 白 → 纯白 */
   --wm-color-footer-fade-start: rgba(255, 255, 255, 0);
   --wm-color-footer-fade-mid: rgba(255, 255, 255, 0.8);
-  /* 渐进模糊用的遮罩不透明度（只取 alpha，颜色无关） */
-  --wm-mask-clear: rgba(0, 0, 0, 0);
-  --wm-mask-a15: rgba(0, 0, 0, 0.15);
-  --wm-mask-a40: rgba(0, 0, 0, 0.4);
-  --wm-mask-a70: rgba(0, 0, 0, 0.7);
-  --wm-mask-a90: rgba(0, 0, 0, 0.9);
-  --wm-mask-solid: rgba(0, 0, 0, 1);
   /* 底栏白色渐变的中间几档（缓入，避免线性渐变的「台阶感」） */
   --wm-color-footer-fade-12: rgba(255, 255, 255, 0.12);
   --wm-color-footer-fade-32: rgba(255, 255, 255, 0.32);
