@@ -142,6 +142,18 @@
   --wm-color-note-topic-dot: #c3c7cf;
   --wm-color-note-topic-line: #dfe1e6;
 
+  /* ---------- 入会极简模式（Figma 215:19035 元宝Agent · 入会） ---------- */
+  /* 窗口底色：#F3F3F4 95%，背后叠 20px 模糊，壁纸透上来一层 */
+  --wm-color-window-translucent: rgba(243, 243, 244, 0.95);
+  /* 元宝消息气泡底（同稿 #F6F6F6） */
+  --wm-color-background-secondary-v2: #f6f6f6;
+  /* 用户气泡（同稿 #5E6270），与助手灰泡区分开 */
+  --wm-color-chat-bubble-send: #5e6270;
+  /* 画面上的名字水牌：白 60% + 10px 模糊 */
+  --wm-color-name-tag-blur: rgba(255, 255, 255, 0.6);
+  /* 底栏小卡片（1px 描边 + 微弱落影，Figma 489:10625） */
+  --wm-shadow-chip: 0 4px 30px rgba(0, 0, 0, 0.08);
+
   /* 字体 */
   --wm-font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial,
     system-ui, -apple-system, 'BlinkMacSystemFont', sans-serif;

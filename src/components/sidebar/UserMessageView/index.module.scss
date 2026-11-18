@@ -17,7 +17,8 @@
 
 .round {
   border-radius: 16px 1px 16px 16px;
-  background-color: var(--wm-color-background-user-bubble);
+  background-color: var(--wm-color-chat-bubble-send);
+  color: var(--wm-color-text-senary);
 }
 
 .compact {

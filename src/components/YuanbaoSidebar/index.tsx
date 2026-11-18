@@ -178,7 +178,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
             )}
           </div>
           <ChatInput
-            placeholder="提问或创建任务"
+            placeholder="和元宝聊聊"
             onSubmit={send}
             onToolAction={(label) => showToast(`${label}（演示）`)}
           />

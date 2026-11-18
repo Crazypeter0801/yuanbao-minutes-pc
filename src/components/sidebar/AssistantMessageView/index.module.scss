@@ -24,16 +24,16 @@
   }
 }
 
-/* 气泡 padding 10 12，底 #F3F3F4；max-width 兜住长内容，不撑破侧栏 */
+/* 气泡 padding 10 12，底 #F6F6F6；max-width 兜住长内容，不撑破侧栏（Figma 215:19035） */
 .bubble {
   max-width: 100%;
   padding: 10px 12px;
-  background-color: var(--wm-color-background-septenary);
+  background-color: var(--wm-color-background-secondary-v2);
 }
 
-/* 方案 A：1 16 16 16（Figma 248:14881） */
+/* 方案 A：四角 16（Figma 215:19035 助手气泡 416:20650） */
 .round {
-  border-radius: 1px 16px 16px 16px;
+  border-radius: 16px;
 }
 
 /*

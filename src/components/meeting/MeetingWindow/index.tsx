@@ -12,9 +12,9 @@ interface MeetingWindowProps {
 }
 
 /**
- * 左侧会议区（Figma 316:2617，除元宝按钮外均为静态）
- * 结构：标题栏 40 + 演讲者视图 656（头像条 118 + 间距 10 + 大画面 512 + 底边距 16）+ 工具栏 64 = 760。
- * 宽度撑满侧栏左侧：侧栏展开时 1034，收起后 1440。
+ * 左侧会议区（Figma 215:19035，除元宝按钮外均为静态）
+ * 结构：标题栏 40 + 演讲者视图（头像条 118 + 间距 8 + 大画面 + 底边距 4）+ 工具栏 48 = 779。
+ * 宽度撑满侧栏左侧：侧栏展开时 936，收起后 1322。
  */
 export const MeetingWindow: FC<MeetingWindowProps> = ({ yuanbaoOpen, onToggleYuanbao }) => (
   <section className={styles.window} aria-label="会议窗口">

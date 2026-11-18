@@ -1,5 +1,5 @@
 /*
- * 页面：Tahoe 壁纸铺满，1440×760 窗口在正中；四周各留 80，最小 1600×920。
+ * 页面：Tahoe 壁纸铺满，1338×779 窗口在正中；四周各留 80，最小 1600×920。
  * 壁纸画在 .page 自身（不用 fixed），导入 Figma code layer 时也能完整显示。
  */
 .page {
@@ -39,15 +39,25 @@
   display: flex;
 }
 
-/* V1 窗口 1440×760、圆角 12、底色 #F0F2F7（Figma 257:1540） */
+/* 会议区与元宝侧栏之间留 10（Figma 215:19035 页面框架） */
+.window > * + * {
+  margin-left: 10px;
+}
+
+/*
+ * 入会极简模式（Figma 215:19035）：1338×779、圆角 20、左右各留 8，
+ * 底色 #F3F3F4 95% + 20px 背景模糊；会议区与右侧元宝卡片并排，中间 10。
+ */
 .window {
   position: relative;
   display: flex;
   flex: 0 0 auto;
-  width: 1440px;
-  height: 760px;
+  width: 1338px;
+  height: 779px;
+  padding: 0 8px;
   overflow: hidden;
-  border-radius: 12px;
-  background-color: var(--wm-color-window-background);
+  border-radius: 20px;
+  background-color: var(--wm-color-window-translucent);
+  backdrop-filter: blur(20px);
   box-shadow: var(--wm-shadow-canvas);
 }

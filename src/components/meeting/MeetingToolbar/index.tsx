@@ -25,14 +25,15 @@ interface MeetingToolbarProps {
 }
 
 /**
- * 会议底部工具栏（Figma 257:1968）
- * 左：表情 / 聊天；中：灰底胶囊（麦克风 / 摄像头 / 共享 / 成员 / 录制 / 元宝 / 更多）；右：离开会议。
- * 说明：仅「元宝」按钮可点（开关右侧元宝侧栏），其余按钮只做视觉还原。
+ * 会议底部工具栏（Figma 215:19035 会中底栏）
+ * 左：表情 | 分割线 | 聊天；中：麦克风 / 摄像头 / 共享 / 成员 / 录制 / 元宝 / 更多；右：离开会议。
+ * 说明：底栏不再包一层灰胶囊，按钮直接落在窗口底色上；仅「元宝」可点（开关右侧侧栏）。
  */
 export const MeetingToolbar: FC<MeetingToolbarProps> = ({ yuanbaoOpen, onToggleYuanbao }) => (
   <div className={styles.toolbar}>
     <div className={styles.side}>
       <IconTbEmoji />
+      <span className={styles.divider} aria-hidden="true" />
       <IconTbChat />
     </div>
 

@@ -1,12 +1,15 @@
+/*
+ * 元宝侧栏（Figma 215:19035）：376 宽的白色卡片，圆角 16，上下各留 8，
+ * 与会议区之间 10 的间隙由窗口的相邻兄弟间距给出。
+ */
 .shell {
   position: relative;
   flex: 0 0 auto;
   display: flex;
   flex-direction: column;
-  width: 400px;
-  /* 白色卡片悬浮在窗口底色上：上右下各留 6（Figma 316:2624） */
-  margin: 6px 6px 6px 0;
+  width: 376px;
+  margin: 8px 0;
   overflow: hidden;
-  border-radius: 12px;
+  border-radius: 16px;
   background-color: var(--wm-color-background-quaternary);
 }
