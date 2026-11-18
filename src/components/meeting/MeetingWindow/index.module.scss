@@ -22,4 +22,5 @@
   flex-direction: column;
   min-width: 0;
   min-height: 0;
+  /* 底栏 flex-shrink:0；舞台吃剩余高度，避免把会中底栏挤没 */
 }

@@ -34,8 +34,9 @@ interface MeetingToolbarProps {
 }
 
 /**
- * 会议底部工具栏（Figma 215:16706 / 406:16873）
- * 左：表情 / 聊天；中：麦克风 / 摄像头 / 共享 / 成员 / 录制 / 元宝 / 更多（无底色）；右：离开会议。
+ * 会中底栏（Figma 215:19035 / Component 6 · 416:20031）
+ * 硬约束：始终渲染、固定 64 高，不可在还原外壳时去掉或压扁。
+ * 左：表情 / 聊天；中：麦克风 / 摄像头 / 共享 / 成员 / 录制 / 元宝 / 更多；右：离开会议。
  * 「聊天」「成员」「元宝」可点，都作用在同一右侧应用容器上，用 Tab 切换。
  */
 export const MeetingToolbar: FC<MeetingToolbarProps> = ({
@@ -46,7 +47,7 @@ export const MeetingToolbar: FC<MeetingToolbarProps> = ({
   onToggleMembers,
   onToggleChat,
 }) => (
-  <div className={styles.toolbar}>
+  <div className={styles.toolbar} role="toolbar" aria-label="会中底栏">
     <div className={styles.blurBase} aria-hidden="true" />
     <ProgressiveBlur className={styles.blur} tint="var(--wm-color-blur-tint-meeting)" />
     <div className={styles.side}>
@@ -65,13 +66,13 @@ export const MeetingToolbar: FC<MeetingToolbarProps> = ({
 
     <div className={styles.controls}>
       {/* 导出的按钮图含底部一块透明占位，按 64×30 / 56×30 裁出可见区域 */}
-      <span className={styles.slot}>
+      <span className={styles.slot} aria-hidden="true">
         <IconTbMic />
       </span>
-      <span className={styles.slot}>
+      <span className={styles.slot} aria-hidden="true">
         <IconTbCamera />
       </span>
-      <span className={styles.slot}>
+      <span className={styles.slot} aria-hidden="true">
         <IconTbShare />
       </span>
       <Pressable
@@ -96,7 +97,7 @@ export const MeetingToolbar: FC<MeetingToolbarProps> = ({
           <IconTbArrow />
         </span>
       </Pressable>
-      <span className={`${styles.slot} ${styles.slotNarrow}`}>
+      <span className={`${styles.slot} ${styles.slotNarrow}`} aria-hidden="true">
         <IconTbRecord />
       </span>
       <Pressable
@@ -109,12 +110,12 @@ export const MeetingToolbar: FC<MeetingToolbarProps> = ({
       >
         <IconTbYuanbao />
       </Pressable>
-      <span className={`${styles.slot} ${styles.slotNarrow}`}>
+      <span className={`${styles.slot} ${styles.slotNarrow}`} aria-hidden="true">
         <IconTbMore />
       </span>
     </div>
 
-    <div className={`${styles.side} ${styles.sideRight}`}>
+    <div className={`${styles.side} ${styles.sideRight}`} aria-hidden="true">
       <IconTbLeave />
     </div>
   </div>
