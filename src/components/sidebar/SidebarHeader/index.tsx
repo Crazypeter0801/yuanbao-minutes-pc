@@ -45,7 +45,7 @@ export const SidebarHeader: FC<SidebarHeaderProps> = ({ onPip, menuItems, onClos
           <IconSidePip />
         </Pressable>
         <Pressable className={styles.iconButton} onClick={onClose} title="关闭" ariaLabel="关闭元宝">
-          <IconSideClose />
+          <IconSideClose width={20} height={21} />
         </Pressable>
       </div>
     </header>
