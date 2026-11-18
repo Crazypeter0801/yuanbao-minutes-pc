@@ -1,9 +1,9 @@
-/* 会中底栏：高 48、右侧留 4、左侧贴边（Figma 416:20031） */
+/* 会中底栏：高 64、右侧留 4、左侧贴边；中间 48 高的按钮组上下各留 8（Figma 416:20031） */
 .toolbar {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
-  height: 48px;
+  height: 64px;
   padding: 0 4px 0 0;
 }
 
