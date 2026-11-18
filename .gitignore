@@ -9,3 +9,6 @@ tsconfig.tsbuildinfo
 figma-import
 code-layer-bundle
 code-layer-bundle.zip
+
+# Design-to-code 本地缓存（含 Figma token，勿提交）
+.d2c
