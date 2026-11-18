@@ -71,3 +71,12 @@
     transition: none;
   }
 }
+
+.solid {
+  background-color: var(--wm-color-background-quaternary);
+}
+
+.hidden,
+.shell[hidden] {
+  display: none;
+}

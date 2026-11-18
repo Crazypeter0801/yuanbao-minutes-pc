@@ -14,6 +14,8 @@ export interface MeetingMember {
   avatar: string;
   micOn: boolean;
   camOn: boolean;
+  /** 是否已在会中；未入会名单走内部 Tab */
+  inMeeting: boolean;
 }
 
 export const MEETING_MEMBERS: MeetingMember[] = [
@@ -24,6 +26,7 @@ export const MEETING_MEMBERS: MeetingMember[] = [
     avatar: member1,
     micOn: true,
     camOn: true,
+    inMeeting: true,
   },
   {
     id: 'alan',
@@ -32,6 +35,7 @@ export const MEETING_MEMBERS: MeetingMember[] = [
     avatar: member2,
     micOn: false,
     camOn: true,
+    inMeeting: true,
   },
   {
     id: 'kesha',
@@ -40,6 +44,7 @@ export const MEETING_MEMBERS: MeetingMember[] = [
     avatar: member3,
     micOn: true,
     camOn: false,
+    inMeeting: true,
   },
   {
     id: 'taylor',
@@ -48,6 +53,7 @@ export const MEETING_MEMBERS: MeetingMember[] = [
     avatar: member4,
     micOn: true,
     camOn: false,
+    inMeeting: true,
   },
   {
     id: 'lenka',
@@ -56,5 +62,6 @@ export const MEETING_MEMBERS: MeetingMember[] = [
     avatar: member5,
     micOn: true,
     camOn: false,
+    inMeeting: true,
   },
 ];

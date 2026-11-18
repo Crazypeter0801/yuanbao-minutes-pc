@@ -21,6 +21,11 @@ import {
   type AgentStatusTab,
 } from "@/components/agent/AgentStatusPage";
 import { AgentWindowShell } from "@/components/agent/AgentWindowShell";
+import { AppTabBar } from "@/components/meeting/app-tab-bar";
+import { MembersSidebar } from "@/components/meeting/MembersSidebar";
+import { MeetingChat } from "@/components/meeting/meeting-chat";
+import type { MeetingAppTab } from "@/lib/meetingAppTab";
+import type { MeetingChatSession } from "@/hooks/useMeetingChat";
 import { TaskDetail } from "@/components/agent/TaskDetail";
 import { WHITEBOARD_TASK_ID } from "@/data/agentTasks";
 import { TASK_ENTRY_RECORDING_TEXT } from "@/data/taskEntry";
@@ -35,6 +40,13 @@ import type { YuanbaoSession } from "@/hooks/useYuanbaoSession";
 import styles from "./index.module.scss";
 
 interface YuanbaoSidebarProps {
+  /** 当前是否显示这个右侧容器（关闭时仍挂载，以免丢掉输入草稿） */
+  visible: boolean;
+  /** 当前应用 Tab */
+  appTab: MeetingAppTab;
+  onSelectTab: (tab: MeetingAppTab) => void;
+  /** 会中聊天（消息 + 草稿），切 Tab / 关闭都由 App 持有 */
+  meetingChat: MeetingChatSession;
   /** 元宝会话（消息流），由 App 持有 */
   chat: YuanbaoSession;
   /** 元宝本轮产出的文件；为空时不出现产物入口 */
@@ -65,7 +77,8 @@ interface YuanbaoSidebarProps {
 
 /**
  * 元宝 personal agent 窗口（Figma 215:19035 / 406:16873）
- * 外壳毛玻璃 rgba(243,243,244,0.98)、圆角 16，与会议窗并排、中间白缝；可与「管理成员」三栏并存。
+ * 外壳毛玻璃 rgba(243,243,244,0.98)、圆角 16，与会议窗并排、中间白缝。
+ * 同一容器在元宝 / 管理成员 / 会议聊天之间切换，不再并排第三栏。
  * 任务入口固定顶部（方案 A）：头部胶囊带状态副标题，点胶囊进状态页；底部只有输入框
  * （画板进行中时多一枚进度胶囊）。输入框上方不再出现任务胶囊。
  * 浮出时会议区预留位不收回（立昌：左边不自动变宽）。
@@ -73,6 +86,10 @@ interface YuanbaoSidebarProps {
  * 长程任务详情仍占用对话区；快捷指令仍在窗口外的演示按钮条上。
  */
 export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
+  visible,
+  appTab,
+  onSelectTab,
+  meetingChat,
   chat,
   dock,
   agent,
@@ -156,25 +173,40 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
         : TASK_ENTRY_RECORDING_TEXT;
   const detailTask = agent.tasks.find((task) => task.id === detailTaskId);
 
-  return (
-    <AgentWindowShell toast={toast} dock={dock}>
-      <AgentTitleBar
-        dock={dock}
-        mood={mood}
-        statusText={headerStatus}
-        replayKey={replayKey}
-        onOnceEnd={onOnceEnd}
-        onTouch={touch}
-        onOpenStatus={() => onOpenStatus('overview')}
-        onClose={onClose}
-        portrait={portrait}
-      />
+  const appTabActive = appTab !== "yuanbao";
 
-      {/* 消息流与底栏叠在一起：对话可以滚到底栏后面，被渐进模糊一点点糊掉 */}
-      <div
-        className={styles.body}
-        style={{ "--yb-footer-height": `${footerHeight}px` } as CSSProperties}
-      >
+  return (
+    <AgentWindowShell
+      toast={toast}
+      dock={dock}
+      visible={visible}
+      ariaLabel={appTab === "members" ? "管理成员" : appTab === "chat" ? "会议聊天" : "元宝"}
+      solid={appTabActive}
+    >
+      {appTab === "yuanbao" ? (
+        <AgentTitleBar
+          dock={dock}
+          mood={mood}
+          statusText={headerStatus}
+          replayKey={replayKey}
+          onOnceEnd={onOnceEnd}
+          onTouch={touch}
+          onOpenStatus={() => onOpenStatus("overview")}
+          onClose={onClose}
+          portrait={portrait}
+        />
+      ) : (
+        <AppTabBar
+          tab={appTab}
+          dock={dock}
+          onSelectTab={onSelectTab}
+          onClose={onClose}
+          onMore={() => showToast("更多（演示）")}
+        />
+      )}
+
+      {/* 三个应用都保持挂载，切换时不丢掉输入草稿、滚动位置和成员筛选 */}
+      <div className={styles.body} hidden={appTab !== "yuanbao"} style={{ "--yb-footer-height": `${footerHeight}px` } as CSSProperties}>
         {/* 长程任务详情占用对话区的位置，从顶部读起；返回后对话重新定位到底部 */}
         {detailTask ? (
           <div className={`${styles.detailScroll} wm-scroll-hidden`}>
@@ -229,8 +261,16 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
         </div>
       </div>
 
+      <div className={styles.appPane} hidden={appTab !== "members"}>
+        <MembersSidebar onAction={(label) => showToast(`${label}（演示）`)} />
+      </div>
+
+      <div className={styles.appPane} hidden={appTab !== "chat"}>
+        <MeetingChat chat={meetingChat} onToolAction={(label) => showToast(`${label}（演示）`)} />
+      </div>
+
       {/* 状态页覆盖整个元宝窗口：对话区保持挂载，返回后消息、输入和滚动位置都还在 */}
-      {statusOpen && (
+      {statusOpen && appTab === "yuanbao" && (
         <div className={styles.statusOverlay}>
           <AgentStatusPage
             dock={dock}
@@ -240,8 +280,8 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
             onClose={onClose}
             onApplyPortrait={onApplyPortrait}
             onOpenFile={onOpenFile}
-            onCreateAuto={() => showToast('创建自动任务（演示）')}
-            onOpenSettings={() => showToast('设置（演示）')}
+            onCreateAuto={() => showToast("创建自动任务（演示）")}
+            onOpenSettings={() => showToast("设置（演示）")}
           />
         </div>
       )}

@@ -1,7 +1,7 @@
 /*
  * 页面：渐变风景壁纸铺满，两扇/三栏窗在正中；
- * 两栏（Figma 215:19035）：会议 960 + 缝 4 + 元宝 400 = 1364；
- * 三栏（Figma 406:16873）：会议舞台 + 管理成员 376 + 缝 4 + 元宝 400。
+ * 两栏（Figma 215:19035）：会议 960 + 缝 4 + 右侧应用容器 400 = 1364。
+ * 成员 / 聊天与元宝共用这一侧容器，用 Tab 切换，不再加宽成三栏。
  * 四周至少留 80，水平垂直居中，最小 1600×920。根底 #EEF1F6。
  *
  * 立昌约束：元宝浮出时，左边会议区不自动变宽。
@@ -41,7 +41,7 @@
 
 /*
  * 会议窗口玻璃层：默认 flex 占满 .window；
- * 元宝仍打开时改用固定宽（.meetingLocked / .meetingLockedMembers），浮出也不变宽。
+ * 右侧容器打开时改用固定宽（.meetingLocked），浮出也不变宽。
  */
 .meetingArea {
   position: relative;
@@ -64,13 +64,6 @@
   max-width: 960px;
 }
 
-/* 三栏：舞台 960 + 管理成员 376 */
-.meetingLockedMembers {
-  flex: 0 0 auto;
-  width: 1336px;
-  min-width: 1336px;
-  max-width: 1336px;
-}
 
 /*
  * 窗口布局容器：宽度跟内容走（会议固定宽 ± 吸附预留）。
@@ -91,14 +84,7 @@
   width: auto;
 }
 
-.windowWithMembers {
-  /* 仅元宝关掉、成员仍开时的兜底；元宝打开时由 meetingLocked* + reserve 决定 */
-  width: 1740px;
-}
 
-.windowAgentOpen.windowWithMembers {
-  width: auto;
-}
 
 /* 元宝仍打开时的槽位：400 + 缝 4；浮出时空着，会议宽靠 .meetingLocked* 锁死 */
 .reserve {

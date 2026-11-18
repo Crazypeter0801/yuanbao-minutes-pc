@@ -143,3 +143,15 @@
   left: 48px;
   display: flex;
 }
+
+.sideAction {
+  display: flex;
+  border-radius: 6px;
+  cursor: pointer;
+  outline: none;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--wm-color-control-hover);
+  }
+}

@@ -2,7 +2,6 @@ import type { FC, ReactNode } from 'react';
 import { MeetingStage } from '@/components/meeting/MeetingStage';
 import { MeetingTitleBar } from '@/components/meeting/MeetingTitleBar';
 import { MeetingToolbar } from '@/components/meeting/MeetingToolbar';
-import { MembersSidebar } from '@/components/meeting/MembersSidebar';
 import styles from './index.module.scss';
 
 interface MeetingWindowProps {
@@ -10,27 +9,29 @@ interface MeetingWindowProps {
   yuanbaoOpen: boolean;
   /** 工具栏元宝按钮：开关元宝侧栏 */
   onToggleYuanbao: () => void;
-  /** 「管理成员」是否打开（与元宝并存，三栏 OK） */
-  membersOpen: boolean;
-  /** 工具栏成员按钮：开关管理成员侧栏 */
+  /** 右侧应用容器当前是否打开 */
+  sidebarOpen: boolean;
+  /** 当前应用 Tab：用于底栏高亮 */
+  appTab: import('@/lib/meetingAppTab').MeetingAppTab;
+  /** 工具栏成员按钮：在同一侧栏打开或切换到管理成员 */
   onToggleMembers: () => void;
-  /** 关闭管理成员 */
-  onCloseMembers: () => void;
+  /** 工具栏聊天按钮：在同一侧栏打开或切换到会议聊天 */
+  onToggleChat: () => void;
   /** 盖在主讲人画面上的图层（演示用：元宝画白板） */
   stageOverlay?: ReactNode;
 }
 
 /**
- * 左侧会议区（Figma 215:19035 / 406:16873）
- * 结构：标题栏 +（演讲者视图 + 工具栏）[+ 管理成员侧栏]。
- * 打开「管理成员」时与元宝窗并存，不互斥；元宝浮出时本区宽度不自动撑开（见 App 预留位逻辑）。
+ * 左侧会议区（Figma 215:19035）
+ * 结构：标题栏 + 演讲者视图 + 工具栏。成员 / 聊天改在右侧同一应用容器里用 Tab 切换，不再在会议窗内加第三栏。
  */
 export const MeetingWindow: FC<MeetingWindowProps> = ({
   yuanbaoOpen,
   onToggleYuanbao,
-  membersOpen,
+  sidebarOpen,
+  appTab,
   onToggleMembers,
-  onCloseMembers,
+  onToggleChat,
   stageOverlay,
 }) => (
   <section className={styles.window} aria-label="会议窗口">
@@ -41,11 +42,12 @@ export const MeetingWindow: FC<MeetingWindowProps> = ({
         <MeetingToolbar
           yuanbaoOpen={yuanbaoOpen}
           onToggleYuanbao={onToggleYuanbao}
-          membersOpen={membersOpen}
+          sidebarOpen={sidebarOpen}
+          appTab={appTab}
           onToggleMembers={onToggleMembers}
+          onToggleChat={onToggleChat}
         />
       </div>
-      {membersOpen && <MembersSidebar onClose={onCloseMembers} />}
     </div>
   </section>
 );

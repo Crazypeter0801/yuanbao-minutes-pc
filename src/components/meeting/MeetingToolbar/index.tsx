@@ -19,33 +19,48 @@ import styles from './index.module.scss';
 const MEMBER_COUNT = 8;
 
 interface MeetingToolbarProps {
-  /** 元宝侧栏当前是否展开 */
+  /** 右侧应用容器是否打开 */
+  sidebarOpen: boolean;
+  /** 当前应用 Tab */
+  appTab: import('@/lib/meetingAppTab').MeetingAppTab;
+  /** 元宝侧栏当前是否展开（兼容旧称呼：容器打开且当前是元宝） */
   yuanbaoOpen: boolean;
-  /** 点击胶囊里的元宝按钮：收起时打开侧栏，展开时收起 */
+  /** 点击元宝按钮：关着则打开元宝 Tab；已在元宝则关闭；在其他 Tab 则切回元宝 */
   onToggleYuanbao: () => void;
-  /** 「管理成员」是否打开 */
-  membersOpen: boolean;
-  /** 成员按钮：与元宝并存，打开管理成员不关掉元宝 */
+  /** 成员按钮：在同一侧栏打开或切换到管理成员 */
   onToggleMembers: () => void;
+  /** 聊天按钮：在同一侧栏打开或切换到会议聊天 */
+  onToggleChat: () => void;
 }
 
 /**
  * 会议底部工具栏（Figma 215:16706 / 406:16873）
  * 左：表情 / 聊天；中：麦克风 / 摄像头 / 共享 / 成员 / 录制 / 元宝 / 更多（无底色）；右：离开会议。
- * 「元宝」「成员」可点；成员与元宝互不挤掉（三栏 OK）。
+ * 「聊天」「成员」「元宝」可点，都作用在同一右侧应用容器上，用 Tab 切换。
  */
 export const MeetingToolbar: FC<MeetingToolbarProps> = ({
+  sidebarOpen,
+  appTab,
   yuanbaoOpen,
   onToggleYuanbao,
-  membersOpen,
   onToggleMembers,
+  onToggleChat,
 }) => (
   <div className={styles.toolbar}>
     <div className={styles.blurBase} aria-hidden="true" />
     <ProgressiveBlur className={styles.blur} tint="var(--wm-color-blur-tint-meeting)" />
     <div className={styles.side}>
       <IconTbEmoji />
-      <IconTbChat />
+      <Pressable
+        as="span"
+        className={`${styles.sideAction} ${sidebarOpen && appTab === 'chat' ? styles.slotActive : ''}`}
+        onClick={onToggleChat}
+        ariaLabel={sidebarOpen && appTab === 'chat' ? '关闭会议聊天' : '打开会议聊天'}
+        ariaExpanded={sidebarOpen && appTab === 'chat'}
+        title={sidebarOpen && appTab === 'chat' ? '关闭会议聊天' : '打开会议聊天'}
+      >
+        <IconTbChat />
+      </Pressable>
     </div>
 
     <div className={styles.controls}>
@@ -61,11 +76,11 @@ export const MeetingToolbar: FC<MeetingToolbarProps> = ({
       </span>
       <Pressable
         as="span"
-        className={`${styles.slot} ${styles.slotAction} ${membersOpen ? styles.slotActive : ''}`}
+        className={`${styles.slot} ${styles.slotAction} ${sidebarOpen && appTab === 'members' ? styles.slotActive : ''}`}
         onClick={onToggleMembers}
-        ariaLabel={membersOpen ? '关闭管理成员' : '打开管理成员'}
-        ariaExpanded={membersOpen}
-        title={membersOpen ? '关闭管理成员' : '打开管理成员'}
+        ariaLabel={sidebarOpen && appTab === 'members' ? '关闭管理成员' : '打开管理成员'}
+        ariaExpanded={sidebarOpen && appTab === 'members'}
+        title={sidebarOpen && appTab === 'members' ? '关闭管理成员' : '打开管理成员'}
       >
         <span className={styles.invite} aria-hidden="true">
           <span className={styles.inviteHead} />
@@ -86,7 +101,7 @@ export const MeetingToolbar: FC<MeetingToolbarProps> = ({
       </span>
       <Pressable
         as="span"
-        className={`${styles.slot} ${styles.slotNarrow} ${styles.slotAction}`}
+        className={`${styles.slot} ${styles.slotNarrow} ${styles.slotAction} ${yuanbaoOpen ? styles.slotActive : ''}`}
         onClick={onToggleYuanbao}
         ariaLabel={yuanbaoOpen ? '关闭元宝' : '打开元宝'}
         ariaExpanded={yuanbaoOpen}
