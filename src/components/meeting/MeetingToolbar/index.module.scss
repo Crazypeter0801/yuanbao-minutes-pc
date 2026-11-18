@@ -1,6 +1,6 @@
 /*
- * 会中底栏 / Component 6（Figma 416:20031）：936×64，三段 space-between。
- * 硬约束：固定 64 高、不可被压扁或隐藏；左右由外壳 pad 8 + 本层 pad-right 4。
+ * 会中底栏（Figma 214:10935 / 416:20031）
+ * 硬约束：始终保留；固定 64 高不可压扁。padding 0 16 16 与还原前一致。
  */
 .toolbar {
   position: relative;
@@ -13,7 +13,7 @@
   width: 100%;
   min-height: 64px;
   height: 64px;
-  padding: 0 4px 0 0;
+  padding: 0 16px 16px;
 }
 
 /*

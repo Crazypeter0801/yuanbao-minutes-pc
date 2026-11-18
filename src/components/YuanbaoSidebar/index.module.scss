@@ -10,11 +10,11 @@
 }
 
 /*
- * 消息区左右 20（Figma 416:20643 layout_V64GVX）。
- * 底栏浮在对话上，底部留出整个底栏高度再加 36：滚到底时，最后一条追问停在输入框上方。
+ * 消息区左右 16。底栏浮在对话上（Figma 215:19535），
+ * 底部留出整个底栏高度再加 36：滚到底时，最后一条追问停在输入框上方，不会被盖住。
  */
 .stream {
-  padding: 0 20px calc(var(--yb-footer-height, 122px) + 36px);
+  padding: 0 16px calc(var(--yb-footer-height, 122px) + 36px);
 }
 
 /* 长程任务详情的滚动容器：和消息流同样撑满、同样的内边距（内层复用 .stream） */
@@ -25,9 +25,8 @@
 }
 
 /*
- * 底栏（Figma 489:10623 layout_VRF42W）：padding 40 16 16，渐隐落在输入上方。
+ * 底栏（Figma 215:19535）：外层 pt 12 + 输入框外再 pt 10，左右下 16。
  * 透明区域不拦点击，按钮和输入框照常可点。
- * 任务入口仍只在头部（方案 A）；此处不放「执行中」类入口。
  */
 /* 底部渐进模糊带：盖住消息流在底栏后面的部分；高度跟底栏，再往上多出一截做过渡 */
 .blur {
@@ -46,7 +45,7 @@
   z-index: 5;
   display: flex;
   flex-direction: column;
-  padding: 40px 16px 16px;
+  padding: 22px 16px 16px;
   pointer-events: none;
 
   & > * {

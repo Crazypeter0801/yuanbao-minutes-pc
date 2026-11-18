@@ -5,8 +5,8 @@ export type AgentDockMode = 'docked' | 'floating';
 /** 吸附在会议窗口的哪一侧，默认右侧 */
 export type AgentDockSide = 'left' | 'right';
 
-/** 浮动小窗尺寸；吸附态宽度同为 376（Figma 215:19035），高度跟会议窗口一致（760）；浮动窗矮一点（580） */
-export const FLOAT_WIDTH = 376;
+/** 浮动小窗尺寸；吸附态宽度同为 400，高度跟会议窗口一致（760）；浮动窗矮一点（580） */
+export const FLOAT_WIDTH = 400;
 export const FLOAT_HEIGHT = 580;
 /** 按住标题栏移动超过多少像素才算「拖出」，避免点一下就分离 */
 export const DETACH_DISTANCE = 6;
@@ -37,7 +37,7 @@ const clamp = (value: number, min: number, max: number) => Math.min(Math.max(val
 
 /**
  * 元宝窗口的吸附 / 分离逻辑
- * - 吸附态：贴在会议外壳右缘，App 预留 386（缝 10 + 376）并锁定会议宽；
+ * - 吸附态：贴在会议窗口右缘，App 预留 404 并锁定会议宽；
  * - 按住标题栏拖动超过 DETACH_DISTANCE 就分离成浮动小窗；
  * - 立昌约束：浮出时左边不自动变宽——App 用固定会议宽（非 flex 吃空位）；本 hook 只改 mode/position；
  * - 拖动中浮动窗右缘离会议窗口右缘小于 DOCK_THRESHOLD，出现吸附提示，松手即吸附回去；

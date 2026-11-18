@@ -1,12 +1,11 @@
-/* 标题栏：总高 40，内含上下 pad 10（Figma 439:21021）；左右由外壳 pad 8 承担 */
+/* 标题栏：padding 10 8，左右两组 space-between（Figma layout_9JE0FQ） */
 .titleBar {
-  box-sizing: border-box;
   flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
   height: 40px;
-  padding: 10px 0;
+  padding: 0 8px;
 }
 
 .left {

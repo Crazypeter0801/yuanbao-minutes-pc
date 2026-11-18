@@ -1,12 +1,12 @@
 /*
- * 页面：渐变风景壁纸铺满，入会窗在正中（Figma 215:19035 极简模式）。
- * 外壳 1338：左右 pad 8 + 会议 936 + 缝 10 + 右侧应用容器 376。
+ * 页面：渐变风景壁纸铺满，两扇/三栏窗在正中；
+ * 两栏（Figma 215:19035）：会议 960 + 缝 4 + 右侧应用容器 400 = 1364。
  * 成员 / 聊天与元宝共用这一侧容器，用 Tab 切换，不再加宽成三栏。
  * 四周至少留 80，水平垂直居中，最小 1600×920。根底 #EEF1F6。
  *
  * 立昌约束：元宝浮出时，左边会议区不自动变宽。
  * 做法：
- * 1) 会议区用固定宽度（.meetingLocked），不靠 flex 吃预留位；
+ * 1) 会议区用固定宽度（.meetingLocked*），不靠 flex 吃预留位；
  * 2) 元宝仍打开时预留位保留（浮出也保留），避免整框变窄后被 page 重新水平居中。
  */
 .page {
@@ -23,19 +23,10 @@
   background-size: cover;
 }
 
-/*
- * 窗口外框 = Figma「极简模式」：圆角 20、左右 pad 8、#F3F3F4F2 + blur 20。
- * 演示按钮条绝对定位在窗口下方，不参与排版，窗口始终居中。
- */
+/* 窗口容器：演示按钮条绝对定位在窗口下方，不参与排版，窗口始终居中 */
 .frame {
   position: relative;
   flex: 0 0 auto;
-  padding: 0 8px;
-  overflow: hidden;
-  border-radius: var(--wm-radius-window-chrome);
-  background-color: var(--wm-color-window-chrome);
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
 }
 
 /* 浮在窗口下方的壁纸上，水平居中，距窗口 14 */
@@ -49,7 +40,7 @@
 }
 
 /*
- * 会议列：落在外壳毛玻璃上，本身不再叠一层玻璃；
+ * 会议窗口玻璃层：默认 flex 占满 .window；
  * 右侧容器打开时改用固定宽（.meetingLocked），浮出也不变宽。
  */
 .meetingArea {
@@ -58,39 +49,44 @@
   min-width: 0;
   display: flex;
   overflow: hidden;
+  border-radius: 12px;
+  background-color: var(--wm-color-window-glass);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   transition: width 200ms cubic-bezier(0.22, 0.8, 0.3, 1);
 }
 
-/* 元宝打开（吸附或浮出）：锁 936，不吃掉右侧空位 */
+/* 元宝打开（吸附或浮出）：锁 960，不吃掉右侧空位 */
 .meetingLocked {
   flex: 0 0 auto;
-  width: 936px;
-  min-width: 936px;
-  max-width: 936px;
+  width: 960px;
+  min-width: 960px;
+  max-width: 960px;
 }
 
 
 /*
- * 窗口布局容器：内容区宽 1322（1338 − 左右 pad 8）。
- * 元宝关掉：会议改回 flex 撑满内容区。
+ * 窗口布局容器：宽度跟内容走（会议固定宽 ± 吸附预留）。
+ * 浮出：无预留，窗口 = 会议锁定宽；吸附：会议锁定宽 + 404。
+ * 元宝关掉：会议改回 flex 撑满 1364（单独开会视图）。
  */
 .window {
   position: relative;
   display: flex;
   flex: 0 0 auto;
-  width: 1322px;
+  width: 1364px;
   height: 760px;
   transition: width 200ms cubic-bezier(0.22, 0.8, 0.3, 1);
 }
 
-/* 元宝仍打开：窗口 hug 内容（浮出时仍靠预留位撑住外壳宽） */
+/* 元宝仍打开：窗口 hug 内容，不再写死 1364（浮出时才会缩到会议宽） */
 .windowAgentOpen {
   width: auto;
 }
 
 
 
-/* 元宝仍打开时的槽位：缝 10 + 侧栏 376；浮出时空着，会议宽靠 .meetingLocked 锁死 */
+/* 元宝仍打开时的槽位：400 + 缝 4；浮出时空着，会议宽靠 .meetingLocked* 锁死 */
 .reserve {
   position: relative;
   flex: 0 0 auto;
@@ -99,21 +95,21 @@
 }
 
 .reserveOpen {
-  width: 386px;
+  width: 404px;
 }
 
-/* 左侧吸附的空位在会议窗口前面，拖拽条落在 10 缝隙正中 */
+/* 左侧吸附的空位在会议窗口前面，拖拽条落在靠会议的一侧（右缘 4 的缝隙正中） */
 .reserveLeft .handle,
 .handleLeft {
   left: auto;
-  right: 4px;
+  right: 1px;
 }
 
-/* 两窗之间的拖拽条：2×32 白、圆角 1，落在 10 的缝隙正中、垂直居中 */
+/* 两窗之间的拖拽条：2×32 白、圆角 1，落在 4 的缝隙正中、垂直居中 */
 .handle {
   position: absolute;
   top: 50%;
-  left: 4px;
+  left: 1px;
   width: 2px;
   height: 32px;
   margin-top: -16px;
@@ -122,16 +118,16 @@
 }
 
 /*
- * 吸附提示：外壳右缘内的占位框（376 宽、与吸附后的元宝完全重合）。
- * 约 8% 的中性浅色占位 + 一圈浅色描边；盖在会议内容和浮窗之上、不拦截鼠标。
+ * 吸附提示：会议右缘的占位框（400 宽、与吸附后的元宝完全重合）。
+ * 约 8% 的中性浅色占位 + 一圈浅色描边（内白外灰，深浅背景上都看得清），不带文字、不带按钮；盖在会议内容和浮窗之上、不拦截鼠标。
  */
 .dockHint {
   position: absolute;
   top: 0;
-  right: 8px;
+  right: 0;
   bottom: 0;
   z-index: 55; /* 盖在浮动小窗（50）之上，占位框的轮廓才看得清 */
-  width: 376px;
+  width: 400px;
   border-radius: 16px;
   background-color: rgba(110, 120, 140, 0.08);
   box-shadow:
@@ -143,7 +139,7 @@
 
 .dockHintLeft {
   right: auto;
-  left: 8px;
+  left: 0;
 }
 
 @keyframes dock-hint-in {

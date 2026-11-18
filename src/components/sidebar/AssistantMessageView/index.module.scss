@@ -30,16 +30,16 @@
   }
 }
 
-/* 气泡 padding 10 12，#F6F6F6（Figma 215:19035 fill_E5905B）；max-width 兜住长内容 */
+/* 气泡 padding 10 12，白底（Figma 215:21884，落在毛玻璃上）；max-width 兜住长内容，不撑破侧栏 */
 .bubble {
   max-width: 100%;
   padding: 10px 12px;
   background-color: var(--wm-color-background-assistant-bubble);
 }
 
-/* 入会框架 215:19035：助手气泡全圆角 16 */
+/* 方案 A：1 16 16 16（Figma 248:14881） */
 .round {
-  border-radius: 16px;
+  border-radius: 1px 16px 16px 16px;
 }
 
 /*

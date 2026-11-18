@@ -152,22 +152,18 @@
   --wm-color-note-topic-dot: #c3c7cf;
   --wm-color-note-topic-line: #dfe1e6;
 
-  /* 入会外壳「极简模式」（Figma 416:19915）：#F3F3F4F2 + blur 20 + 圆角 20 */
-  --wm-color-window-chrome: #f3f3f4f2;
-  --wm-radius-window-chrome: 20px;
-  /* 会议列落在外壳上，不再单独铺玻璃；保留旧 token 给其它引用 */
-  --wm-color-window-glass: var(--wm-color-window-chrome);
-  /* 元宝侧栏吸附态：白底（Figma 416:20465）；浮出仍可用浅灰玻璃 */
-  --wm-color-agent-glass: #fffffff5;
-  /* 渐进模糊带的着色：跟着外壳 / 侧栏 */
+  /* 会议窗材质（Figma 215:19035 / 406:16875）：浅灰毛玻璃 */
+  --wm-color-window-glass: rgba(243, 243, 244, 0.98);
+  /* 元宝窗材质（Figma 215:19388 / 406:17109）：同色 + blur 10 */
+  --wm-color-agent-glass: rgba(243, 243, 244, 0.98);
+  /* 渐进模糊带的着色：跟着毛玻璃，不要再铺一层纯白（Figma 215:19534 / 215:21963） */
   --wm-color-blur-tint-meeting: rgba(243, 243, 244, 0.28);
-  --wm-color-blur-tint-agent: rgba(255, 255, 255, 0.35);
-  /* 两窗之间的拖拽条（Figma 缝 10 正中） */
+  --wm-color-blur-tint-agent: rgba(243, 243, 244, 0.12);
+  /* 两窗之间的拖拽条 4×48（Figma 215:16809） */
   --wm-color-window-handle: #ffffff;
 
-  /* 元宝气泡（Figma 215:19035 / fill_E5905B wm_color_background_secondary_v2）：#F6F6F6 */
-  --wm-color-background-secondary-v2: #f6f6f6;
-  --wm-color-background-assistant-bubble: var(--wm-color-background-secondary-v2);
+  /* 元宝气泡（Figma 215:21884）：白底，落在毛玻璃侧栏上 */
+  --wm-color-background-assistant-bubble: var(--wm-color-background-senary);
   /* 追问胶囊（Figma 215:21950）：#FFFFFF99 + 1px 白描边，圆角 18 */
   --wm-color-follow-up-fill: rgba(255, 255, 255, 0.6);
   --wm-color-follow-up-fill-hover: rgba(255, 255, 255, 0.82);
@@ -230,12 +226,10 @@
   /* 设置列表分隔线（Figma 243:1196） */
   --wm-color-status-setting-line: #eef0f3;
 
-  /* 顶部标题胶囊（Figma 416:20878）：白底 + 圆角 18；操作区无胶囊底 */
+  /* 顶部标题/操作胶囊（Figma 399:16703 / 406:17111）：白底 + 1px 白描边 + 0 4 15 / 8% */
   --wm-color-header-pill: #ffffff;
   --wm-color-header-pill-line: #ffffff;
   --wm-shadow-header-pill: 0 4px 15px rgba(0, 0, 0, 0.08);
-  /* 输入框（Figma 489:10655）：0 4 24 / 6% + 0.5px 内描边 */
-  --wm-shadow-chat-input: 0 4px 24px rgba(0, 0, 0, 0.06), inset 0 0 0 0.5px rgba(0, 0, 0, 0.08);
   /*
    * 画板进度胶囊 / MorphPanel 胶囊（沿用原任务胶囊材质）
    * 填充 #FFFFFFE6，描边白，落影 0 4 30 / 8%。
