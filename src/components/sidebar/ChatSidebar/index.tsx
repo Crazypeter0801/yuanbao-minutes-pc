@@ -18,6 +18,7 @@ interface ChatSidebarProps {
   chat: MeetingChat;
   showHeader: boolean;
   onClose: () => void;
+  onPopOut?: () => void;
   /** 每次变化都把焦点放进输入框（从弹幕浮层「聊天 >」进来时用） */
   focusSignal?: number;
 }
@@ -67,7 +68,7 @@ const ChatRow: FC<{ entry: Exclude<ChatEntry, { kind: 'time' }> }> = ({ entry })
  * 消息列表（padding 10 20、间距 16）→ 底部输入框（344 宽、圆角 20）：
  * 第一行「说点什么」，第二行左侧 表情 / 图片 / 文件，右侧圆形发送。Enter 发送，消息同时以弹幕上屏。
  */
-export const ChatSidebar: FC<ChatSidebarProps> = ({ chat, showHeader, onClose, focusSignal }) => {
+export const ChatSidebar: FC<ChatSidebarProps> = ({ chat, showHeader, onClose, onPopOut, focusSignal }) => {
   const { toast, showToast } = useToast();
   const [value, setValue] = useState('');
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -131,7 +132,7 @@ export const ChatSidebar: FC<ChatSidebarProps> = ({ chat, showHeader, onClose, f
         <SidebarHeader
           icon={SIDE_APPS.chat.icon}
           title={SIDE_APPS.chat.title}
-          onPip={() => showToast('聊天已在独立窗口打开（演示）')}
+          onPip={() => (onPopOut ? onPopOut() : showToast('聊天已在独立窗口打开（演示）'))}
           menuItems={menuItems}
           onClose={onClose}
         />

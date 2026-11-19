@@ -1,0 +1,759 @@
+/* 覆盖元宝侧栏面板的 Agent 详情页（Muse 极简节奏 + 腾讯会议元宝视觉） */
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 25;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--wm-color-background-quaternary);
+  animation: detail-enter 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes detail-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.topBar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 46px;
+  padding: 6px 14px 2px;
+}
+
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  padding: 0 8px 0 4px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 500;
+  color: var(--wm-color-text-secondary);
+  cursor: pointer;
+  outline: none;
+  transition:
+    background-color 120ms ease,
+    color 120ms ease;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--wm-color-control-hover);
+    color: var(--wm-color-text-title);
+  }
+}
+
+.closeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  color: var(--wm-color-text-secondary);
+  cursor: pointer;
+  outline: none;
+  transition:
+    background-color 120ms ease,
+    color 120ms ease;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--wm-color-control-hover);
+    color: var(--wm-color-text-title);
+  }
+}
+
+.scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 4px 18px 24px;
+}
+
+/* ---------- Hero ---------- */
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4px 0 18px;
+}
+
+.avatarWrap {
+  position: relative;
+  width: 84px;
+  height: 84px;
+}
+
+.avatarRing {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: var(--wm-color-agent-hero-bg);
+  box-shadow:
+    inset 0 0 0 1px var(--wm-color-outline-tertiary),
+    0 4px 14px rgba(0, 204, 112, 0.08);
+}
+
+.avatarBadge {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: var(--wm-color-background-quaternary);
+  color: var(--wm-color-text-secondary);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.1),
+    inset 0 0 0 0.5px var(--wm-color-outline-tertiary);
+  cursor: pointer;
+  outline: none;
+  transition:
+    transform 120ms ease,
+    background-color 120ms ease;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--wm-color-agent-surface);
+    transform: scale(1.04);
+  }
+}
+
+.heroName {
+  margin-top: 10px;
+  font-size: 19px;
+  line-height: 25px;
+  font-weight: 600;
+  color: var(--wm-color-text-title);
+  letter-spacing: -0.01em;
+}
+
+.heroStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 17px;
+  color: var(--wm-color-text-tertiary);
+}
+
+.heroDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--wm-color-brand-yuanbao);
+  box-shadow: 0 0 0 3px var(--wm-color-agent-badge-green-soft);
+}
+
+/* ---------- Muse 3 段胶囊切换 ---------- */
+
+.segmentWrap {
+  margin-bottom: 18px;
+}
+
+.segmentTrack {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  padding: 3px;
+  border-radius: 999px;
+  background-color: var(--wm-color-safari-track);
+  box-shadow: inset 0 0 0 0.5px var(--wm-color-safari-track-line);
+}
+
+.segmentCell {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.segmentItem {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  height: 30px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  line-height: 16px;
+  font-weight: 500;
+  color: var(--wm-color-text-tertiary);
+  cursor: pointer;
+  outline: none;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease,
+    box-shadow 160ms ease;
+
+  &:hover:not(.segmentItemActive) {
+    color: var(--wm-color-text-secondary);
+  }
+}
+
+.segmentItemActive {
+  background-color: var(--wm-color-safari-tab-active);
+  color: var(--wm-color-text-title);
+  box-shadow: var(--wm-shadow-safari-tab-active);
+}
+
+.segmentDivider {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 14px;
+  background-color: var(--wm-color-safari-divider);
+  pointer-events: none;
+}
+
+/* ---------- 区块通用 ---------- */
+
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 30px;
+  margin-bottom: 6px;
+  padding: 0 2px;
+  border-radius: 8px;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease;
+
+  &:hover {
+    background-color: var(--wm-color-agent-surface);
+  }
+}
+
+.sectionTitle {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--wm-color-text-title);
+}
+
+.sectionChevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--wm-color-text-tertiary);
+  transition: transform 160ms ease;
+}
+
+.sectionChevronCollapsed {
+  transform: rotate(-90deg);
+}
+
+/* ---------- 预定与自动任务 ---------- */
+
+.taskList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.taskCard {
+  border-radius: 12px;
+  transition: background-color 140ms ease;
+}
+
+.taskCardExpanded {
+  background-color: var(--wm-color-agent-surface);
+}
+
+.taskRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 6px;
+  border-radius: 12px;
+  transition: background-color 120ms ease;
+
+  &:hover {
+    background-color: var(--wm-color-agent-surface);
+  }
+}
+
+.taskMain {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  cursor: pointer;
+  outline: none;
+}
+
+.taskGlyph {
+  position: relative;
+  flex: 0 0 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background-color: var(--wm-color-agent-surface);
+  color: var(--wm-color-text-secondary);
+  box-shadow: inset 0 0 0 0.5px var(--wm-color-outline-tertiary);
+}
+
+.taskGlyphCircle {
+  border-radius: 50%;
+  color: var(--wm-color-agent-badge-rose);
+  background-color: var(--wm-color-agent-badge-rose-soft);
+  box-shadow: none;
+}
+
+.glyphMuted {
+  opacity: 0.45;
+}
+
+.liveDotBadge {
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background-color: var(--wm-color-brand-yuanbao);
+  box-shadow: 0 0 0 2px var(--wm-color-background-quaternary);
+}
+
+.clockBadge {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  display: flex;
+  color: var(--wm-color-agent-badge-amber);
+  border-radius: 50%;
+  box-shadow: 0 0 0 1.5px var(--wm-color-background-quaternary);
+}
+
+.taskText {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.taskTitle {
+  overflow: hidden;
+  font-size: 13.5px;
+  line-height: 19px;
+  font-weight: 500;
+  color: var(--wm-color-text-title);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.taskTitlePaused {
+  color: var(--wm-color-text-tertiary);
+}
+
+.taskSchedule {
+  overflow: hidden;
+  margin-top: 1px;
+  font-size: 12px;
+  line-height: 17px;
+  color: var(--wm-color-text-tertiary);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* macOS 风格拨动开关 */
+.switch {
+  position: relative;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 20px;
+  padding: 2px;
+  border-radius: 999px;
+  background-color: var(--wm-color-agent-toggle-off);
+  cursor: pointer;
+  outline: none;
+  transition: background-color 160ms ease;
+}
+
+.switchOn {
+  background-color: var(--wm-color-agent-toggle-on);
+}
+
+.switchThumb {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: var(--wm-color-background-quaternary);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+  transition: transform 160ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.switchOn .switchThumb {
+  transform: translateX(14px);
+}
+
+.taskExpand {
+  padding: 2px 12px 12px 53px;
+}
+
+.expandDesc {
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--wm-color-text-secondary);
+}
+
+.expandMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 6px;
+  font-size: 11.5px;
+  line-height: 16px;
+  color: var(--wm-color-text-tertiary);
+}
+
+.expandActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.expandAction,
+.expandActionPrimary {
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 7px;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease;
+}
+
+.expandActionPrimary {
+  background-color: var(--wm-color-text-title);
+  color: var(--wm-color-text-senary);
+
+  &:hover {
+    opacity: 0.88;
+  }
+}
+
+.expandAction {
+  background-color: var(--wm-color-background-quaternary);
+  color: var(--wm-color-text-secondary);
+  box-shadow: inset 0 0 0 0.5px var(--wm-color-outline-secondary);
+
+  &:hover {
+    background-color: var(--wm-color-agent-surface-hover);
+  }
+}
+
+.viewAllButton {
+  align-self: center;
+  margin-top: 10px;
+  padding: 5px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 500;
+  color: var(--wm-color-text-title);
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--wm-color-agent-surface);
+  }
+}
+
+/* ---------- 今日活动时间线 ---------- */
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.timelineCard {
+  border-radius: 12px;
+  transition: background-color 140ms ease;
+}
+
+.timelineCardExpanded {
+  background-color: var(--wm-color-agent-surface);
+}
+
+.timelineRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 8px 6px;
+  border-radius: 12px;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease;
+
+  &:hover {
+    background-color: var(--wm-color-agent-surface);
+  }
+}
+
+.timelineGlyph {
+  flex: 0 0 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  margin-top: 1px;
+  border-radius: 10px;
+  background-color: var(--wm-color-agent-surface);
+  color: var(--wm-color-text-secondary);
+}
+
+.timelineGlyphActive {
+  background-color: var(--wm-color-agent-badge-green-soft);
+  color: var(--wm-color-brand-yuanbao);
+}
+
+.timelineBody {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.timelineTitle {
+  font-size: 13.5px;
+  line-height: 19px;
+  font-weight: 500;
+  color: var(--wm-color-text-title);
+}
+
+.timelineSummary {
+  margin-top: 2px;
+  font-size: 12px;
+  line-height: 17px;
+  color: var(--wm-color-text-tertiary);
+}
+
+.timelineTime {
+  margin-top: 3px;
+  font-size: 11.5px;
+  line-height: 15px;
+  color: var(--wm-color-text-quaternary);
+}
+
+.timelineExpand {
+  padding: 0 12px 12px 51px;
+}
+
+/* ---------- 资料库 ---------- */
+
+.filterRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.filterChip {
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 17px;
+  color: var(--wm-color-text-secondary);
+  background-color: var(--wm-color-agent-surface);
+  cursor: pointer;
+  outline: none;
+  transition:
+    background-color 120ms ease,
+    color 120ms ease;
+
+  &:hover:not(.filterChipActive) {
+    background-color: var(--wm-color-agent-surface-hover);
+  }
+}
+
+.filterChipActive {
+  background-color: var(--wm-color-text-title);
+  color: var(--wm-color-text-senary);
+}
+
+.libraryList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.libraryItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background-color: var(--wm-color-agent-surface);
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease;
+
+  &:hover {
+    background-color: var(--wm-color-agent-surface-hover);
+  }
+}
+
+.libraryBadge {
+  flex: 0 0 auto;
+  padding: 3px 7px;
+  border-radius: 6px;
+  font-size: 11px;
+  line-height: 15px;
+  font-weight: 500;
+  color: var(--wm-color-text-secondary);
+  background-color: var(--wm-color-background-quaternary);
+  box-shadow: inset 0 0 0 0.5px var(--wm-color-outline-tertiary);
+}
+
+.libraryBody {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.libraryName {
+  overflow: hidden;
+  font-size: 13px;
+  line-height: 19px;
+  font-weight: 500;
+  color: var(--wm-color-text-title);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.libraryMeta {
+  margin-top: 2px;
+  font-size: 11.5px;
+  line-height: 16px;
+  color: var(--wm-color-text-tertiary);
+}
+
+.emptyText {
+  padding: 28px 0;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--wm-color-text-tertiary);
+}
+
+/* ---------- 设置 ---------- */
+
+.prefList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.prefRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 12px;
+  border-radius: 12px;
+  background-color: var(--wm-color-agent-surface);
+}
+
+.prefText {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.prefTitle {
+  font-size: 13px;
+  line-height: 19px;
+  font-weight: 500;
+  color: var(--wm-color-text-title);
+}
+
+.prefDesc {
+  margin-top: 2px;
+  font-size: 11.5px;
+  line-height: 16px;
+  color: var(--wm-color-text-tertiary);
+}
+
+.scopeCard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 0.5px solid var(--wm-color-outline-tertiary);
+}
+
+.scopeRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  line-height: 17px;
+}
+
+.scopeLabel {
+  color: var(--wm-color-text-tertiary);
+}
+
+.scopeValue {
+  font-weight: 500;
+  color: var(--wm-color-text-title);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay,
+  .switchThumb {
+    animation: none;
+    transition: none;
+  }
+}

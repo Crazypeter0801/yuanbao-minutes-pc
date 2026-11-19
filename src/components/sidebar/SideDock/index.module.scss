@@ -1,6 +1,7 @@
 /*
  * 侧栏槽位：收起时宽 0，打开时 386（卡片 376 + 左侧与会议区的 10）。
- * 卡片贴右放，宽度变化时像从窗口右缘滑进来；会议区是 flex 1，跟着让位。
+ * 左侧会中区域宽度固定 936，因此槽位开合时由主窗口整体向右展开 / 向左收缩，
+ * 左侧会中画面绝不拉伸变宽。
  */
 .slot {
   flex: 0 0 auto;
@@ -29,10 +30,249 @@
   }
 }
 
-/* ---------- 页签（多个应用并开时，Figma 505:12264） ---------- */
+/* ---------- Figma 505:12421 新版顶部胶囊标签栏（Frame 505:12423） ---------- */
 
-/* 一行：padding 12、间距 4，页签高 40 → 整行 64，与单开时的标题栏同高，切换时内容不跳 */
-.tabs {
+/* 整行 padding 16，左侧灰底胶囊轨道（fill）+ 8px + 右侧白色操作胶囊（hug，高 40） */
+.pillBar {
+  position: relative;
+  z-index: 30;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  padding: 16px;
+}
+
+/* 左侧凹槽胶囊轨道（505:12607 / 563:15854）：#F3F3F4（wm_color_background_tertiary）、圆角 20、高 40、四边 2px 内边距 */
+.pillTrack {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding: 2px;
+  border-radius: 20px;
+  background-color: var(--wm-color-background-tertiary);
+}
+
+/* 激活页签白胶囊（505:12608）：fill、高 36、圆角 18、padding 4 12 4 8、#FFF、1px #EBEDF2、blur(10px) */
+.pillTab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 36px;
+  border-radius: 18px;
+  outline: none;
+  user-select: none;
+}
+
+.pillTabActive {
+  flex: 1 1 auto;
+  min-width: 0;
+  justify-content: space-between;
+  padding: 4px 12px 4px 8px;
+  background-color: var(--wm-color-background-quaternary);
+  box-shadow: inset 0 0 0 1px var(--wm-color-outline-tertiary);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  animation: classic-tab-expand 200ms cubic-bezier(0.22, 1, 0.36, 1);
+
+  &:hover .pillClose,
+  &:focus-within .pillClose {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.pillActiveMain {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  outline: none;
+
+  & > * + * {
+    margin-left: 4px;
+  }
+}
+
+.pillIcon {
+  flex: 0 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+/* Figma style_ZB8QV8：PingFang SC 13px / 18px 400 #000000（wm_color_text_primary） */
+.pillLabel {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 400;
+  color: var(--wm-color-text-primary);
+}
+
+/* Figma 541:13600：3×8 折线（导出 viewBox 5×10，用负边距抵回外扩） */
+.pillChevron {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  margin: -1px -1px -1px calc(4px - 0.75px);
+}
+
+/* Hover 时浮现在激活白胶囊右端的关闭按钮（静止态完全隐藏，与设计稿 505:12421 一致） */
+.pillClose {
+  flex: 0 0 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-left: 4px;
+  border-radius: 9px;
+  color: var(--wm-color-text-tertiary);
+  opacity: 0;
+  pointer-events: none;
+  cursor: pointer;
+  outline: none;
+  transition:
+    opacity 120ms ease,
+    background-color 120ms ease,
+    color 120ms ease;
+
+  &:hover,
+  &:focus-visible {
+    opacity: 1;
+    pointer-events: auto;
+    background-color: var(--wm-color-control-hover);
+    color: var(--wm-color-text-primary);
+  }
+}
+
+.pillInactiveWrap {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+}
+
+/*
+ * 未选中页签（Figma 505:12633 + hover 563:15890 尺寸）：
+ * 56×36、圆角 18、居中显示 24px 灰图标；
+ * hover 时仅添加柔和浅灰背景色（rgba(0, 0, 0, 0.06)），不改图标色、无额外特效。
+ */
+.pillTabInactive {
+  flex: 0 0 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 36px;
+  border-radius: 18px;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease-in-out;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--wm-color-control-hover);
+  }
+}
+
+/* 未选中相邻页签之间的竖分隔线（505:12632）：1×20 #D3D6DB，相邻未选中项 hover 时隐藏 */
+.pillDivider {
+  flex: 0 0 1px;
+  width: 1px;
+  height: 20px;
+  background-color: var(--wm-color-outline-secondary);
+  transition: opacity 120ms ease-in-out;
+}
+
+.pillDividerHidden {
+  opacity: 0;
+}
+
+/* 右侧操作胶囊（505:12590）：高 40、圆角 20、padding 6 12、#FFF、1px #EBEDF2、blur(10px) */
+.pillActionsCapsule {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  margin-left: 8px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background-color: var(--wm-color-background-quaternary);
+  box-shadow: inset 0 0 0 1px var(--wm-color-outline-tertiary);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+
+  & > * + * {
+    margin-left: 4px;
+  }
+}
+
+/* 独立窗口 / 更多（505:12592 / 505:12597）：24×24、圆角 7 */
+.pillActionBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease-in-out;
+
+  & > svg {
+    display: block;
+    flex: 0 0 auto;
+  }
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--wm-color-control-hover);
+  }
+}
+
+.pillActionBtnActive {
+  background-color: var(--wm-color-control-hover);
+}
+
+.moreWrap {
+  position: relative;
+  display: flex;
+}
+
+/* 「更多」菜单：228 宽白卡片，圆角 14，右对齐弹出 */
+.menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: -12px;
+  z-index: 4;
+  width: 228px;
+  padding: 6px;
+  border-radius: 14px;
+  background-color: var(--wm-color-background-quaternary);
+  box-shadow: var(--wm-shadow-input-menu);
+  animation: menu-enter 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.menuClassic {
+  top: calc(100% + 8px);
+  right: -32px;
+  width: 220px;
+  padding: 8px;
+  border-radius: 16px;
+}
+
+/* ---------- 原版 single-window-base 标签页（Figma 505:12264，完整保留原样式） ---------- */
+
+/* 一行：padding 12、间距 4，页签高 40 → 整行 64 */
+.classicTabs {
   position: relative;
   z-index: 30;
   flex: 0 0 auto;
@@ -46,7 +286,7 @@
 }
 
 /* 未选中：40×40、0.5px #EBEDF2 描边、圆角 8，灰色图标居中（元宝 20、成员 / 聊天 24） */
-.tab {
+.classicTab {
   flex: 0 0 40px;
   display: flex;
   align-items: center;
@@ -64,25 +304,24 @@
     flex: 0 0 auto;
   }
 
-  &:not(.tabSelected):hover,
-  &:not(.tabSelected):focus-visible {
+  &:not(.classicTabSelected):hover,
+  &:not(.classicTabSelected):focus-visible {
     background-color: var(--wm-color-control-hover);
   }
 }
 
 /* 选中：撑满剩余宽度，padding 0 8，左标题右操作（Figma 504:11045） */
-.tabSelected {
+.classicTabSelected {
   flex: 1 1 auto;
   justify-content: space-between;
   width: auto;
   min-width: 0;
   padding: 0 8px;
   cursor: default;
-  animation: tab-expand 200ms cubic-bezier(0.22, 1, 0.36, 1);
+  animation: classic-tab-expand 200ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* 图标 24 + 名称 + （元宝的）小箭头，间距 6 */
-.tabTitle {
+.classicTabTitle {
   display: flex;
   align-items: center;
   min-width: 0;
@@ -92,7 +331,21 @@
   }
 }
 
-.tabIcon {
+.classicTabTitleClickable {
+  padding: 2px 6px 2px 2px;
+  margin-left: -2px;
+  border-radius: 6px;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease-in-out;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--wm-color-control-hover);
+  }
+}
+
+.classicTabIcon {
   display: flex;
   flex: 0 0 24px;
   width: 24px;
@@ -100,7 +353,7 @@
 }
 
 /* 14/18 400 #000（Figma 504:11059） */
-.tabLabel {
+.classicTabLabel {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -110,17 +363,14 @@
   color: var(--wm-color-text-primary);
 }
 
-/*
- * 3×8 的折线（描边 1.5 #B0B6C3），导出图四周带了描边外扩（上左 0.75、下右 1.25），
- * 按导出尺寸 5×10 显示，再用负边距抵回 3×8 的占位。
- */
-.tabChevron {
+/* 3×8 折线外扩补偿，对齐 Figma 541:13598 */
+.classicTabChevron {
   display: flex;
   margin: -0.75px -1.25px -1.25px calc(6px - 0.75px);
 }
 
 /* 独立窗口 / 更多 / 关闭：20 的图标、间距 4（Figma 504:11060） */
-.tabActions {
+.classicTabActions {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
@@ -130,7 +380,7 @@
   }
 }
 
-.tabAction {
+.classicTabAction {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -152,36 +402,17 @@
   }
 }
 
-.tabActionActive {
+.classicTabActionActive {
   background-color: var(--wm-color-control-hover);
 }
 
-.moreWrap {
-  position: relative;
-  display: flex;
-}
-
-@keyframes tab-expand {
+@keyframes classic-tab-expand {
   from {
     opacity: 0.6;
   }
   to {
     opacity: 1;
   }
-}
-
-/* 「更多」菜单：220 宽白卡片，圆角 16，从按钮下方 8 弹出、右对齐 */
-.menu {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: -32px;
-  z-index: 2;
-  width: 220px;
-  padding: 8px;
-  border-radius: 16px;
-  background-color: var(--wm-color-background-quaternary);
-  box-shadow: var(--wm-shadow-input-menu);
-  animation: menu-enter 180ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .menuRow {
@@ -191,7 +422,7 @@
   min-height: 36px;
   padding: 0 10px;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 13px;
   color: var(--wm-color-text-secondary);
 }
 
@@ -202,6 +433,7 @@
   &:hover,
   &:focus-visible {
     background-color: var(--wm-color-control-hover);
+    color: var(--wm-color-text-title);
   }
 }
 
@@ -241,7 +473,6 @@
 
 /* ---------- 内容区 ---------- */
 
-/* 各应用叠放在同一块里：只显示当前的，其余隐藏但保持挂载（滚动位置、输入草稿不丢） */
 .panes {
   position: relative;
   flex: 1 1 auto;
@@ -257,7 +488,6 @@
   pointer-events: none;
 }
 
-/* 切到这个应用时淡入 + 上移 4px（200ms） */
 .paneActive {
   visibility: visible;
   pointer-events: auto;
@@ -276,8 +506,12 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tab,
-  .tabSelected,
+  .pillTabActive,
+  .pillClose,
+  .pillTabInactive,
+  .pillDivider,
+  .classicTab,
+  .classicTabSelected,
   .menu,
   .paneActive {
     transition: none;

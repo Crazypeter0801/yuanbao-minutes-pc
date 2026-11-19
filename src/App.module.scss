@@ -1,5 +1,5 @@
 /*
- * 页面：Tahoe 壁纸铺满，主窗口 + 控制台整组居中；上下留 80、左右 24，最小 1600×920。
+ * 页面：Tahoe 壁纸铺满，主窗口舞台 + 控制台整组居中；上下留 80、左右 24，最小 1600×920。
  * 壁纸画在 .page 自身（不用 fixed），导入 Figma code layer 时也能完整显示。
  */
 .page {
@@ -17,7 +17,7 @@
 }
 
 /*
- * 主窗口 + 右侧演示控制台排成一行，整组在浏览器里上下左右居中；控制台与主窗口垂直居中、间距 16。
+ * 主窗口舞台 + 右侧演示控制台排成一行，整组在浏览器里上下左右居中；控制台与舞台垂直居中、间距 16。
  */
 .frame {
   position: relative;
@@ -26,32 +26,51 @@
   align-items: center;
 }
 
-/* 演示控制台：跟在主窗口右边 16，竖向排列 */
+/*
+ * 1338×795 主窗口舞台锚点：
+ * 主窗口紧贴左缘，当所有侧栏标签页关闭或弹出时，主窗口整体向左收缩为 952（936 会中区 + 左右各 8），
+ * 左侧会中区宽度与位置完全保持不变；独立浮窗也以本舞台为坐标系自然停靠在右侧空位。
+ */
+.windowStage {
+  position: relative;
+  flex: 0 0 1338px;
+  width: 1338px;
+  height: 795px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: stretch;
+}
+
+/* 演示控制台：跟在舞台右边 16，竖向排列 */
 .demoBar {
   flex: 0 0 auto;
   margin-left: 16px;
   white-space: nowrap;
 }
 
-/* 会议区容器：投票弹窗以它为定位基准，只覆盖左侧，不盖住元宝侧栏 */
+/*
+ * 会议区容器：宽度严格锁定 936（原 1338 - 16 内边距 - 386 侧栏槽位）。
+ * 绝不因侧栏关闭或独立窗口浮出而向右拉伸变宽。
+ */
 .meetingArea {
   position: relative;
-  flex: 1 1 auto;
-  min-width: 0;
+  flex: 0 0 936px;
+  width: 936px;
+  min-width: 936px;
+  max-width: 936px;
   display: flex;
 }
 
-/* 会议区与侧栏之间的 10 由侧栏槽位自己带（收起时宽 0，会议区占满） */
-
 /*
- * 入会极简模式（Figma 215:19035）：1338×795（操作栏 40 + 视频布局 691 + 会中底栏 64）、
- * 圆角 20、左右各留 8，底色 #F3F3F4 95% + 20px 背景模糊；会议区与右侧元宝卡片并排，中间 10。
+ * 入会极简主窗口：高 795、圆角 20、左右各留 8，底色 #F3F3F4 95% + 20px 背景模糊。
+ * 宽度由左侧 936 会议区 + 右侧 SideDock（0 ↔ 386）自然决定（952 ↔ 1338），
+ * 随 SideDock 宽度过渡平滑向左收缩 / 向右展开。
  */
 .window {
   position: relative;
   display: flex;
   flex: 0 0 auto;
-  width: 1338px;
+  width: fit-content;
   height: 795px;
   padding: 0 8px;
   overflow: hidden;

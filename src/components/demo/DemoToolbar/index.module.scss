@@ -131,6 +131,33 @@
   white-space: nowrap;
 }
 
+.optionMenu {
+  width: 204px;
+}
+
+.optionItem {
+  justify-content: space-between;
+  padding: 0 10px 0 12px;
+}
+
+.optionItemActive {
+  background-color: var(--wm-color-agent-surface);
+}
+
+.optionCheck {
+  flex: 0 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10px;
+  color: var(--wm-color-brand-yuanbao);
+  opacity: 0;
+}
+
+.optionCheckVisible {
+  opacity: 1;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .caret {
     transition: none;

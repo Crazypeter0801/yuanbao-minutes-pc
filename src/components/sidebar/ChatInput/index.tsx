@@ -22,6 +22,14 @@ interface ChatInputProps {
   onSubmit: (text: string) => void;
   /** 点工具入口（选择会议 / 上传图片 / 本地文件），演示里只给 Toast */
   onToolAction?: (label: string) => void;
+  /** 输入内容变化回调（供「/」唤起与筛选推荐指令） */
+  onValueChange?: (value: string) => void;
+  /** 递增时清空输入框（点选指令后清掉「/」） */
+  clearSignal?: number;
+  /** 推荐指令弹层打开时与弹层一体呈现 */
+  commandOpen?: boolean;
+  /** 测量输入框高度，供一体化弹层精准留空 */
+  onHeightChange?: (height: number) => void;
 }
 
 /**
@@ -32,12 +40,39 @@ interface ChatInputProps {
  * 单行高 48：padding 10、按钮 28；多行时向上撑高，发送按钮贴底。
  * Enter 发送、Shift+Enter 换行；中文输入法组词期间不触发发送。
  */
-export const ChatInput: FC<ChatInputProps> = ({ placeholder, onSubmit, onToolAction }) => {
+export const ChatInput: FC<ChatInputProps> = ({
+  placeholder,
+  onSubmit,
+  onToolAction,
+  onValueChange,
+  clearSignal,
+  commandOpen = false,
+  onHeightChange,
+}) => {
   const [value, setValue] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const canSend = value.trim().length > 0;
+
+  useEffect(() => {
+    if (clearSignal) {
+      setValue('');
+      onValueChange?.('');
+    }
+  }, [clearSignal, onValueChange]);
+
+  useLayoutEffect(() => {
+    const node = wrapRef.current;
+    if (!node || !onHeightChange) {
+      return undefined;
+    }
+    const report = () => onHeightChange(node.offsetHeight);
+    report();
+    const observer = new ResizeObserver(report);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [onHeightChange]);
 
   useLayoutEffect(() => {
     const node = textareaRef.current;
@@ -77,6 +112,7 @@ export const ChatInput: FC<ChatInputProps> = ({ placeholder, onSubmit, onToolAct
     }
     onSubmit(value.trim());
     setValue('');
+    onValueChange?.('');
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -114,7 +150,7 @@ export const ChatInput: FC<ChatInputProps> = ({ placeholder, onSubmit, onToolAct
         </div>
       )}
 
-      <div className={styles.input}>
+      <div className={`${styles.input} ${commandOpen ? styles.inputIntegrated : ''}`}>
         <div className={styles.field}>
           <Pressable
             className={`${styles.add} ${menuOpen ? styles.addActive : ''}`}
@@ -131,7 +167,11 @@ export const ChatInput: FC<ChatInputProps> = ({ placeholder, onSubmit, onToolAct
             rows={1}
             value={value}
             placeholder={placeholder}
-            onChange={(event) => setValue(event.target.value)}
+            onChange={(event) => {
+              const next = event.target.value;
+              setValue(next);
+              onValueChange?.(next);
+            }}
             onKeyDown={handleKeyDown}
           />
         </div>

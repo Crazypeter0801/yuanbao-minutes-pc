@@ -16,6 +16,7 @@ import styles from './index.module.scss';
 interface MembersSidebarProps {
   showHeader: boolean;
   onClose: () => void;
+  onPopOut?: () => void;
 }
 
 type MemberTab = 'joined' | 'invited';
@@ -26,7 +27,7 @@ type MemberTab = 'joined' | 'invited';
  * 底部三颗 32 高的胶囊按钮：全体静音、会议管控、邀请成员（黑底）。
  * 演示里点麦克风图标可切换该成员的静音状态，「全体静音」把会议中所有人静音。
  */
-export const MembersSidebar: FC<MembersSidebarProps> = ({ showHeader, onClose }) => {
+export const MembersSidebar: FC<MembersSidebarProps> = ({ showHeader, onClose, onPopOut }) => {
   const { toast, showToast } = useToast();
   const [tab, setTab] = useState<MemberTab>('joined');
   const [members, setMembers] = useState<MeetingMember[]>(MEMBERS_IN_MEETING);
@@ -59,7 +60,7 @@ export const MembersSidebar: FC<MembersSidebarProps> = ({ showHeader, onClose })
         <SidebarHeader
           icon={SIDE_APPS.members.icon}
           title={SIDE_APPS.members.title}
-          onPip={() => showToast('管理成员已在独立窗口打开（演示）')}
+          onPip={() => (onPopOut ? onPopOut() : showToast('管理成员已在独立窗口打开（演示）'))}
           menuItems={menuItems}
           onClose={onClose}
         />
