@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useRef, useState, type FC, type ReactNode, type TransitionEvent } from 'react';
-import IconTab505Chevron from '@/assets/d2c/icons/sidetabs505/icon-tab505-chevron';
 import IconTab505More from '@/assets/d2c/icons/sidetabs505/icon-tab505-more';
 import IconTab505Pip from '@/assets/d2c/icons/sidetabs505/icon-tab505-pip';
+import IconTab574Chevron from '@/assets/d2c/icons/sidetabs574/icon-tab574-chevron';
 import IconTab585Close from '@/assets/d2c/icons/sidetabs585/icon-tab585-close';
 import IconTab585Dropdown from '@/assets/d2c/icons/sidetabs585/icon-tab585-dropdown';
 import IconTab585More from '@/assets/d2c/icons/sidetabs585/icon-tab585-more';
@@ -257,7 +257,7 @@ export const SideDock: FC<SideDockProps> = ({
                           <span className={styles.folderTabLabel}>{meta.title}</span>
                           {meta.chevron && (
                             <span className={styles.folderTabChevron} aria-hidden="true">
-                              <IconTab505Chevron width={5} height={10} />
+                              <IconTab574Chevron width={5} height={10} />
                             </span>
                           )}
                         </Pressable>
@@ -365,7 +365,7 @@ export const SideDock: FC<SideDockProps> = ({
                               <span className={styles.pillLabel}>{meta.title}</span>
                               {meta.chevron && (
                                 <span className={styles.pillChevron} aria-hidden="true">
-                                  <IconTab505Chevron width={5} height={10} />
+                                  <IconTab574Chevron width={5} height={10} />
                                 </span>
                               )}
                             </Pressable>

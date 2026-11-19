@@ -1,6 +1,6 @@
 import { useState, type FC, type ReactNode } from 'react';
-import IconTab505Chevron from '@/assets/d2c/icons/sidetabs505/icon-tab505-chevron';
 import IconTab505Yuanbao from '@/assets/d2c/icons/sidetabs505/icon-tab505-yuanbao';
+import IconTab574Chevron from '@/assets/d2c/icons/sidetabs574/icon-tab574-chevron';
 import IconTab585Close from '@/assets/d2c/icons/sidetabs585/icon-tab585-close';
 import IconTab585More from '@/assets/d2c/icons/sidetabs585/icon-tab585-more';
 import IconTab585Pip from '@/assets/d2c/icons/sidetabs585/icon-tab585-pip';
@@ -46,7 +46,7 @@ export const SidebarHeader: FC<SidebarHeaderProps> = ({
       <span className={styles.titleText}>{title}</span>
       {onTitleClick && (
         <span className={styles.chevron} aria-hidden="true">
-          <IconTab505Chevron width={5} height={10} />
+          <IconTab574Chevron width={5} height={10} />
         </span>
       )}
     </>

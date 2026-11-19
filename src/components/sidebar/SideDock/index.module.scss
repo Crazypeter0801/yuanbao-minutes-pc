@@ -402,11 +402,11 @@
   color: var(--wm-color-text-primary);
 }
 
+/* Figma 574:16905：与「元宝」间距 4px（由父级 margin-left: 4px 给出），5×10 居中对齐 */
 .folderTabChevron {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
-  margin-left: 2px;
 }
 
 /* 操作区（Figma 585:68665）：更多 / 独立窗口 / 关闭，三个 28×28、间距 2 */

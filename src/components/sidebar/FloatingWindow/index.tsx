@@ -1,4 +1,5 @@
 import { useRef, useState, type FC, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
+import IconTab574Chevron from '@/assets/d2c/icons/sidetabs574/icon-tab574-chevron';
 import IconTab582DockBack from '@/assets/d2c/icons/sidetabs585/icon-tab582-dock-back';
 import IconTab585Close from '@/assets/d2c/icons/sidetabs585/icon-tab585-close';
 import { Pressable } from '@/components/common/Pressable';
@@ -104,9 +105,7 @@ export const FloatingWindow: FC<FloatingWindowProps> = ({
             >
               <span className={styles.icon}>{meta.icon585On}</span>
               <span className={styles.label}>{meta.title}</span>
-              <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                <path d="M4.4 2.8 7.6 6 4.4 9.2" stroke="currentColor" strokeWidth="1.35" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+              <IconTab574Chevron width={5} height={10} aria-hidden="true" />
             </Pressable>
           ) : (
             <div className={styles.titleStatic}>
