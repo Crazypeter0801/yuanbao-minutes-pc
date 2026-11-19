@@ -98,3 +98,26 @@
   color: var(--wm-color-text-tertiary);
   background-color: var(--wm-color-background-septenary);
 }
+
+.detailLink {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+  padding: 7px 8px;
+  border-top: 0.5px solid var(--wm-color-outline-tertiary);
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 500;
+  color: var(--wm-color-text-secondary);
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease-out;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--wm-color-background-septenary);
+    color: var(--wm-color-text-primary);
+  }
+}

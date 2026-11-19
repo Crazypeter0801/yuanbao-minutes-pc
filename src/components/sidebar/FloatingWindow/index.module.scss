@@ -44,6 +44,24 @@
   min-width: 0;
 }
 
+.titleButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 6px 3px 4px;
+  margin-left: -4px;
+  border-radius: 7px;
+  color: var(--wm-color-text-tertiary);
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--wm-color-control-hover);
+  }
+}
+
 .icon {
   display: flex;
   align-items: center;

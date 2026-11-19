@@ -30,122 +30,126 @@
   }
 }
 
-/* ---------- macOS Safari 风格顶部标签栏 ---------- */
+/* ---------- Figma 505:12421 新版顶部胶囊标签栏（Frame 505:12423） ---------- */
 
-.safariBar {
+/* 整行 padding 16，左侧灰底胶囊轨道（fill）+ 8px + 右侧白色操作胶囊（hug，高 40） */
+.pillBar {
   position: relative;
   z-index: 30;
   flex: 0 0 auto;
   display: flex;
   align-items: center;
-  gap: 6px;
-  height: 52px;
-  padding: 10px 10px 6px 12px;
+  padding: 16px;
 }
 
-/* 柔和浅灰凹槽轨道底 */
-.safariTrack {
+/* 左侧凹槽胶囊轨道（505:12607）：#F3F3F4（wm_color_background_tertiary）、圆角 20、高 40 */
+.pillTrack {
   flex: 1 1 auto;
   min-width: 0;
   display: flex;
   align-items: center;
-  height: 34px;
-  padding: 3px;
-  border-radius: 10px;
-  background-color: var(--wm-color-safari-track);
-  box-shadow: inset 0 0 0 0.5px var(--wm-color-safari-track-line);
+  height: 40px;
+  border-radius: 20px;
+  background-color: var(--wm-color-background-tertiary);
+
+  & > * + * {
+    margin-left: 8px;
+  }
 }
 
-.safariCell {
-  position: relative;
-  flex: 1 1 0;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  height: 100%;
+/* 贴齐激活白胶囊一侧留 2px，未选中纯图标一侧留 10px（对齐 Figma 505:12607 padding: 2px 10px 2px 2px） */
+.pillTrackPadRight {
+  padding: 2px 10px 2px 2px;
 }
 
-.safariTab {
+.pillTrackPadLeft {
+  padding: 2px 2px 2px 10px;
+}
+
+.pillTrackPadBoth {
+  padding: 2px 10px;
+}
+
+/* 激活页签白胶囊（505:12608）：fill、高 36、圆角 18、padding 4 12 4 8、#FFF、1px #EBEDF2、blur(10px) */
+.pillTab {
   position: relative;
-  flex: 1 1 auto;
-  min-width: 0;
   display: flex;
   align-items: center;
-  justify-content: center;
-  height: 28px;
-  padding: 0 20px;
-  border-radius: 7.5px;
-  color: var(--wm-color-text-tertiary);
-  cursor: pointer;
+  height: 36px;
+  border-radius: 18px;
   outline: none;
   user-select: none;
-  transition:
-    background-color 140ms ease,
-    color 140ms ease,
-    box-shadow 160ms ease;
+}
 
-  &:not(.safariTabActive):hover,
-  &:not(.safariTabActive):focus-visible {
-    background-color: var(--wm-color-safari-tab-hover);
-    color: var(--wm-color-text-secondary);
-  }
+.pillTabActive {
+  flex: 1 1 auto;
+  min-width: 0;
+  justify-content: space-between;
+  padding: 4px 12px 4px 8px;
+  background-color: var(--wm-color-background-quaternary);
+  box-shadow: inset 0 0 0 1px var(--wm-color-outline-tertiary);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  animation: classic-tab-expand 200ms cubic-bezier(0.22, 1, 0.36, 1);
 
-  &:hover .safariTabClose,
-  &:focus-within .safariTabClose {
+  &:hover .pillClose,
+  &:focus-within .pillClose {
     opacity: 1;
     pointer-events: auto;
   }
 }
 
-/* 选中标签：独立圆角白卡 + 极细描边 + 柔和阴影浮起 */
-.safariTabActive {
-  background-color: var(--wm-color-safari-tab-active);
-  color: var(--wm-color-text-title);
-  box-shadow: var(--wm-shadow-safari-tab-active);
-  cursor: default;
-}
-
-.safariTabInner {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
+.pillActiveMain {
+  flex: 1 1 auto;
   min-width: 0;
-  max-width: 100%;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  outline: none;
+
+  & > * + * {
+    margin-left: 4px;
+  }
 }
 
-.safariTabIcon {
-  flex: 0 0 auto;
+.pillIcon {
+  flex: 0 0 24px;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 24px;
+  height: 24px;
 }
 
-.safariTabLabel {
+/* Figma style_ZB8QV8：PingFang SC 13px / 18px 400 #000000（wm_color_text_primary） */
+.pillLabel {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  font-size: 12.5px;
-  line-height: 16px;
+  font-size: 13px;
+  line-height: 18px;
   font-weight: 400;
+  color: var(--wm-color-text-primary);
 }
 
-.safariTabActive .safariTabLabel {
-  font-weight: 500;
+/* Figma 541:13600：3×8 折线（导出 viewBox 5×10，用负边距抵回外扩） */
+.pillChevron {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  margin: -1px -1px -1px calc(4px - 0.75px);
 }
 
-/* Hover 时在标签右侧浮现的关闭按钮（×），不挤压居中标题 */
-.safariTabClose {
-  position: absolute;
-  right: 4px;
-  top: 50%;
-  transform: translateY(-50%);
+/* Hover 时浮现在激活白胶囊右端的关闭按钮（静止态完全隐藏，与设计稿 505:12421 一致） */
+.pillClose {
+  flex: 0 0 18px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
-  border-radius: 5px;
+  width: 18px;
+  height: 18px;
+  margin-left: 4px;
+  border-radius: 9px;
   color: var(--wm-color-text-tertiary);
   opacity: 0;
   pointer-events: none;
@@ -160,45 +164,104 @@
   &:focus-visible {
     opacity: 1;
     pointer-events: auto;
-    background-color: var(--wm-color-safari-tab-close-hover);
-    color: var(--wm-color-text-title);
+    background-color: var(--wm-color-control-hover);
+    color: var(--wm-color-text-primary);
   }
 }
 
-/* 非相邻未选中项之间的淡竖分隔线（邻近激活项或 hover 项时自动淡隐） */
-.safariDivider {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 1px;
-  height: 14px;
-  border-radius: 1px;
-  background-color: var(--wm-color-safari-divider);
-  pointer-events: none;
-  transition: opacity 120ms ease;
-}
-
-.safariDividerHidden {
-  opacity: 0;
-}
-
-/* 右侧工具按钮：独立窗口弹出 + 更多 */
-.barActions {
+/* 未选中页签（505:12633 / 505:12621）：hug、高 36、圆角 18、padding 4 8（宽 40）、24 灰图标 */
+.pillTabInactive {
+  position: relative;
   flex: 0 0 auto;
   display: flex;
   align-items: center;
-  gap: 2px;
+  justify-content: center;
+  height: 36px;
+  padding: 4px 8px;
+  border-radius: 18px;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease-in-out;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--wm-color-control-hover);
+  }
+
+  &:hover .pillInactiveClose,
+  &:focus-within .pillInactiveClose {
+    opacity: 1;
+    pointer-events: auto;
+  }
 }
 
-.barAction {
+.pillInactiveClose {
+  position: absolute;
+  top: 1px;
+  right: 1px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 26px;
+  width: 14px;
+  height: 14px;
   border-radius: 7px;
+  background-color: var(--wm-color-background-quaternary);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.14);
   color: var(--wm-color-text-secondary);
+  opacity: 0;
+  pointer-events: none;
+  cursor: pointer;
+  outline: none;
+  transition:
+    opacity 120ms ease,
+    background-color 120ms ease,
+    color 120ms ease;
+
+  &:hover,
+  &:focus-visible {
+    opacity: 1;
+    pointer-events: auto;
+    background-color: var(--wm-color-text-primary);
+    color: var(--wm-color-text-senary);
+  }
+}
+
+/* 未选中相邻页签之间的竖分隔线（505:12632）：1×20 #D3D6DB（wm_color_outline_secondary） */
+.pillDivider {
+  flex: 0 0 1px;
+  width: 1px;
+  height: 20px;
+  background-color: var(--wm-color-outline-secondary);
+}
+
+/* 右侧操作胶囊（505:12590）：高 40、圆角 20、padding 6 12、#FFF、1px #EBEDF2、blur(10px) */
+.pillActionsCapsule {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  margin-left: 8px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background-color: var(--wm-color-background-quaternary);
+  box-shadow: inset 0 0 0 1px var(--wm-color-outline-tertiary);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+
+  & > * + * {
+    margin-left: 4px;
+  }
+}
+
+/* 独立窗口 / 更多（505:12592 / 505:12597）：24×24、圆角 7 */
+.pillActionBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
   cursor: pointer;
   outline: none;
   transition: background-color 120ms ease-in-out;
@@ -214,7 +277,7 @@
   }
 }
 
-.barActionActive {
+.pillActionBtnActive {
   background-color: var(--wm-color-control-hover);
 }
 
@@ -226,8 +289,8 @@
 /* 「更多」菜单：228 宽白卡片，圆角 14，右对齐弹出 */
 .menu {
   position: absolute;
-  top: calc(100% + 6px);
-  right: 0;
+  top: calc(100% + 10px);
+  right: -12px;
   z-index: 4;
   width: 228px;
   padding: 6px;
@@ -235,6 +298,160 @@
   background-color: var(--wm-color-background-quaternary);
   box-shadow: var(--wm-shadow-input-menu);
   animation: menu-enter 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.menuClassic {
+  top: calc(100% + 8px);
+  right: -32px;
+  width: 220px;
+  padding: 8px;
+  border-radius: 16px;
+}
+
+/* ---------- 原版 single-window-base 标签页（Figma 505:12264，完整保留原样式） ---------- */
+
+/* 一行：padding 12、间距 4，页签高 40 → 整行 64 */
+.classicTabs {
+  position: relative;
+  z-index: 30;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  padding: 12px;
+
+  & > * + * {
+    margin-left: 4px;
+  }
+}
+
+/* 未选中：40×40、0.5px #EBEDF2 描边、圆角 8，灰色图标居中（元宝 20、成员 / 聊天 24） */
+.classicTab {
+  flex: 0 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 0.5px var(--wm-color-outline-tertiary);
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease-in-out;
+
+  & > svg {
+    display: block;
+    flex: 0 0 auto;
+  }
+
+  &:not(.classicTabSelected):hover,
+  &:not(.classicTabSelected):focus-visible {
+    background-color: var(--wm-color-control-hover);
+  }
+}
+
+/* 选中：撑满剩余宽度，padding 0 8，左标题右操作（Figma 504:11045） */
+.classicTabSelected {
+  flex: 1 1 auto;
+  justify-content: space-between;
+  width: auto;
+  min-width: 0;
+  padding: 0 8px;
+  cursor: default;
+  animation: classic-tab-expand 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.classicTabTitle {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+
+  & > * + * {
+    margin-left: 6px;
+  }
+}
+
+.classicTabTitleClickable {
+  padding: 2px 6px 2px 2px;
+  margin-left: -2px;
+  border-radius: 6px;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease-in-out;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--wm-color-control-hover);
+  }
+}
+
+.classicTabIcon {
+  display: flex;
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+}
+
+/* 14/18 400 #000（Figma 504:11059） */
+.classicTabLabel {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 400;
+  color: var(--wm-color-text-primary);
+}
+
+/* 3×8 折线外扩补偿，对齐 Figma 541:13598 */
+.classicTabChevron {
+  display: flex;
+  margin: -0.75px -1.25px -1.25px calc(6px - 0.75px);
+}
+
+/* 独立窗口 / 更多 / 关闭：20 的图标、间距 4（Figma 504:11060） */
+.classicTabActions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+
+  & > * + * {
+    margin-left: 4px;
+  }
+}
+
+.classicTabAction {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease-in-out;
+
+  & > svg {
+    display: block;
+    flex: 0 0 auto;
+  }
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--wm-color-control-hover);
+  }
+}
+
+.classicTabActionActive {
+  background-color: var(--wm-color-control-hover);
+}
+
+@keyframes classic-tab-expand {
+  from {
+    opacity: 0.6;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .menuRow {
@@ -328,9 +545,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .safariTab,
-  .safariTabClose,
-  .safariDivider,
+  .pillTabActive,
+  .pillClose,
+  .pillInactiveClose,
+  .classicTab,
+  .classicTabSelected,
   .menu,
   .paneActive {
     transition: none;

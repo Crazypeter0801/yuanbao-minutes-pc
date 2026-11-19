@@ -14,6 +14,8 @@ interface FloatingWindowProps {
   onDockBack: () => void;
   /** 关闭浮窗 */
   onClose: () => void;
+  /** 点击标题（例如元宝浮窗里打开 Agent 详情页） */
+  onTitleClick?: () => void;
   children: ReactNode;
 }
 
@@ -28,6 +30,7 @@ export const FloatingWindow: FC<FloatingWindowProps> = ({
   onFocus,
   onDockBack,
   onClose,
+  onTitleClick,
   children,
 }) => {
   const meta = SIDE_APPS[id];
@@ -90,8 +93,26 @@ export const FloatingWindow: FC<FloatingWindowProps> = ({
         title="按住拖动独立窗口"
       >
         <div className={styles.title}>
-          <span className={styles.icon}>{meta.tabIcon}</span>
-          <span className={styles.label}>{meta.title}</span>
+          {onTitleClick ? (
+            <Pressable
+              className={styles.titleButton}
+              onClick={onTitleClick}
+              ariaLabel={`查看${meta.title} Agent 详情`}
+              title={`查看${meta.title} Agent 详情`}
+              stopPropagation
+            >
+              <span className={styles.icon}>{meta.icon505On}</span>
+              <span className={styles.label}>{meta.title}</span>
+              <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                <path d="M4.4 2.8 7.6 6 4.4 9.2" stroke="currentColor" strokeWidth="1.35" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </Pressable>
+          ) : (
+            <>
+              <span className={styles.icon}>{meta.icon505On}</span>
+              <span className={styles.label}>{meta.title}</span>
+            </>
+          )}
           <span className={styles.pill}>独立窗口</span>
         </div>
         <div className={styles.actions} data-nodrag>

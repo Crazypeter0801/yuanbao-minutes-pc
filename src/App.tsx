@@ -6,7 +6,7 @@ import { PollComposer } from "@/components/poll/PollComposer";
 import { ChatSidebar } from "@/components/sidebar/ChatSidebar";
 import { FloatingWindow } from "@/components/sidebar/FloatingWindow";
 import { MembersSidebar } from "@/components/sidebar/MembersSidebar";
-import { SideDock, type SideAppId } from "@/components/sidebar/SideDock";
+import { SideDock, type SideAppId, type SideTabStyle } from "@/components/sidebar/SideDock";
 import { SIDE_APP_ORDER } from "@/components/sidebar/SideDock/apps";
 import { YuanbaoSidebar } from "@/components/YuanbaoSidebar";
 import {
@@ -115,6 +115,8 @@ export default function App() {
     active: "yuanbao",
     floating: [],
   });
+  const [tabStyle, setTabStyle] = useState<SideTabStyle>("pill505");
+  const [yuanbaoDetailOpen, setYuanbaoDetailOpen] = useState(false);
   const meetingChat = useMeetingChat();
   /** 从弹幕浮层「聊天 >」进来时，把焦点放进聊天输入框 */
   const [chatFocusSignal, setChatFocusSignal] = useState(0);
@@ -256,6 +258,8 @@ export default function App() {
         onSubmit={handleSubmit}
         noteTopics={noteTopics}
         showHeader={showHeader}
+        detailOpen={yuanbaoDetailOpen}
+        onDetailOpenChange={setYuanbaoDetailOpen}
       />
     );
   };
@@ -293,10 +297,12 @@ export default function App() {
             <SideDock
               apps={dock.apps}
               active={dock.active}
+              tabStyle={tabStyle}
               onSelect={openApp}
               onCloseApp={closeApp}
               onPopOutApp={popOutApp}
               onCloseAll={closeAll}
+              onToggleYuanbaoDetail={() => setYuanbaoDetailOpen((open) => !open)}
               onClosed={handleDockClosed}
               renderApp={(id, { showHeader }) => renderAppContent(id, showHeader, false)}
             />
@@ -314,6 +320,7 @@ export default function App() {
               onFocus={() => focusFloatingApp(id)}
               onDockBack={() => dockBackApp(id)}
               onClose={() => closeFloatingApp(id)}
+              onTitleClick={id === "yuanbao" ? () => setYuanbaoDetailOpen((open) => !open) : undefined}
             >
               {renderAppContent(id, false, true)}
             </FloatingWindow>
@@ -322,7 +329,11 @@ export default function App() {
 
         {/* 窗口外：演示按钮，浮在窗口右侧壁纸上 */}
         <div className={styles.demoBar}>
-          <DemoToolbar onCommand={runCommand} />
+          <DemoToolbar
+            onCommand={runCommand}
+            tabStyle={tabStyle}
+            onTabStyleChange={setTabStyle}
+          />
         </div>
       </div>
     </div>

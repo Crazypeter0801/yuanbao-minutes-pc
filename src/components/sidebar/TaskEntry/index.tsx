@@ -15,6 +15,8 @@ interface TaskEntryProps {
   hidden?: boolean;
   /** 点一条任务：打开任务详情 */
   onOpenTask: (task: AgentTask) => void;
+  /** 打开元宝 Agent 详情页 */
+  onOpenAgentDetail?: () => void;
 }
 
 /**
@@ -28,6 +30,7 @@ export const TaskEntry: FC<TaskEntryProps> = ({
   onExpandedChange,
   hidden,
   onOpenTask,
+  onOpenAgentDetail,
 }) => (
   <MorphPanel
     expanded={expanded}
@@ -68,6 +71,27 @@ export const TaskEntry: FC<TaskEntryProps> = ({
           </span>
         </Pressable>
       ))}
+      {onOpenAgentDetail && (
+        <Pressable
+          className={styles.detailLink}
+          onClick={() => {
+            onExpandedChange(false);
+            onOpenAgentDetail();
+          }}
+          ariaLabel="查看元宝 Agent 详情"
+        >
+          <span>查看元宝 Agent 详情</span>
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+            <path
+              d="M4.4 2.8 7.6 6 4.4 9.2"
+              stroke="currentColor"
+              strokeWidth="1.3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </Pressable>
+      )}
     </div>
   </MorphPanel>
 );

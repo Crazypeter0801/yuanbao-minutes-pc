@@ -8,7 +8,6 @@ import {
   type FC,
 } from "react";
 import type { PopMenuItem } from "@/components/common/PopMenu";
-import { Pressable } from "@/components/common/Pressable";
 import { Toast } from "@/components/common/Toast";
 import { AgentDetail } from "@/components/sidebar/AgentDetail";
 import { ChatInput } from "@/components/sidebar/ChatInput";
@@ -17,9 +16,9 @@ import { MessageStream } from "@/components/sidebar/MessageStream";
 import { QuickCommandEntry } from "@/components/sidebar/QuickCommandEntry";
 import { SidebarHeader } from "@/components/sidebar/SidebarHeader";
 import { TaskDetail } from "@/components/sidebar/TaskDetail";
-import { TaskDots } from "@/components/sidebar/TaskDots";
+import { TaskEntry } from "@/components/sidebar/TaskEntry";
 import { INITIAL_SCHEDULED_TASKS, type AgentScheduledTask } from "@/data/agentDetail";
-import type { AgentTask } from "@/data/agentTasks";
+import { AGENT_TASKS, RUNNING_TASK_COUNT, type AgentTask } from "@/data/agentTasks";
 import { NOTE_ARTIFACT_ID } from "@/data/artifacts";
 import { buildCardResult } from "@/data/interactiveCards";
 import { useToast } from "@/hooks/useToast";
@@ -43,13 +42,17 @@ interface YuanbaoSidebarProps {
   noteTopics?: string[];
   /** 只开着元宝时显示自己的标题栏；多个应用并开或独立浮窗时由外层承载 */
   showHeader?: boolean;
+  /** 是否打开 Agent Profile 详情页（由 App 控制，便于顶部页签/浮窗标题联动） */
+  detailOpen?: boolean;
+  /** 切换 Agent Profile 详情页开关 */
+  onDetailOpenChange?: (open: boolean) => void;
 }
 
 /**
  * 元宝 Agent 对话区
  *
- * 严守方案 A 约束：任务与 Agent 详情入口固定放在顶部 header（绝不在输入框上方放任务入口）；
- * 输入框上方仅保留「推荐指令」快捷入口，点击顶部入口可展开完整 Agent 详情页。
+ * 顶部保持清爽（无额外状态条）；输入框上方恢复原「推荐指令」与「进行中任务」TaskEntry 进度条，
+ * 点顶部元宝标题/页签或任务列表内入口可打开完整 Agent Profile 详情页。
  */
 export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
   chat,
@@ -59,12 +62,27 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
   onSubmit,
   noteTopics,
   showHeader = true,
+  detailOpen: controlledDetailOpen,
+  onDetailOpenChange,
 }) => {
   const { toast, showToast } = useToast();
-  const [commandsOpen, setCommandsOpen] = useState(false);
-  const [detailOpen, setDetailOpen] = useState(false);
+  /** 底栏同一时刻只展开一个面板：推荐指令 / 进行中任务 */
+  const [openPanel, setOpenPanel] = useState<"commands" | "tasks" | null>(null);
+  const [uncontrolledDetailOpen, setUncontrolledDetailOpen] = useState(false);
+  const detailOpen = controlledDetailOpen ?? uncontrolledDetailOpen;
+  const setDetailOpen = useCallback(
+    (next: boolean) => {
+      if (onDetailOpenChange) {
+        onDetailOpenChange(next);
+      } else {
+        setUncontrolledDetailOpen(next);
+      }
+    },
+    [onDetailOpenChange],
+  );
+
   const [scheduledTasks, setScheduledTasks] = useState<AgentScheduledTask[]>(INITIAL_SCHEDULED_TASKS);
-  /** 从 Agent 详情页点进某条长程任务步骤详情 */
+  /** 正在看的任务；有值时盖住侧栏显示任务步骤详情 */
   const [activeTask, setActiveTask] = useState<AgentTask | null>(null);
   const footerRef = useRef<HTMLDivElement>(null);
   const [footerHeight, setFooterHeight] = useState(122);
@@ -80,11 +98,6 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
     observer.observe(node);
     return () => observer.disconnect();
   }, []);
-
-  const enabledTaskCount = useMemo(
-    () => scheduledTasks.filter((item) => item.enabled).length,
-    [scheduledTasks],
-  );
 
   const toggleScheduledTask = useCallback(
     (id: string) => {
@@ -104,7 +117,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
 
   const menuItems = useMemo<PopMenuItem[]>(
     () => [
-      { key: "detail", label: "查看 Agent 详情", onClick: () => setDetailOpen(true) },
+      { key: "detail", label: "查看元宝 Agent 详情", onClick: () => setDetailOpen(true) },
       { key: "summary", label: "立即总结", onClick: chat.summarizeNow },
       {
         key: "export",
@@ -117,7 +130,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
         onClick: () => showToast("打开纪要设置（演示）"),
       },
     ],
-    [chat.summarizeNow, showToast],
+    [chat.summarizeNow, setDetailOpen, showToast],
   );
 
   const openSource = () => showToast("已定位到原文（演示）");
@@ -141,51 +154,14 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
 
   return (
     <div className={styles.panel}>
-      {showHeader ? (
+      {showHeader && (
         <SidebarHeader
           onPip={() => (onPopOut ? onPopOut() : showToast("已在独立窗口打开（演示）"))}
           menuItems={menuItems}
           onClose={onClose}
           onTitleClick={() => setDetailOpen(true)}
           titleTooltip="打开元宝 Agent 详情"
-          titleStatus={
-            <>
-              <TaskDots running={enabledTaskCount > 0} />
-              <span>{enabledTaskCount > 0 ? `正在记录 · ${enabledTaskCount}项任务` : "已暂停自动任务"}</span>
-            </>
-          }
         />
-      ) : (
-        /* 多页签 / 独立浮窗模式下的方案 A 顶部 Agent 状态与详情入口（位于头部，不在输入框上方） */
-        <div className={styles.headerStripWrap}>
-          <Pressable
-            className={styles.headerStrip}
-            onClick={() => setDetailOpen(true)}
-            ariaLabel="查看元宝 Agent 详情与自动任务"
-            title="打开元宝 Agent 详情"
-          >
-            <span className={styles.headerStripLeft}>
-              <TaskDots running={enabledTaskCount > 0} />
-              <span className={styles.headerStripText}>
-                {enabledTaskCount > 0
-                  ? `正在记录会议 · ${enabledTaskCount}项自动任务运行中`
-                  : "自动任务已暂停 · 点击管理"}
-              </span>
-            </span>
-            <span className={styles.headerStripRight}>
-              <span>详情</span>
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                <path
-                  d="M4.4 2.8 7.6 6 4.4 9.2"
-                  stroke="currentColor"
-                  strokeWidth="1.35"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </span>
-          </Pressable>
-        </div>
       )}
 
       {/* 消息流与底栏叠在一起：对话可以滚到底栏后面，被渐变底一点点盖掉 */}
@@ -212,12 +188,22 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
         </MessageStream>
 
         <div className={styles.footer} ref={footerRef}>
-          {/* 仅保留「推荐指令」，严守方案 A 不在输入框上方放置任务入口 */}
+          {/* 输入框上方一行：左「推荐指令」、右「进行中任务」（按 feat/single-window-base 还原） */}
           <div className={styles.statusRow}>
             <QuickCommandEntry
-              expanded={commandsOpen}
-              onExpandedChange={setCommandsOpen}
+              expanded={openPanel === "commands"}
+              onExpandedChange={(next) => setOpenPanel(next ? "commands" : null)}
+              hidden={openPanel === "tasks"}
               onPick={send}
+            />
+            <TaskEntry
+              tasks={AGENT_TASKS}
+              runningCount={RUNNING_TASK_COUNT}
+              expanded={openPanel === "tasks"}
+              onExpandedChange={(next) => setOpenPanel(next ? "tasks" : null)}
+              hidden={openPanel === "commands"}
+              onOpenTask={setActiveTask}
+              onOpenAgentDetail={() => setDetailOpen(true)}
             />
           </div>
           <ChatInput
