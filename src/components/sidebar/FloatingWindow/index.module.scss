@@ -19,14 +19,14 @@
   transition: none;
 }
 
+/* 对齐 Figma 582:62255：高 44、padding 8、白底无分割线 */
 .titleBar {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 46px;
-  padding: 0 12px 0 14px;
-  border-bottom: 0.5px solid var(--wm-color-outline-tertiary);
+  height: 44px;
+  padding: 8px;
   background-color: var(--wm-color-background-quaternary);
   cursor: grab;
   user-select: none;
@@ -40,17 +40,23 @@
 .title {
   display: flex;
   align-items: center;
-  gap: 6px;
   min-width: 0;
 }
 
+.titleStatic,
 .titleButton {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 3px 6px 3px 4px;
-  margin-left: -4px;
-  border-radius: 7px;
+  height: 28px;
+  padding: 0 6px;
+  border-radius: 6px;
+
+  & > * + * {
+    margin-left: 4px;
+  }
+}
+
+.titleButton {
   color: var(--wm-color-text-tertiary);
   cursor: pointer;
   outline: none;
@@ -66,43 +72,47 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 0 0 auto;
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
 }
 
+/* Figma 582:62273：12px / 14px 400 #000000，letter-spacing 0.2px */
 .label {
-  font-size: 13px;
-  line-height: 18px;
-  font-weight: 600;
-  color: var(--wm-color-text-title);
+  font-size: 12px;
+  line-height: 14px;
+  font-weight: 400;
+  letter-spacing: 0.2px;
+  color: var(--wm-color-text-primary);
   white-space: nowrap;
-}
-
-.pill {
-  padding: 1px 6px;
-  border-radius: 999px;
-  font-size: 10.5px;
-  line-height: 15px;
-  color: var(--wm-color-text-tertiary);
-  background-color: var(--wm-color-agent-surface);
 }
 
 .actions {
   display: flex;
   align-items: center;
-  gap: 4px;
+
+  & > * + * {
+    margin-left: 2px;
+  }
 }
 
+/* 与停靠态 Chrome 页签操作按钮一致：28×28、圆角 6 */
 .actionButton {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   border-radius: 6px;
   color: var(--wm-color-text-secondary);
   cursor: pointer;
   outline: none;
   transition: background-color 120ms ease;
+
+  & > svg {
+    display: block;
+    flex: 0 0 auto;
+  }
 
   &:hover,
   &:focus-visible {

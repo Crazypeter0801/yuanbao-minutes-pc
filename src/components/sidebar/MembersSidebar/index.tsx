@@ -58,7 +58,7 @@ export const MembersSidebar: FC<MembersSidebarProps> = ({ showHeader, onClose, o
     <div className={styles.panel}>
       {showHeader && (
         <SidebarHeader
-          icon={SIDE_APPS.members.icon}
+          icon={SIDE_APPS.members.icon585On}
           title={SIDE_APPS.members.title}
           onPip={() => (onPopOut ? onPopOut() : showToast('管理成员已在独立窗口打开（演示）'))}
           menuItems={menuItems}

@@ -1,83 +1,75 @@
-/* 撑满侧栏宽度，高 60、padding 12 16（单开侧栏头部） */
+/* 单侧栏头部（Figma 582:62255）：高 44、padding 8、白底无分割线 */
 .header {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  height: 60px;
-  padding: 10px 16px;
+  height: 44px;
+  padding: 8px;
+  background-color: var(--wm-color-background-quaternary);
 }
 
+/* 左侧标题组（Figma 582:62259）：高 28、padding 0 6、子元素间距 4 */
 .title {
   display: flex;
   align-items: center;
   min-width: 0;
-  padding: 4px 10px 4px 4px;
-  border-radius: 12px;
-  gap: 7px;
+  height: 28px;
+  padding: 0 6px;
+  border-radius: 6px;
+
+  & > * + * {
+    margin-left: 4px;
+  }
 }
 
 .titleClickable {
   cursor: pointer;
   outline: none;
-  transition: background-color 120ms ease;
+  transition: background-color 120ms ease-in-out;
 
   &:hover,
   &:focus-visible {
-    background-color: var(--wm-color-agent-surface);
+    background-color: var(--wm-color-control-hover);
   }
 }
 
 .logo {
-  flex: 0 0 24px;
-  display: flex;
-  width: 24px;
-  height: 24px;
-}
-
-.titleMeta {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.titleRow {
+  flex: 0 0 20px;
   display: flex;
   align-items: center;
-  gap: 2px;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
 }
 
+/* Figma 582:62273：12px / 14px 400 #000000，letter-spacing 0.2px */
 .titleText {
-  font-size: 13px;
-  line-height: 18px;
-  font-weight: 600;
-  color: var(--wm-color-text-title);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 12px;
+  line-height: 14px;
+  font-weight: 400;
+  letter-spacing: 0.2px;
+  color: var(--wm-color-text-primary);
 }
 
 .chevron {
   flex: 0 0 auto;
-  color: var(--wm-color-text-tertiary);
-}
-
-.titleStatus {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 5px;
-  margin-top: 1px;
-  font-size: 11px;
-  line-height: 15px;
-  color: var(--wm-color-text-tertiary);
-  white-space: nowrap;
+  margin-left: 2px;
 }
 
+/* 右侧操作区（Figma 582:62274）：三个 28×28、圆角 6、间距 2 */
 .actions {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
 
   & > * + * {
-    margin-left: 4px;
+    margin-left: 2px;
   }
 }
 
@@ -85,15 +77,26 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   border-radius: 6px;
   cursor: pointer;
+  outline: none;
   transition: background-color 120ms ease-in-out;
 
-  &:hover {
-    background-color: var(--wm-color-control-fill);
+  & > svg {
+    display: block;
+    flex: 0 0 auto;
   }
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--wm-color-control-hover);
+  }
+}
+
+.iconButtonActive {
+  background-color: var(--wm-color-control-hover);
 }
 
 .moreWrap {

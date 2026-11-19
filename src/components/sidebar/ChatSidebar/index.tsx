@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useRef, useState, type FC, type KeyboardEvent } from 'react';
-import IconChatEmoji from '@/assets/d2c/icons/sidetabs/icon-chat-emoji';
-import IconChatFile from '@/assets/d2c/icons/sidetabs/icon-chat-file';
-import IconChatImage from '@/assets/d2c/icons/sidetabs/icon-chat-image';
+import IconChat556Chevron from '@/assets/d2c/icons/chat556/icon-chat556-chevron';
+import IconChat556Emoji from '@/assets/d2c/icons/chat556/icon-chat556-emoji';
+import IconChat556File from '@/assets/d2c/icons/chat556/icon-chat556-file';
+import IconChat556Notice from '@/assets/d2c/icons/chat556/icon-chat556-notice';
+import IconChat556Settings from '@/assets/d2c/icons/chat556/icon-chat556-settings';
 import IconChatSend from '@/assets/d2c/icons/sidetabs/icon-chat-send';
-import { Toast } from '@/components/common/Toast';
-import { Pressable } from '@/components/common/Pressable';
 import type { PopMenuItem } from '@/components/common/PopMenu';
+import { Pressable } from '@/components/common/Pressable';
+import { Toast } from '@/components/common/Toast';
 import { MessageStream } from '@/components/sidebar/MessageStream';
 import { SidebarHeader } from '@/components/sidebar/SidebarHeader';
 import { SIDE_APPS } from '@/components/sidebar/SideDock/apps';
@@ -26,10 +28,10 @@ interface ChatSidebarProps {
 /** 输入框最多撑到 4 行（14/20） */
 const MAX_INPUT_HEIGHT = 80;
 
+const RECIPIENTS = ['所有人', '主持人', 'Carmen', 'Tinashe(蒂娜雪)'] as const;
+
 /**
  * 一条消息（Figma 接收消息_01 / 发送消息_01 / Sent Messages）
- * 别人的：头像 32 在左，名字 11/14 + 浅灰泡；自己的：深灰泡白字在右、头像在最右，不显示名字。
- * 左右各留 38 不让气泡贴到对侧（图片消息留 118，图 190×190）。
  */
 const ChatRow: FC<{ entry: Exclude<ChatEntry, { kind: 'time' }> }> = ({ entry }) => {
   const rowClass = [styles.row, entry.self ? styles.rowSelf : '', entry.kind === 'image' ? styles.rowImage : '']
@@ -64,14 +66,17 @@ const ChatRow: FC<{ entry: Exclude<ChatEntry, { kind: 'time' }> }> = ({ entry })
 };
 
 /**
- * 会中聊天侧栏（Figma 505:12264 第三张 · 504:12069）
- * 消息列表（padding 10 20、间距 16）→ 底部输入框（344 宽、圆角 20）：
- * 第一行「说点什么」，第二行左侧 表情 / 图片 / 文件，右侧圆形发送。Enter 发送，消息同时以弹幕上屏。
+ * 会中聊天侧栏（底部输入框按 Figma 556:9748 还原）
+ * 底部白卡（圆角 20、padding 12 10 10、0.5px 8% 黑描边 + 0 4 20 4% 落影）：
+ * 第一行「说点什么」，第二行左侧「发给 所有人 ⌄」，右侧 表情 / 文件 / 公告 / 设置（有输入时支持 Enter 或点发送）。
  */
 export const ChatSidebar: FC<ChatSidebarProps> = ({ chat, showHeader, onClose, onPopOut, focusSignal }) => {
   const { toast, showToast } = useToast();
   const [value, setValue] = useState('');
+  const [recipient, setRecipient] = useState<(typeof RECIPIENTS)[number]>('所有人');
+  const [recipientOpen, setRecipientOpen] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const recipientRef = useRef<HTMLDivElement>(null);
   const canSend = value.trim().length > 0;
 
   useEffect(() => {
@@ -80,7 +85,6 @@ export const ChatSidebar: FC<ChatSidebarProps> = ({ chat, showHeader, onClose, o
     }
   }, [focusSignal]);
 
-  // 随内容长高：一行 20，最多 4 行
   useEffect(() => {
     const input = inputRef.current;
     if (!input) {
@@ -89,6 +93,28 @@ export const ChatSidebar: FC<ChatSidebarProps> = ({ chat, showHeader, onClose, o
     input.style.height = 'auto';
     input.style.height = `${Math.min(MAX_INPUT_HEIGHT, Math.max(20, input.scrollHeight))}px`;
   }, [value]);
+
+  useEffect(() => {
+    if (!recipientOpen) {
+      return undefined;
+    }
+    const onPointerDown = (event: PointerEvent) => {
+      if (!recipientRef.current?.contains(event.target as Node)) {
+        setRecipientOpen(false);
+      }
+    };
+    const onKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setRecipientOpen(false);
+      }
+    };
+    document.addEventListener('pointerdown', onPointerDown);
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [recipientOpen]);
 
   const menuItems = useMemo<PopMenuItem[]>(
     () => [
@@ -130,7 +156,7 @@ export const ChatSidebar: FC<ChatSidebarProps> = ({ chat, showHeader, onClose, o
     <div className={styles.panel}>
       {showHeader && (
         <SidebarHeader
-          icon={SIDE_APPS.chat.icon}
+          icon={SIDE_APPS.chat.icon585On}
           title={SIDE_APPS.chat.title}
           onPip={() => (onPopOut ? onPopOut() : showToast('聊天已在独立窗口打开（演示）'))}
           menuItems={menuItems}
@@ -156,6 +182,7 @@ export const ChatSidebar: FC<ChatSidebarProps> = ({ chat, showHeader, onClose, o
         ))}
       </MessageStream>
 
+      {/* 底部输入框（Figma 556:9748） */}
       <div className={styles.compose} onClick={() => inputRef.current?.focus()}>
         <div className={styles.inputRow}>
           <textarea
@@ -170,19 +197,43 @@ export const ChatSidebar: FC<ChatSidebarProps> = ({ chat, showHeader, onClose, o
             onKeyDown={handleKeyDown}
           />
         </div>
+
         <div className={styles.toolbar}>
-          <div className={styles.tools}>
-            <Pressable className={styles.tool} onClick={insertEmoji} ariaLabel="表情" title="表情" stopPropagation>
-              <IconChatEmoji />
-            </Pressable>
+          <div className={styles.recipientWrap} ref={recipientRef}>
+            <span className={styles.recipientPrefix}>发给</span>
             <Pressable
-              className={styles.tool}
-              onClick={() => showToast('发送图片（演示）')}
-              ariaLabel="图片"
-              title="图片"
+              className={`${styles.recipientTrigger} ${recipientOpen ? styles.recipientTriggerActive : ''}`}
+              onClick={() => setRecipientOpen((open) => !open)}
+              ariaLabel={`发送对象：${recipient}`}
+              ariaExpanded={recipientOpen}
               stopPropagation
             >
-              <IconChatImage />
+              <span className={styles.recipientName}>{recipient}</span>
+              <span className={`${styles.recipientChevron} ${recipientOpen ? styles.recipientChevronOpen : ''}`}>
+                <IconChat556Chevron width={11} height={6} />
+              </span>
+            </Pressable>
+            {recipientOpen && (
+              <div className={styles.recipientMenu} role="menu" aria-label="选择发送对象" onClick={(e) => e.stopPropagation()}>
+                {RECIPIENTS.map((name) => (
+                  <Pressable
+                    key={name}
+                    className={`${styles.recipientOption} ${recipient === name ? styles.recipientOptionActive : ''}`}
+                    onClick={() => {
+                      setRecipient(name);
+                      setRecipientOpen(false);
+                    }}
+                  >
+                    {name}
+                  </Pressable>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className={styles.tools}>
+            <Pressable className={styles.tool} onClick={insertEmoji} ariaLabel="表情" title="表情" stopPropagation>
+              <IconChat556Emoji width={16} height={16} />
             </Pressable>
             <Pressable
               className={styles.tool}
@@ -191,19 +242,38 @@ export const ChatSidebar: FC<ChatSidebarProps> = ({ chat, showHeader, onClose, o
               title="文件"
               stopPropagation
             >
-              <IconChatFile />
+              <IconChat556File width={24} height={24} />
             </Pressable>
+            <Pressable
+              className={styles.tool}
+              onClick={() => showToast('发布会议公告（演示）')}
+              ariaLabel="公告"
+              title="公告"
+              stopPropagation
+            >
+              <IconChat556Notice width={24} height={24} />
+            </Pressable>
+            <Pressable
+              className={styles.tool}
+              onClick={() => showToast('打开聊天设置（演示）')}
+              ariaLabel="聊天设置"
+              title="聊天设置"
+              stopPropagation
+            >
+              <IconChat556Settings width={24} height={24} />
+            </Pressable>
+            {canSend && (
+              <Pressable
+                className={styles.send}
+                onClick={submit}
+                ariaLabel="发送"
+                title="发送（Enter）"
+                stopPropagation
+              >
+                <IconChatSend width={24} height={24} />
+              </Pressable>
+            )}
           </div>
-          <Pressable
-            className={`${styles.send} ${canSend ? styles.sendEnabled : ''}`}
-            onClick={submit}
-            disabled={!canSend}
-            ariaLabel="发送"
-            title={canSend ? '发送（Enter）' : '请输入内容'}
-            stopPropagation
-          >
-            <IconChatSend />
-          </Pressable>
         </div>
       </div>
 

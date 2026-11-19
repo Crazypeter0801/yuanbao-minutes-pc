@@ -1,5 +1,5 @@
 import { useRef, useState, type FC, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
-import IconTabClose from '@/assets/d2c/icons/sidetabs/icon-tab-close';
+import IconTab585Close from '@/assets/d2c/icons/sidetabs585/icon-tab585-close';
 import { Pressable } from '@/components/common/Pressable';
 import { SIDE_APPS, type SideAppId } from '@/components/sidebar/SideDock/apps';
 import styles from './index.module.scss';
@@ -21,7 +21,7 @@ interface FloatingWindowProps {
 
 /**
  * 从侧栏弹出（浮出）后的独立窗口：
- * 保持 376×779 卡片尺寸，按住顶部条可自由拖拽，右上角支持一键吸附回侧栏或关闭。
+ * 保持 376×779 卡片尺寸，按住顶部条可自由拖拽，右上角支持一键吸附回侧栏或关闭（与停靠态关闭图标一致）。
  */
 export const FloatingWindow: FC<FloatingWindowProps> = ({
   id,
@@ -101,19 +101,18 @@ export const FloatingWindow: FC<FloatingWindowProps> = ({
               title={`查看${meta.title} Agent 详情`}
               stopPropagation
             >
-              <span className={styles.icon}>{meta.icon505On}</span>
+              <span className={styles.icon}>{meta.icon585On}</span>
               <span className={styles.label}>{meta.title}</span>
               <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
                 <path d="M4.4 2.8 7.6 6 4.4 9.2" stroke="currentColor" strokeWidth="1.35" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </Pressable>
           ) : (
-            <>
-              <span className={styles.icon}>{meta.icon505On}</span>
+            <div className={styles.titleStatic}>
+              <span className={styles.icon}>{meta.icon585On}</span>
               <span className={styles.label}>{meta.title}</span>
-            </>
+            </div>
           )}
-          <span className={styles.pill}>独立窗口</span>
         </div>
         <div className={styles.actions} data-nodrag>
           <Pressable
@@ -122,7 +121,7 @@ export const FloatingWindow: FC<FloatingWindowProps> = ({
             ariaLabel={`将${meta.title}吸附回侧栏`}
             title="吸附回侧栏"
           >
-            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <rect x="2" y="3" width="12" height="10" rx="2" stroke="currentColor" strokeWidth="1.25" />
               <path d="M10 3v10" stroke="currentColor" strokeWidth="1.25" />
               <path d="M7.6 8H4.8m0 0 1.4-1.4M4.8 8l1.4 1.4" stroke="currentColor" strokeWidth="1.15" strokeLinecap="round" strokeLinejoin="round" />
@@ -134,7 +133,7 @@ export const FloatingWindow: FC<FloatingWindowProps> = ({
             ariaLabel={`关闭${meta.title}独立窗口`}
             title="关闭"
           >
-            <IconTabClose width={16} height={17} />
+            <IconTab585Close width={28} height={28} />
           </Pressable>
         </div>
       </header>

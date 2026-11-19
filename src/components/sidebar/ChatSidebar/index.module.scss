@@ -166,11 +166,106 @@
   }
 }
 
-/* 工具行：左 表情 / 图片 / 文件（28、间距 4），右 发送 28 */
+/* 工具行（Figma 556:9825）：左「发给 所有人 ⌄」，右 表情 / 文件 / 公告 / 设置（24×24、间距 12） */
 .toolbar {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
+}
+
+.recipientWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0 6px;
+}
+
+.recipientPrefix {
+  font-size: 12px;
+  line-height: 20px;
+  font-weight: 400;
+  color: var(--wm-color-text-primary);
+  white-space: nowrap;
+}
+
+.recipientTrigger {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 2px;
+  padding: 1px 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease-in-out;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--wm-color-control-hover);
+  }
+}
+
+.recipientTriggerActive {
+  background-color: var(--wm-color-control-hover);
+}
+
+.recipientName {
+  font-size: 12px;
+  line-height: 20px;
+  font-weight: 400;
+  color: var(--wm-color-text-primary);
+  white-space: nowrap;
+}
+
+.recipientChevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-left: 3px;
+  transition: transform 150ms ease;
+}
+
+.recipientChevronOpen {
+  transform: rotate(180deg);
+}
+
+.recipientMenu {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 6px;
+  z-index: 20;
+  min-width: 136px;
+  padding: 4px;
+  border-radius: 10px;
+  background-color: var(--wm-color-background-quaternary);
+  box-shadow: var(--wm-shadow-input-menu), inset 0 0 0 0.5px var(--wm-color-line);
+}
+
+.recipientOption {
+  display: flex;
+  align-items: center;
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--wm-color-text-secondary);
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--wm-color-control-hover);
+    color: var(--wm-color-text-primary);
+  }
+}
+
+.recipientOptionActive {
+  background-color: var(--wm-color-background-septenary);
+  color: var(--wm-color-text-primary);
+  font-weight: 500;
 }
 
 .tools {
@@ -178,23 +273,26 @@
   align-items: center;
 
   & > * + * {
-    margin-left: 4px;
+    margin-left: 12px;
   }
 }
 
+/* Figma 556:9838 / 556:9845 / 556:9848 / 556:10124：24×24、圆角 4 */
 .tool {
   display: flex;
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  /* 导出 SVG 是 currentColor，稿里为黑色 */
-  color: var(--wm-color-text-primary);
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  color: var(--wm-color-text-secondary);
   cursor: pointer;
   outline: none;
   transition: background-color 120ms ease-in-out;
 
   & > svg {
     display: block;
+    flex: 0 0 auto;
   }
 
   &:hover,
@@ -203,23 +301,21 @@
   }
 }
 
-/* 发送：稿里是置灰态（#D3D6DB 圆底 + 白箭头）；有内容时圆底换成发送气泡同色 */
+/* 有输入文本时出现发送按钮 */
 .send {
   display: flex;
-  width: 28px;
-  height: 28px;
-  border-radius: 14px;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 12px;
   color: var(--wm-color-text-senary);
-  cursor: not-allowed;
+  cursor: pointer;
   outline: none;
 
   & > svg {
     display: block;
   }
-}
-
-.sendEnabled {
-  cursor: pointer;
 
   & > svg > path:first-child {
     fill: var(--wm-color-chat-bubble-send);
