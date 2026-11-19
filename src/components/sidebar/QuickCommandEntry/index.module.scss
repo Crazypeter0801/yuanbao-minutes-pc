@@ -59,3 +59,25 @@
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+
+/* 展开态标题栏右上角关闭按钮：与 24px 标题行垂直居中对齐 */
+.closeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  color: var(--wm-color-text-secondary);
+  cursor: pointer;
+  outline: none;
+  transition:
+    background-color 120ms ease-in-out,
+    color 120ms ease-in-out;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--wm-color-control-hover);
+    color: var(--wm-color-text-primary);
+  }
+}

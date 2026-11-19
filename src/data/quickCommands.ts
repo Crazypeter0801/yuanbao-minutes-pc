@@ -18,14 +18,14 @@ export const QUICK_COMMANDS: QuickCommandItem[] = [
   {
     id: 'what-did-i-miss',
     title: '我错过了什么',
-    description: '总结前 5～10 分钟的讨论重点',
-    prompt: '我错过了什么？帮我总结前 5～10 分钟的讨论重点',
+    description: '总结前 5 分钟的讨论重点',
+    prompt: '我错过了什么？帮我总结前 5 分钟的讨论重点',
   },
   {
     id: 'make-me-sound-smart',
     title: '帮我聪明发言',
-    description: '提供 2 条有见地的观点或提问',
-    prompt: '帮我聪明发言：结合当前讨论给我 2 条有见地的观点或提问',
+    description: '提供有见地的观点或提问',
+    prompt: '帮我聪明发言：结合当前讨论给我有见地的观点或提问',
   },
   {
     id: 'suggest-questions',

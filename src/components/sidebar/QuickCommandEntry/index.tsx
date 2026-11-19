@@ -47,6 +47,24 @@ export const QuickCommandEntry: FC<QuickCommandEntryProps> = ({
     maxHeight={320}
     alignHeaderToContent
     hideSummaryWhenExpanded
+    headerAction={
+      <Pressable
+        className={styles.closeBtn}
+        onClick={() => onExpandedChange(false)}
+        ariaLabel="关闭推荐指令"
+        title="关闭"
+        stopPropagation
+      >
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <path
+            d="M3.5 3.5 10.5 10.5M10.5 3.5 3.5 10.5"
+            stroke="currentColor"
+            strokeWidth="1.35"
+            strokeLinecap="round"
+          />
+        </svg>
+      </Pressable>
+    }
   >
     <div className={styles.list}>
       {QUICK_COMMANDS.map((command) => (

@@ -1,4 +1,5 @@
 import { useRef, useState, type FC, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
+import IconTab582DockBack from '@/assets/d2c/icons/sidetabs585/icon-tab582-dock-back';
 import IconTab585Close from '@/assets/d2c/icons/sidetabs585/icon-tab585-close';
 import { Pressable } from '@/components/common/Pressable';
 import { SIDE_APPS, type SideAppId } from '@/components/sidebar/SideDock/apps';
@@ -118,14 +119,10 @@ export const FloatingWindow: FC<FloatingWindowProps> = ({
           <Pressable
             className={styles.actionButton}
             onClick={onDockBack}
-            ariaLabel={`将${meta.title}吸附回侧栏`}
-            title="吸附回侧栏"
+            ariaLabel={`将${meta.title}合并到主窗口`}
+            title="合并到主窗口"
           >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <rect x="2" y="3" width="12" height="10" rx="2" stroke="currentColor" strokeWidth="1.25" />
-              <path d="M10 3v10" stroke="currentColor" strokeWidth="1.25" />
-              <path d="M7.6 8H4.8m0 0 1.4-1.4M4.8 8l1.4 1.4" stroke="currentColor" strokeWidth="1.15" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            <IconTab582DockBack width={28} height={28} />
           </Pressable>
           <Pressable
             className={styles.actionButton}
