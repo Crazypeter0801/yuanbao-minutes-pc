@@ -1,0 +1,56 @@
+import React, { useId } from 'react';
+
+interface IconTab574ChatProps {
+  /** 图标宽度，默认与 Figma 设计稿一致 */
+  width?: number;
+  /** 图标高度，默认与 Figma 设计稿一致 */
+  height?: number;
+  /** 图标主题色，默认取 Figma 574:20876 fill (#4E5461 / wm_color_text_secondary) */
+  color?: string;
+  /** 自定义 className */
+  className?: string;
+  [key: string]: unknown;
+}
+
+/** IconTab574Chat - Figma nodeId: 574:20876 (14x14 optical inside 20x20 box, #4E5461) */
+const IconTab574Chat: React.FC<IconTab574ChatProps> = React.memo(({
+  width = 20,
+  height = 20,
+  color = '#4E5461',
+  className,
+  ...props
+}) => {
+  const maskId = useId();
+  return (
+    <svg
+      width={width}
+      height={height}
+      viewBox="0 0 20 20"
+      fill="none"
+      className={className}
+      {...props}
+    >
+      <defs>
+        <mask id={maskId}>
+          <rect width="20" height="20" fill="white" />
+          <g transform="translate(0.67 0.67) scale(0.7778)">
+            <path
+              d="M8.36426 9.85742C8.94155 9.85758 9.40911 10.3371 9.40918 10.9287C9.40918 11.5203 8.9416 11.9998 8.36426 12C7.78679 12 7.31836 11.5204 7.31836 10.9287C7.31843 10.337 7.78683 9.85742 8.36426 9.85742ZM11.999 9.85742C12.5762 9.85768 13.0439 10.3372 13.0439 10.9287C13.0439 11.5203 12.5763 11.9997 11.999 12C11.4216 12 10.9531 11.5204 10.9531 10.9287C10.9532 10.337 11.4216 9.85742 11.999 9.85742ZM15.6318 9.85742C16.2091 9.85758 16.6767 10.3371 16.6768 10.9287C16.6768 11.5203 16.2092 11.9998 15.6318 12C15.0544 12 14.5859 11.5204 14.5859 10.9287C14.586 10.337 15.0544 9.85742 15.6318 9.85742Z"
+              fill="black"
+            />
+          </g>
+        </mask>
+      </defs>
+      <g transform="translate(0.67 0.67) scale(0.7778)" mask={`url(#${maskId})`}>
+        <path
+          d="M12 3.27197C16.9705 3.27197 20.9998 6.96261 21 11.5151C21 16.0678 16.9706 19.7583 12 19.7583C11.074 19.7583 10.1814 19.6284 9.34082 19.3901C9.15134 19.3364 8.94889 19.3415 8.76562 19.4136L5.58398 20.6675C4.97005 20.9093 4.32431 20.3953 4.42188 19.7427L4.83789 16.9585C4.87435 16.7139 4.80164 16.4667 4.65039 16.271C3.61169 14.9272 3 13.2869 3 11.5151C3.00015 6.96261 7.02953 3.27197 12 3.27197Z"
+          fill={color}
+        />
+      </g>
+    </svg>
+  );
+});
+
+IconTab574Chat.displayName = 'IconTab574Chat';
+
+export default IconTab574Chat;
