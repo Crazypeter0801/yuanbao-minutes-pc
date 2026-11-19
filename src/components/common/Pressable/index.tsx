@@ -15,6 +15,8 @@ interface PressableProps {
   as?: 'div' | 'span';
   /** 阻止点击冒泡（嵌在另一个可点击区域里时使用） */
   stopPropagation?: boolean;
+  /** 展开 / 收起类按钮的当前状态 */
+  ariaExpanded?: boolean;
   children: ReactNode;
 }
 
@@ -30,6 +32,7 @@ export const Pressable: FC<PressableProps> = ({
   disabled = false,
   as: Tag = 'div',
   stopPropagation = false,
+  ariaExpanded,
   children,
 }) => {
   const handleKeyDown = (event: KeyboardEvent<HTMLElement>) => {
@@ -60,6 +63,7 @@ export const Pressable: FC<PressableProps> = ({
       tabIndex={disabled ? -1 : 0}
       aria-label={ariaLabel}
       aria-disabled={disabled || undefined}
+      aria-expanded={ariaExpanded}
       title={title}
       className={className}
       onClick={handleClick}

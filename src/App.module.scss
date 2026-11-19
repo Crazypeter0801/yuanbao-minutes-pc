@@ -1,14 +1,14 @@
+/*
+ * 页面：Tahoe 壁纸铺满，主窗口 + 控制台整组居中；上下留 80、左右 24，最小 1600×920。
+ * 壁纸画在 .page 自身（不用 fixed），导入 Figma code layer 时也能完整显示。
+ */
 .page {
-  position: relative;
-  min-height: 100vh;
-  padding: 40px 32px 64px;
-}
-
-/* 固定壁纸：滚动方案时背景不动 */
-.backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1600px;
+  min-height: 100%;
+  padding: 80px 24px;
   background-color: var(--wm-color-stage-background);
   background-image: url('./assets/background/tahoe-light.jpg');
   background-repeat: no-repeat;
@@ -16,10 +16,47 @@
   background-size: cover;
 }
 
-.list {
+/*
+ * 主窗口 + 右侧演示控制台排成一行，整组在浏览器里上下左右居中；控制台与主窗口垂直居中、间距 16。
+ */
+.frame {
   position: relative;
-  z-index: 1;
+  flex: 0 0 auto;
   display: flex;
-  flex-direction: column;
   align-items: center;
+}
+
+/* 演示控制台：跟在主窗口右边 16，竖向排列 */
+.demoBar {
+  flex: 0 0 auto;
+  margin-left: 16px;
+  white-space: nowrap;
+}
+
+/* 会议区容器：投票弹窗以它为定位基准，只覆盖左侧，不盖住元宝侧栏 */
+.meetingArea {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+}
+
+/* 会议区与侧栏之间的 10 由侧栏槽位自己带（收起时宽 0，会议区占满） */
+
+/*
+ * 入会极简模式（Figma 215:19035）：1338×795（操作栏 40 + 视频布局 691 + 会中底栏 64）、
+ * 圆角 20、左右各留 8，底色 #F3F3F4 95% + 20px 背景模糊；会议区与右侧元宝卡片并排，中间 10。
+ */
+.window {
+  position: relative;
+  display: flex;
+  flex: 0 0 auto;
+  width: 1338px;
+  height: 795px;
+  padding: 0 8px;
+  overflow: hidden;
+  border-radius: 20px;
+  background-color: var(--wm-color-window-translucent);
+  backdrop-filter: blur(20px);
+  box-shadow: var(--wm-shadow-canvas);
 }

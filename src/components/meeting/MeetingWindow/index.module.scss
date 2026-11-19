@@ -1,9 +1,7 @@
 .window {
-  flex: 0 0 auto;
+  flex: 1 1 auto;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  width: 998px;
-  height: 674px;
-  overflow: hidden;
-  background-color: var(--wm-color-page-background);
+  height: 100%;
 }

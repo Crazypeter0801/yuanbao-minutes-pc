@@ -1,45 +1,30 @@
-/* padding 0 16 16，三段 space-between（Figma layout_KKXALN） */
+/* 会中底栏：高 64、右侧留 4、左侧贴边；中间 48 高的按钮组上下各留 8（Figma 416:20031） */
 .toolbar {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  height: 52px;
-  padding: 0 16px 16px;
+  height: 64px;
+  padding: 0 4px 0 0;
 }
 
-.interact {
+/*
+ * 左侧一组：三个图标 + 分隔线 + 亮度（Figma 520:13382）。
+ * 稿里标的是右侧留 100，但 416:20031 导出图实测中间按钮组起点在 272（左组宽 168），
+ * 以导出图为准取 104，让中间组与稿逐像素对齐。
+ */
+.side {
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
+  padding-right: 104px;
 
   & > * + * {
     margin-left: 8px;
   }
 }
 
-.input {
-  display: flex;
-  align-items: center;
-  width: 120px;
-  height: 36px;
-  padding: 6px 16px 6px 8px;
-  border-radius: 8px;
-  background-color: var(--wm-color-control-fill);
-}
-
-.inputText {
-  flex: 1;
-  min-width: 0;
-  margin-left: 4px;
-  overflow: hidden;
-  font-size: 12px;
-  line-height: 16px;
-  color: var(--wm-color-text-tertiary);
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.controls {
+/* 三个 36×36 图标按钮，间距 4（Figma 520:13384） */
+.sideIcons {
   display: flex;
   align-items: center;
 
@@ -48,16 +33,83 @@
   }
 }
 
-.control {
+/* 图标位：36×36、圆角 8，内容居中（Figma 520:13385 / 520:13391 / 520:13401） */
+.iconBox {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 54px;
+  width: 36px;
   height: 36px;
   border-radius: 8px;
-  background-color: var(--wm-color-control-fill);
+}
+
+/*
+ * 表情切图按设计稿节点 1:1 还原：节点是 36×36，导出为 4 倍图（144×144），
+ * 这里就显示 36×36。图里的透明留白与节点一致，可见图形自然落在稿里的位置。
+ */
+.emojiHi,
+.emojiSmile {
+  display: block;
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  user-select: none;
+}
+
+/*
+ * 1×16 分隔线（Figma 520:13400）：Figma 里是 0 宽的竖线 + 1px 描边，不占布局宽度，
+ * 所以用 -1px 右边距抵掉自身宽度，亮度按钮紧跟在 8px 之后（导出图实测亮度框起点 132）。
+ */
+.divider {
+  flex: 0 0 auto;
+  width: 1px;
+  height: 16px;
+  margin-right: -1px;
+  background-color: var(--wm-color-line);
+}
+
+/* 中间一组按钮：高 48、居中、间距 10（Figma 416:20057） */
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
 
   & > * + * {
-    margin-left: 4px;
+    margin-left: 10px;
   }
+}
+
+/* 单个按钮位：60×40、圆角 20（Figma 416:20058 等，图已含图标与箭头） */
+.slot {
+  flex: 0 0 auto;
+  display: flex;
+  width: 60px;
+  height: 40px;
+  border-radius: 20px;
+
+  & > svg {
+    display: block;
+  }
+}
+
+/* 可点击的按钮（元宝）：hover 叠一层浅灰，形状与按钮位一致 */
+.slotAction {
+  cursor: pointer;
+  outline: none;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--wm-color-control-hover);
+  }
+}
+
+/* 结束会议：占满剩余宽度、靠右（Figma 416:20131，里面是 44×44 的圆） */
+.exit {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 0;
+  padding-left: 8px;
 }

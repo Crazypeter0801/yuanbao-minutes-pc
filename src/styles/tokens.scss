@@ -8,6 +8,8 @@
   --wm-color-text-primary: #000000;
   --wm-color-text-secondary: #4e5461;
   --wm-color-text-tertiary: #7b818f;
+  /* 附件 / 产物列表的次级信息（类型、体积），Figma 附件组件 text_tertiary = 40% 黑 */
+  --wm-color-text-quaternary: rgba(0, 0, 0, 0.4);
   --wm-color-text-disabled: #b0b6c3;
   --wm-color-text-senary: #ffffff;
   --wm-color-text-septenary: #0066ff;
@@ -26,6 +28,8 @@
   --wm-color-background-bubble: #ffffff;
   /* 用户提问气泡（设计稿未给，取品牌蓝 8% 与助手灰泡区分） */
   --wm-color-background-user-bubble: rgba(0, 102, 255, 0.08);
+  /* 人名胶囊底：正文中间出现，比 @ 胶囊淡一档，避免抢读 */
+  --wm-color-background-mention: rgba(0, 102, 255, 0.08);
   --wm-color-background-link-badge: #e6e8eb;
   --wm-color-background-sheet-mask: rgba(255, 255, 255, 0.72);
 
@@ -40,10 +44,29 @@
 
   /* 画布 / 控件（设计稿未给 token，按原值补充） */
   --wm-color-page-background: #f5f7fc;
+  /* V1 窗口底色（Figma 257:1540 fill） */
+  --wm-color-window-background: #f0f2f7;
+  --wm-color-video-placeholder: #d9d9d9;
+  --wm-color-name-tag: rgba(0, 0, 0, 0.4);
+  /* 顶部参会人条（Figma 317:5308） */
+  --wm-color-participant-tile: #e2e3e8;
+  --wm-color-participant-name-tag: rgba(255, 255, 255, 0.8);
+  /* 头像块上的名字胶囊：白 50%（Figma 292:38011 fill #FFFFFF80） */
+  --wm-color-tile-name-tag: rgba(255, 255, 255, 0.5);
+  --wm-color-participant-name: #303440;
+  --wm-color-speaking: #16d968;
+  /* 胶囊按钮 hover（仅元宝按钮可点） */
+  --wm-color-control-hover: rgba(0, 0, 0, 0.06);
   --wm-color-stage-background: #eef1f6;
   --wm-color-control-fill: rgba(0, 0, 0, 0.06);
   --wm-color-icon-strong: #373c48;
   --wm-color-brand-yuanbao: #00cc70;
+  /* 主操作蓝（发起投票等主按钮） */
+  --wm-color-brand-primary: #0066ff;
+  --wm-color-brand-primary-hover: #0052cc;
+  --wm-color-brand-primary-soft: rgba(0, 102, 255, 0.08);
+  /* 模态遮罩 */
+  --wm-color-scrim: rgba(8, 22, 44, 0.32);
 
   /* 渐隐：消息流顶部 / 底部输入区 */
   --wm-gradient-fade-top: linear-gradient(
@@ -58,29 +81,129 @@
     #ffffff 50%
   );
 
-  /* macOS 窗口控制按钮：上深下浅的竖向渐变 = 果冻质感（取色自设计稿 4x 导出） */
+  /* macOS 窗口控制按钮（Figma 215:19035 操作栏）：实色 + 内阴影堆出果冻质感 */
+  --wm-color-traffic-close: #fa9891;
+  --wm-color-traffic-minimize: #ffda66;
+  --wm-color-traffic-zoom: #ade392;
+
+  /* 旧版渐变（其它页面仍在用） */
   --wm-gradient-traffic-close: linear-gradient(180deg, #ff6d62 0%, #fa9088 100%);
   --wm-gradient-traffic-minimize: linear-gradient(180deg, #ffbb0c 0%, #ffd558 100%);
   --wm-gradient-traffic-zoom: linear-gradient(180deg, #6acf37 0%, #a3df84 100%);
 
-  /* 细描边 + 同色系外晕，让 12px 的圆点有体积又不发灰 */
-  --wm-shadow-traffic-close: inset 0 0 0 0.5px rgba(183, 45, 37, 0.28),
-    0 1px 2px rgba(224, 72, 60, 0.3);
-  --wm-shadow-traffic-minimize: inset 0 0 0 0.5px rgba(163, 108, 0, 0.26),
-    0 1px 2px rgba(201, 142, 0, 0.28);
-  --wm-shadow-traffic-zoom: inset 0 0 0 0.5px rgba(43, 128, 22, 0.26),
-    0 1px 2px rgba(74, 168, 46, 0.28);
+  /* 12px 圆点上把设计稿的多层内阴影等比收到 0.5px 描边 + 一点点落影，才有稿里的柔和感 */
+  --wm-shadow-traffic-close: inset 0 0 0 0.5px rgba(196, 0, 0, 0.18), 0 1px 1.5px rgba(0, 0, 0, 0.06);
+  --wm-shadow-traffic-minimize: inset 0 0 0 0.5px rgba(158, 110, 0, 0.18), 0 1px 1.5px rgba(0, 0, 0, 0.06);
+  --wm-shadow-traffic-zoom: inset 0 0 0 0.5px rgba(0, 86, 0, 0.16), 0 1px 1.5px rgba(0, 0, 0, 0.06);
 
   /* 阴影 */
   --wm-shadow-float: 0 4px 24px rgba(0, 0, 0, 0.06);
+  /* 胶囊 hover：只比静止态略微收紧、抬起一点点，不抢视觉 */
+  --wm-shadow-hover: 0 2px 8px rgba(0, 0, 0, 0.08);
   --wm-shadow-segment: 0 2px 8px rgba(0, 0, 0, 0.06);
   --wm-shadow-popup: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --wm-shadow-input-menu: 0 8px 40px rgba(0, 0, 0, 0.08);
   --wm-shadow-sheet: 0 12px 32px rgba(0, 0, 0, 0.1);
   /* 壁纸底上托起窗口的落影 */
   --wm-shadow-canvas: 0 18px 48px rgba(2, 26, 58, 0.28), 0 2px 8px rgba(2, 26, 58, 0.12);
 
-  /* 壁纸上的浮层（方案标签） */
+  /* 壁纸上的浮层（方案标签 / 演示用场景切换条） */
   --wm-color-overlay-chip: rgba(8, 22, 44, 0.42);
+  --wm-color-overlay-chip-hover: rgba(8, 22, 44, 0.6);
+  --wm-color-overlay-chip-line: rgba(255, 255, 255, 0.16);
+  --wm-color-overlay-label: rgba(255, 255, 255, 0.72);
+
+  /* 对话里的交互卡片（Figma 元宝Agent · Component Gallery 4:351）
+     白底 + 1px 描边；标题近黑、说明中灰；控件未选中是浅灰描边、选中是近黑实底 */
+  --wm-color-card-background: #ffffff;
+  --wm-color-card-border: #e5e5e5;
+  --wm-color-card-title: #1d1d1f;
+  --wm-color-card-text-secondary: #74777c;
+  --wm-color-card-subtle: #f5f5f5;
+  --wm-color-card-control-border: #b7b9bc;
+  --wm-color-card-control-active: #202123;
+  --wm-color-card-text-on-active: #ffffff;
+
+  /* 气泡下方的产物卡片（Figma 14330:23470）：文件名 90% 黑；封面配色取自设计稿示例封面 */
+  --wm-color-text-artifact-name: rgba(0, 0, 0, 0.9);
+  --wm-color-artifact-cover-paper: #f0ece5;
+  --wm-color-artifact-cover-ink: #4a2f1a;
+  --wm-color-artifact-cover-accent: #8c4f10;
+  --wm-color-artifact-cover-soft: #c9a77f;
+  --wm-color-artifact-cover-line: rgba(0, 0, 0, 0.05);
+
+  /* 输入框左侧添加按钮底（Figma 36:10814，#6666661F） */
+  --wm-color-input-add-fill: rgba(102, 102, 102, 0.12);
+  --wm-color-input-menu-hover: rgba(0, 0, 0, 0.06);
+  /* 底栏渐变底（Figma 91:15671）：透明白 → 80% 白 → 纯白 */
+  --wm-color-footer-fade-start: rgba(255, 255, 255, 0);
+  --wm-color-footer-fade-mid: rgba(255, 255, 255, 0.8);
+  /* 底栏白色渐变的中间几档（缓入，避免线性渐变的「台阶感」） */
+  --wm-color-footer-fade-12: rgba(255, 255, 255, 0.12);
+  --wm-color-footer-fade-32: rgba(255, 255, 255, 0.32);
+  --wm-color-footer-fade-75: rgba(255, 255, 255, 0.75);
+  --wm-color-footer-fade-92: rgba(255, 255, 255, 0.92);
+  /* 进行中任务点阵（Figma 533:13569）：off #E6E8EB、on #B0B6C3 */
+  --wm-color-task-dot-off: #e6e8eb;
+  --wm-color-task-dot-on: #b0b6c3;
+  /* 新版底栏渐变中段：白 54%（Figma 533:13549 #FFFFFF8A） */
+  --wm-color-footer-fade-soft: rgba(255, 255, 255, 0.54);
+  --wm-color-follow-up-icon: #525252;
+  /* 「正在帮你记」文字闪光：中灰字上扫过一道浅色亮带 */
+  --wm-color-note-text-shimmer-base: #7b818f;
+  --wm-color-note-text-shimmer-light: #d3d6dd;
+  /* 「当前正在聊」话题时间线 */
+  --wm-color-note-topic-dot: #c3c7cf;
+  --wm-color-note-topic-line: #dfe1e6;
+
+  /* ---------- 入会极简模式（Figma 215:19035 元宝Agent · 入会） ---------- */
+  /* 窗口底色：#F3F3F4 95%，背后叠 20px 模糊，壁纸透上来一层 */
+  --wm-color-window-translucent: rgba(243, 243, 244, 0.95);
+  /* 元宝消息气泡底（同稿 #F6F6F6） */
+  --wm-color-background-secondary-v2: #f6f6f6;
+  /* 用户气泡（同稿 #5E6270），与助手灰泡区分开 */
+  --wm-color-chat-bubble-send: #5e6270;
+  /* 参会人头像块底色（Figma 314:41435 起 6 个实例） */
+  --wm-color-tile-1: #e2e3e8;
+  --wm-color-tile-2: #e7e3da;
+  --wm-color-tile-3: #e8e8e8;
+  --wm-color-tile-4: #f1eae5;
+  --wm-color-tile-5: #e8eff4;
+  --wm-color-tile-6: #f1f1f1;
+
+  /* 画面上的名字水牌：白 60% + 10px 模糊 */
+  --wm-color-name-tag-blur: rgba(255, 255, 255, 0.6);
+  /* 底栏小卡片（1px 描边 + 微弱落影，Figma 489:10625） */
+  --wm-shadow-chip: 0 4px 30px rgba(0, 0, 0, 0.08);
+  /* 侧栏标题字色（Figma 416:20890 #1F2329） */
+  --wm-color-text-title: #1f2329;
+  /* 输入框落影（Figma 489:10655） */
+  --wm-shadow-input: 0 4px 24px rgba(0, 0, 0, 0.06);
+
+  /* ---------- 会中聊天 / 管理成员侧栏（参考 meeting-experience-demo-dawen，待 Figma 校准） ---------- */
+  /* 他人聊天气泡、分段控件底 */
+  --wm-color-chat-bubble-receive: #e9ebf0;
+  --wm-color-segment-track: #f3f3f4;
+  /* 成员名 / 部门 */
+  --wm-color-member-name: #171b22;
+  /* 置顶公告卡、侧栏浮层落影 */
+  --wm-shadow-notice: 0 8px 24px rgba(0, 0, 0, 0.09);
+  --wm-shadow-compose: 0 4px 32px rgba(52, 57, 70, 0.08);
+  /* 聊天侧栏输入框落影（Figma 504:12116） */
+  --wm-shadow-compose-box: 0 4px 20px rgba(0, 0, 0, 0.04);
+  /* 分段控件选中项落影（Figma 504:11250） */
+  --wm-shadow-segment-thumb: 0 0 4px rgba(0, 9, 95, 0.05);
+  --wm-shadow-avatar: 0 2px 3px rgba(65, 97, 152, 0.12);
+  /* 消息卡、输入框细描边 */
+  --wm-color-card-line: #f1f1f1;
+  --wm-color-compose-line: #e8e8e8;
+  /* 弹幕输入框获得焦点时的蓝描边 */
+  --wm-color-focus-ring: #8bb6ff;
+  /* 「邀请成员」主按钮 */
+  --wm-color-button-strong: #000000;
+  /* 画面上的弹幕：黑 50% + 8px 模糊，署名橙色 */
+  --wm-color-barrage-bg: rgba(0, 0, 0, 0.5);
+  --wm-color-barrage-name: #f5a53d;
 
   /* 字体 */
   --wm-font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial,

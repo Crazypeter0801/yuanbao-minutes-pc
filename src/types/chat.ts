@@ -1,12 +1,16 @@
+import type { ArtifactItem } from '@/types/artifact';
+
 /**
- * 元宝侧栏的数据结构（三个方案共用）
+ * 元宝侧栏的数据结构
  * 说明：当前为前端 mock，接入真实接口时保持这套结构即可，视图无需改动。
  */
 
-/** 一段文本，可加粗 */
+/** 一段文本，可加粗、可标成人名 */
 export interface TextRun {
   text: string;
   bold?: boolean;
+  /** 参会人名：渲染成浅蓝底胶囊，人名可能出现在句中，不限于开头 */
+  mention?: boolean;
 }
 
 /** 富文本块：段落 / 小标题 / 无序列表 */
@@ -15,26 +19,85 @@ export type RichBlock =
   | { type: 'heading'; text: string }
   | { type: 'list'; items: TextRun[][] };
 
+/** 气泡里附带的图片（如截图记录里缩小的会议画面） */
+export interface BubbleImage {
+  src: string;
+  alt: string;
+  /** 显示宽度（px），高度按图片比例自动算 */
+  width?: number;
+  height?: number;
+}
+
+/**
+ * 对话里的交互卡片（Figma 元宝Agent · Component Gallery 4:351）
+ * - single：单选，选完提交；
+ * - multi：多选，选完提交；
+ * - confirm：只做确认，展示 summary 后按主按钮执行。
+ */
+export interface BubbleCard {
+  /** 卡片类型标识，决定提交后元宝回什么 */
+  id: 'summary-mode' | 'extract' | 'task-confirm';
+  kind: 'single' | 'multi' | 'confirm';
+  title: string;
+  description: string;
+  /** single / multi 的选项文案 */
+  options?: string[];
+  /** confirm 的摘要行 */
+  summary?: { label: string; value: string }[];
+  /** 主按钮文案 */
+  primaryLabel: string;
+  /** 次按钮文案（如「返回修改」） */
+  secondaryLabel?: string;
+}
+
+/**
+ * 默认折叠的补充信息（专业信息补充：术语 / 数据 / 竞品）
+ * 折叠态只露一行标题 + 简述，避免打断开会；点击后展开 blocks。
+ */
+export interface BubbleFold {
+  title: string;
+  /** 折叠态下标题右侧的简述，如「术语 · 数据 · 竞品」 */
+  hint?: string;
+  blocks: RichBlock[];
+}
+
 /** 一个气泡 */
 export interface Bubble {
   id: string;
   blocks: RichBlock[];
-  /** 句首 @ 的参会人（设计稿里的蓝色人名胶囊） */
-  mention?: string;
   /** 末尾是否带「查看原文」链接徽标 */
   withLink?: boolean;
+  /** 附在文字下方的图片 */
+  image?: BubbleImage;
+  /** 附在文字下方的交互卡片 */
+  card?: BubbleCard;
+  /** 默认折叠的补充信息卡片；有 fold 的气泡 blocks 可以为空 */
+  fold?: BubbleFold;
 }
 
 /** 元宝发出的一组消息（同一时间点的连续气泡） */
 export interface AssistantMessage {
   id: string;
   role: 'assistant';
-  time: string;
+  /**
+   * 毫秒时间戳
+   * 渲染时不再每条都显示「元宝 + 时间」：连续消息间隔短时只标一次，
+   * 所以时间必须是真实值，不能再用「刚刚」这种文案。
+   */
+  createdAt: number;
   bubbles: Bubble[];
   /** 回答依据，例如「引用 · 2分钟前 黄婷婷」 */
   source?: string;
+  /** 这条回答生成的文件：在气泡下方显示可点击的产物卡片 */
+  artifact?: ArtifactItem;
+  /** 刚入会且开启云笔记：在气泡下方显示「正在帮你记」卡片（话题是会中实时状态，由上层传入） */
+  recordingCard?: boolean;
+  /** 笔记卡标题（如「元宝笔记：产品方案评审」），不填用默认「元宝笔记」 */
+  recordingTitle?: string;
   /** 追问建议 */
   followUps?: string[];
+  /** 元宝主动记下的笔记（实时纪要、阶段小结、截图记录）；回答用户提问的消息不算 */
+  isNote?: boolean;
 }
 
 /** 用户提问 */
@@ -42,24 +105,7 @@ export interface UserMessage {
   id: string;
   role: 'user';
   text: string;
+  createdAt: number;
 }
 
 export type ChatMessage = AssistantMessage | UserMessage;
-
-/** 纪要中的待办 */
-export interface MinutesTodo {
-  id: string;
-  owner: string;
-  content: string;
-  done: boolean;
-}
-
-/** 方案 C 抽屉里的结构化纪要 */
-export interface MeetingMinutes {
-  title: string;
-  overview: string;
-  conclusions: { id: string; title: string; detail: string }[];
-  todos: MinutesTodo[];
-  /** 待定事项 */
-  pending: string[];
-}

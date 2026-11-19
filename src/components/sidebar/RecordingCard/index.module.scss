@@ -1,0 +1,284 @@
+/*
+ * 卡片：248×98、圆角 20、白底 1px 内描边（Figma 46:7838）
+ * 尺寸按设计稿 2x 导出图逐像素量出：标题行中线在 y=25，灰条 y=49–85、左右各留 13、底部留 13。
+ * （节点数据里的 padding-top 8 与导出图对不上，以导出图为准）
+ */
+.card {
+  display: flex;
+  flex-direction: column;
+  width: 248px;
+  max-width: 100%;
+  border-radius: 20px;
+  background-color: var(--wm-color-background-quaternary);
+  box-shadow: inset 0 0 0 1px var(--wm-color-outline-tertiary);
+  cursor: pointer;
+  outline: none;
+  transition: box-shadow 160ms ease-out;
+
+  &:hover,
+  &:focus-visible {
+    box-shadow: inset 0 0 0 1px var(--wm-color-outline-tertiary), var(--wm-shadow-hover);
+  }
+}
+
+/* 标题行：高 49，padding 15 17 14 18；图标 18 → 标题间距 7 → 右箭头靠右（按导出图量出） */
+.header {
+  display: flex;
+  align-items: center;
+  padding: 15px 17px 14px 18px;
+}
+
+.icon {
+  flex: 0 0 auto;
+  display: flex;
+  width: 18px;
+  height: 18px;
+  color: var(--wm-color-text-secondary);
+}
+
+.title {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-left: 7px;
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+  color: var(--wm-color-text-artifact-name);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chevron {
+  flex: 0 0 auto;
+  display: flex;
+  width: 28px;
+  height: 16px;
+  margin-left: 12px;
+}
+
+/* 占位区：左右下各 13，灰条 222×36（Figma 46:7858） */
+.slot {
+  display: flex;
+  padding: 0 13px 13px;
+}
+
+/* 识别中的灰条：静止底色，不再有骨架扫光（Figma 46:7858 的底色） */
+.hintBar {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 8px;
+  background-color: var(--wm-color-background-septenary);
+}
+
+/*
+ * 文字闪光（参考飞书 AI 视图「正在识别说话人和讨论内容…」）
+ * 字本身是中灰，一道亮带从左往右扫过：用 background-clip: text 把渐变裁成字形，只动 background-position。
+ * 4s 一轮，与换句节奏一致：扫过约 2.4s，停 1.6s。
+ */
+.hint {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 13px;
+  line-height: 20px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: transparent;
+  background-image: linear-gradient(
+    90deg,
+    var(--wm-color-note-text-shimmer-base) 0%,
+    var(--wm-color-note-text-shimmer-base) 35%,
+    var(--wm-color-note-text-shimmer-light) 50%,
+    var(--wm-color-note-text-shimmer-base) 65%,
+    var(--wm-color-note-text-shimmer-base) 100%
+  );
+  background-size: 300% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation:
+    note-text-in 240ms ease-out both,
+    note-text-shimmer 4s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+/* 亮带从字的左侧外面进来、右侧外面出去 */
+@keyframes note-text-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+
+  60%,
+  100% {
+    background-position: 0% 0;
+  }
+}
+
+/*
+ * 有话题（Figma 91:15376，尺寸按 2x 导出图量出）：灰底区 220 宽，距卡片左右下各 14
+ * 灰底 padding 10 12；「当前正在聊」13/20 灰字，话题 14/20 黑字，话题行距 12，标题到列表 8。
+ * 列表最高 76（2.5 条），卡片最高 = 49 + (10 + 20 + 8 + 76 + 10) + 14 = 187。
+ */
+.slotTopics {
+  padding: 0 14px 14px;
+}
+
+.topicPanel {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background-color: var(--wm-color-background-septenary);
+}
+
+.topicLabel {
+  flex: 0 0 auto;
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--wm-color-text-tertiary);
+}
+
+/* 话题列表：高度由组件按内容给（带过渡），超过 76 滚动；滚动条隐藏，往下滚过后顶部渐隐 */
+.topicList {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  margin-top: 8px;
+  overscroll-behavior: contain;
+  transition: height 260ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.topicListScrolled {
+  mask-image: linear-gradient(to bottom, transparent 0, #000 12px);
+}
+
+/* 单条话题：左 14 留给圆点和竖线，文字压成一行 */
+.topicItem {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  min-width: 0;
+  padding-left: 14px;
+  animation: note-topic-in 220ms ease-out both;
+
+  & + & {
+    margin-top: 12px;
+  }
+
+  /* 竖线 1px #DFE1E6：从本条圆点下方 2px 连到下一条圆点上方 2px（下一条圆点在 20 + 12 + 8 = 40） */
+  &:not(:last-child)::after {
+    position: absolute;
+    top: 14px;
+    bottom: -18px;
+    left: 2px;
+    width: 1px;
+    content: '';
+    background-color: var(--wm-color-note-topic-line);
+  }
+}
+
+/* 圆点 4×4（比设计稿 6 小一号），垂直居中在 20 的行高里 */
+.topicDot {
+  position: absolute;
+  top: 8px;
+  left: 0.5px;
+  width: 4px;
+  height: 4px;
+  border-radius: 2px;
+  background-color: var(--wm-color-note-topic-dot);
+}
+
+/* 话题都是黑字，只靠圆点区分当前；超长截断，保持一行 */
+.topicText {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--wm-color-text-primary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 当前话题：蓝点 #0066FF */
+.topicCurrent .topicDot {
+  background-color: var(--wm-color-brand-primary);
+}
+
+/* 新话题只淡入，不位移：位移会和列表长高、滚动叠加，看起来像弹了一下 */
+@keyframes note-topic-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* 换字：淡入 + 上移 3px，不硬切 */
+@keyframes note-text-in {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+  }
+
+  /* 不播动画：字保持中灰，不闪 */
+  .hint {
+    animation: none;
+    color: var(--wm-color-note-text-shimmer-base);
+    background-image: none;
+  }
+
+  .topicItem {
+    animation: none;
+  }
+
+  .topicList {
+    transition: none;
+  }
+}
+
+/*
+ * 单行卡片（Figma 416:20791）：宽度随内容、高 42、圆角 16、1px #EBEDF2 内描边。
+ * 标题行 padding 12：图标 18 → 4 → 标题 14/18 500 → 10 → 箭头 18。
+ */
+.cardCompact {
+  width: fit-content;
+  align-self: flex-start;
+  border-radius: 16px;
+
+  .header {
+    padding: 12px;
+  }
+
+  .title {
+    flex: 0 1 auto;
+    margin-left: 4px;
+    line-height: 18px;
+    font-weight: 500;
+    color: var(--wm-color-text-primary);
+  }
+
+  .chevron {
+    width: 18px;
+    height: 18px;
+    margin-left: 10px;
+  }
+}

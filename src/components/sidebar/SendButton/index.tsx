@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import IconInputSend from '@/assets/d2c/icons/schemes/icon-input-send';
+import IconSideSend from '@/assets/d2c/icons/v1/icon-side-send';
 import { Pressable } from '@/components/common/Pressable';
 import styles from './index.module.scss';
 
@@ -10,7 +10,7 @@ interface SendButtonProps {
 }
 
 /**
- * 发送按钮（Figma 248:12599 / 248:13528）
+ * 发送按钮（Figma 316:2770）
  * 设计稿只给了置灰态；可发送态把圆底换成深色，箭头保持白色。
  */
 export const SendButton: FC<SendButtonProps> = ({ enabled, onClick }) => (
@@ -21,6 +21,6 @@ export const SendButton: FC<SendButtonProps> = ({ enabled, onClick }) => (
     ariaLabel="发送"
     title={enabled ? '发送（Enter）' : '请输入内容'}
   >
-    <IconInputSend />
+    <IconSideSend />
   </Pressable>
 );

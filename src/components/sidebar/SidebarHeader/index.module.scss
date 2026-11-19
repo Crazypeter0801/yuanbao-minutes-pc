@@ -1,39 +1,38 @@
-/* 376 宽居中，padding 0 12（Figma layout_1NB1TS） */
+/* 撑满侧栏宽度，高 64、padding 16 20（Figma 416:20844） */
 .header {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 376px;
-  height: 40px;
-  margin: 0 auto;
-  padding: 0 12px;
+  height: 64px;
+  padding: 16px 20px;
 }
 
+/* 标题：padding 4 12 4 0、间距 4、圆角 16（Figma 416:20878，左侧不留白，元宝标贴着 20 的边线） */
 .title {
   display: flex;
   align-items: center;
+  padding: 4px 12px 4px 0;
+  border-radius: 16px;
 
   & > * + * {
     margin-left: 4px;
   }
 }
 
-/* 16px 元宝图形放在 20×20 位置中心 */
+/* 24 元宝标（Figma 416:20879） */
 .logo {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  color: var(--wm-color-text-secondary);
+  width: 24px;
+  height: 24px;
 }
 
+/* 12/17 600 #1F2329（Figma 416:20890） */
 .titleText {
   font-size: 12px;
-  line-height: 18px;
-  font-weight: 500;
-  color: var(--wm-color-text-primary);
+  line-height: 17px;
+  font-weight: 600;
+  color: var(--wm-color-text-title);
 }
 
 .actions {

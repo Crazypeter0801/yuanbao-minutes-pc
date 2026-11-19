@@ -4,11 +4,12 @@
   padding-left: 48px;
 }
 
+/* 与元宝正文同为 14/22，一问一答读起来是同一个字号 */
 .bubble {
   margin: 0;
   padding: 10px 12px;
-  font-size: 12px;
-  line-height: 20px;
+  font-size: var(--wm-side-font-size, 14px);
+  line-height: calc(var(--wm-side-font-size, 14px) + 8px);
   color: var(--wm-color-text-primary);
   word-break: break-word;
   white-space: pre-wrap;
@@ -16,7 +17,8 @@
 
 .round {
   border-radius: 16px 1px 16px 16px;
-  background-color: var(--wm-color-background-user-bubble);
+  background-color: var(--wm-color-chat-bubble-send);
+  color: var(--wm-color-text-senary);
 }
 
 .compact {
@@ -28,5 +30,4 @@
   padding: 8px 14px;
   border-radius: 14px;
   background-color: var(--wm-color-background-septenary);
-  font-size: 13px;
 }

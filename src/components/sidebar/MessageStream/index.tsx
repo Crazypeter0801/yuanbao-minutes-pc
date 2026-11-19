@@ -8,6 +8,8 @@ interface MessageStreamProps {
   withTopFade?: boolean;
   /** 内容不足一屏时贴底排列（方案 A 的 justify-content: flex-end） */
   bottomAligned?: boolean;
+  /** 首次挂载停在顶部（入会稿 416:20464 展示的是对话开头），之后有新消息照常滚到底 */
+  startAtTop?: boolean;
   /** 内边距等差异由调用方传入 */
   className?: string;
   children: ReactNode;
@@ -23,20 +25,27 @@ export const MessageStream: FC<MessageStreamProps> = ({
   scrollKey,
   withTopFade = false,
   bottomAligned = false,
+  startAtTop = false,
   className,
   children,
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const mounted = useRef(false);
+  /** 首屏的 scrollKey：只要还是这一份内容就不滚（StrictMode 下 effect 会跑两遍，靠 key 判断而不是次数） */
+  const initialKey = useRef(scrollKey);
 
   useLayoutEffect(() => {
     const node = scrollRef.current;
     if (!node) {
       return;
     }
+    if (startAtTop && scrollKey === initialKey.current) {
+      mounted.current = true;
+      return;
+    }
     node.scrollTo({ top: node.scrollHeight, behavior: mounted.current ? 'smooth' : 'auto' });
     mounted.current = true;
-  }, [scrollKey]);
+  }, [scrollKey, startAtTop]);
 
   return (
     <div className={styles.wrap}>

@@ -1,0 +1,220 @@
+/* 盖住整张侧栏卡片的一层页面 */
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--wm-color-background-quaternary);
+}
+
+.header {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  height: 64px;
+  padding: 0 20px;
+
+  & > * + * {
+    margin-left: 4px;
+  }
+}
+
+.back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease-out;
+
+  &:hover {
+    background-color: var(--wm-color-control-fill);
+  }
+}
+
+/* 下拉箭头转 90° 当返回箭头用 */
+.backIcon {
+  display: flex;
+  transform: rotate(90deg);
+}
+
+.headerTitle {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  color: var(--wm-color-text-primary);
+}
+
+.body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding: 4px 20px 24px;
+}
+
+.titleRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.title {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  font-size: 15px;
+  line-height: 22px;
+  font-weight: 600;
+  color: var(--wm-color-text-primary);
+}
+
+.badgeRunning,
+.badgeDone {
+  flex: 0 0 auto;
+  margin-left: 8px;
+  padding: 1px 8px;
+  border-radius: 9px;
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.badgeRunning {
+  color: var(--wm-color-brand-yuanbao);
+  background-color: var(--wm-color-brand-primary-soft);
+}
+
+.badgeDone {
+  color: var(--wm-color-text-tertiary);
+  background-color: var(--wm-color-background-septenary);
+}
+
+.summary {
+  margin: 6px 0 0;
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--wm-color-text-tertiary);
+}
+
+.sectionTitle {
+  margin: 20px 0 8px;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 400;
+  color: var(--wm-color-text-tertiary);
+}
+
+/* ---------- 进度时间线 ---------- */
+
+.steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  position: relative;
+  display: flex;
+  padding-bottom: 16px;
+
+  &:last-child {
+    padding-bottom: 0;
+  }
+
+  /* 竖线：连到下一步圆点 */
+  &::before {
+    position: absolute;
+    top: 14px;
+    bottom: 0;
+    left: 3px;
+    width: 1px;
+    content: '';
+    background-color: var(--wm-color-note-topic-line);
+  }
+
+  &:last-child::before {
+    display: none;
+  }
+}
+
+.stepDot {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  width: 7px;
+  height: 7px;
+  margin-top: 6px;
+  border-radius: 4px;
+  background-color: var(--wm-color-note-topic-dot);
+}
+
+.done .stepDot {
+  background-color: var(--wm-color-success-primary);
+}
+
+.doing .stepDot {
+  background-color: var(--wm-color-brand-yuanbao);
+  box-shadow: 0 0 0 3px var(--wm-color-brand-primary-soft);
+}
+
+.stepBody {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  margin-left: 10px;
+}
+
+.stepLabel {
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--wm-color-text-primary);
+}
+
+.todo .stepLabel {
+  color: var(--wm-color-text-tertiary);
+}
+
+.stepTime {
+  margin-top: 1px;
+  font-size: 11px;
+  line-height: 16px;
+  color: var(--wm-color-text-disabled);
+}
+
+/* ---------- 产出 ---------- */
+
+.outputs {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.output {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 36px;
+  padding: 0 8px;
+  border-radius: 8px;
+  background-color: var(--wm-color-background-septenary);
+}
+
+.output + .output {
+  margin-top: 6px;
+}
+
+.outputName {
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--wm-color-text-primary);
+}
+
+.outputKind {
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--wm-color-text-tertiary);
+}

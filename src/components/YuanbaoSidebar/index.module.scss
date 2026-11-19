@@ -1,0 +1,109 @@
+/* 元宝面板：撑满侧栏卡片（或页签下方的区域），任务详情以它为定位基准盖住整块 */
+.panel {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 消息流 + 底栏的容器：底栏绝对定位浮在消息流下沿 */
+.body {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/*
+ * 消息区 padding 0 20（Figma 215:19035 对话区 416:20643）
+ * 底栏浮在上面，所以底部再加上底栏高度：滚到底时最后一条仍停在底栏上方 20，往上翻时才从底栏后面经过。
+ */
+.stream {
+  padding: 0 20px calc(var(--yb-footer-height, 122px) + 20px);
+}
+
+/*
+ * 底部 padding 16，卡片行与输入框间距 8（用户调整，原稿 10），总高 120
+ * 背景只保留 Figma 533:13549 的白色渐变（已按用户要求去掉背景模糊），经过的对话在上沿渐渐被盖住。
+ * 透明的渐变带不拦点击，按钮和输入框照常可点。
+ */
+.footer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  pointer-events: none;
+
+  /*
+   * 白色渐变（Figma 533:13549：透明 → 12.5% 54% 白 → 47.7% 起纯白）。
+   * 线性插值在 12.5% 处有明显拐点，看着像一道台阶；改成缓入曲线、端点不变，过渡更顺。
+   * 底部两个角跟着侧栏卡片收 16 的圆角，否则会在卡片圆角外露出直角。
+   */
+  &::after {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    content: '';
+    border-radius: 0 0 16px 16px;
+    background-image: linear-gradient(
+      180deg,
+      var(--wm-color-footer-fade-start) 0%,
+      var(--wm-color-footer-fade-12) 6%,
+      var(--wm-color-footer-fade-32) 12%,
+      var(--wm-color-footer-fade-soft) 18%,
+      var(--wm-color-footer-fade-75) 27%,
+      var(--wm-color-footer-fade-92) 37%,
+      var(--wm-color-background-quaternary) 48%,
+      var(--wm-color-background-quaternary) 100%
+    );
+    pointer-events: none;
+  }
+
+  & > * {
+    pointer-events: auto;
+  }
+
+  & > * + * {
+    margin-top: 8px;
+  }
+}
+
+/*
+ * 输入框上方一行（Figma 489:10624）：读稿是两颗小卡片从左侧起排、间距 4，不左右分开。
+ * 面板以这一行为基线、向左长成整行（MorphPanel 量的是这一行的宽度和自己的偏移）。
+ */
+.statusRow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 32px;
+
+  & > * + * {
+    margin-left: 4px;
+  }
+}
+
+/* 长程任务区：占满左侧剩余宽度，任务之间间距 8，放不下时横向截在这一区里 */
+.tasks {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: flex-end;
+  min-width: 0;
+  margin-right: 8px;
+
+  & > * + * {
+    margin-left: 8px;
+  }
+}
+
+/* 文件夹面板展开时整块让位（胶囊自己也会淡出，这里只防止误点） */
+.tasksHidden {
+  pointer-events: none;
+}

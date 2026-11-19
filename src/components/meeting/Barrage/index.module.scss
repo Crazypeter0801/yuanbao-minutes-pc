@@ -1,0 +1,73 @@
+/* 贴主画面左下，在名字水牌上方（参考 Demo：距底 min(61px, 22%)、左 4，宽 231） */
+.stack {
+  position: absolute;
+  left: 6px;
+  bottom: 40px;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 231px;
+  max-width: calc(100% - 12px);
+  pointer-events: none;
+
+  & > * + * {
+    margin-top: 4px;
+  }
+}
+
+/* 黑 50% + 8 模糊的胶囊，12/18 白字，最宽 208 */
+.bubble {
+  max-width: 208px;
+  min-height: 34px;
+  padding: 8px 12px;
+  border-radius: 39px;
+  background-color: var(--wm-color-barrage-bg);
+  backdrop-filter: blur(8px);
+  color: var(--wm-color-text-senary);
+  font-size: 12px;
+  line-height: 18px;
+  overflow-wrap: anywhere;
+  animation: barrage-enter 350ms both;
+}
+
+.name {
+  font-weight: 500;
+  color: var(--wm-color-barrage-name);
+}
+
+.leaving {
+  animation: barrage-exit 220ms ease both;
+}
+
+/* 从下方 24 弹上来，68% 时略冲过 2 再回位 */
+@keyframes barrage-enter {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+    animation-timing-function: cubic-bezier(0.2, 0.72, 0.28, 1);
+  }
+  68% {
+    opacity: 1;
+    transform: translateY(-2px);
+    animation-timing-function: cubic-bezier(0.3, 0, 0.35, 1);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes barrage-exit {
+  to {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bubble,
+  .leaving {
+    animation: none;
+  }
+}

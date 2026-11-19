@@ -1,0 +1,227 @@
+/* 撑满侧栏：（单开时的标题栏）+ 消息列表 + 底部输入，底部留 16（Figma 504:12069） */
+.panel {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 16px;
+  color: var(--wm-color-text-primary);
+}
+
+/* 消息列表 padding 10 20、间距 16（Figma 545:23112） */
+.stream {
+  padding: 10px 20px;
+}
+
+/* MessageStream 自带 12 的间距，双类名提高优先级改成 16 */
+.stream.stream > * + * {
+  margin-top: 16px;
+}
+
+/*
+ * 时间：11/18 #7B818F 居中（Figma 消息中时间戳）。
+ * 稿里这一行是纵向填充，被撑到约 24 高，文字在其中垂直居中，按导出图实测取 24。
+ */
+.time {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+  text-align: center;
+  color: var(--wm-color-text-tertiary);
+  font-size: 11px;
+  line-height: 18px;
+}
+
+/* 消息行：头像与内容间距 6；别人的右侧留 38，自己的左侧留 38 */
+.row {
+  display: flex;
+  align-items: flex-start;
+  padding-right: 38px;
+
+  & > * + * {
+    margin-left: 6px;
+  }
+}
+
+.rowSelf {
+  justify-content: flex-end;
+  padding-right: 0;
+  padding-left: 38px;
+}
+
+/* 图片消息左侧留 118（Figma Sent Messages） */
+.rowImage {
+  padding-left: 118px;
+}
+
+/* 别人头像 32（导出图即 32×32） */
+.avatar {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+}
+
+/* 自己头像：导出图上下带 2 的留白，32×36（Figma 头像 padding 2 0） */
+.avatarSelf {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 36px;
+}
+
+/* 名字 + 气泡 */
+.rowBody {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+/* 名字 11/14 #4E5461 80%；与下方气泡间距 2，挂在名字上（气泡自身 margin: 0 会盖掉兄弟选择器） */
+.rowName {
+  margin-bottom: 2px;
+  font-size: 11px;
+  line-height: 14px;
+  color: var(--wm-color-text-secondary);
+  opacity: 0.8;
+}
+
+/* 气泡：padding 8 10、圆角 16，14/20；别人的 #F3F3F4，自己的 #5E6270 白字 */
+.bubble {
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 16px;
+  background-color: var(--wm-color-background-septenary);
+  font-size: var(--wm-side-font-size, 14px);
+  line-height: calc(var(--wm-side-font-size, 14px) + 6px);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+
+  .rowSelf & {
+    background-color: var(--wm-color-chat-bubble-send);
+    color: var(--wm-color-text-senary);
+  }
+}
+
+/* 单图 190×190、圆角 16、0.5px 8% 黑描边（Figma 单图，描边画在图片内侧） */
+.image {
+  flex: 0 0 auto;
+  display: block;
+  width: 190px;
+  height: 190px;
+  border-radius: 16px;
+  object-fit: cover;
+  outline: 0.5px solid var(--wm-color-line);
+  outline-offset: -0.5px;
+}
+
+/*
+ * 输入框（Figma 504:12116）：344 宽（左右各留 16）、圆角 20、白底，
+ * 0.5px 8% 黑描边 + 0 4 20 4% 落影；padding 12 10 10，两行间距 10，总高 80。
+ */
+.compose {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  margin: 0 16px;
+  padding: 12px 10px 10px;
+  border-radius: 20px;
+  background-color: var(--wm-color-background-senary);
+  box-shadow:
+    inset 0 0 0 0.5px var(--wm-color-line),
+    var(--wm-shadow-compose-box);
+  cursor: text;
+
+  & > * + * {
+    margin-top: 10px;
+  }
+}
+
+/* 文字行：左右再缩 6（Figma 输入文本容器 padding 0 6） */
+.inputRow {
+  display: flex;
+  padding: 0 6px;
+}
+
+.input {
+  flex: 1 1 auto;
+  width: 100%;
+  height: 20px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: none;
+  resize: none;
+  background: transparent;
+  color: var(--wm-color-text-primary);
+  caret-color: var(--wm-color-text-primary);
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 20px;
+
+  /* 提示文字 #B0B6C3 */
+  &::placeholder {
+    color: var(--wm-color-text-disabled);
+  }
+}
+
+/* 工具行：左 表情 / 图片 / 文件（28、间距 4），右 发送 28 */
+.toolbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.tools {
+  display: flex;
+  align-items: center;
+
+  & > * + * {
+    margin-left: 4px;
+  }
+}
+
+.tool {
+  display: flex;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  /* 导出 SVG 是 currentColor，稿里为黑色 */
+  color: var(--wm-color-text-primary);
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease-in-out;
+
+  & > svg {
+    display: block;
+  }
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--wm-color-control-hover);
+  }
+}
+
+/* 发送：稿里是置灰态（#D3D6DB 圆底 + 白箭头）；有内容时圆底换成发送气泡同色 */
+.send {
+  display: flex;
+  width: 28px;
+  height: 28px;
+  border-radius: 14px;
+  color: var(--wm-color-text-senary);
+  cursor: not-allowed;
+  outline: none;
+
+  & > svg {
+    display: block;
+  }
+}
+
+.sendEnabled {
+  cursor: pointer;
+
+  & > svg > path:first-child {
+    fill: var(--wm-color-chat-bubble-send);
+  }
+}

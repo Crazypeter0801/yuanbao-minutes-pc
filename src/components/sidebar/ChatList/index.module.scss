@@ -1,0 +1,39 @@
+/* 消息列表：间距由每条消息自己决定（换人 / 连发 / 时间行后），不用统一 gap */
+.list {
+  display: flex;
+  flex-direction: column;
+}
+
+.entry {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 换人：拉开 20，一问一答之间有明确停顿 */
+.newSender {
+  margin-top: 20px;
+}
+
+/* 同一个人连发：12，读起来是一段话 */
+.sameSender {
+  margin-top: 12px;
+}
+
+/* 时间行下方 12 */
+.afterTime {
+  margin-top: 12px;
+}
+
+/* 居中时间：12/18 浅灰，上方 20（第一条前不留） */
+.time {
+  margin: 20px 0 0;
+  font-size: 12px;
+  line-height: 18px;
+  text-align: center;
+  color: var(--wm-color-text-disabled);
+  font-variant-numeric: tabular-nums;
+}
+
+.timeFirst {
+  margin-top: 0;
+}

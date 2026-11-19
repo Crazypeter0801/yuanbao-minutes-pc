@@ -16,6 +16,7 @@ body {
   margin: 0;
   font-family: var(--wm-font-family);
   color: var(--wm-color-text-primary);
+  /* 壁纸画在 App 的 .page 上，这里只给加载前的兜底底色 */
   background-color: var(--wm-color-stage-background);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
