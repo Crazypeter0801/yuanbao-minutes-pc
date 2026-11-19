@@ -1,6 +1,6 @@
 /*
- * 元宝侧栏（Figma 215:19035）：376 宽的白色卡片，圆角 16，上下各留 8，
- * 与会议区之间 10 的间隙由窗口的相邻兄弟间距给出。
+ * 侧栏外壳（Figma 574:19176 / 574:19434）：位于顶部通栏操作栏下方，376 宽白色卡片，
+ * 圆角 12，底部留 8 与窗口下缘对齐。
  */
 .shell {
   position: relative;
@@ -8,11 +8,11 @@
   display: flex;
   flex-direction: column;
   width: 376px;
-  margin: 8px 0;
+  margin: 0 0 8px;
   overflow: hidden;
   /* backdrop-filter 的子层在 Chrome 里不吃父级 overflow 的圆角裁切，加 isolation + clip-path 兜底 */
   isolation: isolate;
-  clip-path: inset(0 round 16px);
-  border-radius: 16px;
+  clip-path: inset(0 round 12px);
+  border-radius: 12px;
   background-color: var(--wm-color-background-quaternary);
 }

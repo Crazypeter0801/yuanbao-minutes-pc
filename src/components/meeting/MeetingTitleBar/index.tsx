@@ -7,6 +7,7 @@ import IconTopShare from '@/assets/d2c/icons/v2/icon-top-share';
 import IconTitleLayout from '@/assets/d2c/icons/v2/icon-title-layout';
 import IconTitleMore from '@/assets/d2c/icons/v2/icon-title-more';
 import IconTitleSafety from '@/assets/d2c/icons/v2/icon-title-safety';
+import { Pressable } from '@/components/common/Pressable';
 import { meetingSession } from '@/data/meetingSession';
 import styles from './index.module.scss';
 
@@ -19,15 +20,24 @@ export interface TitleBarDragHandlers {
 
 interface MeetingTitleBarProps {
   dragHandlers?: TitleBarDragHandlers;
+  /** 右上角侧栏开关按钮点击 */
+  onToggleSidebar?: () => void;
+  /** 侧栏当前是否展开 */
+  sidebarOpen?: boolean;
 }
 
 /**
- * 会议窗口顶部操作栏（Figma 439:21021）
+ * 会议窗口顶部通栏操作栏（Figma 574:19176 / 574:19177）
  *
- * 按住标题栏空白区域可拖拽移动整个主窗口；交通灯与功能图标带 data-nodrag 不误触发拖拽。
+ * 横跨整个主窗口顶部（左侧会议区 + 右侧侧栏上方），按住空白处可拖拽移动整个主窗口；
+ * 右侧图标带文字标签：宫格视图 ▾ / 主持人工具 ▾ / 设置 / 侧栏切换。
  */
-export const MeetingTitleBar: FC<MeetingTitleBarProps> = ({ dragHandlers }) => (
-  <div
+export const MeetingTitleBar: FC<MeetingTitleBarProps> = ({
+  dragHandlers,
+  onToggleSidebar,
+  sidebarOpen = true,
+}) => (
+  <header
     className={`${styles.titleBar} ${dragHandlers ? styles.titleBarDraggable : ''} ${
       dragHandlers?.dragging ? styles.titleBarDragging : ''
     }`}
@@ -65,19 +75,34 @@ export const MeetingTitleBar: FC<MeetingTitleBarProps> = ({ dragHandlers }) => (
       <div className={styles.tools}>
         <span className={styles.tool}>
           <IconTopGrid />
+          <span className={styles.toolLabel}>宫格视图</span>
           <IconTopChevron width={10} height={10} />
         </span>
         <span className={styles.tool}>
           <IconTitleSafety />
+          <span className={styles.toolLabel}>主持人工具</span>
           <IconTopChevron width={10} height={10} />
         </span>
         <span className={`${styles.tool} ${styles.toolLoose}`}>
           <IconTitleLayout width={16} height={16} />
+          <span className={styles.toolLabel}>设置</span>
         </span>
       </div>
-      <span className={styles.more}>
-        <IconTitleMore width={28} height={28} />
-      </span>
+      {onToggleSidebar ? (
+        <Pressable
+          as="span"
+          className={`${styles.more} ${styles.moreInteractive}`}
+          onClick={onToggleSidebar}
+          ariaLabel={sidebarOpen ? '收起侧栏' : '展开侧栏'}
+          title={sidebarOpen ? '收起侧栏' : '展开侧栏'}
+        >
+          <IconTitleMore width={28} height={28} />
+        </Pressable>
+      ) : (
+        <span className={styles.more}>
+          <IconTitleMore width={28} height={28} />
+        </span>
+      )}
     </div>
-  </div>
+  </header>
 );

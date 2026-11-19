@@ -8,39 +8,52 @@
 }
 
 /*
- * 左侧一组：三个图标 + 分隔线 + 亮度（Figma 520:13382）。
- * 稿里标的是右侧留 100，但 416:20031 导出图实测中间按钮组起点在 272（左组宽 168），
- * 以导出图为准取 104，让中间组与稿逐像素对齐。
+ * 左侧一组（Figma 574:19176 / 582:61126）：
+ * 左 3 个图标共用一块 r=12 浅灰底板 + 12px 间距 + 第 4 个聊天图标独立一块 36×36 r=12 浅灰底板。
  */
 .side {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
-  padding-right: 104px;
+  padding-right: 112px;
 
   & > * + * {
-    margin-left: 8px;
+    margin-left: 12px;
   }
 }
 
-/* 三个 36×36 图标按钮，间距 4（Figma 520:13384） */
-.sideIcons {
+/* 左侧 3 图标共用浅灰底板（Figma 582:61127）：高 36、圆角 12、#0000000A、图标间距 2 */
+.sidePlate {
   display: flex;
   align-items: center;
+  height: 36px;
+  border-radius: 12px;
+  background-color: var(--wm-color-toolbar-plate);
 
   & > * + * {
-    margin-left: 4px;
+    margin-left: 2px;
   }
 }
 
-/* 图标位：36×36、圆角 8，内容居中（Figma 520:13385 / 520:13391 / 520:13401） */
+/* 第 4 个图标独立浅灰底板（Figma 582:61143）：36×36、圆角 12、#0000000A */
+.chatPlate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background-color: var(--wm-color-toolbar-plate);
+}
+
+/* 图标位：36×36、圆角 12，内容居中 */
 .iconBox {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 36px;
   height: 36px;
-  border-radius: 8px;
+  border-radius: 12px;
 }
 
 /*

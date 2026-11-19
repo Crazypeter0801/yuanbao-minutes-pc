@@ -1,6 +1,5 @@
 import type { FC } from 'react';
 import { MeetingStage } from '@/components/meeting/MeetingStage';
-import { MeetingTitleBar, type TitleBarDragHandlers } from '@/components/meeting/MeetingTitleBar';
 import { MeetingToolbar } from '@/components/meeting/MeetingToolbar';
 import type { SideAppId } from '@/components/sidebar/SideDock';
 import type { BarrageItem } from '@/hooks/useMeetingChat';
@@ -17,13 +16,11 @@ interface MeetingWindowProps {
   onSendBarrage: (text: string) => boolean;
   /** 弹幕浮层里的「聊天 >」 */
   onOpenChat: () => void;
-  /** 主窗口标题栏拖拽句柄 */
-  titleBarDrag?: TitleBarDragHandlers;
 }
 
 /**
- * 左侧会议区（Figma 215:19035）
- * 结构：标题栏 40 + 演讲者视图 691（头像条 118 + 间距 8 + 大画面 + 底边距 4）+ 会中底栏 64 = 795。
+ * 左侧会议区（Figma 574:19176：位于顶部通栏操作栏下方）
+ * 结构：演讲者视图（头像条 118 + 间距 8 + 大画面）+ 会中底栏 64。
  */
 export const MeetingWindow: FC<MeetingWindowProps> = ({
   activeApp,
@@ -31,10 +28,8 @@ export const MeetingWindow: FC<MeetingWindowProps> = ({
   barrage,
   onSendBarrage,
   onOpenChat,
-  titleBarDrag,
 }) => (
   <section className={styles.window} aria-label="会议窗口">
-    <MeetingTitleBar dragHandlers={titleBarDrag} />
     <MeetingStage barrage={barrage} />
     <MeetingToolbar
       activeApp={activeApp}

@@ -1,11 +1,12 @@
-/* 操作栏：高 40、上下 10、左右不留白（Figma 439:21021，窗口自身左右各 8） */
+/* 通栏操作栏：高 40、横跨整个主窗口宽度（Figma 574:19177） */
 .titleBar {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 100%;
   height: 40px;
-  padding: 10px 0;
+  padding: 6px 0;
   user-select: none;
 }
 
@@ -132,27 +133,55 @@
   }
 }
 
-/* 纯图标按钮：20 图标 + 12 下拉箭头、间距 4、内边距 4、圆角 6（Figma 439:21096 / 439:21103 / 439:21115） */
+/* 图标 + 文字标签 + 可选下拉箭头（Figma 574:19388 / 574:19395 / 574:19407） */
 .tool {
   display: flex;
   align-items: center;
+  height: 28px;
   padding: 4px;
   border-radius: 6px;
+  transition: background-color 120ms ease-in-out;
 
   & > * + * {
     margin-left: 4px;
   }
+
+  &:hover {
+    background-color: var(--wm-color-control-hover);
+  }
 }
 
-/* 布局按钮内边距 4 6（Figma 439:21115） */
+/* 设置按钮左右留 6px（Figma 574:19407） */
 .toolLoose {
   padding: 4px 6px;
 }
 
-/* 更多：单独的图标位，圆角 6（Figma 439:21218） */
+/* 12/16 400 #4E5461（wm_color_text_secondary） */
+.toolLabel {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 400;
+  color: var(--wm-color-text-secondary);
+  white-space: nowrap;
+}
+
+/* 右侧侧栏切换按钮（Figma 574:19425）：28×28、圆角 6 */
 .more {
   display: flex;
   align-items: center;
-  padding: 4px;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
   border-radius: 6px;
+  transition: background-color 120ms ease-in-out;
+}
+
+.moreInteractive {
+  cursor: pointer;
+  outline: none;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--wm-color-control-hover);
+  }
 }

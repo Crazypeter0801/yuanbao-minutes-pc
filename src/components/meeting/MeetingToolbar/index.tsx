@@ -38,7 +38,8 @@ interface MeetingToolbarProps {
 export const MeetingToolbar: FC<MeetingToolbarProps> = ({ activeApp, onToggleApp, onSendBarrage, onOpenChat }) => (
   <div className={styles.toolbar}>
     <div className={styles.side}>
-      <div className={styles.sideIcons}>
+      {/* Figma 574:19176 (582:61127)：最左 3 个图标共用一块浅灰底板（r=12、#0000000A） */}
+      <div className={styles.sidePlate}>
         <span className={styles.iconBox}>
           <img className={styles.emojiHi} src={barEmojiHi} alt="互动表情" draggable={false} />
         </span>
@@ -49,11 +50,12 @@ export const MeetingToolbar: FC<MeetingToolbarProps> = ({ activeApp, onToggleApp
           <IconBarEmojiChat />
         </span>
       </div>
-      <span className={styles.divider} aria-hidden="true" />
-      {/* 分隔线后的气泡图标是「聊天」（导出时命名成了 light）：悬停 / 点击弹「发送弹幕」 */}
-      <ChatCompose triggerClassName={styles.iconBox} onSend={onSendBarrage} onOpenChat={onOpenChat}>
-        <IconBarLight />
-      </ChatCompose>
+      {/* Figma 574:19176 (582:61143)：第 4 个聊天图标独立一块 36×36 浅灰底板（r=12、#0000000A） */}
+      <div className={styles.chatPlate}>
+        <ChatCompose triggerClassName={styles.iconBox} onSend={onSendBarrage} onOpenChat={onOpenChat}>
+          <IconBarLight />
+        </ChatCompose>
+      </div>
     </div>
 
     <div className={styles.controls}>

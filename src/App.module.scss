@@ -62,13 +62,14 @@
 }
 
 /*
- * 入会极简主窗口：高 795、圆角 20、左右各留 8，底色 #F3F3F4 95% + 20px 背景模糊。
- * 宽度由左侧 936 会议区 + 右侧 SideDock（0 ↔ 386）自然决定（952 ↔ 1338），
- * 随 SideDock 宽度过渡平滑向左收缩 / 向右展开；支持按住标题栏拖拽自由移动。
+ * 入会极简主窗口（Figma 574:19176）：高 795、圆角 20、左右各留 8，
+ * 顶部 40 通栏操作栏横跨会议区与侧栏上方；下方主体行并排 936 会中区 + SideDock（0 ↔ 386），
+ * 随 SideDock 宽度过渡平滑向左收缩 / 向右展开（952 ↔ 1338）。
  */
 .window {
   position: relative;
   display: flex;
+  flex-direction: column;
   flex: 0 0 auto;
   width: fit-content;
   height: 795px;
@@ -79,6 +80,13 @@
   backdrop-filter: blur(20px);
   box-shadow: var(--wm-shadow-canvas);
   will-change: transform;
+}
+
+.workspaceRow {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  align-items: stretch;
 }
 
 .windowDragging {

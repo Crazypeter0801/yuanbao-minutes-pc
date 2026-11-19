@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import { WINDOW_TOAST_ROOT_ID } from "@/components/common/Toast";
 import { DemoToolbar } from "@/components/demo/DemoToolbar";
+import { MeetingTitleBar } from "@/components/meeting/MeetingTitleBar";
 import { MeetingWindow } from "@/components/meeting/MeetingWindow";
 import { PollComposer } from "@/components/poll/PollComposer";
 import { ChatSidebar } from "@/components/sidebar/ChatSidebar";
@@ -343,46 +344,59 @@ export default function App() {
             id={WINDOW_TOAST_ROOT_ID}
             style={{ transform: `translate3d(${windowPos.x}px, ${windowPos.y}px, 0)` }}
           >
-            <div className={styles.meetingArea}>
-              <MeetingWindow
-                activeApp={dock.active}
-                onToggleApp={toggleApp}
-                barrage={meetingChat.barrage}
-                onSendBarrage={meetingChat.send}
-                onOpenChat={() => {
-                  openApp("chat");
-                  setChatFocusSignal((value) => value + 1);
-                }}
-                titleBarDrag={{
-                  dragging: windowDragging,
-                  onPointerDown: handleWindowDragDown,
-                  onPointerMove: handleWindowDragMove,
-                  onPointerUp: handleWindowDragUp,
-                }}
-              />
-              {pollOpen && (
-                <PollComposer
-                  draft={teamBuildingPoll}
-                  onClose={() => setPollOpen(false)}
-                  onSubmit={() => {
-                    setPollOpen(false);
-                    chat.push(buildPollPostedMessage(teamBuildingPoll.title));
+            {/* 顶部通栏操作栏（Figma 574:19176）：横跨会议区与侧栏上方 */}
+            <MeetingTitleBar
+              dragHandlers={{
+                dragging: windowDragging,
+                onPointerDown: handleWindowDragDown,
+                onPointerMove: handleWindowDragMove,
+                onPointerUp: handleWindowDragUp,
+              }}
+              sidebarOpen={dockOpen}
+              onToggleSidebar={() => {
+                if (dockOpen) {
+                  closeAll();
+                } else {
+                  openApp("yuanbao");
+                }
+              }}
+            />
+            <div className={styles.workspaceRow}>
+              <div className={styles.meetingArea}>
+                <MeetingWindow
+                  activeApp={dock.active}
+                  onToggleApp={toggleApp}
+                  barrage={meetingChat.barrage}
+                  onSendBarrage={meetingChat.send}
+                  onOpenChat={() => {
+                    openApp("chat");
+                    setChatFocusSignal((value) => value + 1);
                   }}
                 />
-              )}
+                {pollOpen && (
+                  <PollComposer
+                    draft={teamBuildingPoll}
+                    onClose={() => setPollOpen(false)}
+                    onSubmit={() => {
+                      setPollOpen(false);
+                      chat.push(buildPollPostedMessage(teamBuildingPoll.title));
+                    }}
+                  />
+                )}
+              </div>
+              <SideDock
+                apps={dock.apps}
+                active={dock.active}
+                tabStyle={tabStyle}
+                onSelect={openApp}
+                onCloseApp={closeApp}
+                onPopOutApp={popOutApp}
+                onCloseAll={closeAll}
+                onToggleYuanbaoDetail={() => setYuanbaoDetailOpen((open) => !open)}
+                onClosed={handleDockClosed}
+                renderApp={(id, { showHeader }) => renderAppContent(id, showHeader, false)}
+              />
             </div>
-            <SideDock
-              apps={dock.apps}
-              active={dock.active}
-              tabStyle={tabStyle}
-              onSelect={openApp}
-              onCloseApp={closeApp}
-              onPopOutApp={popOutApp}
-              onCloseAll={closeAll}
-              onToggleYuanbaoDetail={() => setYuanbaoDetailOpen((open) => !open)}
-              onClosed={handleDockClosed}
-              renderApp={(id, { showHeader }) => renderAppContent(id, showHeader, false)}
-            />
           </div>
 
           {dock.floating.map((id, index) => (
@@ -391,7 +405,7 @@ export default function App() {
               id={id}
               defaultOffset={{
                 x: windowPos.x + (dockOpen ? 986 : 968) + index * 20,
-                y: windowPos.y + (dockOpen ? 24 : 8) + index * 20,
+                y: windowPos.y + (dockOpen ? 56 : 40) + index * 20,
               }}
               zIndex={40 + index}
               onFocus={() => focusFloatingApp(id)}
