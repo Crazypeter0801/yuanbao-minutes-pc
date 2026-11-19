@@ -37,7 +37,7 @@ interface YuanbaoSidebarProps {
   /** 独立窗口弹出 */
   onPopOut?: () => void;
   /** 输入框提交：App 层会先匹配生成文件与演示场景，未命中才走普通提问 */
-  onSubmit?: (text: string) => void;
+  onSubmit?: (text: string, options?: { fromUser?: boolean }) => void;
   /** 会中已识别出的话题（最后一条是当前正在聊的），显示在「正在帮你记」卡片里 */
   noteTopics?: string[];
   /** 只开着元宝时显示自己的标题栏；多个应用并开或独立浮窗时由外层承载 */
@@ -150,7 +150,8 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
     [chat],
   );
 
-  const send = (text: string) => (onSubmit ? onSubmit(text) : chat.ask(text));
+  const send = (text: string, fromUser = false) =>
+    onSubmit ? onSubmit(text, { fromUser }) : chat.ask(text);
 
   return (
     <div className={styles.panel}>
@@ -194,7 +195,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
               expanded={openPanel === "commands"}
               onExpandedChange={(next) => setOpenPanel(next ? "commands" : null)}
               hidden={openPanel === "tasks"}
-              onPick={send}
+              onPick={(prompt) => send(prompt, true)}
             />
             <TaskEntry
               tasks={AGENT_TASKS}

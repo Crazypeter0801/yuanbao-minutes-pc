@@ -323,27 +323,7 @@ export const SideDock: FC<SideDockProps> = ({
                   <IconTab585Dropdown width={28} height={28} />
                 </Pressable>
                 {tabListOpen && (
-                  <div className={`${styles.menu} ${styles.menuTabList}`} role="menu" aria-label="全部侧栏标签页">
-                    {SIDE_APP_ORDER.map((appId) => {
-                      const appMeta = SIDE_APPS[appId];
-                      const isCurrent = appId === shown;
-                      return (
-                        <Pressable
-                          key={appId}
-                          className={`${styles.menuRow} ${styles.menuItem} ${isCurrent ? styles.menuItemCurrent : ''}`}
-                          onClick={() => {
-                            setTabListOpen(false);
-                            onSelect(appId);
-                          }}
-                        >
-                          <span className={styles.tabListRow}>
-                            <span className={styles.tabListIcon}>{appMeta.icon585On}</span>
-                            <span>{appMeta.title}</span>
-                          </span>
-                          {isCurrent && <span className={styles.tabListDot} aria-hidden="true" />}
-                        </Pressable>
-                      );
-                    })}
+                  <div className={`${styles.menu} ${styles.menuTabList}`} role="menu" aria-label="窗口操作">
                     <Pressable
                       className={`${styles.menuRow} ${styles.menuItem}`}
                       onClick={() => {

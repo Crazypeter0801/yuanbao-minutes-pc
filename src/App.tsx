@@ -243,7 +243,7 @@ export default function App() {
     chat.push(buildArtifactCreatedMessage(created));
   };
 
-  const handleSubmit = (text: string) => {
+  const handleSubmit = (text: string, options?: { fromUser?: boolean }) => {
     const shared = lastArtifact.current;
     if (text === SHARE_TO_GROUP_LABEL && shared) {
       chat.runTask(text, () => chat.push(buildArtifactSharedMessage(shared)));
@@ -268,7 +268,7 @@ export default function App() {
       }
       return;
     }
-    if (scenario.asReply) {
+    if (scenario.asReply || options?.fromUser) {
       chat.runTask(text, () => [scenario.build()].flat().forEach(chat.push));
       return;
     }

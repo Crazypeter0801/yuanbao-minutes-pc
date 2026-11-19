@@ -195,7 +195,7 @@
   opacity: 0;
 }
 
-/* 右侧操作胶囊（505:12590）：高 40、圆角 20、padding 6 12、#FFF、1px #EBEDF2、blur(10px) */
+/* 右侧操作胶囊（505:12590）：高 40、圆角 20、#FFF、1px #EBEDF2、blur(10px) */
 .pillActionsCapsule {
   flex: 0 0 auto;
   display: flex;
@@ -203,7 +203,7 @@
   justify-content: center;
   height: 40px;
   margin-left: 8px;
-  padding: 6px 12px;
+  padding: 6px 8px;
   border-radius: 20px;
   background-color: var(--wm-color-background-quaternary);
   box-shadow: inset 0 0 0 1px var(--wm-color-outline-tertiary);
@@ -211,18 +211,18 @@
   backdrop-filter: blur(10px);
 
   & > * + * {
-    margin-left: 4px;
+    margin-left: 2px;
   }
 }
 
-/* 独立窗口 / 更多（505:12592 / 505:12597）：24×24、圆角 7 */
+/* 独立窗口 / 更多：与右侧 ⌄ 下拉按钮统一为 28×28、圆角 6 的 hover 热区 */
 .pillActionBtn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 7px;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
   cursor: pointer;
   outline: none;
   transition: background-color 120ms ease-in-out;
@@ -272,9 +272,9 @@
 .menuTabList {
   top: calc(100% + 6px);
   right: 6px;
-  width: 184px;
+  width: 144px;
   padding: 6px;
-  border-radius: 14px;
+  border-radius: 12px;
 }
 
 /* ---------- 分段标签页（Figma 585:68637）：#F7F7F7 顶条 + 白底内凹反圆角激活页签 ---------- */
@@ -318,7 +318,7 @@
   justify-content: center;
   width: 28px;
   height: 28px;
-  border-radius: 7px;
+  border-radius: 6px;
   transition: background-color 120ms ease-in-out;
 }
 
@@ -462,35 +462,6 @@
   height: 12px;
   margin-right: 5px;
   background-color: var(--wm-color-tab585-divider);
-}
-
-.tabListRow {
-  display: inline-flex;
-  align-items: center;
-
-  & > * + * {
-    margin-left: 8px;
-  }
-}
-
-.tabListIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-}
-
-.menuItemCurrent {
-  color: var(--wm-color-text-primary);
-  font-weight: 500;
-}
-
-.tabListDot {
-  width: 6px;
-  height: 6px;
-  border-radius: 3px;
-  background-color: var(--wm-color-brand-yuanbao);
 }
 
 @keyframes classic-tab-expand {

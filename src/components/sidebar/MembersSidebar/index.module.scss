@@ -6,12 +6,12 @@
   flex-direction: column;
 }
 
-/* 分段 + 搜索：左右 20，间距 8；下面到成员列表 16（Figma 504:11247 gap 16） */
+/* 分段 + 搜索：顶部留 12 呼吸感（对齐 Figma 585:68637），左右 20，间距 8；下面到成员列表 16 */
 .toolbar {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
-  padding: 0 20px 16px;
+  padding: 12px 20px 16px;
 
   & > * + * {
     margin-left: 8px;
