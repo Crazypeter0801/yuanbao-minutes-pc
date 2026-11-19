@@ -1,6 +1,7 @@
 /* padding 10、间距 16、圆角 24、1px 内描边 + 0.5px 8% 内描边 + 0 4 24 / 6% 落影；单行高 48（Figma 489:10655） */
 .wrap {
   position: relative;
+  z-index: 3;
 }
 
 .input {
@@ -24,6 +25,15 @@
 
   & > * + * {
     margin-left: 16px;
+  }
+}
+
+/* 推荐指令弹层打开时，输入框收弱外阴影，自然嵌入弹层底部 */
+.inputIntegrated {
+  box-shadow: inset 0 0 0 1px var(--wm-color-outline-secondary);
+
+  &:focus-within {
+    box-shadow: inset 0 0 0 1.25px var(--wm-color-brand-yuanbao);
   }
 }
 

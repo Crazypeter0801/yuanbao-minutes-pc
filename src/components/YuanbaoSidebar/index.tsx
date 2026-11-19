@@ -13,7 +13,7 @@ import { AgentDetail } from "@/components/sidebar/AgentDetail";
 import { ChatInput } from "@/components/sidebar/ChatInput";
 import { ChatList } from "@/components/sidebar/ChatList";
 import { MessageStream } from "@/components/sidebar/MessageStream";
-import { QuickCommandEntry } from "@/components/sidebar/QuickCommandEntry";
+import { QuickCommandEntry, QuickCommandPopover } from "@/components/sidebar/QuickCommandEntry";
 import { SidebarHeader } from "@/components/sidebar/SidebarHeader";
 import { TaskDetail } from "@/components/sidebar/TaskDetail";
 import { TaskEntry } from "@/components/sidebar/TaskEntry";
@@ -21,6 +21,7 @@ import { INITIAL_SCHEDULED_TASKS, type AgentScheduledTask } from "@/data/agentDe
 import { AGENT_TASKS, RUNNING_TASK_COUNT, type AgentTask } from "@/data/agentTasks";
 import { NOTE_ARTIFACT_ID } from "@/data/artifacts";
 import { buildCardResult } from "@/data/interactiveCards";
+import type { QuickCommandItem } from "@/data/quickCommands";
 import { useToast } from "@/hooks/useToast";
 import type { YuanbaoSession } from "@/hooks/useYuanbaoSession";
 import type { ArtifactItem } from "@/types/artifact";
@@ -86,6 +87,9 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
   const [activeTask, setActiveTask] = useState<AgentTask | null>(null);
   const footerRef = useRef<HTMLDivElement>(null);
   const [footerHeight, setFooterHeight] = useState(122);
+  const [inputHeight, setInputHeight] = useState(48);
+  const [slashQuery, setSlashQuery] = useState("");
+  const [inputClearSignal, setInputClearSignal] = useState(0);
 
   useLayoutEffect(() => {
     const node = footerRef.current;
@@ -150,7 +154,35 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
     [chat],
   );
 
-  const send = (text: string) => (onSubmit ? onSubmit(text) : chat.ask(text));
+  const send = useCallback(
+    (text: string) => (onSubmit ? onSubmit(text) : chat.ask(text)),
+    [chat, onSubmit],
+  );
+
+  const handleInputValueChange = useCallback((value: string) => {
+    if (value.startsWith("/")) {
+      setSlashQuery(value.slice(1));
+      setOpenPanel("commands");
+    } else {
+      setSlashQuery("");
+      setOpenPanel((current) => (current === "commands" ? null : current));
+    }
+  }, []);
+
+  const handlePickCommand = useCallback(
+    (item: QuickCommandItem) => {
+      setOpenPanel(null);
+      setSlashQuery("");
+      setInputClearSignal((count) => count + 1);
+      send(item.prompt);
+    },
+    [send],
+  );
+
+  const handleCloseCommands = useCallback(() => {
+    setOpenPanel(null);
+    setSlashQuery("");
+  }, []);
 
   return (
     <div className={styles.panel}>
@@ -192,9 +224,11 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
           <div className={styles.statusRow}>
             <QuickCommandEntry
               expanded={openPanel === "commands"}
-              onExpandedChange={(next) => setOpenPanel(next ? "commands" : null)}
+              onExpandedChange={(next) => {
+                setSlashQuery("");
+                setOpenPanel(next ? "commands" : null);
+              }}
               hidden={openPanel === "tasks"}
-              onPick={send}
             />
             <TaskEntry
               tasks={AGENT_TASKS}
@@ -206,10 +240,24 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
               onOpenAgentDetail={() => setDetailOpen(true)}
             />
           </div>
+          <QuickCommandPopover
+            open={openPanel === "commands"}
+            query={slashQuery}
+            containerRef={footerRef}
+            inputHeight={inputHeight}
+            onClose={handleCloseCommands}
+            onPick={handlePickCommand}
+            onCreate={() => showToast("创建自定义指令（演示）")}
+            onInspect={(item) => showToast(`${item.title}：${item.description}`)}
+          />
           <ChatInput
             placeholder="和元宝聊聊"
             onSubmit={send}
             onToolAction={(label) => showToast(`${label}（演示）`)}
+            onValueChange={handleInputValueChange}
+            clearSignal={inputClearSignal}
+            commandOpen={openPanel === "commands"}
+            onHeightChange={setInputHeight}
           />
         </div>
       </div>
