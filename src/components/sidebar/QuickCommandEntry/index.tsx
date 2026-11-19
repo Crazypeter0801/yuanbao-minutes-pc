@@ -1,4 +1,5 @@
 import type { FC } from 'react';
+import IconTab585Close from '@/assets/d2c/icons/sidetabs585/icon-tab585-close';
 import IconSide3Book from '@/assets/d2c/icons/v2/icon-side3-book';
 import { Pressable } from '@/components/common/Pressable';
 import { MorphPanel } from '@/components/sidebar/MorphPanel';
@@ -55,14 +56,7 @@ export const QuickCommandEntry: FC<QuickCommandEntryProps> = ({
         title="关闭"
         stopPropagation
       >
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-          <path
-            d="M3.5 3.5 10.5 10.5M10.5 3.5 3.5 10.5"
-            stroke="currentColor"
-            strokeWidth="1.35"
-            strokeLinecap="round"
-          />
-        </svg>
+        <IconTab585Close width={28} height={28} />
       </Pressable>
     }
   >
