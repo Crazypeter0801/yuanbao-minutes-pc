@@ -132,31 +132,16 @@
 }
 
 .optionMenu {
-  width: 268px;
+  width: 204px;
 }
 
 .optionItem {
   justify-content: space-between;
-  gap: 10px;
-  height: auto;
-  min-height: 44px;
-  padding: 6px 10px 6px 12px;
+  padding: 0 10px 0 12px;
 }
 
 .optionItemActive {
   background-color: var(--wm-color-agent-surface);
-}
-
-.optionText {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.optionHint {
-  font-size: 11px;
-  line-height: 15px;
-  color: var(--wm-color-text-tertiary);
 }
 
 .optionCheck {
@@ -164,6 +149,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-left: 10px;
   color: var(--wm-color-brand-yuanbao);
   opacity: 0;
 }

@@ -6,9 +6,9 @@ import styles from './index.module.scss';
 
 type OpenMenuKey = DemoMenu['key'] | 'tab-style';
 
-const TAB_STYLE_OPTIONS: Array<{ value: SideTabStyle; label: string; hint: string }> = [
-  { value: 'pill505', label: '新版胶囊标签页', hint: 'Figma 505:12421 · 默认' },
-  { value: 'classic', label: '原版标签页', hint: 'single-window-base' },
+const TAB_STYLE_OPTIONS: Array<{ value: SideTabStyle; label: string }> = [
+  { value: 'pill505', label: '新版胶囊标签页' },
+  { value: 'classic', label: '分段标签页' },
 ];
 
 interface DemoToolbarProps {
@@ -119,52 +119,46 @@ export const DemoToolbar: FC<DemoToolbarProps> = ({ onCommand, tabStyle, onTabSt
         );
       })}
 
-      {/* 侧栏标签页方案对比切换：Safari 风格（默认） vs 原版 single-window-base */}
+      {/* 侧栏标签页方案对比切换：新版胶囊标签页（默认） vs 分段标签页 */}
       <div className={styles.slot}>
         {tabStyleOpen && (
-          <div className={`${styles.menu} ${styles.optionMenu}`} role="menu" aria-label="侧栏标签页方案" ref={menuRef}>
-            <div className={styles.group}>
-              <p className={styles.groupTitle}>侧栏标签页方案</p>
-              <div className={styles.list} role="radiogroup" aria-label="切换侧栏标签页视觉方案">
-                {TAB_STYLE_OPTIONS.map((option) => {
-                  const selected = tabStyle === option.value;
-                  return (
-                    <Pressable
-                      key={option.value}
-                      className={`${styles.item} ${styles.optionItem} ${selected ? styles.optionItemActive : ''}`}
-                      onClick={() => onTabStyleChange(option.value)}
-                      ariaLabel={`${option.label}（${option.hint}）`}
-                      ariaExpanded={selected}
-                    >
-                      <span className={styles.optionText}>
-                        <span className={styles.itemText}>{option.label}</span>
-                        <span className={styles.optionHint}>{option.hint}</span>
-                      </span>
-                      <span className={`${styles.optionCheck} ${selected ? styles.optionCheckVisible : ''}`} aria-hidden="true">
-                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                          <path
-                            d="M3.2 7.3 5.8 9.9 10.9 4.5"
-                            stroke="currentColor"
-                            strokeWidth="1.6"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </span>
-                    </Pressable>
-                  );
-                })}
-              </div>
+          <div className={`${styles.menu} ${styles.optionMenu}`} role="menu" aria-label="侧栏标签页" ref={menuRef}>
+            <div className={styles.list} role="radiogroup" aria-label="侧栏标签页">
+              {TAB_STYLE_OPTIONS.map((option) => {
+                const selected = tabStyle === option.value;
+                return (
+                  <Pressable
+                    key={option.value}
+                    className={`${styles.item} ${styles.optionItem} ${selected ? styles.optionItemActive : ''}`}
+                    onClick={() => onTabStyleChange(option.value)}
+                    ariaLabel={option.label}
+                    ariaExpanded={selected}
+                  >
+                    <span className={styles.itemText}>{option.label}</span>
+                    <span className={`${styles.optionCheck} ${selected ? styles.optionCheckVisible : ''}`} aria-hidden="true">
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path
+                          d="M3.2 7.3 5.8 9.9 10.9 4.5"
+                          stroke="currentColor"
+                          strokeWidth="1.6"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </span>
+                  </Pressable>
+                );
+              })}
             </div>
           </div>
         )}
         <Pressable
           className={`${styles.button} ${tabStyleOpen ? styles.buttonActive : ''}`}
           onClick={() => setOpenKey(tabStyleOpen ? null : 'tab-style')}
-          ariaLabel="侧栏标签页方案"
+          ariaLabel="侧栏标签页"
           ariaExpanded={tabStyleOpen}
         >
-          <span className={styles.buttonText}>侧栏标签页方案</span>
+          <span className={styles.buttonText}>侧栏标签页</span>
           <span className={`${styles.caret} ${tabStyleOpen ? styles.caretOpen : ''}`} aria-hidden="true">
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
               <path d="M3 7.5 6 4.5l3 3" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
