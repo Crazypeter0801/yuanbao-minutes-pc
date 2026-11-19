@@ -7,8 +7,8 @@ import styles from './index.module.scss';
 type OpenMenuKey = DemoMenu['key'] | 'tab-style';
 
 const TAB_STYLE_OPTIONS: Array<{ value: SideTabStyle; label: string }> = [
-  { value: 'pill505', label: '新版胶囊标签页' },
-  { value: 'classic', label: '分段标签页' },
+  { value: 'pill505', label: 'Safari胶囊' },
+  { value: 'classic', label: 'Chrome页签' },
 ];
 
 interface DemoToolbarProps {
@@ -21,7 +21,7 @@ interface DemoToolbarProps {
 }
 
 /**
- * 视口右侧贴边吸附演示控制台：模拟元宝发言 / 模拟用户发言 / 模拟交互功能 / 侧栏标签页
+ * 视口右侧贴边吸附演示控制台：模拟元宝发言 / 模拟用户发言 / 模拟交互功能 / 侧栏标签页方案
  * 四个按钮竖向吸附在右侧边缘，菜单统一向左侧弹出并自动约束在视口上下安全区内，不被裁切。
  */
 export const DemoToolbar: FC<DemoToolbarProps> = ({ onCommand, tabStyle, onTabStyleChange }) => {
@@ -128,11 +128,11 @@ export const DemoToolbar: FC<DemoToolbarProps> = ({ onCommand, tabStyle, onTabSt
         );
       })}
 
-      {/* 侧栏标签页方案对比切换：新版胶囊标签页（默认） vs 分段标签页（Figma 585:68637） */}
+      {/* 侧栏标签页方案对比切换：Safari胶囊（默认，Figma 505:12421） vs Chrome页签（Figma 585:68637） */}
       <div className={styles.slot}>
         {tabStyleOpen && (
-          <div className={`${styles.menu} ${styles.optionMenu}`} role="menu" aria-label="侧栏标签页" ref={menuRef}>
-            <div className={styles.list} role="radiogroup" aria-label="侧栏标签页">
+          <div className={`${styles.menu} ${styles.optionMenu}`} role="menu" aria-label="侧栏标签页方案" ref={menuRef}>
+            <div className={styles.list} role="radiogroup" aria-label="侧栏标签页方案">
               {TAB_STYLE_OPTIONS.map((option) => {
                 const selected = tabStyle === option.value;
                 return (
@@ -164,7 +164,7 @@ export const DemoToolbar: FC<DemoToolbarProps> = ({ onCommand, tabStyle, onTabSt
         <Pressable
           className={`${styles.button} ${tabStyleOpen ? styles.buttonActive : ''}`}
           onClick={() => setOpenKey(tabStyleOpen ? null : 'tab-style')}
-          ariaLabel="侧栏标签页"
+          ariaLabel="侧栏标签页方案"
           ariaExpanded={tabStyleOpen}
         >
           <span className={`${styles.caret} ${tabStyleOpen ? styles.caretOpen : ''}`} aria-hidden="true">
@@ -172,7 +172,7 @@ export const DemoToolbar: FC<DemoToolbarProps> = ({ onCommand, tabStyle, onTabSt
               <path d="M7.5 3 4.5 6l3 3" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </span>
-          <span className={styles.buttonText}>侧栏标签页</span>
+          <span className={styles.buttonText}>侧栏标签页方案</span>
         </Pressable>
       </div>
     </div>
