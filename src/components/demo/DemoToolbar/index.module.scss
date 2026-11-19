@@ -1,23 +1,25 @@
-/* 窗口外的演示按钮条：三个按钮间距 12，位置由 App 决定 */
+/* 窗口外的演示按钮条：竖向排列、等宽、间距 12，位置由 App 决定；菜单以整条为定位基准 */
 .bar {
+  position: relative;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
 
   & > * + * {
-    margin-left: 12px;
+    margin-top: 12px;
   }
 }
 
-/* 每个按钮自带菜单的定位基准 */
 .slot {
-  position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 /* 36 高胶囊按钮，白底细描边，和侧栏里的胶囊同一语言 */
 .button {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   height: 36px;
   padding: 0 12px 0 16px;
   border-radius: 18px;
@@ -47,29 +49,33 @@
   color: var(--wm-color-text-primary);
 }
 
-/* 收起时箭头朝下，展开时朝上（菜单向上弹出） */
+/* 菜单向左弹出：收起时箭头朝左，展开时朝右 */
 .caret {
   display: flex;
   width: 12px;
   height: 12px;
   margin-left: 6px;
   color: var(--wm-color-text-tertiary);
-  transform: rotate(180deg);
+  transform: rotate(-90deg);
   transition: transform 160ms ease-out;
 }
 
 .caretOpen {
-  transform: rotate(0deg);
+  transform: rotate(90deg);
 }
 
-/* 菜单：向上弹出、左对齐按钮，样式同输入框加号菜单（圆角 12、padding 6、无描边） */
+/*
+ * 菜单：从按钮条左侧弹出、与整条垂直居中，样式同输入框加号菜单（圆角 12、padding 6、无描边）；
+ * 最高 660，浏览器矮时收到视口内滚动。
+ */
 .menu {
   position: absolute;
-  bottom: calc(100% + 8px);
-  left: 0;
+  top: 50%;
+  right: calc(100% + 8px);
   z-index: 200;
   width: 240px;
-  max-height: 660px;
+  max-height: min(660px, calc(100vh - 48px));
+  transform: translateY(-50%);
   padding: 6px;
   overflow-y: auto;
   border-radius: 12px;

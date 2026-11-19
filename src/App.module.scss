@@ -23,13 +23,16 @@
   flex: 0 0 auto;
 }
 
-/* 演示控制台：吸在浏览器窗口底部、距底 60，水平居中，不随页面滚动 */
+/*
+ * 演示控制台：吸在浏览器窗口右侧、竖向排列，与主窗口垂直居中对齐（主窗口上提了 40，这里同步）。
+ * 距右默认 24；浏览器较窄、主窗口右侧放不下时（按钮宽 130）往右边缘挤，最小 8，尽量不压到主窗口。
+ */
 .demoBar {
   position: fixed;
-  bottom: 60px;
-  left: 50%;
+  top: calc(50% - 40px);
+  right: clamp(8px, calc((100vw - 1338px) / 2 - 146px), 24px);
   z-index: 100;
-  transform: translateX(-50%);
+  transform: translateY(-50%);
   white-space: nowrap;
 }
 

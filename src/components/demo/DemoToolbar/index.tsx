@@ -9,9 +9,9 @@ interface DemoToolbarProps {
 }
 
 /**
- * 窗口外的演示按钮条：模拟元宝发言 / 模拟用户发言 / 模拟交互功能
+ * 窗口外的演示按钮条：模拟元宝发言 / 模拟用户发言 / 模拟交互功能（竖向排列，吸在浏览器右侧）
  * 快捷指令从会议窗口里整体拿出来放到这里，窗口内只保留真实产品界面。
- * 点按钮向上弹出指令菜单，同一时间只开一个；点外面或按 Esc 收起，点指令后自动收起。
+ * 点按钮向左弹出指令菜单，同一时间只开一个；点外面或按 Esc 收起，点指令后自动收起。
  */
 export const DemoToolbar: FC<DemoToolbarProps> = ({ onCommand }) => {
   const [openKey, setOpenKey] = useState<DemoMenu['key'] | null>(null);
