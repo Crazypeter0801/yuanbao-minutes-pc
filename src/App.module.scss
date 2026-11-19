@@ -1,5 +1,5 @@
 /*
- * 页面：Tahoe 壁纸铺满，1338×795 窗口在正中；四周各留 80，最小 1600×920。
+ * 页面：Tahoe 壁纸铺满，主窗口 + 控制台整组居中；上下留 80、左右 24，最小 1600×920。
  * 壁纸画在 .page 自身（不用 fixed），导入 Figma code layer 时也能完整显示。
  */
 .page {
@@ -8,7 +8,7 @@
   justify-content: center;
   min-width: 1600px;
   min-height: 100%;
-  padding: 80px;
+  padding: 80px 24px;
   background-color: var(--wm-color-stage-background);
   background-image: url('./assets/background/tahoe-light.jpg');
   background-repeat: no-repeat;
@@ -16,23 +16,22 @@
   background-size: cover;
 }
 
-/* 窗口容器：在浏览器里水平居中，垂直方向比正中再上提 40（用户要求，给底部演示控制台让位） */
+/*
+ * 主窗口 + 右侧演示控制台排成一行，整组在浏览器里水平居中；控制台与主窗口垂直居中、间距 16。
+ * 垂直方向比正中再上提 40（用户要求）。
+ */
 .frame {
   position: relative;
   top: -40px;
   flex: 0 0 auto;
+  display: flex;
+  align-items: center;
 }
 
-/*
- * 演示控制台：吸在浏览器窗口右侧、竖向排列，与主窗口垂直居中对齐（主窗口上提了 40，这里同步）。
- * 距右默认 24；浏览器较窄、主窗口右侧放不下时（按钮宽 130）往右边缘挤，最小 8，尽量不压到主窗口。
- */
+/* 演示控制台：跟在主窗口右边 16，竖向排列 */
 .demoBar {
-  position: fixed;
-  top: calc(50% - 40px);
-  right: clamp(8px, calc((100vw - 1338px) / 2 - 146px), 24px);
-  z-index: 100;
-  transform: translateY(-50%);
+  flex: 0 0 auto;
+  margin-left: 16px;
   white-space: nowrap;
 }
 

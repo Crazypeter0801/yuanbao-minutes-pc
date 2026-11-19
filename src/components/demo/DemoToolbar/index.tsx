@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FC } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type FC } from 'react';
 import { Pressable } from '@/components/common/Pressable';
 import { demoMenus, type CommandItem, type DemoMenu } from '@/data/commands';
 import styles from './index.module.scss';
@@ -9,9 +9,9 @@ interface DemoToolbarProps {
 }
 
 /**
- * 窗口外的演示按钮条：模拟元宝发言 / 模拟用户发言 / 模拟交互功能（竖向排列，吸在浏览器右侧）
+ * 窗口外的演示按钮条：模拟元宝发言 / 模拟用户发言 / 模拟交互功能（竖向排列，跟在主窗口右侧）
  * 快捷指令从会议窗口里整体拿出来放到这里，窗口内只保留真实产品界面。
- * 点按钮向左弹出指令菜单，同一时间只开一个；点外面或按 Esc 收起，点指令后自动收起。
+ * 点按钮向下弹出指令菜单，同一时间只开一个；点外面或按 Esc 收起，点指令后自动收起。
  */
 export const DemoToolbar: FC<DemoToolbarProps> = ({ onCommand }) => {
   const [openKey, setOpenKey] = useState<DemoMenu['key'] | null>(null);
@@ -39,6 +39,23 @@ export const DemoToolbar: FC<DemoToolbarProps> = ({ onCommand }) => {
     };
   }, [openKey]);
 
+  /** 菜单向下弹出：最高只到浏览器底边上方 16，放不下的部分在菜单里滚动 */
+  const menuRef = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const menu = menuRef.current;
+    if (!openKey || !menu) {
+      return undefined;
+    }
+    const fit = () => {
+      menu.style.maxHeight = '';
+      const room = window.innerHeight - menu.getBoundingClientRect().top - 16;
+      menu.style.maxHeight = `${Math.max(160, Math.min(660, room))}px`;
+    };
+    fit();
+    window.addEventListener('resize', fit);
+    return () => window.removeEventListener('resize', fit);
+  }, [openKey]);
+
   const pick = (item: CommandItem) => {
     setOpenKey(null);
     onCommand(item);
@@ -51,7 +68,7 @@ export const DemoToolbar: FC<DemoToolbarProps> = ({ onCommand }) => {
         return (
           <div className={styles.slot} key={menu.key}>
             {open && (
-              <div className={styles.menu} role="menu" aria-label={menu.label}>
+              <div className={styles.menu} role="menu" aria-label={menu.label} ref={menuRef}>
                 {menu.groups.map((group, index) => (
                   <div className={styles.group} key={group.title ?? `group-${index}`}>
                     {group.title && <p className={styles.groupTitle}>{group.title}</p>}

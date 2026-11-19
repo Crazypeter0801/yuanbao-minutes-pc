@@ -1,6 +1,5 @@
-/* 窗口外的演示按钮条：竖向排列、等宽、间距 12，位置由 App 决定；菜单以整条为定位基准 */
+/* 窗口外的演示按钮条：竖向排列、等宽、间距 12，位置由 App 决定 */
 .bar {
-  position: relative;
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -10,7 +9,9 @@
   }
 }
 
+/* 每个按钮自带菜单的定位基准 */
 .slot {
+  position: relative;
   display: flex;
   flex-direction: column;
 }
@@ -49,33 +50,32 @@
   color: var(--wm-color-text-primary);
 }
 
-/* 菜单向左弹出：收起时箭头朝左，展开时朝右 */
+/* 菜单向下弹出：收起时箭头朝下，展开时朝上 */
 .caret {
   display: flex;
   width: 12px;
   height: 12px;
   margin-left: 6px;
   color: var(--wm-color-text-tertiary);
-  transform: rotate(-90deg);
+  transform: rotate(180deg);
   transition: transform 160ms ease-out;
 }
 
 .caretOpen {
-  transform: rotate(90deg);
+  transform: rotate(0deg);
 }
 
 /*
- * 菜单：从按钮条左侧弹出、与整条垂直居中，样式同输入框加号菜单（圆角 12、padding 6、无描边）；
- * 最高 660，浏览器矮时收到视口内滚动。
+ * 菜单：从按钮下方 8 向下弹出、右缘与按钮对齐（往左长，不出浏览器右边），
+ * 样式同输入框加号菜单（圆角 12、padding 6、无描边）；最高 660，且不超过浏览器底边上方 16（组件里按位置算），放不下时内部滚动。
  */
 .menu {
   position: absolute;
-  top: 50%;
-  right: calc(100% + 8px);
+  top: calc(100% + 8px);
+  right: 0;
   z-index: 200;
   width: 240px;
-  max-height: min(660px, calc(100vh - 48px));
-  transform: translateY(-50%);
+  max-height: 660px;
   padding: 6px;
   overflow-y: auto;
   border-radius: 12px;
