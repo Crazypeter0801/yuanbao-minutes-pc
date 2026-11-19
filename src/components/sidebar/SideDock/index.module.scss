@@ -1,6 +1,7 @@
 /*
  * 侧栏槽位：收起时宽 0，打开时 386（卡片 376 + 左侧与会议区的 10）。
- * 卡片贴右放，宽度变化时像从窗口右缘滑进来；会议区是 flex 1，跟着让位。
+ * 左侧会中区域宽度固定 936，因此槽位开合时由主窗口整体向右展开 / 向左收缩，
+ * 左侧会中画面绝不拉伸变宽。
  */
 .slot {
   flex: 0 0 auto;
@@ -29,114 +30,175 @@
   }
 }
 
-/* ---------- 页签（多个应用并开时，Figma 505:12264） ---------- */
+/* ---------- macOS Safari 风格顶部标签栏 ---------- */
 
-/* 一行：padding 12、间距 4，页签高 40 → 整行 64，与单开时的标题栏同高，切换时内容不跳 */
-.tabs {
+.safariBar {
   position: relative;
   z-index: 30;
   flex: 0 0 auto;
   display: flex;
   align-items: center;
-  padding: 12px;
-
-  & > * + * {
-    margin-left: 4px;
-  }
+  gap: 6px;
+  height: 52px;
+  padding: 10px 10px 6px 12px;
 }
 
-/* 未选中：40×40、0.5px #EBEDF2 描边、圆角 8，灰色图标居中（元宝 20、成员 / 聊天 24） */
-.tab {
-  flex: 0 0 40px;
+/* 柔和浅灰凹槽轨道底 */
+.safariTrack {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  height: 34px;
+  padding: 3px;
+  border-radius: 10px;
+  background-color: var(--wm-color-safari-track);
+  box-shadow: inset 0 0 0 0.5px var(--wm-color-safari-track-line);
+}
+
+.safariCell {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.safariTab {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  box-shadow: inset 0 0 0 0.5px var(--wm-color-outline-tertiary);
+  height: 28px;
+  padding: 0 20px;
+  border-radius: 7.5px;
+  color: var(--wm-color-text-tertiary);
   cursor: pointer;
   outline: none;
-  transition: background-color 120ms ease-in-out;
+  user-select: none;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease,
+    box-shadow 160ms ease;
 
-  & > svg {
-    display: block;
-    flex: 0 0 auto;
+  &:not(.safariTabActive):hover,
+  &:not(.safariTabActive):focus-visible {
+    background-color: var(--wm-color-safari-tab-hover);
+    color: var(--wm-color-text-secondary);
   }
 
-  &:not(.tabSelected):hover,
-  &:not(.tabSelected):focus-visible {
-    background-color: var(--wm-color-control-hover);
+  &:hover .safariTabClose,
+  &:focus-within .safariTabClose {
+    opacity: 1;
+    pointer-events: auto;
   }
 }
 
-/* 选中：撑满剩余宽度，padding 0 8，左标题右操作（Figma 504:11045） */
-.tabSelected {
-  flex: 1 1 auto;
-  justify-content: space-between;
-  width: auto;
-  min-width: 0;
-  padding: 0 8px;
+/* 选中标签：独立圆角白卡 + 极细描边 + 柔和阴影浮起 */
+.safariTabActive {
+  background-color: var(--wm-color-safari-tab-active);
+  color: var(--wm-color-text-title);
+  box-shadow: var(--wm-shadow-safari-tab-active);
   cursor: default;
-  animation: tab-expand 200ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* 图标 24 + 名称 + （元宝的）小箭头，间距 6 */
-.tabTitle {
-  display: flex;
+.safariTabInner {
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
+  gap: 5px;
   min-width: 0;
-
-  & > * + * {
-    margin-left: 6px;
-  }
+  max-width: 100%;
 }
 
-.tabIcon {
-  display: flex;
-  flex: 0 0 24px;
-  width: 24px;
-  height: 24px;
-}
-
-/* 14/18 400 #000（Figma 504:11059） */
-.tabLabel {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  font-size: 14px;
-  line-height: 18px;
-  font-weight: 400;
-  color: var(--wm-color-text-primary);
-}
-
-/*
- * 3×8 的折线（描边 1.5 #B0B6C3），导出图四周带了描边外扩（上左 0.75、下右 1.25），
- * 按导出尺寸 5×10 显示，再用负边距抵回 3×8 的占位。
- */
-.tabChevron {
-  display: flex;
-  margin: -0.75px -1.25px -1.25px calc(6px - 0.75px);
-}
-
-/* 独立窗口 / 更多 / 关闭：20 的图标、间距 4（Figma 504:11060） */
-.tabActions {
+.safariTabIcon {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
-
-  & > * + * {
-    margin-left: 4px;
-  }
+  justify-content: center;
 }
 
-.tabAction {
+.safariTabLabel {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 12.5px;
+  line-height: 16px;
+  font-weight: 400;
+}
+
+.safariTabActive .safariTabLabel {
+  font-weight: 500;
+}
+
+/* Hover 时在标签右侧浮现的关闭按钮（×），不挤压居中标题 */
+.safariTabClose {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
-  border-radius: 6px;
+  width: 16px;
+  height: 16px;
+  border-radius: 5px;
+  color: var(--wm-color-text-tertiary);
+  opacity: 0;
+  pointer-events: none;
+  cursor: pointer;
+  outline: none;
+  transition:
+    opacity 120ms ease,
+    background-color 120ms ease,
+    color 120ms ease;
+
+  &:hover,
+  &:focus-visible {
+    opacity: 1;
+    pointer-events: auto;
+    background-color: var(--wm-color-safari-tab-close-hover);
+    color: var(--wm-color-text-title);
+  }
+}
+
+/* 非相邻未选中项之间的淡竖分隔线（邻近激活项或 hover 项时自动淡隐） */
+.safariDivider {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 14px;
+  border-radius: 1px;
+  background-color: var(--wm-color-safari-divider);
+  pointer-events: none;
+  transition: opacity 120ms ease;
+}
+
+.safariDividerHidden {
+  opacity: 0;
+}
+
+/* 右侧工具按钮：独立窗口弹出 + 更多 */
+.barActions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.barAction {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  color: var(--wm-color-text-secondary);
   cursor: pointer;
   outline: none;
   transition: background-color 120ms ease-in-out;
@@ -152,7 +214,7 @@
   }
 }
 
-.tabActionActive {
+.barActionActive {
   background-color: var(--wm-color-control-hover);
 }
 
@@ -161,24 +223,15 @@
   display: flex;
 }
 
-@keyframes tab-expand {
-  from {
-    opacity: 0.6;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-/* 「更多」菜单：220 宽白卡片，圆角 16，从按钮下方 8 弹出、右对齐 */
+/* 「更多」菜单：228 宽白卡片，圆角 14，右对齐弹出 */
 .menu {
   position: absolute;
-  top: calc(100% + 8px);
-  right: -32px;
-  z-index: 2;
-  width: 220px;
-  padding: 8px;
-  border-radius: 16px;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 4;
+  width: 228px;
+  padding: 6px;
+  border-radius: 14px;
   background-color: var(--wm-color-background-quaternary);
   box-shadow: var(--wm-shadow-input-menu);
   animation: menu-enter 180ms cubic-bezier(0.22, 1, 0.36, 1);
@@ -191,7 +244,7 @@
   min-height: 36px;
   padding: 0 10px;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 13px;
   color: var(--wm-color-text-secondary);
 }
 
@@ -202,6 +255,7 @@
   &:hover,
   &:focus-visible {
     background-color: var(--wm-color-control-hover);
+    color: var(--wm-color-text-title);
   }
 }
 
@@ -241,7 +295,6 @@
 
 /* ---------- 内容区 ---------- */
 
-/* 各应用叠放在同一块里：只显示当前的，其余隐藏但保持挂载（滚动位置、输入草稿不丢） */
 .panes {
   position: relative;
   flex: 1 1 auto;
@@ -257,7 +310,6 @@
   pointer-events: none;
 }
 
-/* 切到这个应用时淡入 + 上移 4px（200ms） */
 .paneActive {
   visibility: visible;
   pointer-events: auto;
@@ -276,8 +328,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tab,
-  .tabSelected,
+  .safariTab,
+  .safariTabClose,
+  .safariDivider,
   .menu,
   .paneActive {
     transition: none;

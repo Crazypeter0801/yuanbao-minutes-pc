@@ -1,13 +1,14 @@
 import { useCallback, useRef, useState } from "react";
-import { MeetingWindow } from "@/components/meeting/MeetingWindow";
-import { PollComposer } from "@/components/poll/PollComposer";
 import { WINDOW_TOAST_ROOT_ID } from "@/components/common/Toast";
 import { DemoToolbar } from "@/components/demo/DemoToolbar";
-import { YuanbaoSidebar } from "@/components/YuanbaoSidebar";
+import { MeetingWindow } from "@/components/meeting/MeetingWindow";
+import { PollComposer } from "@/components/poll/PollComposer";
 import { ChatSidebar } from "@/components/sidebar/ChatSidebar";
+import { FloatingWindow } from "@/components/sidebar/FloatingWindow";
 import { MembersSidebar } from "@/components/sidebar/MembersSidebar";
 import { SideDock, type SideAppId } from "@/components/sidebar/SideDock";
 import { SIDE_APP_ORDER } from "@/components/sidebar/SideDock/apps";
+import { YuanbaoSidebar } from "@/components/YuanbaoSidebar";
 import {
   buildArtifact,
   buildArtifactCreatedMessage,
@@ -20,9 +21,9 @@ import {
 } from "@/data/artifacts";
 import { buildAutoNote } from "@/data/autoNotes";
 import type { CommandItem } from "@/data/commands";
-import { buildPollPostedMessage, teamBuildingPoll } from "@/data/polls";
 import { SHARE_TO_GROUP_LABEL } from "@/data/meetingSession";
 import { topicAt } from "@/data/meetingTopics";
+import { buildPollPostedMessage, teamBuildingPoll } from "@/data/polls";
 import { matchScenario } from "@/data/proactiveScenarios";
 import { buildScreenshotNote, meetingShotSrc } from "@/data/yuanbaoContent";
 import { useMeetingChat } from "@/hooks/useMeetingChat";
@@ -30,90 +31,140 @@ import { useYuanbaoSession } from "@/hooks/useYuanbaoSession";
 import type { ArtifactItem } from "@/types/artifact";
 import styles from "./App.module.scss";
 
-/** 侧栏：已打开的应用（页签顺序）+ 正在看的那个；active 为 null 表示收起 */
+/** 侧栏停靠状态 + 弹出独立浮窗列表；active 为 null 表示侧栏区为空、主窗口向左收缩 */
 interface DockState {
   apps: SideAppId[];
   active: SideAppId | null;
+  floating: SideAppId[];
 }
 
 /**
- * 底栏按钮开合侧栏应用（参考 Demo sidebar-motion.js）
- * - 正在看的就是它：关掉；还开着别的就切到相邻页签（优先右边），否则整个侧栏收起；
- * - 侧栏收着：只打开它；
- * - 侧栏开着别的：加一个页签（已开过就直接切过去）。
+ * 从停靠区移除一个页签后的激活切换规则：
+ * - 若关闭/弹出的是成员或聊天且元宝仍在侧栏里，自动切回元宝页签；
+ * - 否则按固定顺序切到相邻残留页签；
+ * - 若停靠区已空，置 active 为 null，触发主窗口向左收缩（保留 apps 供收起过渡动画结束再清空）。
  */
-function toggleDockApp({ apps, active }: DockState, app: SideAppId): DockState {
-  if (active === app) {
-    if (apps.length > 1) {
-      // 按页签的固定顺序（元宝 → 管理成员 → 聊天）找相邻的
-      const ordered = SIDE_APP_ORDER.filter((id) => apps.includes(id));
-      const index = ordered.indexOf(app);
-      const rest = apps.filter((id) => id !== app);
-      return { apps: rest, active: ordered[index + 1] ?? ordered[index - 1] };
-    }
-    // 先只置空 active，卡片在收起动画里仍显示原内容，动画结束再清空 apps
-    return { apps, active: null };
+function removeFromDock(state: DockState, app: SideAppId): Pick<DockState, "apps" | "active"> {
+  const ordered = SIDE_APP_ORDER.filter((id) => state.apps.includes(id));
+  const rest = state.apps.filter((id) => id !== app);
+
+  if (state.active !== app) {
+    return { apps: rest, active: state.active };
   }
-  if (active === null) {
-    return { apps: [app], active: app };
+
+  if (rest.length === 0) {
+    return { apps: state.apps, active: null };
   }
-  return { apps: apps.includes(app) ? apps : [...apps, app], active: app };
+
+  if (app !== "yuanbao" && rest.includes("yuanbao")) {
+    return { apps: rest, active: "yuanbao" };
+  }
+
+  const index = ordered.indexOf(app);
+  const nextActive = ordered[index + 1] ?? ordered[index - 1] ?? rest[0];
+  return { apps: rest, active: nextActive };
+}
+
+/**
+ * 底栏按钮切换应用：
+ * - 若该应用当前正浮出为独立窗口，重新吸附回侧栏并激活（主窗口向右展开）；
+ * - 若该应用正是当前停靠激活页签，则关闭它；
+ * - 否则在侧栏中打开/切到该页签（若侧栏收起，主窗口向右展开）。
+ */
+function toggleDockApp(state: DockState, app: SideAppId): DockState {
+  if (state.floating.includes(app)) {
+    const nextFloating = state.floating.filter((id) => id !== app);
+    const baseApps = state.active === null ? [] : state.apps;
+    const nextApps = baseApps.includes(app) ? baseApps : [...baseApps, app];
+    return { apps: nextApps, active: app, floating: nextFloating };
+  }
+
+  if (state.active === app) {
+    return { ...state, ...removeFromDock(state, app) };
+  }
+
+  if (state.active === null) {
+    return { ...state, apps: [app], active: app };
+  }
+
+  return {
+    ...state,
+    apps: state.apps.includes(app) ? state.apps : [...state.apps, app],
+    active: app,
+  };
+}
+
+/** 打开并激活指定应用（如「聊天 >」或演示指令）：若已浮出则吸附回侧栏 */
+function openDockApp(state: DockState, app: SideAppId): DockState {
+  if (state.active === app && !state.floating.includes(app)) {
+    return state;
+  }
+  const nextFloating = state.floating.filter((id) => id !== app);
+  const baseApps = state.active === null ? [] : state.apps;
+  const nextApps = baseApps.includes(app) ? baseApps : [...baseApps, app];
+  return { apps: nextApps, active: app, floating: nextFloating };
 }
 
 /** 「建一个 PDF / PPT / 文件」这类说法都算要生成产物 */
 const CREATE_FILE_PATTERN = /创建|建个|生成|做一?份|出一份/;
 const FILE_KIND_PATTERN = /pdf|ppt|幻灯片|文件|纪要文档/i;
 
-/**
- * 腾讯会议 PC + 元宝 Agent 对话区（Figma 257:1540）· Figma 导入版
- *
- * 1. Tahoe 壁纸铺满页面，1440×760 主窗口（会议区 + 元宝侧栏）居中，窗口内不放任何演示入口；
- * 2. 窗口下方的壁纸上浮着三个演示按钮：模拟元宝发言 / 模拟用户发言 / 模拟交互功能；
- * 3. 输入框里直接打「刚入会」「建个投票」这类词也能触发演示场景。
- */
 export default function App() {
-  const [dock, setDock] = useState<DockState>({ apps: ["yuanbao"], active: "yuanbao" });
+  const [dock, setDock] = useState<DockState>({
+    apps: ["yuanbao", "members", "chat"],
+    active: "yuanbao",
+    floating: [],
+  });
   const meetingChat = useMeetingChat();
   /** 从弹幕浮层「聊天 >」进来时，把焦点放进聊天输入框 */
   const [chatFocusSignal, setChatFocusSignal] = useState(0);
 
   const toggleApp = useCallback((app: SideAppId) => setDock((state) => toggleDockApp(state, app)), []);
-  /** 只打开 / 切到某个应用，已在看就不动（演示指令、「聊天 >」用） */
-  const openApp = useCallback(
-    (app: SideAppId) => setDock((state) => (state.active === app ? state : toggleDockApp(state, app))),
+  const openApp = useCallback((app: SideAppId) => setDock((state) => openDockApp(state, app)), []);
+  const closeApp = useCallback(
+    (app: SideAppId) => setDock((state) => ({ ...state, ...removeFromDock(state, app) })),
     [],
   );
-  const closeApp = useCallback(
+  const popOutApp = useCallback(
+    (app: SideAppId) =>
+      setDock((state) => {
+        const nextDock = removeFromDock(state, app);
+        const nextFloating = [...state.floating.filter((id) => id !== app), app];
+        return { ...nextDock, floating: nextFloating };
+      }),
+    [],
+  );
+  const dockBackApp = useCallback((app: SideAppId) => setDock((state) => openDockApp(state, app)), []);
+  const closeFloatingApp = useCallback(
+    (app: SideAppId) => setDock((state) => ({ ...state, floating: state.floating.filter((id) => id !== app) })),
+    [],
+  );
+  const focusFloatingApp = useCallback(
     (app: SideAppId) =>
       setDock((state) =>
-        state.active === app ? toggleDockApp(state, app) : { ...state, apps: state.apps.filter((id) => id !== app) },
+        state.floating[state.floating.length - 1] === app
+          ? state
+          : { ...state, floating: [...state.floating.filter((id) => id !== app), app] },
       ),
     [],
   );
   const closeAll = useCallback(() => setDock((state) => ({ ...state, active: null })), []);
   const handleDockClosed = useCallback(
-    () => setDock((state) => (state.active === null ? { apps: [], active: null } : state)),
+    () => setDock((state) => (state.active === null ? { ...state, apps: [], active: null } : state)),
     [],
   );
+
   const [pollOpen, setPollOpen] = useState(false);
   /** 会中文件：一开始只有「元宝笔记」（来源），生成文件、记录画面后再往里加 */
   const [artifacts, setArtifacts] = useState<ArtifactItem[]>([noteArtifact]);
   const chat = useYuanbaoSession();
-  /** 会中记录素材的游标：每次手动记一条往后走一格，不重复 */
   const noteIndex = useRef(0);
-  /** 最近生成的文件：「发送到某某会议群」的追问发的就是它 */
   const lastArtifact = useRef<ArtifactItem | null>(null);
-  /** 会中已识别出的话题数：0 时「正在帮你记」卡片显示识别中，之后逐条出现在「当前正在聊」下 */
   const [topicCount, setTopicCount] = useState(0);
   const noteTopics = Array.from({ length: topicCount }, (_, index) => topicAt(index));
 
-  /**
-   * 创建产物：本次生成的文件排最前；第一次额外附带一组会中已有文件。
-   * 只有创建过才会出现文件入口，这样第一步是从零开始的。
-   */
   const createArtifact = (kind: ArtifactKind, title: string) => {
     const created = buildArtifact(kind, title);
-    // 第一次生成时带上会中已有的文件（判断依据：附带文件还没进来）；之后只把新文件插到最前
     setArtifacts((previous) =>
       previous.some((item) => item.id === companionArtifacts[0].id)
         ? [created, ...previous]
@@ -123,11 +174,6 @@ export default function App() {
     chat.push(buildArtifactCreatedMessage(created));
   };
 
-  /**
-   * 输入框提交：先看是不是要生成文件，再过一遍演示场景，都没命中才当普通提问。
-   * 主动开口的场景（刚入会 / 别人提到 / 会议将结束）只追加元宝消息，不出现用户气泡；
-   * 投票这类任务场景用场景自带的 userText 提问，同时把确认弹窗摊开。
-   */
   const handleSubmit = (text: string) => {
     const shared = lastArtifact.current;
     if (text === SHARE_TO_GROUP_LABEL && shared) {
@@ -136,11 +182,8 @@ export default function App() {
     }
 
     if (CREATE_FILE_PATTERN.test(text) && FILE_KIND_PATTERN.test(text)) {
-      // 和普通提问一样先出用户气泡、元宝想一下再回，文件随回答一起落进「输出」
       const kind: ArtifactKind = /ppt|幻灯片/i.test(text) ? "pptx" : "pdf";
-      chat.runTask(text, () =>
-        createArtifact(kind, resolveArtifactTitle(text, kind)),
-      );
+      chat.runTask(text, () => createArtifact(kind, resolveArtifactTitle(text, kind)));
       return;
     }
 
@@ -157,18 +200,12 @@ export default function App() {
       return;
     }
     if (scenario.asReply) {
-      // 追问建议触发的承接场景：先出用户气泡，元宝想一下再回
       chat.runTask(text, () => [scenario.build()].flat().forEach(chat.push));
       return;
     }
     [scenario.build()].flat().forEach(chat.push);
   };
 
-  /**
-   * 执行一条演示指令：侧栏关着就先打开，再按类型分发
-   * - effect：会中记录 / 记录画面，直接推一条元宝消息；
-   * - 其余都走和输入框相同的链路（普通提问 / 生成文件 / 演示场景）。
-   */
   const runCommand = (item: CommandItem) => {
     openApp("yuanbao");
     if (item.effect === "auto-note") {
@@ -177,13 +214,10 @@ export default function App() {
       return;
     }
     if (item.effect === "next-topic") {
-      // 只换卡片上的话题，不往对话里加消息：要点在对话里，话题在卡片上，两边不重复
-      // 不封顶：话题池用完后从头轮着取
       setTopicCount((current) => current + 1);
       return;
     }
     if (item.effect === "screenshot") {
-      // 对话里出现的截图同步进文件夹的「来源」
       const note = buildScreenshotNote();
       chat.push(note);
       setArtifacts((previous) => [buildScreenshotArtifact(meetingShotSrc, note.createdAt), ...previous]);
@@ -192,68 +226,101 @@ export default function App() {
     handleSubmit(item.prompt ?? item.label);
   };
 
+  const renderAppContent = (id: SideAppId, showHeader: boolean, inFloating: boolean) => {
+    if (id === "chat") {
+      return (
+        <ChatSidebar
+          chat={meetingChat}
+          showHeader={showHeader}
+          onClose={() => (inFloating ? closeFloatingApp("chat") : closeApp("chat"))}
+          onPopOut={inFloating ? undefined : () => popOutApp("chat")}
+          focusSignal={chatFocusSignal}
+        />
+      );
+    }
+    if (id === "members") {
+      return (
+        <MembersSidebar
+          showHeader={showHeader}
+          onClose={() => (inFloating ? closeFloatingApp("members") : closeApp("members"))}
+          onPopOut={inFloating ? undefined : () => popOutApp("members")}
+        />
+      );
+    }
+    return (
+      <YuanbaoSidebar
+        chat={chat}
+        artifacts={artifacts}
+        onClose={() => (inFloating ? closeFloatingApp("yuanbao") : closeApp("yuanbao"))}
+        onPopOut={inFloating ? undefined : () => popOutApp("yuanbao")}
+        onSubmit={handleSubmit}
+        noteTopics={noteTopics}
+        showHeader={showHeader}
+      />
+    );
+  };
+
+  const dockOpen = dock.active !== null;
+
   return (
     <div className={styles.page}>
       <div className={styles.frame}>
-        <div className={styles.window} id={WINDOW_TOAST_ROOT_ID}>
-          {/* 投票弹窗只盖会议区，元宝说的话仍然看得见 */}
-          <div className={styles.meetingArea}>
-            <MeetingWindow
-              activeApp={dock.active}
-              onToggleApp={toggleApp}
-              barrage={meetingChat.barrage}
-              onSendBarrage={meetingChat.send}
-              onOpenChat={() => {
-                openApp("chat");
-                setChatFocusSignal((value) => value + 1);
-              }}
-            />
-            {pollOpen && (
-              <PollComposer
-                draft={teamBuildingPoll}
-                onClose={() => setPollOpen(false)}
-                onSubmit={() => {
-                  setPollOpen(false);
-                  chat.push(buildPollPostedMessage(teamBuildingPoll.title));
+        {/* 固定 1338 宽舞台锚点：主窗口靠左停放，侧栏全部关闭或浮出时主窗口向左收缩到 952，左侧会中区 936 原地不动 */}
+        <div className={styles.windowStage}>
+          <div className={styles.window} id={WINDOW_TOAST_ROOT_ID}>
+            <div className={styles.meetingArea}>
+              <MeetingWindow
+                activeApp={dock.active}
+                onToggleApp={toggleApp}
+                barrage={meetingChat.barrage}
+                onSendBarrage={meetingChat.send}
+                onOpenChat={() => {
+                  openApp("chat");
+                  setChatFocusSignal((value) => value + 1);
                 }}
               />
-            )}
-          </div>
-          <SideDock
-            apps={dock.apps}
-            active={dock.active}
-            onSelect={openApp}
-            onCloseApp={closeApp}
-            onCloseAll={closeAll}
-            onClosed={handleDockClosed}
-            renderApp={(id, { showHeader }) => {
-              if (id === "chat") {
-                return (
-                  <ChatSidebar
-                    chat={meetingChat}
-                    showHeader={showHeader}
-                    onClose={() => closeApp("chat")}
-                    focusSignal={chatFocusSignal}
-                  />
-                );
-              }
-              if (id === "members") {
-                return <MembersSidebar showHeader={showHeader} onClose={() => closeApp("members")} />;
-              }
-              return (
-                <YuanbaoSidebar
-                  chat={chat}
-                  artifacts={artifacts}
-                  onClose={() => closeApp("yuanbao")}
-                  onSubmit={handleSubmit}
-                  noteTopics={noteTopics}
-                  showHeader={showHeader}
+              {pollOpen && (
+                <PollComposer
+                  draft={teamBuildingPoll}
+                  onClose={() => setPollOpen(false)}
+                  onSubmit={() => {
+                    setPollOpen(false);
+                    chat.push(buildPollPostedMessage(teamBuildingPoll.title));
+                  }}
                 />
-              );
-            }}
-          />
+              )}
+            </div>
+            <SideDock
+              apps={dock.apps}
+              active={dock.active}
+              onSelect={openApp}
+              onCloseApp={closeApp}
+              onPopOutApp={popOutApp}
+              onCloseAll={closeAll}
+              onClosed={handleDockClosed}
+              renderApp={(id, { showHeader }) => renderAppContent(id, showHeader, false)}
+            />
+          </div>
+
+          {dock.floating.map((id, index) => (
+            <FloatingWindow
+              key={id}
+              id={id}
+              defaultOffset={{
+                x: (dockOpen ? 986 : 968) + index * 20,
+                y: (dockOpen ? 24 : 8) + index * 20,
+              }}
+              zIndex={40 + index}
+              onFocus={() => focusFloatingApp(id)}
+              onDockBack={() => dockBackApp(id)}
+              onClose={() => closeFloatingApp(id)}
+            >
+              {renderAppContent(id, false, true)}
+            </FloatingWindow>
+          ))}
         </div>
-        {/* 窗口外：演示按钮，浮在窗口下方的壁纸上 */}
+
+        {/* 窗口外：演示按钮，浮在窗口右侧壁纸上 */}
         <div className={styles.demoBar}>
           <DemoToolbar onCommand={runCommand} />
         </div>

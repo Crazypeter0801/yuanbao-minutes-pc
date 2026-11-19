@@ -12,7 +12,13 @@ interface SidebarHeaderProps {
   icon?: ReactNode;
   /** 标题文字，默认「元宝」 */
   title?: string;
-  /** 独立窗口打开 */
+  /** 标题右侧可选状态徽标（方案 A 顶部任务状态入口） */
+  titleStatus?: ReactNode;
+  /** 点击标题区触发（如打开 Agent 详情页） */
+  onTitleClick?: () => void;
+  /** 标题区可点提示 */
+  titleTooltip?: string;
+  /** 独立窗口弹出 */
   onPip: () => void;
   /** 「更多」菜单项 */
   menuItems: PopMenuItem[];
@@ -21,21 +27,60 @@ interface SidebarHeaderProps {
 }
 
 /**
- * 侧栏头部（Figma 416:20844）
- * 左：应用图标 24 + 标题 12/17 600（元宝 / 聊天 / 管理成员共用）；右：独立窗口 / 更多 / 关闭，三个 20 的图标、间距 4。
+ * 单应用侧栏头部（Figma 416:20844 + 方案 A 顶部 Agent 详情入口）
  */
-export const SidebarHeader: FC<SidebarHeaderProps> = ({ icon, title = '元宝', onPip, menuItems, onClose }) => {
+export const SidebarHeader: FC<SidebarHeaderProps> = ({
+  icon,
+  title = '元宝',
+  titleStatus,
+  onTitleClick,
+  titleTooltip,
+  onPip,
+  menuItems,
+  onClose,
+}) => {
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const titleContent = (
+    <>
+      <span className={styles.logo}>{icon ?? <IconSide3Logo />}</span>
+      <span className={styles.titleMeta}>
+        <span className={styles.titleRow}>
+          <span className={styles.titleText}>{title}</span>
+          {onTitleClick && (
+            <svg className={styles.chevron} width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+              <path
+                d="M4.4 2.8 7.6 6 4.4 9.2"
+                stroke="currentColor"
+                strokeWidth="1.35"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          )}
+        </span>
+        {titleStatus && <span className={styles.titleStatus}>{titleStatus}</span>}
+      </span>
+    </>
+  );
 
   return (
     <header className={styles.header}>
-      <div className={styles.title}>
-        <span className={styles.logo}>{icon ?? <IconSide3Logo />}</span>
-        <span className={styles.titleText}>{title}</span>
-      </div>
+      {onTitleClick ? (
+        <Pressable
+          className={`${styles.title} ${styles.titleClickable}`}
+          onClick={onTitleClick}
+          title={titleTooltip ?? `查看${title}详情`}
+          ariaLabel={titleTooltip ?? `查看${title}详情`}
+        >
+          {titleContent}
+        </Pressable>
+      ) : (
+        <div className={styles.title}>{titleContent}</div>
+      )}
 
       <div className={styles.actions}>
-        <Pressable className={styles.iconButton} onClick={onPip} title="独立窗口" ariaLabel="独立窗口打开">
+        <Pressable className={styles.iconButton} onClick={onPip} title="独立窗口弹出" ariaLabel="独立窗口弹出">
           <IconSide3Pip />
         </Pressable>
         <div className={styles.moreWrap}>

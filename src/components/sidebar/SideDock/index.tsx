@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState, type FC, type ReactNode, type TransitionEvent } from 'react';
-import IconTabClose from '@/assets/d2c/icons/sidetabs/icon-tab-close';
 import IconTabMore from '@/assets/d2c/icons/sidetabs/icon-tab-more';
 import IconTabPip from '@/assets/d2c/icons/sidetabs/icon-tab-pip';
-import IconTabYuanbaoChevron from '@/assets/d2c/icons/sidetabs/icon-tab-yuanbao-chevron';
 import { Pressable } from '@/components/common/Pressable';
 import { SidebarShell } from '@/components/sidebar/SidebarShell';
 import { useToast } from '@/hooks/useToast';
@@ -20,42 +18,51 @@ const FONT_SIZES = [
 ] as const;
 
 export interface SideAppContext {
-  /** 只开了一个应用：显示应用自己的标题栏；并开多个时标题栏由页签代替 */
+  /** 只开了一个应用：显示应用自己的标题栏；并开多个时由顶部 macOS Safari 风格标签栏代替 */
   showHeader: boolean;
 }
 
 interface SideDockProps {
-  /** 已打开的应用 */
+  /** 已停靠在侧栏的应用 */
   apps: SideAppId[];
   /** 正在看的应用；null 表示侧栏正在收起 / 已收起 */
   active: SideAppId | null;
   onSelect: (id: SideAppId) => void;
-  /** 关掉某个应用（页签上的 ×，或应用标题栏的 ×） */
+  /** 关掉某个标签页（标签上的 × 或应用标题栏的 ×） */
   onCloseApp: (id: SideAppId) => void;
-  /** 「更多 → 关闭所有窗口」 */
+  /** 弹出某个应用为独立浮窗 */
+  onPopOutApp: (id: SideAppId) => void;
+  /** 「更多 → 关闭所有标签页」 */
   onCloseAll: () => void;
-  /** 收起动画走完：此时再清空已打开的应用，收起过程中内容不消失 */
+  /** 收起动画走完：此时再清空残留内容 */
   onClosed: () => void;
   renderApp: (id: SideAppId, context: SideAppContext) => ReactNode;
 }
 
 /**
- * 侧栏容器 · 多应用页签（Figma 505:12264）
+ * 侧栏容器 · macOS Safari 风格多应用标签页
  *
- * - 打开 / 收起：槽位宽度 0 ↔ 386（卡片 376 + 与会议区间距 10），240ms，会议区跟着让位；
- * - 只开一个应用：就是原来的侧栏，标题栏由应用自己画（元宝仍按 Figma 416:20844）；
- * - 开了多个：顶部一行页签（padding 12、间距 4），顺序固定为 元宝 → 管理成员 → 聊天；
- *   当前页签撑满剩余宽度：图标 24 + 名称 14/18（元宝多一个小箭头），右侧 独立窗口 / 更多 / 关闭；
- *   其余页签 40×40 只露灰色图标；都是 0.5px #EBEDF2 描边、圆角 8；
- * - 切换页签时内容淡入并上移 4px（200ms）；各应用一直挂着，滚动位置、输入草稿都保留。
+ * - 打开 / 收起：槽位宽度 0 ↔ 386（卡片 376 + 间距 10），240ms；主窗口跟随向右展开 / 向左收缩，左侧会中区宽度锁定不变；
+ * - 多个应用并开时顶部呈现 Safari 风格凹槽轨道 + 选中白卡浮起 + 非相邻未选中项淡竖分隔线 + hover 反馈与关闭按钮（×）；
+ * - 元宝 / 成员 / 聊天均支持关闭与弹出为独立窗口；关闭成员或聊天时自动切回元宝页签。
  */
-export const SideDock: FC<SideDockProps> = ({ apps, active, onSelect, onCloseApp, onCloseAll, onClosed, renderApp }) => {
-  const { toast, showToast } = useToast();
+export const SideDock: FC<SideDockProps> = ({
+  apps,
+  active,
+  onSelect,
+  onCloseApp,
+  onPopOutApp,
+  onCloseAll,
+  onClosed,
+  renderApp,
+}) => {
+  const { toast } = useToast();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [hoveredId, setHoveredId] = useState<SideAppId | null>(null);
   const [fontSize, setFontSize] = useState<number>(14);
   const menuRef = useRef<HTMLDivElement>(null);
   const open = active !== null;
-  /** 收起过程中仍显示最后看的那个应用 */
+  /** 收起过程中保留最后看的那个应用，避免收起动画还没走完内容先变白 */
   const lastShown = useRef<SideAppId | null>(active);
   if (active) {
     lastShown.current = active;
@@ -63,20 +70,18 @@ export const SideDock: FC<SideDockProps> = ({ apps, active, onSelect, onCloseApp
   const shown = active ?? lastShown.current;
   const ordered = SIDE_APP_ORDER.filter((id) => apps.includes(id));
   const multiple = ordered.length > 1;
+  const activeIndex = shown ? ordered.indexOf(shown) : -1;
 
-  // 系统开了「减少动态效果」时没有过渡，transitionend 不会来，直接收尾
   useEffect(() => {
     if (!open && apps.length && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       onClosed();
     }
   }, [open, apps.length, onClosed]);
 
-  // 切页签 / 收起时菜单跟着关
   useEffect(() => {
     setMenuOpen(false);
   }, [shown, multiple, open]);
 
-  // 菜单开着时点别处 / Esc 收起（卡片有 clip-path，fixed 遮罩会被裁掉，所以用全局监听）
   useEffect(() => {
     if (!menuOpen) {
       return undefined;
@@ -109,96 +114,133 @@ export const SideDock: FC<SideDockProps> = ({ apps, active, onSelect, onCloseApp
     >
       <SidebarShell toast={toast} label={shown ? SIDE_APPS[shown].title : '侧栏'} fontSize={fontSize}>
         {multiple && (
-          <nav className={styles.tabs} aria-label="侧栏应用">
-            {ordered.map((id) => {
-              const meta = SIDE_APPS[id];
-              if (id !== shown) {
+          <nav className={styles.safariBar} aria-label="侧栏应用标签页">
+            <div className={styles.safariTrack} role="tablist" aria-label="侧栏页签">
+              {ordered.map((id, index) => {
+                const meta = SIDE_APPS[id];
+                const isSelected = id === shown;
+                const nextId = ordered[index + 1];
+                const hideRightDivider =
+                  index === ordered.length - 1 ||
+                  isSelected ||
+                  index + 1 === activeIndex ||
+                  hoveredId === id ||
+                  (nextId !== undefined && hoveredId === nextId);
+
                 return (
-                  <Pressable
+                  <div
                     key={id}
-                    className={styles.tab}
-                    onClick={() => onSelect(id)}
-                    ariaLabel={meta.title}
-                    title={meta.title}
+                    className={styles.safariCell}
+                    onMouseEnter={() => setHoveredId(id)}
+                    onMouseLeave={() => setHoveredId((current) => (current === id ? null : current))}
                   >
-                    {meta.iconOff}
-                  </Pressable>
-                );
-              }
-              return (
-                <div key={id} className={`${styles.tab} ${styles.tabSelected}`}>
-                  <div className={styles.tabTitle}>
-                    <span className={styles.tabIcon}>{meta.icon}</span>
-                    <span className={styles.tabLabel}>{meta.title}</span>
-                    {meta.chevron && (
-                      <span className={styles.tabChevron} aria-hidden="true">
-                        <IconTabYuanbaoChevron width={5} height={10} />
+                    <Pressable
+                      className={`${styles.safariTab} ${isSelected ? styles.safariTabActive : ''}`}
+                      onClick={() => onSelect(id)}
+                      ariaLabel={meta.title}
+                      ariaExpanded={isSelected}
+                      title={meta.title}
+                    >
+                      <span className={styles.safariTabInner}>
+                        <span className={styles.safariTabIcon}>
+                          {isSelected ? meta.tabIcon : meta.tabIconOff}
+                        </span>
+                        <span className={styles.safariTabLabel}>{meta.tabLabel}</span>
                       </span>
+                      <Pressable
+                        as="span"
+                        className={styles.safariTabClose}
+                        onClick={() => onCloseApp(id)}
+                        ariaLabel={`关闭${meta.title}`}
+                        title={`关闭${meta.title}`}
+                        stopPropagation
+                      >
+                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+                          <path
+                            d="M2.4 2.4 7.6 7.6M7.6 2.4 2.4 7.6"
+                            stroke="currentColor"
+                            strokeWidth="1.35"
+                            strokeLinecap="round"
+                          />
+                        </svg>
+                      </Pressable>
+                    </Pressable>
+                    {index < ordered.length - 1 && (
+                      <span
+                        className={`${styles.safariDivider} ${hideRightDivider ? styles.safariDividerHidden : ''}`}
+                        aria-hidden="true"
+                      />
                     )}
                   </div>
-                  <div className={styles.tabActions}>
-                    <Pressable
-                      className={styles.tabAction}
-                      onClick={() => showToast(`${meta.title}已在独立窗口打开（演示）`)}
-                      ariaLabel="独立窗口打开"
-                      title="独立窗口"
-                    >
-                      <IconTabPip />
-                    </Pressable>
-                    <div className={styles.moreWrap} ref={menuRef}>
-                      <Pressable
-                        className={`${styles.tabAction} ${menuOpen ? styles.tabActionActive : ''}`}
-                        onClick={() => setMenuOpen((value) => !value)}
-                        ariaLabel="更多操作"
-                        ariaExpanded={menuOpen}
-                        title="更多"
-                      >
-                        <IconTabMore />
-                      </Pressable>
-                      {menuOpen && (
-                        <div className={styles.menu} role="menu">
-                          <div className={styles.menuRow}>
-                            <span>字体大小</span>
-                            <div className={styles.fontOptions} role="radiogroup" aria-label="侧栏字体大小">
-                              {FONT_SIZES.map((item) => (
-                                <Pressable
-                                  key={item.value}
-                                  as="span"
-                                  className={`${styles.fontOption} ${
-                                    fontSize === item.value ? styles.fontOptionActive : ''
-                                  }`}
-                                  onClick={() => setFontSize(item.value)}
-                                  ariaLabel={`字体${item.label}`}
-                                >
-                                  {item.label}
-                                </Pressable>
-                              ))}
-                            </div>
-                          </div>
+                );
+              })}
+            </div>
+
+            <div className={styles.barActions}>
+              {shown && (
+                <Pressable
+                  className={styles.barAction}
+                  onClick={() => onPopOutApp(shown)}
+                  ariaLabel={`独立窗口打开${SIDE_APPS[shown].title}`}
+                  title="独立窗口弹出"
+                >
+                  <IconTabPip width={18} height={18} />
+                </Pressable>
+              )}
+              <div className={styles.moreWrap} ref={menuRef}>
+                <Pressable
+                  className={`${styles.barAction} ${menuOpen ? styles.barActionActive : ''}`}
+                  onClick={() => setMenuOpen((value) => !value)}
+                  ariaLabel="更多操作"
+                  ariaExpanded={menuOpen}
+                  title="更多"
+                >
+                  <IconTabMore width={18} height={18} />
+                </Pressable>
+                {menuOpen && (
+                  <div className={styles.menu} role="menu">
+                    <div className={styles.menuRow}>
+                      <span>字体大小</span>
+                      <div className={styles.fontOptions} role="radiogroup" aria-label="侧栏字体大小">
+                        {FONT_SIZES.map((item) => (
                           <Pressable
-                            className={`${styles.menuRow} ${styles.menuItem}`}
-                            onClick={() => {
-                              setMenuOpen(false);
-                              onCloseAll();
-                            }}
+                            key={item.value}
+                            as="span"
+                            className={`${styles.fontOption} ${
+                              fontSize === item.value ? styles.fontOptionActive : ''
+                            }`}
+                            onClick={() => setFontSize(item.value)}
+                            ariaLabel={`字体${item.label}`}
                           >
-                            关闭所有窗口
+                            {item.label}
                           </Pressable>
-                        </div>
-                      )}
+                        ))}
+                      </div>
                     </div>
+                    {shown && (
+                      <Pressable
+                        className={`${styles.menuRow} ${styles.menuItem}`}
+                        onClick={() => {
+                          setMenuOpen(false);
+                          onPopOutApp(shown);
+                        }}
+                      >
+                        独立窗口弹出「{SIDE_APPS[shown].tabLabel}」
+                      </Pressable>
+                    )}
                     <Pressable
-                      className={styles.tabAction}
-                      onClick={() => onCloseApp(id)}
-                      ariaLabel={`关闭${meta.title}`}
-                      title="关闭"
+                      className={`${styles.menuRow} ${styles.menuItem}`}
+                      onClick={() => {
+                        setMenuOpen(false);
+                        onCloseAll();
+                      }}
                     >
-                      <IconTabClose width={20} height={21} />
+                      关闭所有标签页
                     </Pressable>
                   </div>
-                </div>
-              );
-            })}
+                )}
+              </div>
+            </div>
           </nav>
         )}
 

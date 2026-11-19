@@ -1,41 +1,78 @@
-/* 撑满侧栏宽度，高 64、padding 16 20（Figma 416:20844） */
+/* 撑满侧栏宽度，高 60、padding 12 16（单开侧栏头部） */
 .header {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 64px;
-  padding: 16px 20px;
+  gap: 8px;
+  height: 60px;
+  padding: 10px 16px;
 }
 
-/* 标题：padding 4 12 4 0、间距 4、圆角 16（Figma 416:20878，左侧不留白，元宝标贴着 20 的边线） */
 .title {
   display: flex;
   align-items: center;
-  padding: 4px 12px 4px 0;
-  border-radius: 16px;
+  min-width: 0;
+  padding: 4px 10px 4px 4px;
+  border-radius: 12px;
+  gap: 7px;
+}
 
-  & > * + * {
-    margin-left: 4px;
+.titleClickable {
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--wm-color-agent-surface);
   }
 }
 
-/* 24 元宝标（Figma 416:20879） */
 .logo {
+  flex: 0 0 24px;
   display: flex;
   width: 24px;
   height: 24px;
 }
 
-/* 12/17 600 #1F2329（Figma 416:20890） */
+.titleMeta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
 .titleText {
-  font-size: 12px;
-  line-height: 17px;
+  font-size: 13px;
+  line-height: 18px;
   font-weight: 600;
   color: var(--wm-color-text-title);
 }
 
+.chevron {
+  flex: 0 0 auto;
+  color: var(--wm-color-text-tertiary);
+}
+
+.titleStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 1px;
+  font-size: 11px;
+  line-height: 15px;
+  color: var(--wm-color-text-tertiary);
+  white-space: nowrap;
+}
+
 .actions {
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
 
@@ -48,8 +85,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   border-radius: 6px;
   cursor: pointer;
   transition: background-color 120ms ease-in-out;

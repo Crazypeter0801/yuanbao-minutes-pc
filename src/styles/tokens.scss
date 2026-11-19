@@ -205,6 +205,34 @@
   --wm-color-barrage-bg: rgba(0, 0, 0, 0.5);
   --wm-color-barrage-name: #f5a53d;
 
+  /* ---------- macOS Safari 风格侧栏标签页 ---------- */
+  --wm-color-safari-track: rgba(118, 118, 128, 0.11);
+  --wm-color-safari-track-line: rgba(0, 0, 0, 0.045);
+  --wm-color-safari-tab-active: #ffffff;
+  --wm-color-safari-tab-hover: rgba(0, 0, 0, 0.045);
+  --wm-color-safari-tab-close-hover: rgba(0, 0, 0, 0.09);
+  --wm-color-safari-divider: rgba(0, 0, 0, 0.12);
+  --wm-shadow-safari-tab-active:
+    0 1px 3px rgba(0, 0, 0, 0.08),
+    0 0.5px 1px rgba(0, 0, 0, 0.06),
+    inset 0 0 0 0.5px rgba(0, 0, 0, 0.04);
+
+  /* ---------- Agent 详情页（Muse 结构 + 元宝视觉）与独立浮窗 ---------- */
+  --wm-color-agent-surface: #f6f7f9;
+  --wm-color-agent-surface-hover: #eef0f4;
+  --wm-color-agent-hero-bg: radial-gradient(circle at 50% 35%, #f3fcf7 0%, #eaf5ef 100%);
+  --wm-color-agent-badge-green-soft: rgba(0, 204, 112, 0.12);
+  --wm-color-agent-badge-amber: #f59e0b;
+  --wm-color-agent-badge-amber-soft: rgba(245, 158, 11, 0.13);
+  --wm-color-agent-badge-rose: #ef4444;
+  --wm-color-agent-badge-rose-soft: rgba(239, 68, 68, 0.1);
+  --wm-color-agent-toggle-off: #d5d9e2;
+  --wm-color-agent-toggle-on: #00cc70;
+  --wm-shadow-floating-window:
+    0 20px 48px rgba(15, 23, 42, 0.22),
+    0 4px 14px rgba(15, 23, 42, 0.1),
+    inset 0 0 0 0.5px rgba(0, 0, 0, 0.08);
+
   /* 字体 */
   --wm-font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial,
     system-ui, -apple-system, 'BlinkMacSystemFont', sans-serif;
