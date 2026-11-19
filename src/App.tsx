@@ -115,7 +115,7 @@ export default function App() {
     active: "yuanbao",
     floating: [],
   });
-  const [tabStyle, setTabStyle] = useState<SideTabStyle>("pill505");
+  const [tabStyle, setTabStyle] = useState<SideTabStyle>("classic");
   const [yuanbaoDetailOpen, setYuanbaoDetailOpen] = useState(false);
   /** 主窗口相对初始居中位置的自由拖拽偏移（px） */
   const [windowPos, setWindowPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });

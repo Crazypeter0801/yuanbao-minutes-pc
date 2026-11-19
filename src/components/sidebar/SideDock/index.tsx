@@ -32,7 +32,7 @@ interface SideDockProps {
   apps: SideAppId[];
   /** 正在看的应用；null 表示侧栏正在收起 / 已收起 */
   active: SideAppId | null;
-  /** 侧栏标签页视觉方案（默认 pill505：Figma 505:12421；classic：Figma 585:68637 分段标签页） */
+  /** 侧栏标签页视觉方案（默认 classic：Figma 585:68637 Chrome页签；pill505：Figma 505:12421 Safari胶囊） */
   tabStyle?: SideTabStyle;
   onSelect: (id: SideAppId) => void;
   /** 关掉某个标签页（标签上的 × 或应用标题栏的 ×） */
@@ -57,7 +57,7 @@ interface SideDockProps {
 export const SideDock: FC<SideDockProps> = ({
   apps,
   active,
-  tabStyle = 'pill505',
+  tabStyle = 'classic',
   onSelect,
   onCloseApp,
   onPopOutApp,

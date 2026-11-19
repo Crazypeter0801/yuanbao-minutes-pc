@@ -13,8 +13,8 @@ import IconTab585YuanbaoOff from '@/assets/d2c/icons/sidetabs585/icon-tab585-yua
 /** 侧栏里能开的三个应用 */
 export type SideAppId = 'yuanbao' | 'chat' | 'members';
 
-/** 侧栏多页签视觉方案：Figma 505:12421 新版顶部胶囊（默认） / Figma 585:68637 分段文件夹标签页 */
-export type SideTabStyle = 'pill505' | 'classic';
+/** 侧栏多页签视觉方案：Figma 585:68637 Chrome页签（默认） / Figma 505:12421 Safari胶囊 */
+export type SideTabStyle = 'classic' | 'pill505';
 
 /** 页签固定顺序：元宝 → 管理成员 → 聊天 */
 export const SIDE_APP_ORDER: SideAppId[] = ['yuanbao', 'members', 'chat'];
