@@ -46,6 +46,7 @@ export const QuickCommandEntry: FC<QuickCommandEntryProps> = ({
     contentKey={QUICK_COMMANDS.length}
     maxHeight={320}
     alignHeaderToContent
+    hideSummaryWhenExpanded
   >
     <div className={styles.list}>
       {QUICK_COMMANDS.map((command) => (

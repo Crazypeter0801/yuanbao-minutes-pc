@@ -42,6 +42,8 @@ interface MorphPanelProps {
    * 收起态不受影响
    */
   alignHeaderToContent?: boolean;
+  /** 展开态隐藏 summary（如「推荐指令」展开后标题栏仅保留文字，不显示图标） */
+  hideSummaryWhenExpanded?: boolean;
   children: ReactNode;
 }
 
@@ -66,6 +68,7 @@ export const MorphPanel: FC<MorphPanelProps> = ({
   contentKey,
   headerAction,
   alignHeaderToContent = false,
+  hideSummaryWhenExpanded = false,
   maxHeight = PANEL_MAX_HEIGHT,
   children,
 }) => {
@@ -198,7 +201,12 @@ export const MorphPanel: FC<MorphPanelProps> = ({
       <div className={styles.fade} aria-hidden="true" />
 
       <div
-        className={[styles.card, expanded ? styles.cardExpanded : '', alignHeaderToContent ? styles.cardAligned : '']
+        className={[
+          styles.card,
+          expanded ? styles.cardExpanded : '',
+          alignHeaderToContent ? styles.cardAligned : '',
+          alignHeaderToContent && hideSummaryWhenExpanded ? styles.cardAlignedTextOnly : '',
+        ]
           .filter(Boolean)
           .join(' ')}
       >
@@ -211,7 +219,7 @@ export const MorphPanel: FC<MorphPanelProps> = ({
             ariaLabel={expanded ? `收起${name}` : `展开${name}`}
             title={name}
           >
-            {summary}
+            {!(expanded && hideSummaryWhenExpanded) && summary}
             {expandedLabel && <span className={styles.label}>{expandedLabel}</span>}
           </Pressable>
           {headerAction && <div className={styles.headerAction}>{headerAction}</div>}
