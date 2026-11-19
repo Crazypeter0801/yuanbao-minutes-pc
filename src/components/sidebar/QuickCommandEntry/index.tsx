@@ -44,6 +44,7 @@ export const QuickCommandEntry: FC<QuickCommandEntryProps> = ({
     panelWidth="full"
     name="推荐指令"
     contentKey={QUICK_COMMANDS.length}
+    maxHeight={320}
     alignHeaderToContent
   >
     <div className={styles.list}>
