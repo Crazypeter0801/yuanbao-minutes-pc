@@ -243,7 +243,21 @@
   --wm-color-demo-dock-bg: rgba(255, 255, 255, 0.2);
   --wm-shadow-demo-dock: -6px 8px 28px rgba(15, 23, 42, 0.12);
 
+  /* 元宝对话气泡统一对称圆角体系（配合 Apple 60% 连续曲率平滑过渡） */
+  --wm-radius-yb-bubble: 14px;
+  --wm-radius-yb-card: 16px;
+  --wm-radius-yb-chip: 12px;
+
   /* 字体 */
   --wm-font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial,
     system-ui, -apple-system, 'BlinkMacSystemFont', sans-serif;
+}
+
+/* 原生支持 CSS corner-shape: superellipse(1.6) 时略微放大圆角半径以对齐 60% 连续曲率视觉柔和度 */
+@supports (corner-shape: superellipse(1.6)) {
+  :root {
+    --wm-radius-yb-bubble: 16px;
+    --wm-radius-yb-card: 18px;
+    --wm-radius-yb-chip: 14px;
+  }
 }

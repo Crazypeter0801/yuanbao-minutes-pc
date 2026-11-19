@@ -2,9 +2,13 @@
 .card {
   width: 100%;
   max-width: 100%;
-  border-radius: 12px;
+  border-radius: var(--wm-radius-yb-chip);
   background-color: var(--wm-color-background-bubble);
   box-shadow: inset 0 0 0 0.5px var(--wm-color-line);
+
+  @supports (corner-shape: superellipse(1.6)) {
+    corner-shape: superellipse(1.6);
+  }
 }
 
 .header {

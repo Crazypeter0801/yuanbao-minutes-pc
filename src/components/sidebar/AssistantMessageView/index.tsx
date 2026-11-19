@@ -1,4 +1,4 @@
-import type { FC } from 'react';
+import type { FC, ReactNode } from 'react';
 import IconFollowUpNext from '@/assets/d2c/icons/chat/icon-follow-up-next';
 import IconSideLink from '@/assets/d2c/icons/v1/icon-side-link';
 import { Pressable } from '@/components/common/Pressable';
@@ -7,18 +7,35 @@ import { FoldCard } from '@/components/sidebar/FoldCard';
 import { MessageCard } from '@/components/sidebar/MessageCard';
 import { RecordingCard } from '@/components/sidebar/RecordingCard';
 import { RichText } from '@/components/sidebar/RichText';
+import { useSquircle } from '@/hooks/useSquircle';
 import type { ArtifactItem } from '@/types/artifact';
 import type { AssistantMessage, BubbleCard } from '@/types/chat';
 import styles from './index.module.scss';
 
+interface AssistantBubbleBoxProps {
+  className: string;
+  squircleRadius: number;
+  squircleEnabled: boolean;
+  children: ReactNode;
+}
+
+/** 单个助手消息气泡容器：在不支持原生 corner-shape 的浏览器里自动应用 60% squircle 回退 */
+const AssistantBubbleBox: FC<AssistantBubbleBoxProps> = ({
+  className,
+  squircleRadius,
+  squircleEnabled,
+  children,
+}) => {
+  const ref = useSquircle<HTMLDivElement>(squircleRadius, squircleEnabled);
+  return (
+    <div ref={ref} className={className}>
+      {children}
+    </div>
+  );
+};
+
 interface AssistantMessageViewProps {
   message: AssistantMessage;
-  /**
-   * 气泡形态
-   * - round：圆角 16，组内气泡各自独立（方案 A）
-   * - compact：圆角 8，组内非末条左下直角相连（方案 B）
-   * - plain：无气泡、无署名，像文档一样直接排版（方案 C，参考 Granola）
-   */
   shape: 'round' | 'compact' | 'plain';
   /** 点击追问建议 */
   onFollowUp?: (text: string) => void;
@@ -32,16 +49,13 @@ interface AssistantMessageViewProps {
   noteTopics?: string[];
   /** 交互卡片提交：把选中的值交给上层生成后续回复 */
   onCardSubmit?: (cardId: BubbleCard['id'], values: string[]) => void;
-  /**
-   * 是否展示追问建议
-   * 只在最新一条消息上展示：元宝说了下一句之后，上一句后面的提问就收起来，避免满屏都是旧按钮
-   */
+  /** 只在最新一条消息上展示追问建议 */
   showFollowUps?: boolean;
 }
 
 /**
  * 元宝消息组：若干气泡 + 卡片 + 追问建议
- * 按 IM 习惯不再逐条写「元宝」署名，时间统一由 ChatList 居中插在消息之间。
+ * 对话内全部气泡统一为四角对称圆角矩形（Apple 60% 连续曲率）。
  */
 export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
   message,
@@ -54,31 +68,27 @@ export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
   showFollowUps = true,
 }) => {
   const isPlain = shape === 'plain';
-  const lastIndex = message.bubbles.length - 1;
-  // 交互卡片独立在气泡外，一条消息最多一张
   const activeCard = message.bubbles.find((bubble) => bubble.card)?.card;
 
   return (
     <div className={`${styles.group} ${isPlain ? styles.groupPlain : ''}`}>
       <div className={styles.bubbles}>
-        {message.bubbles.map((bubble, index) => {
+        {message.bubbles.map((bubble) => {
           const shapeClass = isPlain
             ? styles.plain
-            : [
-                styles.bubble,
-                shape === 'round' ? styles.round : styles.compact,
-                shape === 'compact' && index !== lastIndex ? styles.compactJoined : '',
-              ]
-                .filter(Boolean)
-                .join(' ');
+            : [styles.bubble, shape === 'round' ? styles.round : styles.compact].join(' ');
 
-          // 默认折叠的补充信息：不套气泡，独立一张轻卡片
           if (bubble.fold) {
             return <FoldCard fold={bubble.fold} key={bubble.id} />;
           }
 
           return (
-            <div className={shapeClass} key={bubble.id}>
+            <AssistantBubbleBox
+              key={bubble.id}
+              className={shapeClass}
+              squircleRadius={shape === 'compact' ? 12 : 14}
+              squircleEnabled={!isPlain}
+            >
               <RichText
                 blocks={bubble.blocks}
                 trailing={
@@ -105,7 +115,7 @@ export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
                   draggable={false}
                 />
               )}
-            </div>
+            </AssistantBubbleBox>
           );
         })}
       </div>
@@ -132,7 +142,6 @@ export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
         <div className={styles.followUps}>
           {message.followUps.map((text) => (
             <Pressable className={styles.followUp} key={text} onClick={() => onFollowUp?.(text)}>
-              {/* 左侧回车箭头（Figma PC新框架改版 14355:74961） */}
               <span className={styles.followUpIcon} aria-hidden="true">
                 <IconFollowUpNext width={16} height={16} />
               </span>

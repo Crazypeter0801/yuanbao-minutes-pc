@@ -8,12 +8,16 @@
   flex-direction: column;
   width: 248px;
   max-width: 100%;
-  border-radius: 20px;
+  border-radius: var(--wm-radius-yb-card);
   background-color: var(--wm-color-background-quaternary);
   box-shadow: inset 0 0 0 1px var(--wm-color-outline-tertiary);
   cursor: pointer;
   outline: none;
   transition: box-shadow 160ms ease-out;
+
+  @supports (corner-shape: superellipse(1.6)) {
+    corner-shape: superellipse(1.6);
+  }
 
   &:hover,
   &:focus-visible {
@@ -262,7 +266,7 @@
 .cardCompact {
   width: fit-content;
   align-self: flex-start;
-  border-radius: 16px;
+  border-radius: var(--wm-radius-yb-chip);
 
   .header {
     padding: 12px;

@@ -4,30 +4,33 @@
   padding-left: 48px;
 }
 
-/* 与元宝正文同为 14/22，一问一答读起来是同一个字号 */
+/* 与元宝正文同为 14/22，统一四角对称圆角矩形 + Apple 60% 连续平滑曲率 */
 .bubble {
   margin: 0;
   padding: 10px 12px;
+  border-radius: var(--wm-radius-yb-bubble);
   font-size: var(--wm-side-font-size, 14px);
   line-height: calc(var(--wm-side-font-size, 14px) + 8px);
   color: var(--wm-color-text-primary);
   word-break: break-word;
   white-space: pre-wrap;
+
+  @supports (corner-shape: superellipse(1.6)) {
+    corner-shape: superellipse(1.6);
+  }
 }
 
 .round {
-  border-radius: 16px 1px 16px 16px;
   background-color: var(--wm-color-chat-bubble-send);
   color: var(--wm-color-text-senary);
 }
 
 .compact {
-  border-radius: 8px 1px 8px 8px;
+  border-radius: var(--wm-radius-yb-chip);
   background-color: var(--wm-color-background-user-bubble);
 }
 
 .plain {
   padding: 8px 14px;
-  border-radius: 14px;
   background-color: var(--wm-color-background-septenary);
 }
