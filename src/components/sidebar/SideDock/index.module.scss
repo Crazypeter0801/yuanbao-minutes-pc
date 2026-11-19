@@ -160,9 +160,9 @@
 }
 
 /*
- * 未选中页签（Figma 505:12633 + hover 563:15890）：
+ * 未选中页签（Figma 505:12633 + hover 563:15890 尺寸）：
  * 56×36、圆角 18、居中显示 24px 灰图标；
- * hover 时仅添加 #E6E8EB（wm_color_background_secondary）胶囊背景色，不改图标色、无额外特效。
+ * hover 时仅添加柔和浅灰背景色（rgba(0, 0, 0, 0.06)），不改图标色、无额外特效。
  */
 .pillTabInactive {
   flex: 0 0 56px;
@@ -178,7 +178,7 @@
 
   &:hover,
   &:focus-visible {
-    background-color: var(--wm-color-background-secondary);
+    background-color: var(--wm-color-control-hover);
   }
 }
 
