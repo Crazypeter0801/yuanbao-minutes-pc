@@ -6,34 +6,37 @@
   flex-direction: column;
 }
 
-/* 分段 + 搜索：左右 20、下 20，间距 8 */
+/* 分段 + 搜索：左右 20，间距 8；下面到成员列表 16（Figma 504:11247 gap 16） */
 .toolbar {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
-  padding: 0 20px 20px;
+  padding: 0 20px 16px;
 
   & > * + * {
     margin-left: 8px;
   }
 }
 
-/* 分段控件：#F3F3F4 胶囊底 + 2 内边距，选中项白底 */
+/* 分段控件：#F3F3F4 底、padding 2、圆角 15（Figma 504:11249） */
 .segment {
   flex: 1 1 auto;
   display: flex;
+  align-items: center;
   padding: 2px;
-  border-radius: 29px;
+  border-radius: 15px;
   background-color: var(--wm-color-segment-track);
 }
 
+/* 每段高 26、padding 0 10、14/20；未选中 #4E5461 */
 .segmentItem {
   flex: 1 1 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 28px;
-  border-radius: 29px;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 13px;
   font-size: 14px;
   line-height: 20px;
   color: var(--wm-color-text-secondary);
@@ -44,18 +47,19 @@
     color 160ms ease;
 }
 
+/* 选中：白底 + 0 0 4 的极淡落影，黑字（Figma 504:11250） */
 .segmentItemActive {
   background-color: var(--wm-color-background-quaternary);
   color: var(--wm-color-text-primary);
-  box-shadow: var(--wm-shadow-segment);
+  box-shadow: var(--wm-shadow-segment-thumb);
 }
 
 .search {
   flex: 1 1 auto;
-  height: 32px;
+  height: 30px;
   padding: 0 14px;
   border: 0;
-  border-radius: 29px;
+  border-radius: 15px;
   outline: none;
   background-color: var(--wm-color-segment-track);
   color: var(--wm-color-text-primary);
@@ -67,31 +71,34 @@
   }
 }
 
+/* 搜索 30×30 圆（图里已含 #F3F3F4 圆底，Figma 504:11254） */
 .searchButton {
   flex: 0 0 auto;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background-color: var(--wm-color-segment-track);
+  width: 30px;
+  height: 30px;
+  border-radius: 15px;
   cursor: pointer;
   outline: none;
+  transition: filter 120ms ease;
+
+  & > svg {
+    display: block;
+  }
 
   &:hover,
   &:focus-visible {
-    background-color: var(--wm-color-control-hover);
+    filter: brightness(0.96);
   }
 }
 
-/* 成员列表：左右 20、行高 40、行距 16，可滚动 */
+/* 成员列表：左右 20、行距 16，可滚动 */
 .list {
   flex: 1 1 auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
-  padding: 0 20px 20px;
+  padding: 0 20px 16px;
   overflow-y: auto;
 
   & > * + * {
@@ -99,15 +106,15 @@
   }
 }
 
+/* 一行：左 头像 + 两行文字（间距 8），右 设备状态（Figma 504:11257） */
 .member {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 40px;
 
   & > * + * {
-    margin-left: 8px;
+    margin-left: 16px;
   }
 }
 
@@ -121,12 +128,15 @@
   }
 }
 
+/*
+ * 头像 28：导出图连同 0 2 6 的落影一起是 42×42（上 5、左右 7、下 9 为落影外扩），
+ * 按导出尺寸显示，再用负边距抵回 28×28 的占位。
+ */
 .avatar {
   flex: 0 0 auto;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  box-shadow: var(--wm-shadow-avatar);
+  width: 42px;
+  height: 42px;
+  margin: -5px -7px -9px;
 }
 
 .personText {
@@ -135,53 +145,57 @@
   min-width: 0;
 }
 
+/* 名字 / 部门：12/20，黑 / #7B818F（跟侧栏字号走：标准 14 → 12） */
 .name,
 .department {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  /* 跟侧栏字号走，但比正文小一档（标准 14 → 12） */
   font-size: calc(var(--wm-side-font-size, 14px) - 2px);
   line-height: calc(var(--wm-side-font-size, 14px) + 6px);
 }
 
 .name {
   font-weight: 400;
-  color: var(--wm-color-member-name);
+  color: var(--wm-color-text-primary);
 }
 
 .department {
-  font-size: 12px;
   color: var(--wm-color-text-tertiary);
 }
 
-/* 麦克风 / 摄像头状态：16 图标、间距 12 */
+/* 麦克风 / 摄像头：16、间距 12 */
 .devices {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
 
   & > * + * {
-    margin-left: 4px;
+    margin-left: 12px;
   }
 }
 
 .device {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+
+  & > svg {
+    display: block;
+  }
 }
 
+/* 可点的麦克风：hover 时外扩 4 的浅灰底 */
 .device[role='button'] {
   cursor: pointer;
   outline: none;
+  transition: box-shadow 120ms ease-in-out;
 
   &:hover,
   &:focus-visible {
     background-color: var(--wm-color-control-hover);
+    box-shadow: 0 0 0 4px var(--wm-color-control-hover);
   }
 }
 
@@ -198,7 +212,7 @@
 
   &:hover,
   &:focus-visible {
-    background-color: var(--wm-color-control-hover);
+    filter: brightness(0.96);
   }
 }
 
@@ -209,26 +223,29 @@
   color: var(--wm-color-text-tertiary);
 }
 
-/* 底部三颗按钮：padding 9 16 16、间距 12、高 32、胶囊 */
+/* 底部：padding 16、间距 12，三颗等宽按钮（Figma 504:11358）；导出图实测按钮离卡片底 17，底边多留 1 */
 .footer {
   flex: 0 0 auto;
   display: flex;
-  padding: 9px 16px 16px;
+  align-items: center;
+  padding: 16px 16px 17px;
 
   & > * + * {
     margin-left: 12px;
   }
 }
 
+/* 按钮 32 高、圆角 16、#F3F3F4 底、12/18 黑字 */
 .footerButton {
   flex: 1 1 0;
   display: flex;
   align-items: center;
   justify-content: center;
   height: 32px;
-  border-radius: 18px;
+  border-radius: 16px;
   background-color: var(--wm-color-segment-track);
   font-size: 12px;
+  line-height: 18px;
   color: var(--wm-color-text-primary);
   white-space: nowrap;
   cursor: pointer;
@@ -241,6 +258,7 @@
   }
 }
 
+/* 邀请成员：黑底白字 */
 .footerButtonStrong {
   background-color: var(--wm-color-button-strong);
   color: var(--wm-color-text-senary);

@@ -16,9 +16,10 @@
   background-size: cover;
 }
 
-/* 窗口容器：演示按钮条绝对定位在窗口下方，不参与排版，窗口始终居中 */
+/* 窗口容器：在浏览器里水平居中，垂直方向比正中再上提 40（用户要求，给底部演示控制台让位） */
 .frame {
   position: relative;
+  top: -40px;
   flex: 0 0 auto;
 }
 

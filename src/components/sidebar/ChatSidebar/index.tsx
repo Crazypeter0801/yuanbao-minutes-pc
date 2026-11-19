@@ -1,20 +1,15 @@
 import { useEffect, useMemo, useRef, useState, type FC, type KeyboardEvent } from 'react';
-import noticeIcon from '@/assets/ref/dawen/b4689.svg';
-import readIcon from '@/assets/ref/dawen/b19ba.svg';
-import infoIcon from '@/assets/ref/dawen/b5697.svg';
-import reportIcon from '@/assets/ref/dawen/ed40c.svg';
-import docIcon from '@/assets/ref/dawen/8e15c.svg';
-import emojiIcon from '@/assets/ref/dawen/62899.svg';
-import fileIcon from '@/assets/ref/dawen/99346.svg';
-import barrageIcon from '@/assets/ref/dawen/5ac15.svg';
-import barrageSettingIcon from '@/assets/ref/dawen/fc498.svg';
+import IconChatEmoji from '@/assets/d2c/icons/sidetabs/icon-chat-emoji';
+import IconChatFile from '@/assets/d2c/icons/sidetabs/icon-chat-file';
+import IconChatImage from '@/assets/d2c/icons/sidetabs/icon-chat-image';
+import IconChatSend from '@/assets/d2c/icons/sidetabs/icon-chat-send';
 import { Toast } from '@/components/common/Toast';
 import { Pressable } from '@/components/common/Pressable';
 import type { PopMenuItem } from '@/components/common/PopMenu';
 import { MessageStream } from '@/components/sidebar/MessageStream';
 import { SidebarHeader } from '@/components/sidebar/SidebarHeader';
 import { SIDE_APPS } from '@/components/sidebar/SideDock/apps';
-import { CHAT_HISTORY, CHAT_NOTICE, SELF, type ChatEntry } from '@/data/meetingChat';
+import { CHAT_HISTORY, SELF, type ChatEntry } from '@/data/meetingChat';
 import type { MeetingChat } from '@/hooks/useMeetingChat';
 import { useToast } from '@/hooks/useToast';
 import styles from './index.module.scss';
@@ -27,53 +22,72 @@ interface ChatSidebarProps {
   focusSignal?: number;
 }
 
-const RECEIVERS = ['所有人', '主持人'] as const;
-
-/** 一行消息：自己的靠右（深灰泡白字），别人的靠左（浅灰泡），头像 28 */
-const ChatRow: FC<{ entry: Exclude<ChatEntry, { kind: 'time' }> }> = ({ entry }) => (
-  <div className={`${styles.row} ${entry.self ? styles.rowSelf : ''}`}>
-    <img className={styles.avatar} src={entry.avatar} alt="" draggable={false} />
-    <div className={styles.rowBody}>
-      <span className={styles.rowName}>{entry.name}</span>
-      {entry.kind === 'text' ? (
-        <p className={styles.bubble}>{entry.text}</p>
-      ) : (
-        <div className={styles.infoCard}>
-          <strong className={styles.infoTitle}>
-            <img src={infoIcon} width={20} height={20} alt="" />
-            {entry.title}
-          </strong>
-          <div className={styles.infoDescription}>{entry.description}</div>
-          <div className={styles.attachments}>
-            {entry.attachments.map((file) => (
-              <div className={styles.attachment} key={file.id}>
-                <img src={file.type === 'report' ? reportIcon : docIcon} width={16} height={16} alt="" />
-                {file.name}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  </div>
-);
+/** 输入框最多撑到 4 行（14/20） */
+const MAX_INPUT_HEIGHT = 80;
 
 /**
- * 会中聊天侧栏（参考 Demo sidebar-content.js chatSidebarContent）
- * 置顶公告 → 时间 → 聊天记录（含会议信息卡）→ 本场新发的消息；
- * 底部输入：「说点什么...」+ 发给 所有人 ▾ + 表情 / 文件 / 弹幕开关 | 弹幕设置。Enter 发送，开着弹幕时同时上屏。
+ * 一条消息（Figma 接收消息_01 / 发送消息_01 / Sent Messages）
+ * 别人的：头像 32 在左，名字 11/14 + 浅灰泡；自己的：深灰泡白字在右、头像在最右，不显示名字。
+ * 左右各留 38 不让气泡贴到对侧（图片消息留 118，图 190×190）。
+ */
+const ChatRow: FC<{ entry: Exclude<ChatEntry, { kind: 'time' }> }> = ({ entry }) => {
+  const rowClass = [styles.row, entry.self ? styles.rowSelf : '', entry.kind === 'image' ? styles.rowImage : '']
+    .filter(Boolean)
+    .join(' ');
+
+  const content =
+    entry.kind === 'image' ? (
+      <img className={styles.image} src={entry.src} alt={entry.alt} draggable={false} />
+    ) : (
+      <p className={styles.bubble}>{entry.text}</p>
+    );
+
+  if (entry.self) {
+    return (
+      <div className={rowClass}>
+        {content}
+        <img className={styles.avatarSelf} src={entry.avatar} alt="" draggable={false} />
+      </div>
+    );
+  }
+
+  return (
+    <div className={rowClass}>
+      <img className={styles.avatar} src={entry.avatar} alt="" draggable={false} />
+      <div className={styles.rowBody}>
+        <span className={styles.rowName}>{entry.name}</span>
+        {content}
+      </div>
+    </div>
+  );
+};
+
+/**
+ * 会中聊天侧栏（Figma 505:12264 第三张 · 504:12069）
+ * 消息列表（padding 10 20、间距 16）→ 底部输入框（344 宽、圆角 20）：
+ * 第一行「说点什么」，第二行左侧 表情 / 图片 / 文件，右侧圆形发送。Enter 发送，消息同时以弹幕上屏。
  */
 export const ChatSidebar: FC<ChatSidebarProps> = ({ chat, showHeader, onClose, focusSignal }) => {
   const { toast, showToast } = useToast();
   const [value, setValue] = useState('');
-  const [receiver, setReceiver] = useState<(typeof RECEIVERS)[number]>('所有人');
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const canSend = value.trim().length > 0;
 
   useEffect(() => {
     if (focusSignal) {
       inputRef.current?.focus({ preventScroll: true });
     }
   }, [focusSignal]);
+
+  // 随内容长高：一行 20，最多 4 行
+  useEffect(() => {
+    const input = inputRef.current;
+    if (!input) {
+      return;
+    }
+    input.style.height = 'auto';
+    input.style.height = `${Math.min(MAX_INPUT_HEIGHT, Math.max(20, input.scrollHeight))}px`;
+  }, [value]);
 
   const menuItems = useMemo<PopMenuItem[]>(
     () => [
@@ -124,81 +138,70 @@ export const ChatSidebar: FC<ChatSidebarProps> = ({ chat, showHeader, onClose, f
       )}
 
       <MessageStream className={styles.stream} scrollKey={chat.sent.length}>
-        <div className={styles.content}>
-          <div className={styles.notice}>
-            <img className={styles.noticeIcon} src={noticeIcon} width={20} height={20} alt="" />
-            <span className={styles.noticeText}>{CHAT_NOTICE.text}</span>
-            <small className={styles.noticeRead}>
-              <img src={readIcon} width={16} height={16} alt="" />
-              {CHAT_NOTICE.readCount}
-            </small>
-          </div>
-
-          {CHAT_HISTORY.map((entry) =>
-            entry.kind === 'time' ? (
-              <div className={styles.time} key={entry.id}>
-                {entry.text}
-              </div>
-            ) : (
-              <ChatRow key={entry.id} entry={entry} />
-            ),
-          )}
-
-          {chat.sent.map((item) => (
-            <ChatRow
-              key={`sent-${item.id}`}
-              entry={{ kind: 'text', id: String(item.id), self: true, name: SELF.name, avatar: SELF.avatar, text: item.text }}
-            />
-          ))}
-        </div>
+        {CHAT_HISTORY.map((entry) =>
+          entry.kind === 'time' ? (
+            <div className={styles.time} key={entry.id}>
+              {entry.text}
+            </div>
+          ) : (
+            <ChatRow key={entry.id} entry={entry} />
+          ),
+        )}
+        {chat.sent.map((item) => (
+          <ChatRow
+            key={`sent-${item.id}`}
+            entry={{ kind: 'text', id: String(item.id), self: true, name: SELF.name, avatar: SELF.avatar, text: item.text }}
+          />
+        ))}
       </MessageStream>
 
-      <div className={styles.compose}>
-        <textarea
-          ref={inputRef}
-          className={styles.input}
-          value={value}
-          maxLength={200}
-          placeholder="说点什么..."
-          aria-label="聊天消息"
-          onChange={(event) => setValue(event.target.value)}
-          onKeyDown={handleKeyDown}
-        />
-        <div className={styles.actions}>
-          <label className={styles.receiver}>
-            发给
-            <select
-              className={styles.receiverSelect}
-              value={receiver}
-              aria-label="接收者"
-              onChange={(event) => setReceiver(event.target.value as (typeof RECEIVERS)[number])}
+      <div className={styles.compose} onClick={() => inputRef.current?.focus()}>
+        <div className={styles.inputRow}>
+          <textarea
+            ref={inputRef}
+            className={styles.input}
+            rows={1}
+            value={value}
+            maxLength={500}
+            placeholder="说点什么"
+            aria-label="聊天消息"
+            onChange={(event) => setValue(event.target.value)}
+            onKeyDown={handleKeyDown}
+          />
+        </div>
+        <div className={styles.toolbar}>
+          <div className={styles.tools}>
+            <Pressable className={styles.tool} onClick={insertEmoji} ariaLabel="表情" title="表情" stopPropagation>
+              <IconChatEmoji />
+            </Pressable>
+            <Pressable
+              className={styles.tool}
+              onClick={() => showToast('发送图片（演示）')}
+              ariaLabel="图片"
+              title="图片"
+              stopPropagation
             >
-              {RECEIVERS.map((item) => (
-                <option key={item}>{item}</option>
-              ))}
-            </select>
-          </label>
-          <Pressable className={styles.tool} onClick={insertEmoji} ariaLabel="添加表情" title="表情">
-            <img src={emojiIcon} width={20} height={16} alt="" />
-          </Pressable>
-          <Pressable className={styles.tool} onClick={() => showToast('添加文件（演示）')} ariaLabel="添加文件" title="文件">
-            <img src={fileIcon} width={16} height={16} alt="" />
-          </Pressable>
+              <IconChatImage />
+            </Pressable>
+            <Pressable
+              className={styles.tool}
+              onClick={() => showToast('发送文件（演示）')}
+              ariaLabel="文件"
+              title="文件"
+              stopPropagation
+            >
+              <IconChatFile />
+            </Pressable>
+          </div>
           <Pressable
-            className={`${styles.tool} ${chat.barrageEnabled ? '' : styles.toolOff}`}
-            onClick={() => {
-              const next = !chat.barrageEnabled;
-              chat.setBarrageEnabled(next);
-              showToast(next ? '已开启弹幕，发送的消息会同时显示在画面上' : '已关闭弹幕');
-            }}
-            ariaLabel={chat.barrageEnabled ? '关闭弹幕' : '开启弹幕'}
-            title={chat.barrageEnabled ? '弹幕已开启' : '弹幕已关闭'}
+            className={`${styles.send} ${canSend ? styles.sendEnabled : ''}`}
+            onClick={submit}
+            disabled={!canSend}
+            ariaLabel="发送"
+            title={canSend ? '发送（Enter）' : '请输入内容'}
+            stopPropagation
           >
-            <img src={barrageIcon} width={20} height={20} alt="" />
-          </Pressable>
-          <span className={styles.toolDivider} aria-hidden="true" />
-          <Pressable className={styles.tool} onClick={() => showToast('弹幕设置（演示）')} ariaLabel="弹幕设置" title="弹幕设置">
-            <img src={barrageSettingIcon} width={16} height={16} alt="" />
+            <IconChatSend />
           </Pressable>
         </div>
       </div>

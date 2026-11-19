@@ -189,6 +189,10 @@
   /* 置顶公告卡、侧栏浮层落影 */
   --wm-shadow-notice: 0 8px 24px rgba(0, 0, 0, 0.09);
   --wm-shadow-compose: 0 4px 32px rgba(52, 57, 70, 0.08);
+  /* 聊天侧栏输入框落影（Figma 504:12116） */
+  --wm-shadow-compose-box: 0 4px 20px rgba(0, 0, 0, 0.04);
+  /* 分段控件选中项落影（Figma 504:11250） */
+  --wm-shadow-segment-thumb: 0 0 4px rgba(0, 9, 95, 0.05);
   --wm-shadow-avatar: 0 2px 3px rgba(65, 97, 152, 0.12);
   /* 消息卡、输入框细描边 */
   --wm-color-card-line: #f1f1f1;

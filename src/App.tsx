@@ -7,6 +7,7 @@ import { YuanbaoSidebar } from "@/components/YuanbaoSidebar";
 import { ChatSidebar } from "@/components/sidebar/ChatSidebar";
 import { MembersSidebar } from "@/components/sidebar/MembersSidebar";
 import { SideDock, type SideAppId } from "@/components/sidebar/SideDock";
+import { SIDE_APP_ORDER } from "@/components/sidebar/SideDock/apps";
 import {
   buildArtifact,
   buildArtifactCreatedMessage,
@@ -44,9 +45,11 @@ interface DockState {
 function toggleDockApp({ apps, active }: DockState, app: SideAppId): DockState {
   if (active === app) {
     if (apps.length > 1) {
-      const index = apps.indexOf(app);
+      // 按页签的固定顺序（元宝 → 管理成员 → 聊天）找相邻的
+      const ordered = SIDE_APP_ORDER.filter((id) => apps.includes(id));
+      const index = ordered.indexOf(app);
       const rest = apps.filter((id) => id !== app);
-      return { apps: rest, active: apps[index + 1] ?? apps[index - 1] };
+      return { apps: rest, active: ordered[index + 1] ?? ordered[index - 1] };
     }
     // 先只置空 active，卡片在收起动画里仍显示原内容，动画结束再清空 apps
     return { apps, active: null };

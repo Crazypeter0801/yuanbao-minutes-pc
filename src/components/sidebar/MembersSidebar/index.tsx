@@ -1,9 +1,9 @@
 import { useMemo, useState, type FC } from 'react';
-import searchIcon from '@/assets/ref/dawen/f02dc.svg';
-import micOnIcon from '@/assets/ref/dawen/64515.svg';
-import micOffIcon from '@/assets/ref/dawen/da4fb.svg';
-import cameraOnIcon from '@/assets/ref/dawen/08551.svg';
-import cameraOffIcon from '@/assets/ref/dawen/bde65.svg';
+import IconMembersCameraOff from '@/assets/d2c/icons/sidetabs/icon-members-camera-off';
+import IconMembersCameraOn from '@/assets/d2c/icons/sidetabs/icon-members-camera-on';
+import IconMembersMicOff from '@/assets/d2c/icons/sidetabs/icon-members-mic-off';
+import IconMembersMicOn from '@/assets/d2c/icons/sidetabs/icon-members-mic-on';
+import IconMembersSearch from '@/assets/d2c/icons/sidetabs/icon-members-search';
 import { Toast } from '@/components/common/Toast';
 import { Pressable } from '@/components/common/Pressable';
 import type { PopMenuItem } from '@/components/common/PopMenu';
@@ -21,9 +21,9 @@ interface MembersSidebarProps {
 type MemberTab = 'joined' | 'invited';
 
 /**
- * 管理成员侧栏（参考 Demo fidelity.js members）
- * 「会议中 / 未入会」分段 + 搜索；成员行：头像 28、名字 / 部门两行、麦克风 / 摄像头状态；
- * 底部三颗按钮：全体静音、会议管控、邀请成员（黑底主按钮）。
+ * 管理成员侧栏（Figma 505:12264 第二张 · 504:11247 / 504:11358）
+ * 「会议中 / 未入会」分段 + 搜索 30；成员行：头像 28、名字 / 部门两行 12/20、麦克风 / 摄像头 16；
+ * 底部三颗 32 高的胶囊按钮：全体静音、会议管控、邀请成员（黑底）。
  * 演示里点麦克风图标可切换该成员的静音状态，「全体静音」把会议中所有人静音。
  */
 export const MembersSidebar: FC<MembersSidebarProps> = ({ showHeader, onClose }) => {
@@ -112,7 +112,7 @@ export const MembersSidebar: FC<MembersSidebarProps> = ({ showHeader, onClose })
           }}
           ariaLabel={searching ? '取消搜索' : '搜索成员'}
         >
-          <img src={searchIcon} width={16} height={16} alt="" />
+          <IconMembersSearch />
         </Pressable>
       </div>
 
@@ -135,10 +135,10 @@ export const MembersSidebar: FC<MembersSidebarProps> = ({ showHeader, onClose })
                     ariaLabel={member.micOn ? `将${member.name}静音` : `请${member.name}解除静音`}
                     title={member.micOn ? '静音' : '解除静音'}
                   >
-                    <img src={member.micOn ? micOnIcon : micOffIcon} width={16} height={16} alt="" />
+                    {member.micOn ? <IconMembersMicOn /> : <IconMembersMicOff />}
                   </Pressable>
                   <span className={styles.device} aria-label={member.cameraOn ? '摄像头已开启' : '摄像头已关闭'}>
-                    <img src={member.cameraOn ? cameraOnIcon : cameraOffIcon} width={16} height={16} alt="" />
+                    {member.cameraOn ? <IconMembersCameraOn /> : <IconMembersCameraOff />}
                   </span>
                 </div>
               </div>

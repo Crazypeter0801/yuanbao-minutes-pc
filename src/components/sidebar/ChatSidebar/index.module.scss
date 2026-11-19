@@ -1,120 +1,100 @@
-/* 撑满侧栏：标题栏 64 + 可滚动的聊天记录 + 底部输入 */
+/* 撑满侧栏：（单开时的标题栏）+ 消息列表 + 底部输入，底部留 16（Figma 504:12069） */
 .panel {
   position: relative;
   flex: 1 1 auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
+  padding-bottom: 16px;
   color: var(--wm-color-text-primary);
 }
 
+/* 消息列表 padding 10 20、间距 16（Figma 545:23112） */
 .stream {
-  padding: 10px 20px 16px;
+  padding: 10px 20px;
 }
 
-.content {
-  display: flex;
-  flex-direction: column;
+/* MessageStream 自带 12 的间距，双类名提高优先级改成 16 */
+.stream.stream > * + * {
+  margin-top: 16px;
 }
 
-/* 置顶公告：白卡片 + 大落影，正文最多 3 行，右下角已读人数 */
-.notice {
-  position: relative;
-  display: flex;
-  align-items: flex-start;
-  padding: 12px;
-  border-radius: 16px;
-  background-color: var(--wm-color-background-quaternary);
-  box-shadow: var(--wm-shadow-notice);
-  font-size: var(--wm-side-font-size, 14px);
-  line-height: calc(var(--wm-side-font-size, 14px) + 6px);
-}
-
-.noticeIcon {
-  flex: 0 0 auto;
-  margin-right: 6px;
-}
-
-.noticeText {
-  display: -webkit-box;
-  overflow: hidden;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-}
-
-.noticeRead {
-  position: absolute;
-  right: 12px;
-  bottom: 12px;
+/*
+ * 时间：11/18 #7B818F 居中（Figma 消息中时间戳）。
+ * 稿里这一行是纵向填充，被撑到约 24 高，文字在其中垂直居中，按导出图实测取 24。
+ */
+.time {
   display: flex;
   align-items: center;
-  padding-left: 4px;
-  background-color: var(--wm-color-background-quaternary);
-  color: var(--wm-color-text-tertiary);
-  font-size: 12px;
-  line-height: 20px;
-}
-
-/* 时间分隔：上 28 下 18 */
-.time {
-  margin: 28px 0 18px;
+  justify-content: center;
+  height: 24px;
   text-align: center;
   color: var(--wm-color-text-tertiary);
-  font-size: 12px;
+  font-size: 11px;
   line-height: 18px;
 }
 
-/* 消息行：头像 28 + 名字 + 气泡，行距 16；自己的整行镜像到右边 */
+/* 消息行：头像与内容间距 6；别人的右侧留 38，自己的左侧留 38 */
 .row {
   display: flex;
   align-items: flex-start;
-  margin-bottom: 16px;
+  padding-right: 38px;
 
   & > * + * {
-    margin-left: 8px;
+    margin-left: 6px;
   }
 }
 
 .rowSelf {
-  flex-direction: row-reverse;
-  text-align: right;
-
-  & > * + * {
-    margin-left: 0;
-    margin-right: 8px;
-  }
+  justify-content: flex-end;
+  padding-right: 0;
+  padding-left: 38px;
 }
 
+/* 图片消息左侧留 118（Figma Sent Messages） */
+.rowImage {
+  padding-left: 118px;
+}
+
+/* 别人头像 32（导出图即 32×32） */
 .avatar {
   flex: 0 0 auto;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  object-fit: cover;
+  width: 32px;
+  height: 32px;
 }
 
+/* 自己头像：导出图上下带 2 的留白，32×36（Figma 头像 padding 2 0） */
+.avatarSelf {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 36px;
+}
+
+/* 名字 + 气泡 */
 .rowBody {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   min-width: 0;
 }
 
+/* 名字 11/14 #4E5461 80%；与下方气泡间距 2，挂在名字上（气泡自身 margin: 0 会盖掉兄弟选择器） */
 .rowName {
-  display: block;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
+  font-size: 11px;
+  line-height: 14px;
   color: var(--wm-color-text-secondary);
-  font-size: 12px;
-  line-height: 18px;
+  opacity: 0.8;
 }
 
+/* 气泡：padding 8 10、圆角 16，14/20；别人的 #F3F3F4，自己的 #5E6270 白字 */
 .bubble {
-  display: inline-block;
-  max-width: 100%;
   margin: 0;
-  padding: 6px 10px;
-  border-radius: 18px;
-  background-color: var(--wm-color-chat-bubble-receive);
+  padding: 8px 10px;
+  border-radius: 16px;
+  background-color: var(--wm-color-background-septenary);
   font-size: var(--wm-side-font-size, 14px);
   line-height: calc(var(--wm-side-font-size, 14px) + 6px);
-  text-align: left;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 
@@ -124,74 +104,50 @@
   }
 }
 
-/* 会议信息卡：268 宽、1px 浅描边、圆角 16，描述最多 4 行，下面是附件 */
-.infoCard {
-  max-width: 268px;
-  padding: 10px 12px 12px;
+/* 单图 190×190、圆角 16、0.5px 8% 黑描边（Figma 单图，描边画在图片内侧） */
+.image {
+  flex: 0 0 auto;
+  display: block;
+  width: 190px;
+  height: 190px;
   border-radius: 16px;
-  box-shadow: inset 0 0 0 1px var(--wm-color-card-line);
-  text-align: left;
-  font-size: var(--wm-side-font-size, 14px);
-  line-height: 18px;
+  object-fit: cover;
+  outline: 0.5px solid var(--wm-color-line);
+  outline-offset: -0.5px;
 }
 
-.infoTitle,
-.attachment {
-  display: flex;
-  align-items: center;
-
-  /* 图标后面直接跟文字节点，间距挂在图标上 */
-  & > img {
-    flex: 0 0 auto;
-    margin-right: 6px;
-  }
-}
-
-.infoTitle {
-  font-weight: 500;
-}
-
-.infoDescription {
-  display: -webkit-box;
-  margin: 8px 0;
-  overflow: hidden;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-}
-
-.attachments {
-  display: flex;
-  flex-direction: column;
-  padding-top: 8px;
-  border-top: 1px solid var(--wm-color-card-line);
-  color: var(--wm-color-text-secondary);
-  font-size: 13px;
-
-  & > * + * {
-    margin-top: 6px;
-  }
-}
-
-/* 底部输入：左右下各留 16，1px 描边、圆角 16，最低 94 */
+/*
+ * 输入框（Figma 504:12116）：344 宽（左右各留 16）、圆角 20、白底，
+ * 0.5px 8% 黑描边 + 0 4 20 4% 落影；padding 12 10 10，两行间距 10，总高 80。
+ */
 .compose {
   flex: 0 0 auto;
   display: flex;
   flex-direction: column;
-  min-height: 94px;
-  margin: 0 16px 16px;
-  padding: 8px 11px 5px;
-  border-radius: 16px;
-  box-shadow: inset 0 0 0 1px var(--wm-color-compose-line);
+  margin: 0 16px;
+  padding: 12px 10px 10px;
+  border-radius: 20px;
+  background-color: var(--wm-color-background-senary);
+  box-shadow:
+    inset 0 0 0 0.5px var(--wm-color-line),
+    var(--wm-shadow-compose-box);
+  cursor: text;
 
   & > * + * {
-    margin-top: 6px;
+    margin-top: 10px;
   }
+}
+
+/* 文字行：左右再缩 6（Figma 输入文本容器 padding 0 6） */
+.inputRow {
+  display: flex;
+  padding: 0 6px;
 }
 
 .input {
   flex: 1 1 auto;
   width: 100%;
-  min-height: 40px;
+  height: 20px;
   margin: 0;
   padding: 0;
   border: 0;
@@ -199,56 +155,47 @@
   resize: none;
   background: transparent;
   color: var(--wm-color-text-primary);
+  caret-color: var(--wm-color-text-primary);
   font-family: inherit;
   font-size: 14px;
   line-height: 20px;
 
+  /* 提示文字 #B0B6C3 */
   &::placeholder {
-    color: var(--wm-color-text-tertiary);
+    color: var(--wm-color-text-disabled);
   }
 }
 
-/* 工具行：发给 ▾ 靠左，四个工具 24×24 间距 14 靠右，弹幕设置前一条 12 高的竖线 */
-.actions {
+/* 工具行：左 表情 / 图片 / 文件（28、间距 4），右 发送 28 */
+.toolbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.tools {
   display: flex;
   align-items: center;
-  min-height: 24px;
-  color: var(--wm-color-text-secondary);
-  font-size: 14px;
 
   & > * + * {
-    margin-left: 14px;
+    margin-left: 4px;
   }
-}
-
-.receiver {
-  display: flex;
-  align-items: center;
-  margin-right: auto;
-  white-space: nowrap;
-}
-
-.receiverSelect {
-  margin-left: 4px;
-  padding: 0 18px 0 0;
-  border: 0;
-  outline: none;
-  appearance: none;
-  background: url('@/assets/ref/dawen/eac7f.svg') no-repeat right center / 16px;
-  color: var(--wm-color-text-primary);
-  font: inherit;
-  cursor: pointer;
 }
 
 .tool {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 5px;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  /* 导出 SVG 是 currentColor，稿里为黑色 */
+  color: var(--wm-color-text-primary);
   cursor: pointer;
   outline: none;
+  transition: background-color 120ms ease-in-out;
+
+  & > svg {
+    display: block;
+  }
 
   &:hover,
   &:focus-visible {
@@ -256,13 +203,25 @@
   }
 }
 
-/* 弹幕关着：图标降到 45% */
-.toolOff {
-  opacity: 0.45;
+/* 发送：稿里是置灰态（#D3D6DB 圆底 + 白箭头）；有内容时圆底换成发送气泡同色 */
+.send {
+  display: flex;
+  width: 28px;
+  height: 28px;
+  border-radius: 14px;
+  color: var(--wm-color-text-senary);
+  cursor: not-allowed;
+  outline: none;
+
+  & > svg {
+    display: block;
+  }
 }
 
-.toolDivider {
-  width: 0;
-  height: 12px;
-  border-left: 1px solid var(--wm-color-line);
+.sendEnabled {
+  cursor: pointer;
+
+  & > svg > path:first-child {
+    fill: var(--wm-color-chat-bubble-send);
+  }
 }
