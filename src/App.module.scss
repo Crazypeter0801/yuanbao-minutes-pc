@@ -1,14 +1,14 @@
 /*
- * 页面：Tahoe 壁纸铺满，主窗口舞台 + 控制台整组居中；上下留 80、左右 24，最小 1600×920。
+ * 页面：Tahoe 壁纸铺满，主窗口舞台居中；控制台固定吸附在视口右侧边缘。
  * 壁纸画在 .page 自身（不用 fixed），导入 Figma code layer 时也能完整显示。
  */
 .page {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 1600px;
+  min-width: 1400px;
   min-height: 100%;
-  padding: 80px 24px;
+  padding: 64px 24px;
   background-color: var(--wm-color-stage-background);
   background-image: url('./assets/background/tahoe-light.jpg');
   background-repeat: no-repeat;
@@ -16,9 +16,6 @@
   background-size: cover;
 }
 
-/*
- * 主窗口舞台 + 右侧演示控制台排成一行，整组在浏览器里上下左右居中；控制台与舞台垂直居中、间距 16。
- */
 .frame {
   position: relative;
   flex: 0 0 auto;
@@ -29,7 +26,7 @@
 /*
  * 1338×795 主窗口舞台锚点：
  * 主窗口紧贴左缘，当所有侧栏标签页关闭或弹出时，主窗口整体向左收缩为 952（936 会中区 + 左右各 8），
- * 左侧会中区宽度与位置完全保持不变；独立浮窗也以本舞台为坐标系自然停靠在右侧空位。
+ * 左侧会中区宽度与位置完全保持不变；自由拖拽后在当前左缘位置同样保持左缩不变宽。
  */
 .windowStage {
   position: relative;
@@ -41,10 +38,13 @@
   align-items: stretch;
 }
 
-/* 演示控制台：跟在舞台右边 16，竖向排列 */
+/* 演示控制台：固定吸附视口右侧边缘并垂直居中，菜单向左展开 */
 .demoBar {
-  flex: 0 0 auto;
-  margin-left: 16px;
+  position: fixed;
+  top: 50%;
+  right: 0;
+  z-index: 120;
+  transform: translateY(-50%);
   white-space: nowrap;
 }
 
@@ -64,7 +64,7 @@
 /*
  * 入会极简主窗口：高 795、圆角 20、左右各留 8，底色 #F3F3F4 95% + 20px 背景模糊。
  * 宽度由左侧 936 会议区 + 右侧 SideDock（0 ↔ 386）自然决定（952 ↔ 1338），
- * 随 SideDock 宽度过渡平滑向左收缩 / 向右展开。
+ * 随 SideDock 宽度过渡平滑向左收缩 / 向右展开；支持按住标题栏拖拽自由移动。
  */
 .window {
   position: relative;
@@ -78,4 +78,9 @@
   background-color: var(--wm-color-window-translucent);
   backdrop-filter: blur(20px);
   box-shadow: var(--wm-shadow-canvas);
+  will-change: transform;
+}
+
+.windowDragging {
+  user-select: none;
 }

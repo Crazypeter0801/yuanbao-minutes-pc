@@ -1,4 +1,4 @@
-import type { FC } from 'react';
+import type { FC, PointerEvent as ReactPointerEvent } from 'react';
 import IconTopAppLogo from '@/assets/d2c/icons/v2/icon-top-app-logo';
 import IconTopChevron from '@/assets/d2c/icons/v2/icon-top-chevron';
 import IconTopGrid from '@/assets/d2c/icons/v2/icon-top-grid';
@@ -10,19 +10,37 @@ import IconTitleSafety from '@/assets/d2c/icons/v2/icon-title-safety';
 import { meetingSession } from '@/data/meetingSession';
 import styles from './index.module.scss';
 
+export interface TitleBarDragHandlers {
+  dragging: boolean;
+  onPointerDown: (event: ReactPointerEvent<HTMLDivElement>) => void;
+  onPointerMove: (event: ReactPointerEvent<HTMLDivElement>) => void;
+  onPointerUp: (event: ReactPointerEvent<HTMLDivElement>) => void;
+}
+
+interface MeetingTitleBarProps {
+  dragHandlers?: TitleBarDragHandlers;
+}
+
 /**
  * 会议窗口顶部操作栏（Figma 439:21021）
  *
- * 左：窗口控制（12 圆点 ×3）→ 应用图标 → 会议详情 → 时长 → 网络 → 分享
- * 右：宫格▾ / 安全▾ / 布局 / 更多（仅前两个带下拉箭头）
- * 间距按稿：图标与标题 4、标题与时长 8、时长与网络 8、网络与分享 10、右侧按钮 4 / 8。
- * 说明：本期仅做视觉还原，不挂交互。
+ * 按住标题栏空白区域可拖拽移动整个主窗口；交通灯与功能图标带 data-nodrag 不误触发拖拽。
  */
-export const MeetingTitleBar: FC = () => (
-  <div className={styles.titleBar}>
+export const MeetingTitleBar: FC<MeetingTitleBarProps> = ({ dragHandlers }) => (
+  <div
+    className={`${styles.titleBar} ${dragHandlers ? styles.titleBarDraggable : ''} ${
+      dragHandlers?.dragging ? styles.titleBarDragging : ''
+    }`}
+    onPointerDown={dragHandlers?.onPointerDown}
+    onPointerMove={dragHandlers?.onPointerMove}
+    onPointerUp={dragHandlers?.onPointerUp}
+    onPointerCancel={dragHandlers?.onPointerUp}
+    aria-label="会议窗口标题栏"
+    title="按住空白区域拖动主窗口"
+  >
     <div className={styles.left}>
       <div className={styles.titleCluster}>
-        <div className={styles.trafficWrap}>
+        <div className={styles.trafficWrap} data-nodrag>
           <div className={styles.traffic} aria-hidden="true">
             <span className={`${styles.dot} ${styles.dotClose}`} />
             <span className={`${styles.dot} ${styles.dotMinimize}`} />
@@ -30,7 +48,7 @@ export const MeetingTitleBar: FC = () => (
           </div>
         </div>
 
-        <div className={styles.appTitle}>
+        <div className={styles.appTitle} data-nodrag>
           <IconTopAppLogo />
           <span className={styles.text}>{meetingSession.title}</span>
         </div>
@@ -38,12 +56,12 @@ export const MeetingTitleBar: FC = () => (
 
       <span className={styles.text}>{meetingSession.duration}</span>
       <IconTopNetwork />
-      <span className={styles.statusIcon}>
+      <span className={styles.statusIcon} data-nodrag>
         <IconTopShare />
       </span>
     </div>
 
-    <div className={styles.right}>
+    <div className={styles.right} data-nodrag>
       <div className={styles.tools}>
         <span className={styles.tool}>
           <IconTopGrid />

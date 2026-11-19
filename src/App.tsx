@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import { WINDOW_TOAST_ROOT_ID } from "@/components/common/Toast";
 import { DemoToolbar } from "@/components/demo/DemoToolbar";
 import { MeetingWindow } from "@/components/meeting/MeetingWindow";
@@ -117,6 +117,72 @@ export default function App() {
   });
   const [tabStyle, setTabStyle] = useState<SideTabStyle>("pill505");
   const [yuanbaoDetailOpen, setYuanbaoDetailOpen] = useState(false);
+  /** 主窗口相对初始居中位置的自由拖拽偏移（px） */
+  const [windowPos, setWindowPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [windowDragging, setWindowDragging] = useState(false);
+  const windowElRef = useRef<HTMLDivElement>(null);
+  const windowDragRef = useRef<{
+    pointerX: number;
+    pointerY: number;
+    startX: number;
+    startY: number;
+    minX: number;
+    maxX: number;
+    minY: number;
+    maxY: number;
+  } | null>(null);
+
+  const handleWindowDragDown = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.button !== 0) {
+      return;
+    }
+    const target = event.target as HTMLElement;
+    if (target.closest('[data-nodrag], button, [role="button"], input, textarea')) {
+      return;
+    }
+    const winEl = windowElRef.current;
+    if (!winEl) {
+      return;
+    }
+    const rect = winEl.getBoundingClientRect();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    windowDragRef.current = {
+      pointerX: event.clientX,
+      pointerY: event.clientY,
+      startX: windowPos.x,
+      startY: windowPos.y,
+      /* 顶部至少留 12px，保证标题栏绝不被拖出视口上方；左右与底部保证标题栏始终可拖回 */
+      minY: windowPos.y - (rect.top - 12),
+      maxY: windowPos.y + (window.innerHeight - 64 - rect.top),
+      minX: windowPos.x - (rect.right - 200),
+      maxX: windowPos.x + (window.innerWidth - 200 - rect.left),
+    };
+    setWindowDragging(true);
+  }, [windowPos.x, windowPos.y]);
+
+  const handleWindowDragMove = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
+    const start = windowDragRef.current;
+    if (!start) {
+      return;
+    }
+    const rawX = start.startX + (event.clientX - start.pointerX);
+    const rawY = start.startY + (event.clientY - start.pointerY);
+    setWindowPos({
+      x: Math.round(Math.min(start.maxX, Math.max(start.minX, rawX))),
+      y: Math.round(Math.min(start.maxY, Math.max(start.minY, rawY))),
+    });
+  }, []);
+
+  const handleWindowDragUp = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
+    if (!windowDragRef.current) {
+      return;
+    }
+    windowDragRef.current = null;
+    setWindowDragging(false);
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  }, []);
   const meetingChat = useMeetingChat();
   /** 从弹幕浮层「聊天 >」进来时，把焦点放进聊天输入框 */
   const [chatFocusSignal, setChatFocusSignal] = useState(0);
@@ -271,7 +337,12 @@ export default function App() {
       <div className={styles.frame}>
         {/* 固定 1338 宽舞台锚点：主窗口靠左停放，侧栏全部关闭或浮出时主窗口向左收缩到 952，左侧会中区 936 原地不动 */}
         <div className={styles.windowStage}>
-          <div className={styles.window} id={WINDOW_TOAST_ROOT_ID}>
+          <div
+            ref={windowElRef}
+            className={`${styles.window} ${windowDragging ? styles.windowDragging : ""}`}
+            id={WINDOW_TOAST_ROOT_ID}
+            style={{ transform: `translate3d(${windowPos.x}px, ${windowPos.y}px, 0)` }}
+          >
             <div className={styles.meetingArea}>
               <MeetingWindow
                 activeApp={dock.active}
@@ -281,6 +352,12 @@ export default function App() {
                 onOpenChat={() => {
                   openApp("chat");
                   setChatFocusSignal((value) => value + 1);
+                }}
+                titleBarDrag={{
+                  dragging: windowDragging,
+                  onPointerDown: handleWindowDragDown,
+                  onPointerMove: handleWindowDragMove,
+                  onPointerUp: handleWindowDragUp,
                 }}
               />
               {pollOpen && (
@@ -313,8 +390,8 @@ export default function App() {
               key={id}
               id={id}
               defaultOffset={{
-                x: (dockOpen ? 986 : 968) + index * 20,
-                y: (dockOpen ? 24 : 8) + index * 20,
+                x: windowPos.x + (dockOpen ? 986 : 968) + index * 20,
+                y: windowPos.y + (dockOpen ? 24 : 8) + index * 20,
               }}
               zIndex={40 + index}
               onFocus={() => focusFloatingApp(id)}
@@ -326,15 +403,15 @@ export default function App() {
             </FloatingWindow>
           ))}
         </div>
+      </div>
 
-        {/* 窗口外：演示按钮，浮在窗口右侧壁纸上 */}
-        <div className={styles.demoBar}>
-          <DemoToolbar
-            onCommand={runCommand}
-            tabStyle={tabStyle}
-            onTabStyleChange={setTabStyle}
-          />
-        </div>
+      {/* 视口右侧贴边吸附演示控制台 */}
+      <div className={styles.demoBar}>
+        <DemoToolbar
+          onCommand={runCommand}
+          tabStyle={tabStyle}
+          onTabStyleChange={setTabStyle}
+        />
       </div>
     </div>
   );

@@ -6,6 +6,20 @@
   justify-content: space-between;
   height: 40px;
   padding: 10px 0;
+  user-select: none;
+}
+
+.titleBarDraggable {
+  cursor: grab;
+  touch-action: none;
+}
+
+.titleBarDragging {
+  cursor: grabbing;
+}
+
+.titleBar [data-nodrag] {
+  cursor: default;
 }
 
 .left {

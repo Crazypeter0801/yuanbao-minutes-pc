@@ -21,9 +21,8 @@ interface DemoToolbarProps {
 }
 
 /**
- * 窗口外的演示按钮条：模拟元宝发言 / 模拟用户发言 / 模拟交互功能 / 侧栏标签页方案（竖向排列，跟在主窗口右侧）
- * 快捷指令从会议窗口里整体拿出来放到这里，窗口内只保留真实产品界面。
- * 点按钮向下弹出指令菜单，同一时间只开一个；点外面或按 Esc 收起。
+ * 视口右侧贴边吸附演示控制台：模拟元宝发言 / 模拟用户发言 / 模拟交互功能 / 侧栏标签页
+ * 四个按钮竖向吸附在右侧边缘，菜单统一向左侧弹出并自动约束在视口上下安全区内，不被裁切。
  */
 export const DemoToolbar: FC<DemoToolbarProps> = ({ onCommand, tabStyle, onTabStyleChange }) => {
   const [openKey, setOpenKey] = useState<OpenMenuKey | null>(null);
@@ -51,7 +50,7 @@ export const DemoToolbar: FC<DemoToolbarProps> = ({ onCommand, tabStyle, onTabSt
     };
   }, [openKey]);
 
-  /** 菜单向下弹出：最高只到浏览器底边上方 16，放不下的部分在菜单里滚动 */
+  /** 菜单向左侧展开，同时按视口高度动态修正纵向偏移与最大高度，防止上下或右侧裁切 */
   const menuRef = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
     const menu = menuRef.current;
@@ -60,8 +59,18 @@ export const DemoToolbar: FC<DemoToolbarProps> = ({ onCommand, tabStyle, onTabSt
     }
     const fit = () => {
       menu.style.maxHeight = '';
-      const room = window.innerHeight - menu.getBoundingClientRect().top - 16;
-      menu.style.maxHeight = `${Math.max(160, Math.min(660, room))}px`;
+      menu.style.top = '0px';
+      const maxH = Math.max(180, Math.min(620, window.innerHeight - 32));
+      menu.style.maxHeight = `${maxH}px`;
+      const rect = menu.getBoundingClientRect();
+      let shiftY = 0;
+      if (rect.bottom > window.innerHeight - 16) {
+        shiftY = window.innerHeight - 16 - rect.bottom;
+      }
+      if (rect.top + shiftY < 16) {
+        shiftY = 16 - rect.top;
+      }
+      menu.style.top = `${Math.round(shiftY)}px`;
     };
     fit();
     window.addEventListener('resize', fit);
@@ -76,7 +85,7 @@ export const DemoToolbar: FC<DemoToolbarProps> = ({ onCommand, tabStyle, onTabSt
   const tabStyleOpen = openKey === 'tab-style';
 
   return (
-    <div className={styles.bar} ref={barRef}>
+    <div className={styles.bar} ref={barRef} aria-label="演示控制台">
       {demoMenus.map((menu) => {
         const open = openKey === menu.key;
         return (
@@ -108,18 +117,18 @@ export const DemoToolbar: FC<DemoToolbarProps> = ({ onCommand, tabStyle, onTabSt
               ariaLabel={menu.label}
               ariaExpanded={open}
             >
-              <span className={styles.buttonText}>{menu.label}</span>
               <span className={`${styles.caret} ${open ? styles.caretOpen : ''}`} aria-hidden="true">
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                  <path d="M3 7.5 6 4.5l3 3" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M7.5 3 4.5 6l3 3" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </span>
+              <span className={styles.buttonText}>{menu.label}</span>
             </Pressable>
           </div>
         );
       })}
 
-      {/* 侧栏标签页方案对比切换：新版胶囊标签页（默认） vs 分段标签页 */}
+      {/* 侧栏标签页方案对比切换：新版胶囊标签页（默认） vs 分段标签页（Figma 585:68637） */}
       <div className={styles.slot}>
         {tabStyleOpen && (
           <div className={`${styles.menu} ${styles.optionMenu}`} role="menu" aria-label="侧栏标签页" ref={menuRef}>
@@ -158,12 +167,12 @@ export const DemoToolbar: FC<DemoToolbarProps> = ({ onCommand, tabStyle, onTabSt
           ariaLabel="侧栏标签页"
           ariaExpanded={tabStyleOpen}
         >
-          <span className={styles.buttonText}>侧栏标签页</span>
           <span className={`${styles.caret} ${tabStyleOpen ? styles.caretOpen : ''}`} aria-hidden="true">
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-              <path d="M3 7.5 6 4.5l3 3" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M7.5 3 4.5 6l3 3" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </span>
+          <span className={styles.buttonText}>侧栏标签页</span>
         </Pressable>
       </div>
     </div>

@@ -1,11 +1,21 @@
-/* 窗口外的演示按钮条：竖向排列、等宽、间距 12，位置由 App 决定 */
+/* 右侧贴边吸附工具条：左圆角 16、右侧贴齐视口边缘，毛玻璃桌面质感 */
 .bar {
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  padding: 10px 8px 10px 10px;
+  border-radius: 16px 0 0 16px;
+  background-color: var(--wm-color-demo-dock-bg);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  box-shadow:
+    inset 1px 0 0 var(--wm-color-line),
+    inset 0 1px 0 var(--wm-color-line),
+    inset 0 -1px 0 var(--wm-color-line),
+    var(--wm-shadow-demo-dock);
 
   & > * + * {
-    margin-top: 12px;
+    margin-top: 8px;
   }
 }
 
@@ -16,16 +26,16 @@
   flex-direction: column;
 }
 
-/* 36 高胶囊按钮，白底细描边，和侧栏里的胶囊同一语言 */
+/* 34 高胶囊按钮：左侧展开箭头 + 文案 */
 .button {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  height: 36px;
-  padding: 0 12px 0 16px;
-  border-radius: 18px;
+  justify-content: flex-start;
+  height: 34px;
+  padding: 0 12px 0 10px;
+  border-radius: 10px;
   background-color: var(--wm-color-card-background);
-  box-shadow: inset 0 0 0 0.5px var(--wm-color-line), var(--wm-shadow-float);
+  box-shadow: inset 0 0 0 0.5px var(--wm-color-line), 0 1px 3px rgba(0, 0, 0, 0.04);
   cursor: pointer;
   outline: none;
   user-select: none;
@@ -36,7 +46,7 @@
   }
 
   &:focus-visible {
-    box-shadow: inset 0 0 0 1.5px var(--wm-color-line), var(--wm-shadow-float);
+    box-shadow: inset 0 0 0 1.5px var(--wm-color-line);
   }
 }
 
@@ -45,37 +55,39 @@
 }
 
 .buttonText {
-  font-size: 14px;
-  line-height: 20px;
+  margin-left: 4px;
+  font-size: 13px;
+  line-height: 18px;
   color: var(--wm-color-text-primary);
 }
 
-/* 菜单向下弹出：收起时箭头朝下，展开时朝上 */
+/* 菜单向左弹出：收起箭头朝左，展开后微转提示已开 */
 .caret {
+  flex: 0 0 12px;
   display: flex;
+  align-items: center;
+  justify-content: center;
   width: 12px;
   height: 12px;
-  margin-left: 6px;
   color: var(--wm-color-text-tertiary);
-  transform: rotate(180deg);
   transition: transform 160ms ease-out;
 }
 
 .caretOpen {
-  transform: rotate(0deg);
+  transform: rotate(180deg);
 }
 
 /*
- * 菜单：从按钮下方 8 向下弹出、右缘与按钮对齐（往左长，不出浏览器右边），
- * 样式同输入框加号菜单（圆角 12、padding 6、无描边）；最高 660，且不超过浏览器底边上方 16（组件里按位置算），放不下时内部滚动。
+ * 菜单：向左侧展开（right: calc(100% + 14px)），绝不超出视口右边界；
+ * 纵向偏移与 max-height 由 useLayoutEffect 动态约束在视口上下安全区内。
  */
 .menu {
   position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
+  top: 0;
+  right: calc(100% + 14px);
   z-index: 200;
   width: 240px;
-  max-height: 660px;
+  max-height: 620px;
   padding: 6px;
   overflow-y: auto;
   border-radius: 12px;
