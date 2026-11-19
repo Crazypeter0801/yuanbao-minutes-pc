@@ -1,11 +1,11 @@
 import { Fragment, useEffect, useRef, useState, type FC, type ReactNode, type TransitionEvent } from 'react';
-import IconTabClose from '@/assets/d2c/icons/sidetabs/icon-tab-close';
-import IconTabMore from '@/assets/d2c/icons/sidetabs/icon-tab-more';
-import IconTabPip from '@/assets/d2c/icons/sidetabs/icon-tab-pip';
-import IconTabYuanbaoChevron from '@/assets/d2c/icons/sidetabs/icon-tab-yuanbao-chevron';
 import IconTab505Chevron from '@/assets/d2c/icons/sidetabs505/icon-tab505-chevron';
 import IconTab505More from '@/assets/d2c/icons/sidetabs505/icon-tab505-more';
 import IconTab505Pip from '@/assets/d2c/icons/sidetabs505/icon-tab505-pip';
+import IconTab585Close from '@/assets/d2c/icons/sidetabs585/icon-tab585-close';
+import IconTab585Dropdown from '@/assets/d2c/icons/sidetabs585/icon-tab585-dropdown';
+import IconTab585More from '@/assets/d2c/icons/sidetabs585/icon-tab585-more';
+import IconTab585Pip from '@/assets/d2c/icons/sidetabs585/icon-tab585-pip';
 import { Pressable } from '@/components/common/Pressable';
 import { SidebarShell } from '@/components/sidebar/SidebarShell';
 import { useToast } from '@/hooks/useToast';
@@ -32,7 +32,7 @@ interface SideDockProps {
   apps: SideAppId[];
   /** 正在看的应用；null 表示侧栏正在收起 / 已收起 */
   active: SideAppId | null;
-  /** 侧栏标签页视觉方案（默认 pill505：Figma 505:12421） */
+  /** 侧栏标签页视觉方案（默认 pill505：Figma 505:12421；classic：Figma 585:68637 分段标签页） */
   tabStyle?: SideTabStyle;
   onSelect: (id: SideAppId) => void;
   /** 关掉某个标签页（标签上的 × 或应用标题栏的 ×） */
@@ -49,7 +49,7 @@ interface SideDockProps {
 }
 
 /**
- * 侧栏容器 · 支持 Figma 505:12421 新版顶部胶囊标签栏 与 原版 single-window-base（Figma 505:12264）实时切换
+ * 侧栏容器 · 支持 Figma 505:12421 新版顶部胶囊标签栏 与 Figma 585:68637 分段标签页实时切换
  *
  * - 打开 / 收起：槽位宽度 0 ↔ 386（卡片 376 + 间距 10），240ms；主窗口跟随向右展开 / 向左收缩，左侧会中区宽度锁定不变；
  * - 两种标签页方案均完整支持页签切换、关闭、弹出独立浮窗、打开元宝 Agent 详情页与空态主窗口左缩。
@@ -68,9 +68,11 @@ export const SideDock: FC<SideDockProps> = ({
 }) => {
   const { toast } = useToast();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [tabListOpen, setTabListOpen] = useState(false);
   const [hoveredPillId, setHoveredPillId] = useState<SideAppId | null>(null);
   const [fontSize, setFontSize] = useState<number>(14);
   const menuRef = useRef<HTMLDivElement>(null);
+  const tabListRef = useRef<HTMLDivElement>(null);
   const open = active !== null;
   /** 收起过程中保留最后看的那个应用，避免收起动画还没走完内容先变白 */
   const lastShown = useRef<SideAppId | null>(active);
@@ -90,26 +92,36 @@ export const SideDock: FC<SideDockProps> = ({
 
   useEffect(() => {
     setMenuOpen(false);
+    setTabListOpen(false);
     setHoveredPillId(null);
   }, [shown, multiple, open, tabStyle]);
 
   useEffect(() => {
-    if (!menuOpen) {
+    if (!menuOpen && !tabListOpen) {
       return undefined;
     }
     const onPointerDown = (event: PointerEvent) => {
-      if (!menuRef.current?.contains(event.target as Node)) {
+      const target = event.target as Node;
+      if (menuOpen && !menuRef.current?.contains(target)) {
         setMenuOpen(false);
       }
+      if (tabListOpen && !tabListRef.current?.contains(target)) {
+        setTabListOpen(false);
+      }
     };
-    const onKeyDown = (event: KeyboardEvent) => event.key === 'Escape' && setMenuOpen(false);
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setMenuOpen(false);
+        setTabListOpen(false);
+      }
+    };
     document.addEventListener('pointerdown', onPointerDown);
     document.addEventListener('keydown', onKeyDown);
     return () => {
       document.removeEventListener('pointerdown', onPointerDown);
       document.removeEventListener('keydown', onKeyDown);
     };
-  }, [menuOpen]);
+  }, [menuOpen, tabListOpen]);
 
   const handleTransitionEnd = (event: TransitionEvent<HTMLDivElement>) => {
     if (event.target === event.currentTarget && event.propertyName === 'width' && !open) {
@@ -117,8 +129,8 @@ export const SideDock: FC<SideDockProps> = ({
     }
   };
 
-  const renderMoreMenu = (classicPlacement = false) => (
-    <div className={`${styles.menu} ${classicPlacement ? styles.menuClassic : ''}`} role="menu">
+  const renderMoreMenu = (folderPlacement = false) => (
+    <div className={`${styles.menu} ${folderPlacement ? styles.menuFolder : ''}`} role="menu">
       <div className={styles.menuRow}>
         <span>字体大小</span>
         <div className={styles.fontOptions} role="radiogroup" aria-label="侧栏字体大小">
@@ -157,7 +169,7 @@ export const SideDock: FC<SideDockProps> = ({
           独立窗口弹出「{SIDE_APPS[shown].title}」
         </Pressable>
       )}
-      {shown && !classicPlacement && (
+      {shown && !folderPlacement && (
         <Pressable
           className={`${styles.menuRow} ${styles.menuItem}`}
           onClick={() => {
@@ -189,87 +201,164 @@ export const SideDock: FC<SideDockProps> = ({
       <SidebarShell toast={toast} label={shown ? SIDE_APPS[shown].title : '侧栏'} fontSize={fontSize}>
         {multiple &&
           (tabStyle === 'classic' ? (
-            /* 原版 single-window-base（Figma 505:12264）：选中展开带操作、未选中 40×40 灰图标 */
-            <nav className={styles.classicTabs} aria-label="侧栏应用">
-              {ordered.map((id) => {
-                const meta = SIDE_APPS[id];
-                if (id !== shown) {
+            /* Figma 585:68637 分段标签页：#F7F7F7 顶部条 + 白底内凹圆角激活页签（含 更多/独立窗口/关闭） + 右侧分割线与下拉 */
+            <nav className={styles.folderBar} aria-label="侧栏应用">
+              <div className={styles.folderTabs} role="tablist" aria-label="分段标签页">
+                {ordered.map((id, index) => {
+                  const meta = SIDE_APPS[id];
+                  if (id !== shown) {
+                    return (
+                      <Pressable
+                        key={id}
+                        className={styles.folderTabInactive}
+                        onClick={() => onSelect(id)}
+                        ariaLabel={meta.title}
+                        title={meta.title}
+                      >
+                        <span className={styles.folderTabInactiveInner}>{meta.icon585Off}</span>
+                      </Pressable>
+                    );
+                  }
                   return (
-                    <Pressable
-                      key={id}
-                      className={styles.classicTab}
-                      onClick={() => onSelect(id)}
-                      ariaLabel={meta.title}
-                      title={meta.title}
-                    >
-                      {meta.iconOff}
-                    </Pressable>
-                  );
-                }
-                return (
-                  <div key={id} className={`${styles.classicTab} ${styles.classicTabSelected}`}>
-                    {id === 'yuanbao' && onToggleYuanbaoDetail ? (
-                      <Pressable
-                        className={`${styles.classicTabTitle} ${styles.classicTabTitleClickable}`}
-                        onClick={onToggleYuanbaoDetail}
-                        ariaLabel="查看元宝 Agent 详情"
-                        title="查看元宝 Agent 详情"
-                      >
-                        <span className={styles.classicTabIcon}>{meta.icon}</span>
-                        <span className={styles.classicTabLabel}>{meta.title}</span>
-                        {meta.chevron && (
-                          <span className={styles.classicTabChevron} aria-hidden="true">
-                            <IconTabYuanbaoChevron width={5} height={10} />
-                          </span>
-                        )}
-                      </Pressable>
-                    ) : (
-                      <div className={styles.classicTabTitle}>
-                        <span className={styles.classicTabIcon}>{meta.icon}</span>
-                        <span className={styles.classicTabLabel}>{meta.title}</span>
-                        {meta.chevron && (
-                          <span className={styles.classicTabChevron} aria-hidden="true">
-                            <IconTabYuanbaoChevron width={5} height={10} />
-                          </span>
-                        )}
-                      </div>
-                    )}
-                    <div className={styles.classicTabActions}>
-                      <Pressable
-                        className={styles.classicTabAction}
-                        onClick={() => onPopOutApp(id)}
-                        ariaLabel={`独立窗口打开${meta.title}`}
-                        title="独立窗口"
-                      >
-                        <IconTabPip />
-                      </Pressable>
-                      <div className={styles.moreWrap} ref={menuRef}>
-                        <Pressable
-                          className={`${styles.classicTabAction} ${menuOpen ? styles.classicTabActionActive : ''}`}
-                          onClick={() => setMenuOpen((value) => !value)}
-                          ariaLabel="更多操作"
-                          ariaExpanded={menuOpen}
-                          title="更多"
+                    <div key={id} className={styles.folderTabActive}>
+                      {/* 左侧 16×16 内凹反圆角（非首项时衔接左侧 #F7F7F7 轨道，Figma 585:68685） */}
+                      {index > 0 && (
+                        <svg
+                          className={styles.folderConcaveLeft}
+                          width="16"
+                          height="16"
+                          viewBox="0 0 16 16"
+                          fill="none"
+                          aria-hidden="true"
                         >
-                          <IconTabMore />
-                        </Pressable>
-                        {menuOpen && renderMoreMenu(true)}
-                      </div>
-                      <Pressable
-                        className={styles.classicTabAction}
-                        onClick={() => onCloseApp(id)}
-                        ariaLabel={`关闭${meta.title}`}
-                        title="关闭"
+                          <path d="M16 0V16H0A16 16 0 0 0 16 0Z" fill="currentColor" />
+                        </svg>
+                      )}
+                      {/* 右侧 16×16 内凹反圆角（衔接右侧未选中项或下拉区，Figma 585:68682） */}
+                      <svg
+                        className={styles.folderConcaveRight}
+                        width="16"
+                        height="16"
+                        viewBox="0 0 16 16"
+                        fill="none"
+                        aria-hidden="true"
                       >
-                        <IconTabClose width={20} height={21} />
-                      </Pressable>
+                        <path d="M0 0V16H16A16 16 0 0 1 0 0Z" fill="currentColor" />
+                      </svg>
+
+                      {id === 'yuanbao' && onToggleYuanbaoDetail ? (
+                        <Pressable
+                          className={`${styles.folderTabTitle} ${styles.folderTabTitleClickable}`}
+                          onClick={onToggleYuanbaoDetail}
+                          ariaLabel="查看元宝 Agent 详情"
+                          title="点击查看元宝 Agent 详情"
+                        >
+                          <span className={styles.folderTabIcon}>{meta.icon585On}</span>
+                          <span className={styles.folderTabLabel}>{meta.title}</span>
+                          {meta.chevron && (
+                            <span className={styles.folderTabChevron} aria-hidden="true">
+                              <IconTab505Chevron width={5} height={10} />
+                            </span>
+                          )}
+                        </Pressable>
+                      ) : (
+                        <div className={styles.folderTabTitle}>
+                          <span className={styles.folderTabIcon}>{meta.icon585On}</span>
+                          <span className={styles.folderTabLabel}>{meta.title}</span>
+                        </div>
+                      )}
+
+                      {/* Figma 585:68665 顺序：更多 / 独立窗口 / 关闭，三个 28×28 按钮 */}
+                      <div className={styles.folderTabActions}>
+                        <div className={styles.moreWrap} ref={menuRef}>
+                          <Pressable
+                            className={`${styles.folderActionBtn} ${menuOpen ? styles.folderActionBtnActive : ''}`}
+                            onClick={() => {
+                              setTabListOpen(false);
+                              setMenuOpen((value) => !value);
+                            }}
+                            ariaLabel="更多操作"
+                            ariaExpanded={menuOpen}
+                            title="更多"
+                          >
+                            <IconTab585More width={28} height={28} />
+                          </Pressable>
+                          {menuOpen && renderMoreMenu(true)}
+                        </div>
+                        <Pressable
+                          className={styles.folderActionBtn}
+                          onClick={() => onPopOutApp(id)}
+                          ariaLabel={`独立窗口打开${meta.title}`}
+                          title="独立窗口"
+                        >
+                          <IconTab585Pip width={28} height={28} />
+                        </Pressable>
+                        <Pressable
+                          className={styles.folderActionBtn}
+                          onClick={() => onCloseApp(id)}
+                          ariaLabel={`关闭${meta.title}`}
+                          title="关闭"
+                        >
+                          <IconTab585Close width={28} height={28} />
+                        </Pressable>
+                      </div>
                     </div>
+                  );
+                })}
+              </div>
+
+              {/* 右侧 1×12 细分隔线 + 28×28 页签下拉（Figma 585:68706 / 585:68707） */}
+              <div className={styles.folderTrailing} ref={tabListRef}>
+                <span className={styles.folderDivider} aria-hidden="true" />
+                <Pressable
+                  className={`${styles.folderActionBtn} ${tabListOpen ? styles.folderActionBtnActive : ''}`}
+                  onClick={() => {
+                    setMenuOpen(false);
+                    setTabListOpen((value) => !value);
+                  }}
+                  ariaLabel="切换侧栏标签页"
+                  ariaExpanded={tabListOpen}
+                  title="全部标签页"
+                >
+                  <IconTab585Dropdown width={28} height={28} />
+                </Pressable>
+                {tabListOpen && (
+                  <div className={`${styles.menu} ${styles.menuTabList}`} role="menu" aria-label="全部侧栏标签页">
+                    {SIDE_APP_ORDER.map((appId) => {
+                      const appMeta = SIDE_APPS[appId];
+                      const isCurrent = appId === shown;
+                      return (
+                        <Pressable
+                          key={appId}
+                          className={`${styles.menuRow} ${styles.menuItem} ${isCurrent ? styles.menuItemCurrent : ''}`}
+                          onClick={() => {
+                            setTabListOpen(false);
+                            onSelect(appId);
+                          }}
+                        >
+                          <span className={styles.tabListRow}>
+                            <span className={styles.tabListIcon}>{appMeta.icon585On}</span>
+                            <span>{appMeta.title}</span>
+                          </span>
+                          {isCurrent && <span className={styles.tabListDot} aria-hidden="true" />}
+                        </Pressable>
+                      );
+                    })}
+                    <Pressable
+                      className={`${styles.menuRow} ${styles.menuItem}`}
+                      onClick={() => {
+                        setTabListOpen(false);
+                        onCloseAll();
+                      }}
+                    >
+                      关闭所有窗口
+                    </Pressable>
                   </div>
-                );
-              })}
+                )}
+              </div>
             </nav>
           ) : (
-            /* Figma 505:12421 + 563:15854 新版顶部胶囊标签栏 */
+            /* Figma 505:12421 + 563:15854 新版顶部胶囊标签栏（默认，保持不变） */
             <nav className={styles.pillBar} aria-label="侧栏应用标签页">
               <div className={styles.pillTrack} role="tablist" aria-label="侧栏页签">
                 {ordered.map((id, index) => {

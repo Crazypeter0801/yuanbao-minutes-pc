@@ -261,131 +261,171 @@
   animation: menu-enter 180ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.menuClassic {
-  top: calc(100% + 8px);
-  right: -32px;
-  width: 220px;
-  padding: 8px;
-  border-radius: 16px;
+.menuFolder {
+  top: calc(100% + 6px);
+  right: -58px;
+  width: 224px;
+  padding: 6px;
+  border-radius: 14px;
 }
 
-/* ---------- 原版 single-window-base 标签页（Figma 505:12264，完整保留原样式） ---------- */
+.menuTabList {
+  top: calc(100% + 6px);
+  right: 6px;
+  width: 184px;
+  padding: 6px;
+  border-radius: 14px;
+}
 
-/* 一行：padding 12、间距 4，页签高 40 → 整行 64 */
-.classicTabs {
+/* ---------- 分段标签页（Figma 585:68637）：#F7F7F7 顶条 + 白底内凹反圆角激活页签 ---------- */
+
+.folderBar {
   position: relative;
   z-index: 30;
   flex: 0 0 auto;
   display: flex;
-  align-items: center;
-  padding: 12px;
-
-  & > * + * {
-    margin-left: 4px;
-  }
+  align-items: stretch;
+  height: 40px;
+  background-color: var(--wm-color-tab585-strip);
 }
 
-/* 未选中：40×40、0.5px #EBEDF2 描边、圆角 8，灰色图标居中（元宝 20、成员 / 聊天 24） */
-.classicTab {
+.folderTabs {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: stretch;
+}
+
+.folderTabInactive {
   flex: 0 0 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 40px;
   height: 40px;
-  border-radius: 8px;
-  box-shadow: inset 0 0 0 0.5px var(--wm-color-outline-tertiary);
   cursor: pointer;
   outline: none;
-  transition: background-color 120ms ease-in-out;
 
-  & > svg {
-    display: block;
-    flex: 0 0 auto;
-  }
-
-  &:not(.classicTabSelected):hover,
-  &:not(.classicTabSelected):focus-visible {
+  &:hover .folderTabInactiveInner,
+  &:focus-visible .folderTabInactiveInner {
     background-color: var(--wm-color-control-hover);
   }
 }
 
-/* 选中：撑满剩余宽度，padding 0 8，左标题右操作（Figma 504:11045） */
-.classicTabSelected {
+.folderTabInactiveInner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  transition: background-color 120ms ease-in-out;
+}
+
+/* 激活页签（Figma 585:68649）：白底、顶圆角 12、左右 16×16 内凹反圆角衔接底部白色正文区 */
+.folderTabActive {
+  position: relative;
+  z-index: 2;
   flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
   justify-content: space-between;
-  width: auto;
-  min-width: 0;
-  padding: 0 8px;
-  cursor: default;
-  animation: classic-tab-expand 200ms cubic-bezier(0.22, 1, 0.36, 1);
+  height: 40px;
+  padding: 6px 8px;
+  border-radius: 12px 12px 0 0;
+  background-color: var(--wm-color-background-quaternary);
+  color: var(--wm-color-background-quaternary);
+  animation: classic-tab-expand 180ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.classicTabTitle {
+.folderConcaveLeft,
+.folderConcaveRight {
+  position: absolute;
+  bottom: 0;
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+}
+
+.folderConcaveLeft {
+  left: -16px;
+}
+
+.folderConcaveRight {
+  right: -16px;
+}
+
+/* 标题组（Figma 585:68650）：padding 0 6、高 28、图标与文案间距 4 */
+.folderTabTitle {
   display: flex;
   align-items: center;
   min-width: 0;
-
-  & > * + * {
-    margin-left: 6px;
-  }
-}
-
-.classicTabTitleClickable {
-  padding: 2px 6px 2px 2px;
-  margin-left: -2px;
+  height: 28px;
+  padding: 0 6px;
   border-radius: 6px;
-  cursor: pointer;
-  outline: none;
-  transition: background-color 120ms ease-in-out;
-
-  &:hover,
-  &:focus-visible {
-    background-color: var(--wm-color-control-hover);
-  }
-}
-
-.classicTabIcon {
-  display: flex;
-  flex: 0 0 24px;
-  width: 24px;
-  height: 24px;
-}
-
-/* 14/18 400 #000（Figma 504:11059） */
-.classicTabLabel {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  font-size: 14px;
-  line-height: 18px;
-  font-weight: 400;
-  color: var(--wm-color-text-primary);
-}
-
-/* 3×8 折线外扩补偿，对齐 Figma 541:13598 */
-.classicTabChevron {
-  display: flex;
-  margin: -0.75px -1.25px -1.25px calc(6px - 0.75px);
-}
-
-/* 独立窗口 / 更多 / 关闭：20 的图标、间距 4（Figma 504:11060） */
-.classicTabActions {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
 
   & > * + * {
     margin-left: 4px;
   }
 }
 
-.classicTabAction {
+.folderTabTitleClickable {
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease-in-out;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--wm-color-control-hover);
+  }
+}
+
+.folderTabIcon {
+  flex: 0 0 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 20px;
   height: 20px;
+}
+
+/* Figma 585:68664：12px / 14px 400 #000000，letter-spacing 0.2px */
+.folderTabLabel {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 12px;
+  line-height: 14px;
+  font-weight: 400;
+  letter-spacing: 0.2px;
+  color: var(--wm-color-text-primary);
+}
+
+.folderTabChevron {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  margin-left: 2px;
+}
+
+/* 操作区（Figma 585:68665）：更多 / 独立窗口 / 关闭，三个 28×28、间距 2 */
+.folderTabActions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+
+  & > * + * {
+    margin-left: 2px;
+  }
+}
+
+.folderActionBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
   border-radius: 6px;
   cursor: pointer;
   outline: none;
@@ -402,13 +442,60 @@
   }
 }
 
-.classicTabActionActive {
+.folderActionBtnActive {
   background-color: var(--wm-color-control-hover);
+}
+
+/* 右侧 1×12 细分隔线 + 28×28 下拉（Figma 585:68697） */
+.folderTrailing {
+  position: relative;
+  z-index: 3;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  padding-right: 6px;
+}
+
+.folderDivider {
+  flex: 0 0 1px;
+  width: 1px;
+  height: 12px;
+  margin-right: 5px;
+  background-color: var(--wm-color-tab585-divider);
+}
+
+.tabListRow {
+  display: inline-flex;
+  align-items: center;
+
+  & > * + * {
+    margin-left: 8px;
+  }
+}
+
+.tabListIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+}
+
+.menuItemCurrent {
+  color: var(--wm-color-text-primary);
+  font-weight: 500;
+}
+
+.tabListDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  background-color: var(--wm-color-brand-yuanbao);
 }
 
 @keyframes classic-tab-expand {
   from {
-    opacity: 0.6;
+    opacity: 0.72;
   }
   to {
     opacity: 1;
@@ -510,8 +597,8 @@
   .pillClose,
   .pillTabInactive,
   .pillDivider,
-  .classicTab,
-  .classicTabSelected,
+  .folderTabInactiveInner,
+  .folderTabActive,
   .menu,
   .paneActive {
     transition: none;
