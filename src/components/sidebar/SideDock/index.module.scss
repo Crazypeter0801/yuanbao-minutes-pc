@@ -42,32 +42,16 @@
   padding: 16px;
 }
 
-/* 左侧凹槽胶囊轨道（505:12607）：#F3F3F4（wm_color_background_tertiary）、圆角 20、高 40 */
+/* 左侧凹槽胶囊轨道（505:12607 / 563:15854）：#F3F3F4（wm_color_background_tertiary）、圆角 20、高 40、四边 2px 内边距 */
 .pillTrack {
   flex: 1 1 auto;
   min-width: 0;
   display: flex;
   align-items: center;
   height: 40px;
+  padding: 2px;
   border-radius: 20px;
   background-color: var(--wm-color-background-tertiary);
-
-  & > * + * {
-    margin-left: 8px;
-  }
-}
-
-/* 贴齐激活白胶囊一侧留 2px，未选中纯图标一侧留 10px（对齐 Figma 505:12607 padding: 2px 10px 2px 2px） */
-.pillTrackPadRight {
-  padding: 2px 10px 2px 2px;
-}
-
-.pillTrackPadLeft {
-  padding: 2px 2px 2px 10px;
-}
-
-.pillTrackPadBoth {
-  padding: 2px 10px;
 }
 
 /* 激活页签白胶囊（505:12608）：fill、高 36、圆角 18、padding 4 12 4 8、#FFF、1px #EBEDF2、blur(10px) */
@@ -169,15 +153,24 @@
   }
 }
 
-/* 未选中页签（505:12633 / 505:12621）：hug、高 36、圆角 18、padding 4 8（宽 40）、24 灰图标 */
-.pillTabInactive {
-  position: relative;
+.pillInactiveWrap {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
+}
+
+/*
+ * 未选中页签（Figma 505:12633 + hover 563:15890）：
+ * 56×36、圆角 18、居中显示 24px 灰图标；
+ * hover 时仅添加 #E6E8EB（wm_color_background_secondary）胶囊背景色，不改图标色、无额外特效。
+ */
+.pillTabInactive {
+  flex: 0 0 56px;
+  display: flex;
+  align-items: center;
   justify-content: center;
+  width: 56px;
   height: 36px;
-  padding: 4px 8px;
   border-radius: 18px;
   cursor: pointer;
   outline: none;
@@ -185,53 +178,21 @@
 
   &:hover,
   &:focus-visible {
-    background-color: var(--wm-color-control-hover);
-  }
-
-  &:hover .pillInactiveClose,
-  &:focus-within .pillInactiveClose {
-    opacity: 1;
-    pointer-events: auto;
+    background-color: var(--wm-color-background-secondary);
   }
 }
 
-.pillInactiveClose {
-  position: absolute;
-  top: 1px;
-  right: 1px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 14px;
-  height: 14px;
-  border-radius: 7px;
-  background-color: var(--wm-color-background-quaternary);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.14);
-  color: var(--wm-color-text-secondary);
-  opacity: 0;
-  pointer-events: none;
-  cursor: pointer;
-  outline: none;
-  transition:
-    opacity 120ms ease,
-    background-color 120ms ease,
-    color 120ms ease;
-
-  &:hover,
-  &:focus-visible {
-    opacity: 1;
-    pointer-events: auto;
-    background-color: var(--wm-color-text-primary);
-    color: var(--wm-color-text-senary);
-  }
-}
-
-/* 未选中相邻页签之间的竖分隔线（505:12632）：1×20 #D3D6DB（wm_color_outline_secondary） */
+/* 未选中相邻页签之间的竖分隔线（505:12632）：1×20 #D3D6DB，相邻未选中项 hover 时隐藏 */
 .pillDivider {
   flex: 0 0 1px;
   width: 1px;
   height: 20px;
   background-color: var(--wm-color-outline-secondary);
+  transition: opacity 120ms ease-in-out;
+}
+
+.pillDividerHidden {
+  opacity: 0;
 }
 
 /* 右侧操作胶囊（505:12590）：高 40、圆角 20、padding 6 12、#FFF、1px #EBEDF2、blur(10px) */
@@ -547,7 +508,8 @@
 @media (prefers-reduced-motion: reduce) {
   .pillTabActive,
   .pillClose,
-  .pillInactiveClose,
+  .pillTabInactive,
+  .pillDivider,
   .classicTab,
   .classicTabSelected,
   .menu,

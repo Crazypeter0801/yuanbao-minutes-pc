@@ -68,6 +68,7 @@ export const SideDock: FC<SideDockProps> = ({
 }) => {
   const { toast } = useToast();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [hoveredPillId, setHoveredPillId] = useState<SideAppId | null>(null);
   const [fontSize, setFontSize] = useState<number>(14);
   const menuRef = useRef<HTMLDivElement>(null);
   const open = active !== null;
@@ -89,6 +90,7 @@ export const SideDock: FC<SideDockProps> = ({
 
   useEffect(() => {
     setMenuOpen(false);
+    setHoveredPillId(null);
   }, [shown, multiple, open, tabStyle]);
 
   useEffect(() => {
@@ -177,14 +179,6 @@ export const SideDock: FC<SideDockProps> = ({
       </Pressable>
     </div>
   );
-
-  const firstIsActive = activeIndex === 0;
-  const lastIsActive = activeIndex === ordered.length - 1;
-  const trackPaddingClass = firstIsActive
-    ? styles.pillTrackPadRight
-    : lastIsActive
-      ? styles.pillTrackPadLeft
-      : styles.pillTrackPadBoth;
 
   return (
     <div
@@ -275,14 +269,17 @@ export const SideDock: FC<SideDockProps> = ({
               })}
             </nav>
           ) : (
-            /* Figma 505:12421 新版顶部胶囊标签栏（Frame 505:12423） */
+            /* Figma 505:12421 + 563:15854 新版顶部胶囊标签栏 */
             <nav className={styles.pillBar} aria-label="侧栏应用标签页">
-              <div className={`${styles.pillTrack} ${trackPaddingClass}`} role="tablist" aria-label="侧栏页签">
+              <div className={styles.pillTrack} role="tablist" aria-label="侧栏页签">
                 {ordered.map((id, index) => {
                   const meta = SIDE_APPS[id];
                   const isSelected = id === shown;
+                  const nextId = ordered[index + 1];
                   const showRightDivider =
                     index < ordered.length - 1 && !isSelected && index + 1 !== activeIndex;
+                  const hideRightDivider =
+                    hoveredPillId === id || (nextId !== undefined && hoveredPillId === nextId);
 
                   return (
                     <Fragment key={id}>
@@ -328,33 +325,27 @@ export const SideDock: FC<SideDockProps> = ({
                           </Pressable>
                         </div>
                       ) : (
-                        <Pressable
-                          className={styles.pillTabInactive}
-                          onClick={() => onSelect(id)}
-                          ariaLabel={meta.title}
-                          title={meta.title}
+                        <div
+                          className={styles.pillInactiveWrap}
+                          onMouseEnter={() => setHoveredPillId(id)}
+                          onMouseLeave={() => setHoveredPillId((current) => (current === id ? null : current))}
                         >
-                          <span className={styles.pillIcon}>{meta.icon505Off}</span>
                           <Pressable
-                            as="span"
-                            className={styles.pillInactiveClose}
-                            onClick={() => onCloseApp(id)}
-                            ariaLabel={`关闭${meta.title}`}
-                            title={`关闭${meta.title}`}
-                            stopPropagation
+                            className={styles.pillTabInactive}
+                            onClick={() => onSelect(id)}
+                            ariaLabel={meta.title}
+                            title={meta.title}
                           >
-                            <svg width="8" height="8" viewBox="0 0 10 10" fill="none" aria-hidden="true">
-                              <path
-                                d="M2.4 2.4 7.6 7.6M7.6 2.4 2.4 7.6"
-                                stroke="currentColor"
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                              />
-                            </svg>
+                            <span className={styles.pillIcon}>{meta.icon505Off}</span>
                           </Pressable>
-                        </Pressable>
+                        </div>
                       )}
-                      {showRightDivider && <span className={styles.pillDivider} aria-hidden="true" />}
+                      {showRightDivider && (
+                        <span
+                          className={`${styles.pillDivider} ${hideRightDivider ? styles.pillDividerHidden : ''}`}
+                          aria-hidden="true"
+                        />
+                      )}
                     </Fragment>
                   );
                 })}
