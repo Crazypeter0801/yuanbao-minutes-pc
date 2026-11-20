@@ -24,11 +24,12 @@
   }
 }
 
-/* 气泡 padding 10 12，底 #F6F6F6；统一四角对称圆角矩形 + Apple 60% 连续平滑曲率 */
+/* 对齐 Figma 2136:77197 / 77199 接收气泡：底 #F3F3F4、padding 8 10、单行 min-height 36、四角对称 16 + Apple 60% 连续平滑曲率 */
 .bubble {
   max-width: 100%;
-  padding: 10px 12px;
-  background-color: var(--wm-color-background-secondary-v2);
+  min-height: 36px;
+  padding: 8px 10px;
+  background-color: var(--wm-color-background-septenary);
 
   @supports (corner-shape: superellipse(1.6)) {
     corner-shape: superellipse(1.6);

@@ -86,7 +86,7 @@ export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
             <AssistantBubbleBox
               key={bubble.id}
               className={shapeClass}
-              squircleRadius={shape === 'compact' ? 12 : 14}
+              squircleRadius={shape === 'compact' ? 12 : 16}
               squircleEnabled={!isPlain}
             >
               <RichText

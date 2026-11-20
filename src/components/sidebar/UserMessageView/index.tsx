@@ -10,7 +10,7 @@ interface UserMessageViewProps {
 
 /** 用户提问气泡（右对齐，四角对称圆角矩形 + Apple 60% 平滑曲率） */
 export const UserMessageView: FC<UserMessageViewProps> = ({ message, shape }) => {
-  const bubbleRef = useSquircle<HTMLParagraphElement>(shape === 'compact' ? 12 : 14);
+  const bubbleRef = useSquircle<HTMLParagraphElement>(shape === 'compact' ? 12 : 16);
   return (
     <div className={styles.row}>
       <p ref={bubbleRef} className={`${styles.bubble} ${styles[shape]}`}>

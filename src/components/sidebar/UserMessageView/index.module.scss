@@ -4,13 +4,15 @@
   padding-left: 48px;
 }
 
-/* 与元宝正文同为 14/22，统一四角对称圆角矩形 + Apple 60% 连续平滑曲率 */
+/* 对齐 Figma 2136:77198 文本气泡：padding 8 10、14/20、letter-spacing 0、单行高 36、四角对称 16 + Apple 60% 平滑曲率 */
 .bubble {
   margin: 0;
-  padding: 10px 12px;
+  min-height: 36px;
+  padding: 8px 10px;
   border-radius: var(--wm-radius-yb-bubble);
   font-size: var(--wm-side-font-size, 14px);
-  line-height: calc(var(--wm-side-font-size, 14px) + 8px);
+  line-height: calc(var(--wm-side-font-size, 14px) + 6px);
+  letter-spacing: 0;
   color: var(--wm-color-text-primary);
   word-break: break-word;
   white-space: pre-wrap;

@@ -9,9 +9,9 @@
   flex-direction: column;
 }
 
-/* 换人：拉开 20，一问一答之间有明确停顿 */
+/* 换人：对齐 Figma 2136:77195 消息列表垂直间距 16 */
 .newSender {
-  margin-top: 20px;
+  margin-top: 16px;
 }
 
 /* 同一个人连发：12，读起来是一段话 */
@@ -19,9 +19,9 @@
   margin-top: 12px;
 }
 
-/* 时间行下方 12 */
+/* 时间行下方 16（对齐 Figma 2136:77196 → 77197） */
 .afterTime {
-  margin-top: 12px;
+  margin-top: 16px;
 }
 
 /* 居中时间：12/18 浅灰，上方 20（第一条前不留） */

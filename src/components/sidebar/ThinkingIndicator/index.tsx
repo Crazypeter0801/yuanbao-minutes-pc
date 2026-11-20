@@ -9,7 +9,7 @@ interface ThinkingIndicatorProps {
 
 /** 元宝思考中：三个跳动的点（对称圆角矩形 + Apple 60% 连续曲率） */
 export const ThinkingIndicator: FC<ThinkingIndicatorProps> = ({ plain = false }) => {
-  const ref = useSquircle<HTMLDivElement>(14, !plain);
+  const ref = useSquircle<HTMLDivElement>(16, !plain);
   return (
     <div ref={ref} className={`${styles.wrap} ${plain ? styles.plain : ''}`} role="status" aria-label="元宝正在思考">
       <span className={styles.dot} />

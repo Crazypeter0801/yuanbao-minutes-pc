@@ -243,8 +243,8 @@
   --wm-color-demo-dock-bg: rgba(255, 255, 255, 0.2);
   --wm-shadow-demo-dock: -6px 8px 28px rgba(15, 23, 42, 0.12);
 
-  /* 元宝对话气泡统一对称圆角体系（配合 Apple 60% 连续曲率平滑过渡） */
-  --wm-radius-yb-bubble: 14px;
+  /* 元宝对话气泡统一对称圆角体系（对齐 Figma 2136:77193 16px 圆角 + Apple 60% 连续曲率平滑过渡） */
+  --wm-radius-yb-bubble: 16px;
   --wm-radius-yb-card: 16px;
   --wm-radius-yb-chip: 12px;
 
@@ -253,7 +253,7 @@
     system-ui, -apple-system, 'BlinkMacSystemFont', sans-serif;
 }
 
-/* 原生支持 CSS corner-shape: superellipse(1.6) 时略微放大圆角半径以对齐 60% 连续曲率视觉柔和度 */
+/* 原生支持 CSS corner-shape: superellipse(1.6) 时保持气泡 16px 精准口径（单行高 36px 利落不胶囊化），大卡/轻卡按同族微调 */
 @supports (corner-shape: superellipse(1.6)) {
   :root {
     --wm-radius-yb-bubble: 16px;
