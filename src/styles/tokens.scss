@@ -231,10 +231,11 @@
   --wm-color-agent-badge-rose-soft: rgba(239, 68, 68, 0.1);
   --wm-color-agent-toggle-off: #d5d9e2;
   --wm-color-agent-toggle-on: #00cc70;
+  --wm-color-floating-window-border: rgba(0, 0, 0, 0.09);
   --wm-shadow-floating-window:
-    0 20px 48px rgba(15, 23, 42, 0.22),
-    0 4px 14px rgba(15, 23, 42, 0.1),
-    inset 0 0 0 0.5px rgba(0, 0, 0, 0.08);
+    0 24px 56px rgba(15, 23, 42, 0.22),
+    0 10px 24px rgba(15, 23, 42, 0.12),
+    0 2px 6px rgba(15, 23, 42, 0.08);
 
   /* 侧栏分段标签页（Figma 585:68637）顶部底色与细分隔线 */
   --wm-color-tab585-strip: #f7f7f7;

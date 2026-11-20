@@ -121,6 +121,7 @@ export default function App() {
   /** 主窗口相对初始居中位置的自由拖拽偏移（px） */
   const [windowPos, setWindowPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [windowDragging, setWindowDragging] = useState(false);
+  const stageElRef = useRef<HTMLDivElement>(null);
   const windowElRef = useRef<HTMLDivElement>(null);
   const windowDragRef = useRef<{
     pointerX: number;
@@ -333,11 +334,42 @@ export default function App() {
 
   const dockOpen = dock.active !== null;
 
+  /**
+   * 计算弹出独立浮窗的初始位置（相对舞台左上角）：
+   * 明显向右上角拉开分离感，并按当前视口尺寸做安全边界夹紧，避免出屏或与右侧演示控制台硬重叠。
+   */
+  const computeFloatingDefaultOffset = (index: number) => {
+    const FLOATING_W = 376;
+    const FLOATING_H = 747;
+    const SAFE_MARGIN = 16;
+    const idealX = windowPos.x + (dockOpen ? 1052 : 1032) + index * 24;
+    const idealY = windowPos.y - 52 + index * 24;
+
+    const stageRect = stageElRef.current?.getBoundingClientRect();
+    if (!stageRect || typeof window === "undefined") {
+      return { x: idealX, y: idealY };
+    }
+
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    // 宽屏下为最右侧吸附的演示控制台（宽约 134px）预留避让呼吸空间
+    const rightReserve = vw >= 1560 ? 148 : 20;
+    const minStageX = SAFE_MARGIN - stageRect.left;
+    const maxStageX = vw - rightReserve - FLOATING_W - stageRect.left;
+    const minStageY = SAFE_MARGIN - stageRect.top;
+    const maxStageY = Math.max(minStageY, vh - SAFE_MARGIN - FLOATING_H - stageRect.top);
+
+    return {
+      x: Math.round(Math.min(maxStageX, Math.max(minStageX, idealX))),
+      y: Math.round(Math.min(maxStageY, Math.max(minStageY, idealY))),
+    };
+  };
+
   return (
     <div className={styles.page}>
       <div className={styles.frame}>
         {/* 固定 1338 宽舞台锚点：主窗口靠左停放，侧栏全部关闭或浮出时主窗口向左收缩到 952，左侧会中区 936 原地不动 */}
-        <div className={styles.windowStage}>
+        <div ref={stageElRef} className={styles.windowStage}>
           <div
             ref={windowElRef}
             className={`${styles.window} ${windowDragging ? styles.windowDragging : ""}`}
@@ -403,10 +435,7 @@ export default function App() {
             <FloatingWindow
               key={id}
               id={id}
-              defaultOffset={{
-                x: windowPos.x + (dockOpen ? 986 : 968) + index * 20,
-                y: windowPos.y + (dockOpen ? 56 : 40) + index * 20,
-              }}
+              defaultOffset={computeFloatingDefaultOffset(index)}
               zIndex={40 + index}
               onFocus={() => focusFloatingApp(id)}
               onDockBack={() => dockBackApp(id)}

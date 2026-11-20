@@ -23,7 +23,7 @@ interface FloatingWindowProps {
 
 /**
  * 从侧栏弹出（浮出）后的独立窗口：
- * 保持 376×779 卡片尺寸，按住顶部条可自由拖拽，右上角支持一键吸附回侧栏或关闭（与停靠态关闭图标一致）。
+ * 保持 376×747 卡片尺寸，带清晰 1px 边框与多层浮层投影；支持自由拖拽、向右上角弹出动效、一键合并回侧栏或关闭。
  */
 export const FloatingWindow: FC<FloatingWindowProps> = ({
   id,
@@ -86,54 +86,56 @@ export const FloatingWindow: FC<FloatingWindowProps> = ({
       aria-label={`${meta.title}独立窗口`}
       onPointerDown={onFocus}
     >
-      <header
-        className={styles.titleBar}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
-        title="按住拖动独立窗口"
-      >
-        <div className={styles.title}>
-          {onTitleClick ? (
+      <div className={styles.surface}>
+        <header
+          className={styles.titleBar}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
+          title="按住拖动独立窗口"
+        >
+          <div className={styles.title}>
+            {onTitleClick ? (
+              <Pressable
+                className={styles.titleButton}
+                onClick={onTitleClick}
+                ariaLabel={`查看${meta.title} Agent 详情`}
+                title={`查看${meta.title} Agent 详情`}
+                stopPropagation
+              >
+                <span className={styles.icon}>{meta.icon585On}</span>
+                <span className={styles.label}>{meta.title}</span>
+                <IconTab574Chevron width={5} height={10} aria-hidden="true" />
+              </Pressable>
+            ) : (
+              <div className={styles.titleStatic}>
+                <span className={styles.icon}>{meta.icon585On}</span>
+                <span className={styles.label}>{meta.title}</span>
+              </div>
+            )}
+          </div>
+          <div className={styles.actions} data-nodrag>
             <Pressable
-              className={styles.titleButton}
-              onClick={onTitleClick}
-              ariaLabel={`查看${meta.title} Agent 详情`}
-              title={`查看${meta.title} Agent 详情`}
-              stopPropagation
+              className={styles.actionButton}
+              onClick={onDockBack}
+              ariaLabel={`将${meta.title}合并到主窗口`}
+              title="合并到主窗口"
             >
-              <span className={styles.icon}>{meta.icon585On}</span>
-              <span className={styles.label}>{meta.title}</span>
-              <IconTab574Chevron width={5} height={10} aria-hidden="true" />
+              <IconTab582DockBack width={28} height={28} />
             </Pressable>
-          ) : (
-            <div className={styles.titleStatic}>
-              <span className={styles.icon}>{meta.icon585On}</span>
-              <span className={styles.label}>{meta.title}</span>
-            </div>
-          )}
-        </div>
-        <div className={styles.actions} data-nodrag>
-          <Pressable
-            className={styles.actionButton}
-            onClick={onDockBack}
-            ariaLabel={`将${meta.title}合并到主窗口`}
-            title="合并到主窗口"
-          >
-            <IconTab582DockBack width={28} height={28} />
-          </Pressable>
-          <Pressable
-            className={styles.actionButton}
-            onClick={onClose}
-            ariaLabel={`关闭${meta.title}独立窗口`}
-            title="关闭"
-          >
-            <IconTab585Close width={28} height={28} />
-          </Pressable>
-        </div>
-      </header>
-      <div className={styles.content}>{children}</div>
+            <Pressable
+              className={styles.actionButton}
+              onClick={onClose}
+              ariaLabel={`关闭${meta.title}独立窗口`}
+              title="关闭"
+            >
+              <IconTab585Close width={28} height={28} />
+            </Pressable>
+          </div>
+        </header>
+        <div className={styles.content}>{children}</div>
+      </div>
     </aside>
   );
 };
