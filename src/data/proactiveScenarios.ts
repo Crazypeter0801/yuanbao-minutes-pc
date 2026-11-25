@@ -62,8 +62,8 @@ export type ProactiveScenario =
     });
 
 /**
- * 开始记录：打开侧栏时默认就有的第一条消息（开启了云笔记），不需要手动触发
- * 「我已经开始记录啦～」+ 下方「正在帮你记」卡片
+ * 开始记录：打开侧栏时默认就有的第一条消息（Figma 811:38603）
+ * 「我已经开始记录啦～ 你专心开会就好。」+ 下方「元宝笔记：产品方案评审」卡片
  */
 export function buildRecordingStartMessage(): AssistantMessage {
   return {
@@ -77,44 +77,107 @@ export function buildRecordingStartMessage(): AssistantMessage {
       },
     ],
     recordingCard: true,
-    recordingTitle: meetingSession.topic,
+    recordingTitle: `元宝笔记：${meetingSession.topic}`,
+    recordingMeta: ['PDF', '128KB'],
     recordingSummary: meetingSession.summary,
   };
 }
 
 /**
- * 入会稿里的小结问答（Figma 416:20680 / 416:20684，533:13495 / 533:13499，533:13523 / 533:13527）
- * 稿里同一轮重复了三次，用来撑出可滚动的长度、演示对话滚到底栏下面被渐变盖住的效果。
+ * 默认首屏对话内容（Figma 811:38602）：
+ * - 811:38638：会中重点确认提示 + 提问话术建议
+ * - 811:38647 → 811:38650：「总结刚刚发生的事情」两段回复
+ * - 811:38669 → 811:38672：「这个跟上次定的有什么不同？」对比答复
+ * - 811:38677：「根据讨论内容，帮我整理发言思路」
  */
 export function buildInitialSummaryRound(): ChatMessage[] {
-  return [0, 1, 2].flatMap(() => buildSummaryPair());
-}
-
-function buildSummaryPair(): ChatMessage[] {
   const now = Date.now();
   return [
-    { id: createId('init-user'), role: 'user', text: '总结刚刚发生的事情', createdAt: now },
     {
-      id: createId('init-summary'),
+      id: createId('init-briefing'),
       role: 'assistant',
       createdAt: now,
       bubbles: [
         {
-          id: createId('init-summary-bubble'),
+          id: createId('init-briefing-focus'),
           blocks: [
-            paragraph('到目前为止主要聊了三件事：'),
+            {
+              type: 'paragraph',
+              runs: [
+                { text: '这场 ' },
+                { text: '产品方案评审', bold: true },
+                { text: '，建议你重点确认：' },
+              ],
+            },
+            paragraph('非整周期计费的严重问题是否已关闭，明天 11 月 19 日的预发演练能否按期进行？'),
+          ],
+        },
+        {
+          id: createId('init-briefing-ask'),
+          blocks: [
+            paragraph(
+              '可以这样问：“这个方向我理解了，想再确认一个使用细节：如果两个区域打开的是同一段对话，输入和回复准备怎么同步？”',
+            ),
+          ],
+        },
+      ],
+    },
+    {
+      id: createId('init-user-summary'),
+      role: 'user',
+      text: '总结刚刚发生的事情',
+      createdAt: now,
+    },
+    {
+      id: createId('init-assistant-summary'),
+      role: 'assistant',
+      createdAt: now,
+      bubbles: [
+        {
+          id: createId('init-assistant-summary-lead'),
+          blocks: [paragraph('我查一下会议过去五分钟讨论的内容。')],
+        },
+        {
+          id: createId('init-assistant-summary-body'),
+          blocks: [
+            paragraph('到目前为止主要聊了两件事：'),
             {
               type: 'list',
               items: [
                 [{ text: '竞品偏“以面为主”的布局，当前产品更偏线性结构，会上做了对照。' }],
                 [{ text: '视觉方向暂定两版并行：线条／卡片版、少色大灰版。' }],
-                [{ text: '登录页需要更亲和、有趣。' }],
               ],
             },
-            { type: 'paragraph', runs: [{ text: '还没定：', bold: true }, { text: '是否保留现有主题色、竖向布局怎么改。' }] },
           ],
         },
       ],
+    },
+    {
+      id: createId('init-user-diff'),
+      role: 'user',
+      text: '这个跟上次定的有什么不同？',
+      createdAt: now,
+    },
+    {
+      id: createId('init-assistant-diff'),
+      role: 'assistant',
+      createdAt: now,
+      bubbles: [
+        {
+          id: createId('init-assistant-diff-body'),
+          blocks: [
+            paragraph(
+              '这次新增了“不同导航页面分别保留侧栏状态”的讨论。上次主要明确的是侧栏内通过 Tab 切换，尚未涉及跨页面的状态保留。',
+            ),
+          ],
+        },
+      ],
+    },
+    {
+      id: createId('init-user-outline'),
+      role: 'user',
+      text: '根据讨论内容，帮我整理发言思路',
+      createdAt: now,
     },
   ];
 }

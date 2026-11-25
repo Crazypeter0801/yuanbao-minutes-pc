@@ -145,6 +145,7 @@ export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
           <RecordingCard
             compact
             title={message.recordingTitle}
+            metaItems={message.recordingMeta}
             summary={message.recordingSummary}
             onOpen={onOpenNote}
           />

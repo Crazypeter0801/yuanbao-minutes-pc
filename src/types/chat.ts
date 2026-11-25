@@ -94,8 +94,10 @@ export interface AssistantMessage {
   artifacts?: ArtifactItem[];
   /** 刚入会且开启云笔记：在气泡下方显示「元宝笔记」卡片（Figma 811:41211） */
   recordingCard?: boolean;
-  /** 笔记卡主标题（会议主题，如「产品方案评审」），不填用默认会议主题 */
+  /** 笔记卡主标题（会议主题，如「元宝笔记：产品方案评审」），不填用默认会议主题 */
   recordingTitle?: string;
+  /** 笔记卡次级信息行（如 ['PDF', '128KB']，对齐 Figma 811:38610） */
+  recordingMeta?: string[];
   /** 笔记卡副标题（会议摘要，超出单行省略），对齐 Figma 811:41233 */
   recordingSummary?: string;
   /** 追问建议 */

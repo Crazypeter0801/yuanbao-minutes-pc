@@ -325,3 +325,40 @@
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+
+/* Figma 811:38631：类型 + 体积行（gap 4px，12/18 #7B818F） */
+.noteMetaRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 400;
+  color: var(--wm-color-text-tertiary);
+}
+
+.noteMetaItem {
+  flex: 0 1 auto;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Figma 811:38637：右侧 16×16 跳转箭头 */
+.noteChevron {
+  flex: 0 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+
+  & > img {
+    display: block;
+    width: 16px;
+    height: 16px;
+    user-select: none;
+  }
+}

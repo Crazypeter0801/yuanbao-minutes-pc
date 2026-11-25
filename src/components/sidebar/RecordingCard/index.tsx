@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState, type FC } from 'react';
 import IconNoteChevron from '@/assets/d2c/icons/v2/icon-side3-note-chevron';
 import IconNoteFile from '@/assets/d2c/icons/v2/icon-side3-note-file';
+import iconNoteChevronRight from '@/assets/d2c/icons/yuanbao811/icon-note-chevron-right.svg';
 import IconYuanbaoNoteDoc from '@/assets/d2c/icons/yuanbao811/icon-yuanbao-note-doc';
 import { Pressable } from '@/components/common/Pressable';
 import { meetingSession } from '@/data/meetingSession';
@@ -17,11 +18,13 @@ const LIST_GROW_MS = 260;
 interface RecordingCardProps {
   /** 卡片标题（compact 新版默认取当前会议主题，展开态默认「元宝笔记」） */
   title?: string;
-  /** 会议摘要（compact 新版单行省略展示，对齐 Figma 811:41211） */
+  /** 次级信息条目（如 ['PDF', '128KB']，对齐 Figma 811:38610） */
+  metaItems?: string[];
+  /** 会议摘要（compact 新版单行省略展示，未传 metaItems 时兜底） */
   summary?: string;
   /** 已识别出的话题，按时间顺序，最后一条是当前正在聊的；为空时显示识别中的过渡态 */
   topics?: string[];
-  /** compact：Figma 811:41211 新版元宝笔记卡片（260×60 左文档徽标 + 右会议主题与单行摘要） */
+  /** compact：Figma 811:38610 新版元宝笔记卡片（260×60 左文档徽标 + 右标题与元信息 + 右箭头） */
   compact?: boolean;
   /** 点击整张卡片打开云笔记 */
   onOpen?: () => void;
@@ -29,12 +32,13 @@ interface RecordingCardProps {
 
 /**
  * 元宝笔记卡片：
- * - compact（Figma 811:41211）：260×60 白底 1px #EBEDF2 描边、圆角 16；左 40×40 绿文档+元宝徽标，
- *   右会议标题（14/20 #000）+ 会议摘要单行省略（12/18 #7B818F）。
+ * - compact（Figma 811:38610 / 582:33088）：260×60 白底 1px #EBEDF2 描边、圆角 16；
+ *   左 40×40 元宝笔记图标，中标题（14/20 #000）+ 次级元信息/摘要（12/18 #7B818F），右 16×16 箭头。
  * - 非 compact：保留「正在帮你记」实时话题过渡卡。
  */
 export const RecordingCard: FC<RecordingCardProps> = ({
   title,
+  metaItems,
   summary,
   topics = [],
   compact = false,
@@ -89,6 +93,7 @@ export const RecordingCard: FC<RecordingCardProps> = ({
   if (compact) {
     const noteTitle = title ?? meetingSession.topic;
     const noteSummary = summary ?? meetingSession.summary;
+    const hasMetaItems = Boolean(metaItems && metaItems.length > 0);
 
     return (
       <Pressable
@@ -103,9 +108,22 @@ export const RecordingCard: FC<RecordingCardProps> = ({
           <span className={styles.noteTitle} title={noteTitle}>
             {noteTitle}
           </span>
-          <span className={styles.noteSummary} title={noteSummary}>
-            {noteSummary}
-          </span>
+          {hasMetaItems ? (
+            <span className={styles.noteMetaRow}>
+              {metaItems?.map((item, idx) => (
+                <span className={styles.noteMetaItem} key={`${item}-${idx}`}>
+                  {item}
+                </span>
+              ))}
+            </span>
+          ) : (
+            <span className={styles.noteSummary} title={noteSummary}>
+              {noteSummary}
+            </span>
+          )}
+        </span>
+        <span className={styles.noteChevron} aria-hidden="true">
+          <img src={iconNoteChevronRight} alt="" width={16} height={16} draggable={false} />
         </span>
       </Pressable>
     );

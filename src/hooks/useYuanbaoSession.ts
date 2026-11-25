@@ -8,7 +8,7 @@ export type YuanbaoSession = YuanbaoChat;
 
 /**
  * 元宝会话状态：提到 App 层，窗口外的演示按钮和窗口内的侧栏操作的是同一份对话
- * 初始对话按 Figma 416:20464：开始记录 + 元宝笔记卡片 + 一轮「总结刚刚发生的事情」小结。
+ * 初始对话对齐 Figma 811:38602：开场记录 + 元宝笔记卡片 + 会中重点确认与多轮问答。
  */
 export function useYuanbaoSession(): YuanbaoSession {
   // 惰性初始化：时间取打开页面的那一刻，而不是模块加载时
