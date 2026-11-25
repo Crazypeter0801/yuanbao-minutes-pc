@@ -5,11 +5,11 @@ import IconConnectorChevron from '@/assets/d2c/icons/agentDetail811/icon-connect
 import IconTaskAuto from '@/assets/d2c/icons/agentDetail811/icon-task-auto';
 import IconTaskDone from '@/assets/d2c/icons/agentDetail811/icon-task-done';
 import IconTaskRunning from '@/assets/d2c/icons/agentDetail811/icon-task-running';
+import IconYuanbaoNoteDoc from '@/assets/d2c/icons/yuanbao811/icon-yuanbao-note-doc';
 import iconAgentAvatarEdit from '@/assets/d2c/images/agentDetail811/icon-agent-avatar-edit@2x.png';
 import iconFileDocx from '@/assets/d2c/images/agentDetail811/icon-file-docx@2x.png';
 import iconFilePdf from '@/assets/d2c/images/agentDetail811/icon-file-pdf@2x.png';
 import iconFileXlsx from '@/assets/d2c/images/agentDetail811/icon-file-xlsx@2x.png';
-import iconFileYuanbao from '@/assets/d2c/images/agentDetail811/icon-file-yuanbao@2x.png';
 import imgConnectorFeishu from '@/assets/d2c/images/agentDetail811/img-connector-feishu@2x.png';
 import imgConnectorFigma from '@/assets/d2c/images/agentDetail811/img-connector-figma@2x.png';
 import imgConnectorGranola from '@/assets/d2c/images/agentDetail811/img-connector-granola@2x.png';
@@ -63,8 +63,7 @@ const DETAIL_TABS: Array<{ id: AgentDetailTab; label: string }> = [
   { id: 'connectors', label: '连接器' },
 ];
 
-const LIBRARY_ICON_MAP: Record<LibraryFileIconKind, string> = {
-  yuanbao: iconFileYuanbao,
+const LIBRARY_ICON_MAP: Record<Exclude<LibraryFileIconKind, 'yuanbao'>, string> = {
   pdf: iconFilePdf,
   xlsx: iconFileXlsx,
   screenshot: imgLibraryScreenshot,
@@ -367,15 +366,19 @@ export const AgentDetail: FC<AgentDetailProps> = ({
                   onClick={() => handleOpenLibraryDoc(doc)}
                 >
                   <span className={styles.libraryIconWrap}>
-                    <img
-                      src={LIBRARY_ICON_MAP[doc.icon]}
-                      alt=""
-                      width={32}
-                      height={32}
-                      className={
-                        doc.icon === 'screenshot' ? styles.libraryThumbImg : styles.libraryIconImg
-                      }
-                    />
+                    {doc.icon === 'yuanbao' ? (
+                      <IconYuanbaoNoteDoc width={32} height={32} />
+                    ) : (
+                      <img
+                        src={LIBRARY_ICON_MAP[doc.icon]}
+                        alt=""
+                        width={32}
+                        height={32}
+                        className={
+                          doc.icon === 'screenshot' ? styles.libraryThumbImg : styles.libraryIconImg
+                        }
+                      />
+                    )}
                   </span>
                   <div className={styles.libraryTextCol}>
                     <span className={styles.libraryTitle}>{doc.name}</span>
@@ -400,13 +403,17 @@ export const AgentDetail: FC<AgentDetailProps> = ({
                   onClick={() => handleOpenLibraryDoc(doc)}
                 >
                   <span className={styles.libraryIconWrap}>
-                    <img
-                      src={LIBRARY_ICON_MAP[doc.icon]}
-                      alt=""
-                      width={32}
-                      height={32}
-                      className={styles.libraryIconImg}
-                    />
+                    {doc.icon === 'yuanbao' ? (
+                      <IconYuanbaoNoteDoc width={32} height={32} />
+                    ) : (
+                      <img
+                        src={LIBRARY_ICON_MAP[doc.icon]}
+                        alt=""
+                        width={32}
+                        height={32}
+                        className={styles.libraryIconImg}
+                      />
+                    )}
                   </span>
                   <div className={styles.libraryTextCol}>
                     <span className={styles.libraryTitle}>{doc.name}</span>

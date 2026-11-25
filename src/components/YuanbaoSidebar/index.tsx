@@ -13,7 +13,7 @@ import { Toast } from "@/components/common/Toast";
 import { AgentDetail } from "@/components/sidebar/AgentDetail";
 import { ChatInput } from "@/components/sidebar/ChatInput";
 import { ChatList } from "@/components/sidebar/ChatList";
-import { MessageStream } from "@/components/sidebar/MessageStream";
+import { MessageStream, type MessageStreamHandle } from "@/components/sidebar/MessageStream";
 import { QuickCommandEntry } from "@/components/sidebar/QuickCommandEntry";
 import { SidebarHeader } from "@/components/sidebar/SidebarHeader";
 import { TaskDetail } from "@/components/sidebar/TaskDetail";
@@ -110,9 +110,12 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
   /** 正在看的任务；有值时盖住侧栏显示任务步骤详情 */
   const [activeTask, setActiveTask] = useState<AgentTask | null>(null);
   const footerRef = useRef<HTMLDivElement>(null);
-  const [footerHeight, setFooterHeight] = useState(80);
-  /** 消息流下方是否仍有未滚动到的历史内容（仅此时显示底栏上方渐隐，处于最底端时隐藏避免遮挡最新气泡） */
+  const streamRef = useRef<MessageStreamHandle>(null);
+  const [footerHeight, setFooterHeight] = useState(64);
+  /** 消息流下方是否仍有未滚动到的历史内容（仅此时显示底栏上方贴边渐隐，处于最底端时隐藏避免遮挡最新气泡） */
   const [hasBottomOverflow, setHasBottomOverflow] = useState(false);
+  /** 上滚离开底部超过 48px 时显示居中「回到底部」圆形按钮 */
+  const [showScrollToBottom, setShowScrollToBottom] = useState(false);
 
   useLayoutEffect(() => {
     const node = footerRef.current;
@@ -199,8 +202,10 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
   // 输入框上方已通过「元宝状态栏」呈现「正在思考回复...」或任务执行状态时，
   // 不再在消息流中重复展示灰色「•••」输入气泡；capsules 模式下保留。
   const showTypingBubble = !isAgentStatus && chat.isThinking;
-  // 状态栏触发瞬间即预留完整目标高度（120px），避免 240ms 展开过渡期间 padding-bottom 滞后导致最新气泡被挡
-  const reservedFooterHeight = Math.max(footerHeight, showStatusRow ? 120 : 80);
+  // 状态栏触发瞬间即预留完整目标高度（104px），避免 240ms 展开过渡期间 padding-bottom 滞后导致最新气泡被挡
+  const reservedFooterHeight = Math.max(footerHeight, showStatusRow ? 104 : 64);
+  // 展开任务/指令浮层时隐藏回底按钮，避免遮挡浮层内容
+  const scrollBottomBtnVisible = showScrollToBottom && openPanel === null;
 
   return (
     <div className={styles.panel}>
@@ -220,11 +225,13 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
         style={{ "--yb-footer-height": `${reservedFooterHeight}px` } as CSSProperties}
       >
         <MessageStream
+          ref={streamRef}
           className={styles.stream}
           startAtTop
           withTopFade="scroll"
           scrollKey={`${chat.messages.length}-${chat.isThinking}`}
           onBottomOverflowChange={setHasBottomOverflow}
+          onShowScrollToBottomChange={setShowScrollToBottom}
         >
           <ChatList
             messages={chat.messages}
@@ -250,6 +257,35 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
           data-bottom-fade-visible={hasBottomOverflow ? "true" : "false"}
           ref={footerRef}
         >
+          <button
+            type="button"
+            className={`${styles.scrollToBottomBtn} ${
+              scrollBottomBtnVisible ? styles.scrollToBottomBtnVisible : ""
+            }`}
+            aria-label="回到底部"
+            title="回到底部"
+            aria-hidden={!scrollBottomBtnVisible}
+            tabIndex={scrollBottomBtnVisible ? 0 : -1}
+            data-scroll-to-bottom-visible={scrollBottomBtnVisible ? "true" : "false"}
+            onClick={() => streamRef.current?.scrollToBottom("smooth")}
+          >
+            <svg
+              className={styles.scrollToBottomIcon}
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M4.25 6.25L8 10L11.75 6.25"
+                stroke="currentColor"
+                strokeWidth="1.65"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
           {/* 输入框上方一行：有任务时平滑滑入/淡入，无任务时 agent-status 整体收起不留空、capsules 仅保留推荐指令 */}
           <div
             className={`${styles.statusRowWrap} ${showStatusRow ? styles.statusRowWrapVisible : styles.statusRowWrapCollapsed}`}

@@ -4,7 +4,7 @@ import iconFileSheet from '@/assets/d2c/icons/v1/icon-file-sheet.svg';
 import iconFileSlide from '@/assets/d2c/icons/v1/icon-file-slide.svg';
 import iconFileTranscript from '@/assets/d2c/icons/v1/icon-file-transcript.svg';
 import iconFileWord from '@/assets/d2c/icons/v1/icon-file-word.svg';
-import iconFileYuanbao from '@/assets/d2c/icons/v1/icon-file-yuanbao.svg';
+import IconYuanbaoNoteDoc from '@/assets/d2c/icons/yuanbao811/icon-yuanbao-note-doc';
 import IconStatusFolder from '@/assets/d2c/icons/input/icon-status-folder';
 import IconMeetSidebar from '@/assets/d2c/icons/v1/icon-meet-sidebar';
 import { Pressable } from '@/components/common/Pressable';
@@ -27,8 +27,7 @@ interface ArtifactEntryProps {
 }
 
 /** 文件类型徽标：Figma 导出的矢量图，按 URL 引入后由 img 渲染，避免位图缩放发虚；图片类改用缩略图 */
-const FILE_ICONS: Record<Exclude<ArtifactIcon, 'image'>, string> = {
-  yuanbao: iconFileYuanbao,
+const FILE_ICONS: Record<Exclude<ArtifactIcon, 'image' | 'yuanbao'>, string> = {
   pdf: iconFilePdf,
   sheet: iconFileSheet,
   transcript: iconFileTranscript,
@@ -104,6 +103,8 @@ export const ArtifactEntry: FC<ArtifactEntryProps> = ({
             <Pressable key={item.id} className={styles.file} onClick={() => onOpen(item)} ariaLabel={`打开${item.name}`}>
               {item.icon === 'image' ? (
                 <img className={styles.fileThumb} src={item.thumb} alt="" aria-hidden="true" />
+              ) : item.icon === 'yuanbao' ? (
+                <IconYuanbaoNoteDoc width={20} height={20} className={styles.fileIcon} />
               ) : (
                 <img className={styles.fileIcon} src={FILE_ICONS[item.icon]} alt="" aria-hidden="true" />
               )}
