@@ -9,6 +9,7 @@ type OpenMenuKey = DemoMenu['key'] | 'command-bar';
 const COMMAND_BAR_OPTIONS: Array<{ value: CommandBarVariant; label: string }> = [
   { value: 'agent-status-sprite', label: '元宝状态栏（工作形象）' },
   { value: 'agent-status-dots', label: '元宝状态栏（基础加载）' },
+  { value: 'top-activity', label: '元宝活动（对话上方）' },
   { value: 'capsules', label: '推荐与任务胶囊' },
 ];
 

@@ -1,7 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState, type FC } from 'react';
 import IconNoteChevron from '@/assets/d2c/icons/v2/icon-side3-note-chevron';
 import IconNoteFile from '@/assets/d2c/icons/v2/icon-side3-note-file';
-import iconNoteChevronRight from '@/assets/d2c/icons/yuanbao811/icon-note-chevron-right.svg';
 import IconYuanbaoNoteDoc from '@/assets/d2c/icons/yuanbao811/icon-yuanbao-note-doc';
 import { Pressable } from '@/components/common/Pressable';
 import { meetingSession } from '@/data/meetingSession';
@@ -24,7 +23,7 @@ interface RecordingCardProps {
   summary?: string;
   /** 已识别出的话题，按时间顺序，最后一条是当前正在聊的；为空时显示识别中的过渡态 */
   topics?: string[];
-  /** compact：Figma 811:38610 新版元宝笔记卡片（260×60 左文档徽标 + 右标题与元信息 + 右箭头） */
+  /** compact：Figma 811:38610 新版元宝笔记卡片（260×60 左文档徽标 + 右标题与元信息） */
   compact?: boolean;
   /** 点击整张卡片打开云笔记 */
   onOpen?: () => void;
@@ -33,7 +32,7 @@ interface RecordingCardProps {
 /**
  * 元宝笔记卡片：
  * - compact（Figma 811:38610 / 582:33088）：260×60 白底 1px #EBEDF2 描边、圆角 16；
- *   左 40×40 元宝笔记图标，中标题（14/20 #000）+ 次级元信息/摘要（12/18 #7B818F），右 16×16 箭头。
+ *   左 40×40 元宝笔记图标，右标题（14/20 #000）+ 次级元信息/摘要（12/18 #7B818F）。
  * - 非 compact：保留「正在帮你记」实时话题过渡卡。
  */
 export const RecordingCard: FC<RecordingCardProps> = ({
@@ -121,9 +120,6 @@ export const RecordingCard: FC<RecordingCardProps> = ({
               {noteSummary}
             </span>
           )}
-        </span>
-        <span className={styles.noteChevron} aria-hidden="true">
-          <img src={iconNoteChevronRight} alt="" width={16} height={16} draggable={false} />
         </span>
       </Pressable>
     );

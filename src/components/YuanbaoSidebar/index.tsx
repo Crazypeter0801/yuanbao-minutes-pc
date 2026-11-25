@@ -18,7 +18,8 @@ import { QuickCommandEntry } from "@/components/sidebar/QuickCommandEntry";
 import { SidebarHeader } from "@/components/sidebar/SidebarHeader";
 import { TaskDetail } from "@/components/sidebar/TaskDetail";
 import { TaskEntry, type CommandBarVariant } from "@/components/sidebar/TaskEntry";
-import { isAgentStatusVariant } from "@/components/sidebar/TaskEntry/types";
+import { isAgentStatusVariant, isTopActivityVariant } from "@/components/sidebar/TaskEntry/types";
+import { TopActivityStage } from "@/components/sidebar/TopActivityStage";
 import { INITIAL_SCHEDULED_TASKS, type AgentScheduledTask } from "@/data/agentDetail";
 import { AGENT_TASKS, getRunningTaskStatus, type AgentTask } from "@/data/agentTasks";
 import { NOTE_ARTIFACT_ID } from "@/data/artifacts";
@@ -183,8 +184,9 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
     onSubmit ? onSubmit(text, { fromUser }) : chat.ask(text);
 
   const isAgentStatus = isAgentStatusVariant(commandBarVariant);
+  const isTopActivity = isTopActivityVariant(commandBarVariant);
   const resolvedTaskStatus = taskStatusText ?? getRunningTaskStatus(AGENT_TASKS, 0);
-  // 展开的「进行中任务」列表与底部状态栏共用当前执行阶段文案，保证两处语义一致
+  // 展开的「进行中任务」列表与底部/顶部状态栏共用当前执行阶段文案，保证两处语义一致
   const activeTasks = useMemo<AgentTask[]>(
     () =>
       hasActiveTasks
@@ -198,10 +200,15 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
     () => activeTasks.filter((task) => task.state === "running").length,
     [activeTasks],
   );
-  const showStatusRow = isAgentStatus ? runningCount > 0 || chat.isThinking : true;
-  // 输入框上方已通过「元宝状态栏」呈现「正在思考」或任务执行状态时，
-  // 不再在消息流中重复展示灰色「•••」输入气泡；capsules 模式下保留。
-  const showTypingBubble = !isAgentStatus && chat.isThinking;
+  const topActivityActive = runningCount > 0 || chat.isThinking;
+  // 对话上方元宝活动方案不显示底部状态栏，避免上下重复
+  const showStatusRow = isTopActivity
+    ? false
+    : isAgentStatus
+      ? runningCount > 0 || chat.isThinking
+      : true;
+  // 底部元宝状态栏与对话上方活动态均已承载思考反馈，仅 capsules 模式保留消息流内灰色「•••」气泡
+  const showTypingBubble = commandBarVariant === "capsules" && chat.isThinking;
   // 状态栏触发瞬间即预留完整目标高度（104px），避免 240ms 展开过渡期间 padding-bottom 滞后导致最新气泡被挡
   const reservedFooterHeight = Math.max(footerHeight, showStatusRow ? 104 : 64);
   // 展开任务/指令浮层时隐藏回底按钮，避免遮挡浮层内容
@@ -224,9 +231,24 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
         className={styles.body}
         style={{ "--yb-footer-height": `${reservedFooterHeight}px` } as CSSProperties}
       >
+        {isTopActivity && (
+          <TopActivityStage
+            isActive={topActivityActive}
+            isThinking={chat.isThinking}
+            statusText={resolvedTaskStatus}
+            onOpenDetail={() => setDetailOpen(true)}
+          />
+        )}
+
         <MessageStream
           ref={streamRef}
-          className={styles.stream}
+          className={`${styles.stream} ${
+            isTopActivity
+              ? topActivityActive
+                ? styles.streamWithTopActivityActive
+                : styles.streamWithTopActivity
+              : ""
+          }`}
           startAtTop
           withTopFade="scroll"
           scrollKey={`${chat.messages.length}-${chat.isThinking}`}
@@ -286,56 +308,58 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
               />
             </svg>
           </button>
-          {/* 输入框上方一行：有任务时平滑滑入/淡入，无任务时 agent-status 整体收起不留空、capsules 仅保留推荐指令 */}
+          {/* 输入框上方一行：有任务时平滑滑入/淡入，无任务时 agent-status 整体收起不留空、top-activity 完全不展示 */}
           <div
             className={`${styles.statusRowWrap} ${showStatusRow ? styles.statusRowWrapVisible : styles.statusRowWrapCollapsed}`}
             data-command-bar-variant={commandBarVariant}
             data-status-bar-visible={showStatusRow ? "true" : "false"}
             aria-hidden={!showStatusRow}
           >
-            <div className={isAgentStatus ? styles.statusRowAgent : styles.statusRow} data-morph-row>
-              {isAgentStatus ? (
-                <TaskEntry
-                  variant={commandBarVariant}
-                  isThinking={chat.isThinking}
-                  statusText={resolvedTaskStatus}
-                  tasks={activeTasks}
-                  runningCount={runningCount}
-                  expanded={openPanel === "tasks"}
-                  onExpandedChange={(next) => setOpenPanel(next ? "tasks" : null)}
-                  onOpenTask={setActiveTask}
-                  onOpenAgentDetail={() => setDetailOpen(true)}
-                />
-              ) : (
-                <>
-                  <QuickCommandEntry
-                    variant="capsules"
-                    expanded={openPanel === "commands"}
-                    onExpandedChange={(next) => setOpenPanel(next ? "commands" : null)}
-                    hidden={openPanel === "tasks"}
-                    onPick={(prompt) => send(prompt, true)}
+            {!isTopActivity && (
+              <div className={isAgentStatus ? styles.statusRowAgent : styles.statusRow} data-morph-row>
+                {isAgentStatus ? (
+                  <TaskEntry
+                    variant={commandBarVariant}
+                    isThinking={chat.isThinking}
+                    statusText={resolvedTaskStatus}
+                    tasks={activeTasks}
+                    runningCount={runningCount}
+                    expanded={openPanel === "tasks"}
+                    onExpandedChange={(next) => setOpenPanel(next ? "tasks" : null)}
+                    onOpenTask={setActiveTask}
+                    onOpenAgentDetail={() => setDetailOpen(true)}
                   />
-                  <div
-                    className={`${styles.taskCapsuleSlot} ${
-                      hasActiveTasks ? styles.taskCapsuleSlotVisible : styles.taskCapsuleSlotCollapsed
-                    }`}
-                    data-task-capsule-visible={hasActiveTasks ? "true" : "false"}
-                    aria-hidden={!hasActiveTasks}
-                  >
-                    <TaskEntry
+                ) : (
+                  <>
+                    <QuickCommandEntry
                       variant="capsules"
-                      tasks={activeTasks}
-                      runningCount={runningCount}
-                      expanded={openPanel === "tasks"}
-                      onExpandedChange={(next) => setOpenPanel(next ? "tasks" : null)}
-                      hidden={openPanel === "commands"}
-                      onOpenTask={setActiveTask}
-                      onOpenAgentDetail={() => setDetailOpen(true)}
+                      expanded={openPanel === "commands"}
+                      onExpandedChange={(next) => setOpenPanel(next ? "commands" : null)}
+                      hidden={openPanel === "tasks"}
+                      onPick={(prompt) => send(prompt, true)}
                     />
-                  </div>
-                </>
-              )}
-            </div>
+                    <div
+                      className={`${styles.taskCapsuleSlot} ${
+                        hasActiveTasks ? styles.taskCapsuleSlotVisible : styles.taskCapsuleSlotCollapsed
+                      }`}
+                      data-task-capsule-visible={hasActiveTasks ? "true" : "false"}
+                      aria-hidden={!hasActiveTasks}
+                    >
+                      <TaskEntry
+                        variant="capsules"
+                        tasks={activeTasks}
+                        runningCount={runningCount}
+                        expanded={openPanel === "tasks"}
+                        onExpandedChange={(next) => setOpenPanel(next ? "tasks" : null)}
+                        hidden={openPanel === "commands"}
+                        onOpenTask={setActiveTask}
+                        onOpenAgentDetail={() => setDetailOpen(true)}
+                      />
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
           </div>
           <ChatInput
             placeholder="和元宝聊聊"

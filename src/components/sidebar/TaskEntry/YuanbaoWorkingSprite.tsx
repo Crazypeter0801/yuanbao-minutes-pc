@@ -12,23 +12,38 @@ const VALID_FRAMES = 36;
 const FRAME_INTERVAL_MS = 1000 / 24;
 
 /**
- * 单格内有效图形并集包围盒为 x:[47..223], y:[32..220]（中心 135, 126，最大边 189px）。
- * 外层视口 32×32px、单格缩放至 38×38px 并做中心补偿后，有效角色视觉尺寸约 27.5×26px（贴合 28px 目标），
- * 36 帧任意一帧均完全落在视口内无裁切与抖动。
+ * 基准视口 32×32px 下的单格缩放与中心补偿参数（36 帧任意一帧均无裁切与抖动）；
+ * 外部传入更大尺寸（如对话上方活动态 60×60px）时按 size / BASE_VIEWPORT_SIZE 等比缩放。
  */
-const CELL_RENDER_SIZE = 38;
-const OFFSET_X = -3.7;
-const OFFSET_Y = -2.4;
+const BASE_VIEWPORT_SIZE = 32;
+const BASE_CELL_RENDER_SIZE = 38;
+const BASE_OFFSET_X = -3.7;
+const BASE_OFFSET_Y = -2.4;
+
+interface YuanbaoWorkingSpriteProps {
+  /** 视口宽高（px），默认 32（底栏状态条）；对话上方活动态传 60 */
+  size?: number;
+  /** 是否播放动画；false 时暂停在首帧以节省开销 */
+  active?: boolean;
+}
 
 /**
  * 元宝工作形象动态雪碧图组件：
  * - 24fps 循环播放 36 帧有效画面，绝不闪现末尾空白格；
- * - prefers-reduced-motion: reduce 时静止停留在首帧。
+ * - prefers-reduced-motion: reduce 或 active=false 时静止停留在首帧。
  */
-export const YuanbaoWorkingSprite: FC = () => {
+export const YuanbaoWorkingSprite: FC<YuanbaoWorkingSpriteProps> = ({
+  size = BASE_VIEWPORT_SIZE,
+  active = true,
+}) => {
   const [frame, setFrame] = useState(0);
 
   useEffect(() => {
+    if (!active) {
+      setFrame(0);
+      return undefined;
+    }
+
     const media = window.matchMedia?.('(prefers-reduced-motion: reduce)');
     if (media?.matches) {
       setFrame(0);
@@ -62,16 +77,22 @@ export const YuanbaoWorkingSprite: FC = () => {
       window.cancelAnimationFrame(rafId);
       media?.removeEventListener?.('change', onMotionChange);
     };
-  }, []);
+  }, [active]);
+
+  const scale = size / BASE_VIEWPORT_SIZE;
+  const cellRenderSize = BASE_CELL_RENDER_SIZE * scale;
+  const offsetX = BASE_OFFSET_X * scale;
+  const offsetY = BASE_OFFSET_Y * scale;
 
   const col = frame % SPRITE_COLS;
   const row = Math.floor(frame / SPRITE_COLS);
-  const translateX = OFFSET_X - col * CELL_RENDER_SIZE;
-  const translateY = OFFSET_Y - row * CELL_RENDER_SIZE;
+  const translateX = offsetX - col * cellRenderSize;
+  const translateY = offsetY - row * cellRenderSize;
 
   return (
     <span
       className={styles.spriteViewport}
+      style={size === BASE_VIEWPORT_SIZE ? undefined : { width: size, height: size, flexBasis: size }}
       data-sprite-frame={frame}
       data-sprite-total={VALID_FRAMES}
       aria-hidden="true"
@@ -80,11 +101,11 @@ export const YuanbaoWorkingSprite: FC = () => {
         src={yuanbaoWorkingSprite}
         alt=""
         className={styles.spriteSheet}
-        width={CELL_RENDER_SIZE * SPRITE_COLS}
-        height={CELL_RENDER_SIZE * SPRITE_ROWS}
+        width={cellRenderSize * SPRITE_COLS}
+        height={cellRenderSize * SPRITE_ROWS}
         style={{
-          width: `${CELL_RENDER_SIZE * SPRITE_COLS}px`,
-          height: `${CELL_RENDER_SIZE * SPRITE_ROWS}px`,
+          width: `${cellRenderSize * SPRITE_COLS}px`,
+          height: `${cellRenderSize * SPRITE_ROWS}px`,
           transform: `translate3d(${translateX}px, ${translateY}px, 0)`,
         }}
         draggable={false}

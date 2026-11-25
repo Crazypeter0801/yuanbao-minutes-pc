@@ -345,20 +345,3 @@
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-
-/* Figma 811:38637：右侧 16×16 跳转箭头 */
-.noteChevron {
-  flex: 0 0 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 16px;
-  height: 16px;
-
-  & > img {
-    display: block;
-    width: 16px;
-    height: 16px;
-    user-select: none;
-  }
-}

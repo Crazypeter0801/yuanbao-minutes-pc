@@ -1,0 +1,300 @@
+/*
+ * 对话内容上方的元宝活动浮层（Figma 811:25116 活动态 / 811:39347 空闲中状态）
+ * 悬浮在消息流顶部，背后铺柔和自上而下白色渐隐，滚动内容从下方自然穿过且绝不压住形象与胶囊。
+ */
+.stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 6;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 12px 0 10px;
+  pointer-events: none;
+  transition: background-image 200ms ease;
+}
+
+.stageIdle {
+  background-image: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    rgba(255, 255, 255, 0.92) 32.31%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+.stageActive {
+  padding-bottom: 4px;
+  background-image: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    rgba(255, 255, 255, 0.92) 18%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+.badge {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  isolation: isolate;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  outline: none;
+  pointer-events: auto;
+
+  &:hover .pill {
+    transform: translateY(-1px);
+    box-shadow: var(--wm-shadow-top-activity-pill-hover);
+  }
+
+  &:active .pill {
+    transform: scale(0.98);
+  }
+
+  &:focus-visible .pill {
+    box-shadow:
+      0 0 0 2px var(--wm-color-focus-ring),
+      var(--wm-shadow-top-activity-pill);
+  }
+}
+
+/* 60×60 形象容器，底部压入白色胶囊 8px（Figma 811:37275 / 811:39426 mb-[-8px]） */
+.character {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  margin-bottom: -8px;
+}
+
+.characterLayer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    opacity 200ms ease,
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.characterLayerVisible {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+.characterLayerHidden {
+  opacity: 0;
+  transform: scale(0.92) translateY(3px);
+  pointer-events: none;
+}
+
+/* 休眠元宝（Figma 811:39427）：严格按 50×53.662 与三层百分比坐标叠放无损矢量图 */
+.sleepingArt {
+  position: relative;
+  width: 50px;
+  height: 53.662px;
+}
+
+.sleepingBg,
+.sleepingBody,
+.sleepingFg {
+  position: absolute;
+  display: block;
+  max-width: none;
+  user-select: none;
+}
+
+.sleepingBg {
+  top: 9.16%;
+  right: 3.75%;
+  bottom: 42.82%;
+  left: 6.85%;
+  width: 89.4%;
+  height: 48.02%;
+}
+
+.sleepingBody {
+  top: 17.3%;
+  right: 7.99%;
+  bottom: 7.21%;
+  left: 10.52%;
+  width: 81.49%;
+  height: 75.49%;
+}
+
+.sleepingFg {
+  top: 7.14%;
+  right: 0;
+  bottom: 5.24%;
+  left: 0;
+  width: 100%;
+  height: 87.62%;
+}
+
+/* 白底悬浮胶囊（Figma 811:37309 / 811:39442）：圆角 16、白描边、0 6 10 / 15% 柔和落影 */
+.pill {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 64px;
+  padding: 5px 12px;
+  border: 1px solid var(--wm-color-background-quaternary);
+  border-radius: 16px;
+  background-color: var(--wm-color-background-quaternary);
+  box-shadow: var(--wm-shadow-top-activity-pill);
+  transition:
+    padding 200ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 150ms ease,
+    box-shadow 150ms ease;
+
+  @supports (corner-shape: superellipse(1.6)) {
+    corner-shape: superellipse(1.6);
+  }
+}
+
+.pillActive {
+  min-width: 84px;
+  padding: 6px 12px;
+}
+
+.pillIdle {
+  min-width: 64px;
+  padding: 5px 12px;
+}
+
+.name {
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 600;
+  color: var(--wm-color-text-title);
+  white-space: nowrap;
+}
+
+/* 活动态副标题槽位：空闲态宽高同步收起为 0，确保空闲胶囊紧凑还原 64×28；活动态平滑展开 */
+.statusWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 0;
+  height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition:
+    max-width 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    height 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 180ms ease;
+}
+
+.statusWrapVisible {
+  max-width: 220px;
+  height: 18px;
+  opacity: 1;
+}
+
+.statusViewport {
+  position: relative;
+  display: inline-grid;
+  align-items: center;
+  justify-items: center;
+  height: 18px;
+  overflow: hidden;
+}
+
+.statusText {
+  grid-area: 1 / 1;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 400;
+  white-space: nowrap;
+  color: var(--wm-color-top-activity-status);
+  background-image: linear-gradient(
+    94deg,
+    var(--wm-color-top-activity-status) 0%,
+    var(--wm-color-top-activity-status) 36%,
+    #9ca3af 50%,
+    var(--wm-color-top-activity-status) 64%,
+    var(--wm-color-top-activity-status) 100%
+  );
+  background-size: 240% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: top-activity-shimmer 2.6s ease-in-out infinite;
+}
+
+.statusTextEnter {
+  animation:
+    top-activity-roll-in 280ms cubic-bezier(0.22, 1, 0.36, 1) both,
+    top-activity-shimmer 2.6s ease-in-out infinite;
+}
+
+.statusTextExit {
+  pointer-events: none;
+  animation: top-activity-roll-out 260ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes top-activity-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+
+  70%,
+  100% {
+    background-position: 0% 0;
+  }
+}
+
+@keyframes top-activity-roll-in {
+  from {
+    opacity: 0;
+    transform: translateY(7px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes top-activity-roll-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-7px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage,
+  .characterLayer,
+  .pill,
+  .statusWrap {
+    transition: none;
+  }
+
+  .statusText,
+  .statusTextEnter,
+  .statusTextExit {
+    animation: none;
+    background-image: none;
+    -webkit-text-fill-color: currentColor;
+  }
+}

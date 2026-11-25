@@ -24,6 +24,17 @@
   padding: 0 20px calc(var(--yb-footer-height, 64px) + 20px);
 }
 
+/* 对话上方悬浮元宝活动态时预留顶部空间，首屏首条与时间戳不被遮挡，长对话滚动时自然从下方穿过 */
+.streamWithTopActivity {
+  padding-top: 108px;
+  transition: padding-top 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.streamWithTopActivityActive {
+  padding-top: 128px;
+  transition: padding-top 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 /*
  * 顶部紧贴输入框（或状态栏）上沿（padding: 0 16px 16px），避免输入框上方出现空白白雾断层；
  * - ::before：底栏自身纯白底，始终隔断滚动到底栏背后的内容，不与状态栏/输入框叠字；

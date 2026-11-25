@@ -68,7 +68,7 @@ export const INITIAL_FOCUS_CONFIRM_ID = 'init-focus-confirm';
 /**
  * 首屏开场第 ①② 项（空态停顿约 400ms 后一起出现，Figma 811:38603）：
  * ① 气泡「我已经开始记录啦～ 你专心开会就好。」
- * ② 卡片「元宝笔记：产品方案评审」（PDF 128KB，582:33088 图标 + 右箭头）
+ * ② 卡片「元宝笔记：产品方案评审」（582:33088 图标 + 会议摘要单行省略）
  */
 export function buildRecordingStartMessage(): AssistantMessage {
   return {
@@ -83,7 +83,6 @@ export function buildRecordingStartMessage(): AssistantMessage {
     ],
     recordingCard: true,
     recordingTitle: `元宝笔记：${meetingSession.topic}`,
-    recordingMeta: ['PDF', '128KB'],
     recordingSummary: meetingSession.summary,
   };
 }
