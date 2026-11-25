@@ -199,7 +199,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
     [activeTasks],
   );
   const showStatusRow = isAgentStatus ? runningCount > 0 || chat.isThinking : true;
-  // 输入框上方已通过「元宝状态栏」呈现「正在思考回复...」或任务执行状态时，
+  // 输入框上方已通过「元宝状态栏」呈现「正在思考」或任务执行状态时，
   // 不再在消息流中重复展示灰色「•••」输入气泡；capsules 模式下保留。
   const showTypingBubble = !isAgentStatus && chat.isThinking;
   // 状态栏触发瞬间即预留完整目标高度（104px），避免 240ms 展开过渡期间 padding-bottom 滞后导致最新气泡被挡

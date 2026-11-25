@@ -133,9 +133,10 @@ export const TaskEntry: FC<TaskEntryProps> = ({
     </>
   );
 
-  const resolvedStatusText = isThinking
-    ? '正在思考...'
+  const rawStatusText = isThinking
+    ? '正在思考'
     : (statusText ?? getRunningTaskStatus(tasks, 0));
+  const resolvedStatusText = rawStatusText.replace(/(\.{3}|…)+$/u, '');
 
   return (
     <MorphPanel
