@@ -88,8 +88,10 @@ export interface AssistantMessage {
   bubbles: Bubble[];
   /** 回答依据，例如「引用 · 2分钟前 黄婷婷」 */
   source?: string;
-  /** 这条回答生成的文件：在气泡下方显示可点击的产物卡片 */
+  /** 这条回答生成的文件：在气泡下方显示可点击的产物卡片（Figma 811:30015） */
   artifact?: ArtifactItem;
+  /** 多文件附件列表：与 artifact 共用 Figma 811:30015 文件卡片样式 */
+  artifacts?: ArtifactItem[];
   /** 刚入会且开启云笔记：在气泡下方显示「元宝笔记」卡片（Figma 811:41211） */
   recordingCard?: boolean;
   /** 笔记卡主标题（会议主题，如「产品方案评审」），不填用默认会议主题 */
@@ -108,6 +110,10 @@ export interface UserMessage {
   role: 'user';
   text: string;
   createdAt: number;
+  /** 用户附带的单个文件卡片（Figma 811:30015） */
+  artifact?: ArtifactItem;
+  /** 用户附带的多个文件卡片（Figma 811:30015） */
+  artifacts?: ArtifactItem[];
 }
 
 export type ChatMessage = AssistantMessage | UserMessage;

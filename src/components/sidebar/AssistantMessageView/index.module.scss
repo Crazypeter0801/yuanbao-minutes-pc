@@ -89,6 +89,15 @@
   margin-top: 8px;
 }
 
+/* 对话中的文件卡片组（Figma 811:30024）：与气泡及卡片之间统一 4px 间距 */
+.fileSlot {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  margin-top: 4px;
+}
+
 /* 追问建议：白底细描边胶囊（Figma 8:593 / 8:594）
    气泡下沿到首个胶囊 8，胶囊之间也是 8；宽度跟着文案走，不铺满整行 */
 .followUps {

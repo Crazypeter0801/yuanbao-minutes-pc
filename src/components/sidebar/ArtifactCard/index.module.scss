@@ -1,15 +1,26 @@
-/* 产物卡片（Figma 14330:23470）：固定 248 宽、圆角 20、白底 + 0.5px 内描边 */
+/*
+ * 对话中的文件卡片（Figma 811:30015 / 811:30027~30031）：
+ * 固定宽 260px、高 60px、圆角 16px（Apple 60% 平滑曲率）、白底 #FFFFFF + 1px #EBEDF2 内描边；
+ * padding 10px 12px 10px 10px、左右间距 8px。
+ */
 .card {
   display: flex;
-  flex-direction: column;
-  width: 248px;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  width: 260px;
   max-width: 100%;
-  border-radius: var(--wm-radius-yb-card);
-  background-color: var(--wm-color-background-bubble);
-  box-shadow: inset 0 0 0 0.5px var(--wm-color-line);
+  min-height: 60px;
+  padding: 10px 12px 10px 10px;
+  border-radius: var(--wm-radius-yb-bubble);
+  background-color: var(--wm-color-background-quaternary);
+  box-shadow: inset 0 0 0 1px var(--wm-color-outline-tertiary);
   cursor: pointer;
   outline: none;
-  transition: box-shadow 160ms ease-out;
+  text-align: left;
+  transition:
+    box-shadow 160ms ease-out,
+    background-color 160ms ease-out;
 
   @supports (corner-shape: superellipse(1.6)) {
     corner-shape: superellipse(1.6);
@@ -17,130 +28,84 @@
 
   &:hover,
   &:focus-visible {
-    box-shadow: inset 0 0 0 0.5px var(--wm-color-line), var(--wm-shadow-hover);
+    box-shadow:
+      inset 0 0 0 1px var(--wm-color-outline-secondary),
+      var(--wm-shadow-hover);
   }
 }
 
-/* 标题行：padding 14 16，图标 20 → 文件名间距 6 → 箭头间距 12（Figma 14330:23471） */
-.header {
+/* 左侧 40×40 文件图标容器（Figma I811:30027;626:33323） */
+.iconBox {
+  flex: 0 0 40px;
   display: flex;
   align-items: center;
-  padding: 14px 16px;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+
+  & > svg {
+    display: block;
+    width: 40px;
+    height: 40px;
+  }
 }
 
 .typeIcon {
-  flex: 0 0 auto;
   display: block;
-  width: 20px;
-  height: 20px;
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  user-select: none;
 }
 
-/* 14/20 600，单行截断（Figma 14330:23475） */
-.name {
+.thumb {
+  display: block;
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  object-fit: cover;
+  box-shadow: inset 0 0 0 0.5px var(--wm-color-line);
+  user-select: none;
+}
+
+/* 右侧元信息列（Figma I811:30027;626:33324）：垂直间距 2px */
+.meta {
   flex: 1 1 auto;
   min-width: 0;
-  margin-left: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* 主标题（Figma style_S0NQAT）：PingFang SC Regular 14/20 #000000，单行省略 */
+.name {
   overflow: hidden;
   font-size: 14px;
   line-height: 20px;
-  font-weight: 600;
-  color: var(--wm-color-text-artifact-name);
-  text-overflow: ellipsis;
+  font-weight: 400;
+  color: var(--wm-color-text-primary);
   white-space: nowrap;
-}
-
-.chevron {
-  flex: 0 0 auto;
-  display: flex;
-  width: 16px;
-  height: 16px;
-  margin-left: 12px;
-}
-
-/* 预览区：左右下各 12（Figma 14330:23482） */
-.preview {
-  display: block;
-  padding: 0 12px 12px;
-}
-
-/* 封面 224×126、圆角 7、0.5px 内描边 */
-.cover {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  height: 126px;
-  padding: 10px 12px;
-  overflow: hidden;
-  border-radius: 7px;
-  background-color: var(--wm-color-artifact-cover-paper);
-  box-shadow: inset 0 0 0 0.5px var(--wm-color-artifact-cover-line);
-}
-
-.coverTitle {
-  overflow: hidden;
-  font-size: 14px;
-  line-height: 20px;
-  font-weight: 600;
-  color: var(--wm-color-artifact-cover-ink);
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
-/* 小字用色条示意：封面缩略图里本来就读不清，也避开浏览器的最小字号限制 */
-.coverSubtitle {
-  flex: 0 0 auto;
-  width: 96px;
-  height: 3px;
-  margin-top: 4px;
-  border-radius: 1.5px;
-  background-color: var(--wm-color-artifact-cover-soft);
-}
-
-/* PPT：三块色块，比例取自设计稿封面 */
-.coverBlocks {
-  flex: 1 1 auto;
-  display: grid;
-  grid-template-columns: 3fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  min-height: 0;
-  margin-top: 10px;
-}
-
-.blockPattern {
-  grid-row: 1 / 3;
-  background-color: var(--wm-color-artifact-cover-accent);
-}
-
-.blockSoft {
-  background-color: var(--wm-color-artifact-cover-soft);
-}
-
-.blockSolid {
-  background-color: var(--wm-color-artifact-cover-accent);
-}
-
-/* PDF：正文行，读起来是文档而不是幻灯片 */
-.coverLines {
-  flex: 1 1 auto;
+/* 次级信息行（Figma I811:30027;626:33326）：类型 + 体积，间距 4px，12/18 #7B818F */
+.subline {
   display: flex;
-  flex-direction: column;
-  min-height: 0;
-  margin-top: 14px;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 400;
+  color: var(--wm-color-text-tertiary);
+}
 
-  & > span {
-    display: block;
-    height: 4px;
-    border-radius: 2px;
-    background-color: var(--wm-color-artifact-cover-soft);
-  }
-
-  & > span + span {
-    margin-top: 10px;
-  }
-
-  & > span:last-child {
-    width: 62%;
-  }
+.subItem {
+  flex: 0 1 auto;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 @media (prefers-reduced-motion: reduce) {
