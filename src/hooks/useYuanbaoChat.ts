@@ -43,12 +43,15 @@ export function useYuanbaoChat(initial: ChatMessage[]): YuanbaoChat {
   useEffect(
     () => () => {
       timers.current.forEach((timer) => window.clearTimeout(timer));
+      timers.current = [];
     },
     [],
   );
 
   const push = useCallback((message: AssistantMessage) => {
-    setMessages((previous) => [...previous, message]);
+    setMessages((previous) =>
+      previous.some((item) => item.id === message.id) ? previous : [...previous, message],
+    );
   }, []);
 
   const ask = useCallback(
