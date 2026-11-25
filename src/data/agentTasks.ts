@@ -37,10 +37,10 @@ export interface AgentTask {
 
 /** 兜底的会议 Agent 执行阶段文案序列 */
 export const DEFAULT_AGENT_STATUS_STAGES: readonly string[] = [
-  '正在持续更新讨论要点',
-  '正在整理与我相关的结论',
-  '正在提取会议关键结论与待办',
-  '正在检索关联文档与历史纪要',
+  '正在更新要点',
+  '正在整理结论',
+  '正在提取待办',
+  '正在检索纪要',
 ];
 
 const TASK_DETAIL_META: Record<

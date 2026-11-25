@@ -120,7 +120,7 @@ export const TaskEntry: FC<TaskEntryProps> = ({
   );
 
   const resolvedStatusText = isThinking
-    ? '正在思考回复...'
+    ? '正在思考...'
     : (statusText ?? getRunningTaskStatus(tasks, 0));
 
   return (
