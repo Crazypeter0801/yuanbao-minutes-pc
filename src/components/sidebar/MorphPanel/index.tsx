@@ -106,16 +106,20 @@ export const MorphPanel: FC<MorphPanelProps> = ({
     return () => observer.disconnect();
   }, [layoutKey, collapsedPaddingX]);
 
-  // 这一行的宽度、自己在行里的位置：排布或形态变化时重新量
+  // 这一行的宽度、自己在行里的位置：排布或形态变化时重新量（支持通过 data-morph-row 跨一层过渡容器定位行宽）
   useLayoutEffect(() => {
     const slot = slotRef.current;
-    const row = slot?.parentElement;
+    const row = (slot?.closest('[data-morph-row]') as HTMLElement | null) ?? slot?.parentElement;
     if (!slot || !row) {
       return undefined;
     }
     const measure = () => {
       setRowWidth(row.clientWidth);
-      setOffsetLeft(slot.offsetLeft);
+      const offset =
+        slot.parentElement === row
+          ? slot.offsetLeft
+          : Math.round(slot.getBoundingClientRect().left - row.getBoundingClientRect().left);
+      setOffsetLeft(offset);
     };
     measure();
     const observer = new ResizeObserver(measure);

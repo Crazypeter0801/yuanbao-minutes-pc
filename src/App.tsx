@@ -117,6 +117,8 @@ export default function App() {
     floating: [],
   });
   const [commandBarVariant, setCommandBarVariant] = useState<CommandBarVariant>("agent-status");
+  /** 演示态进行中任务开关：默认关闭（无任务隐藏状态栏），由右侧演示栏一键切换 */
+  const [hasSimulatedTask, setHasSimulatedTask] = useState(false);
   const [yuanbaoDetailOpen, setYuanbaoDetailOpen] = useState(false);
   /** 主窗口相对初始居中位置的自由拖拽偏移（px） */
   const [windowPos, setWindowPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -329,6 +331,7 @@ export default function App() {
         detailOpen={yuanbaoDetailOpen}
         onDetailOpenChange={setYuanbaoDetailOpen}
         commandBarVariant={commandBarVariant}
+        hasActiveTasks={hasSimulatedTask}
       />
     );
   };
@@ -454,6 +457,8 @@ export default function App() {
           onCommand={runCommand}
           commandBarVariant={commandBarVariant}
           onCommandBarVariantChange={setCommandBarVariant}
+          taskSimulated={hasSimulatedTask}
+          onToggleTaskSimulated={() => setHasSimulatedTask((active) => !active)}
         />
       </div>
     </div>

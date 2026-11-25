@@ -18,16 +18,22 @@ interface DemoToolbarProps {
   commandBarVariant: CommandBarVariant;
   /** 切换输入框上方栏形态 */
   onCommandBarVariantChange: (variant: CommandBarVariant) => void;
+  /** 是否正在模拟进行中任务（一键开关控制状态栏显隐） */
+  taskSimulated: boolean;
+  /** 一键切换模拟进行中任务（开始 / 结束） */
+  onToggleTaskSimulated: () => void;
 }
 
 /**
- * 视口右侧贴边吸附演示控制台：模拟元宝发言 / 模拟用户发言 / 模拟交互功能 / 上方工具栏
- * 四个按钮竖向吸附在右侧边缘，菜单统一向左侧弹出并自动约束在视口上下安全区内，不被裁切。
+ * 视口右侧贴边吸附演示控制台：
+ * 模拟元宝发言 / 模拟用户发言 / 模拟交互功能 / 上方工具栏 / 模拟任务一键开关。
  */
 export const DemoToolbar: FC<DemoToolbarProps> = ({
   onCommand,
   commandBarVariant,
   onCommandBarVariantChange,
+  taskSimulated,
+  onToggleTaskSimulated,
 }) => {
   const [openKey, setOpenKey] = useState<OpenMenuKey | null>(null);
   const barRef = useRef<HTMLDivElement>(null);
@@ -87,6 +93,7 @@ export const DemoToolbar: FC<DemoToolbarProps> = ({
   };
 
   const commandBarOpen = openKey === 'command-bar';
+  const taskToggleLabel = taskSimulated ? '模拟任务：结束' : '模拟任务：开始';
 
   return (
     <div className={styles.bar} ref={barRef} aria-label="演示控制台">
@@ -177,6 +184,26 @@ export const DemoToolbar: FC<DemoToolbarProps> = ({
             </svg>
           </span>
           <span className={styles.buttonText}>上方工具栏</span>
+        </Pressable>
+      </div>
+
+      {/* 模拟进行中任务一键开关：点一次触发任务（状态栏出现），再点一次结束任务（状态栏收起） */}
+      <div className={styles.slot}>
+        <Pressable
+          className={`${styles.button} ${styles.toggleButton} ${taskSimulated ? styles.toggleButtonActive : ''}`}
+          onClick={() => {
+            setOpenKey(null);
+            onToggleTaskSimulated();
+          }}
+          ariaLabel={taskToggleLabel}
+          ariaExpanded={taskSimulated}
+          title={taskSimulated ? '点击结束进行中任务并隐藏状态栏' : '点击触发进行中任务并显示状态栏'}
+        >
+          <span
+            className={`${styles.toggleDot} ${taskSimulated ? styles.toggleDotActive : ''}`}
+            aria-hidden="true"
+          />
+          <span className={styles.buttonText}>{taskToggleLabel}</span>
         </Pressable>
       </div>
     </div>

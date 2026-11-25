@@ -21,13 +21,12 @@
  * 底栏浮在上面，所以底部再加上底栏高度：滚到底时最后一条仍停在底栏上方 20，往上翻时才从底栏后面经过。
  */
 .stream {
-  padding: 0 20px calc(var(--yb-footer-height, 122px) + 20px);
+  padding: 0 20px calc(var(--yb-footer-height, 80px) + 20px);
 }
 
 /*
- * 底部 padding 16，卡片行与输入框间距 8（用户调整，原稿 10），总高 120
- * 背景只保留 Figma 533:13549 的白色渐变（已按用户要求去掉背景模糊），经过的对话在上沿渐渐被盖住。
- * 透明的渐变带不拦点击，按钮和输入框照常可点。
+ * 底部 padding 16；无任务态紧凑仅展示输入框（总高 80），有任务态平滑滑出 32 高状态栏 + 8 间距（总高 120）。
+ * 底部白色渐隐向上外延柔和过渡，确保滚动正文在到达状态栏文案之前已完全淡入纯白，避免正文与「正在整理发言内容」叠字。
  */
 .footer {
   position: absolute;
@@ -40,26 +39,21 @@
   padding: 16px;
   pointer-events: none;
 
-  /*
-   * 白色渐变（Figma 533:13549：透明 → 12.5% 54% 白 → 47.7% 起纯白）。
-   * 线性插值在 12.5% 处有明显拐点，看着像一道台阶；改成缓入曲线、端点不变，过渡更顺。
-   * 底部两个角跟着侧栏卡片收 16 的圆角，否则会在卡片圆角外露出直角。
-   */
   &::after {
     position: absolute;
-    inset: 0;
+    top: -24px;
+    left: 0;
+    right: 0;
+    bottom: 0;
     z-index: -1;
     content: '';
     border-radius: 0 0 16px 16px;
     background-image: linear-gradient(
       180deg,
-      var(--wm-color-footer-fade-start) 0%,
-      var(--wm-color-footer-fade-12) 6%,
-      var(--wm-color-footer-fade-32) 12%,
-      var(--wm-color-footer-fade-soft) 18%,
-      var(--wm-color-footer-fade-75) 27%,
-      var(--wm-color-footer-fade-92) 37%,
-      var(--wm-color-background-quaternary) 48%,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.55) 18%,
+      rgba(255, 255, 255, 0.94) 30%,
+      var(--wm-color-background-quaternary) 38%,
       var(--wm-color-background-quaternary) 100%
     );
     pointer-events: none;
@@ -68,10 +62,46 @@
   & > * {
     pointer-events: auto;
   }
+}
 
-  & > * + * {
-    margin-top: 8px;
-  }
+/* 有状态栏时渐隐区向上延伸 32px，在状态栏上方即过渡到纯白，彻底杜绝滚动文字与状态文案重叠 */
+.footerWithStatus::after {
+  top: -32px;
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.52) 12%,
+    rgba(255, 255, 255, 0.92) 22%,
+    var(--wm-color-background-quaternary) 29%,
+    var(--wm-color-background-quaternary) 100%
+  );
+}
+
+/* 状态栏可折叠容器：有任务时平滑滑入/淡入，无任务时收起为 0px 不留多余空白 */
+.statusRowWrap {
+  position: relative;
+  height: 32px;
+  margin-bottom: 8px;
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    height 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    margin-bottom 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 180ms ease-out,
+    transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.statusRowWrapVisible {
+  overflow: visible;
+}
+
+.statusRowWrapCollapsed {
+  height: 0;
+  margin-bottom: 0;
+  opacity: 0;
+  transform: translateY(6px);
+  overflow: hidden;
+  pointer-events: none;
 }
 
 /*
@@ -84,10 +114,34 @@
   align-items: center;
   justify-content: flex-start;
   height: 32px;
+}
 
-  & > * + * {
-    margin-left: 4px;
-  }
+/* 胶囊模式下「进行中任务」胶囊独立显隐槽位：无任务时平滑收起，保留左侧「推荐指令」胶囊 */
+.taskCapsuleSlot {
+  display: flex;
+  align-items: center;
+  margin-left: 4px;
+  max-width: 180px;
+  opacity: 1;
+  transform: translateX(0);
+  transition:
+    max-width 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    margin-left 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 160ms ease-out,
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.taskCapsuleSlotVisible {
+  overflow: visible;
+}
+
+.taskCapsuleSlotCollapsed {
+  max-width: 0;
+  margin-left: 0;
+  opacity: 0;
+  transform: translateX(-4px);
+  overflow: hidden;
+  pointer-events: none;
 }
 
 /* 新版元宝状态栏（Figma 811:38164 / 811:38683）：仅保留左侧 32×32 元宝工作形象 + 扫光状态文案 */
@@ -115,4 +169,11 @@
 /* 文件夹面板展开时整块让位（胶囊自己也会淡出，这里只防止误点） */
 .tasksHidden {
   pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .statusRowWrap,
+  .taskCapsuleSlot {
+    transition: none;
+  }
 }

@@ -51,6 +51,8 @@ interface YuanbaoSidebarProps {
   onDetailOpenChange?: (open: boolean) => void;
   /** 输入框上方形态：agent-status（Figma 811:38164 新版元宝状态栏）或 capsules（推荐与任务胶囊） */
   commandBarVariant?: CommandBarVariant;
+  /** 当前是否存在进行中的任务；false 时隐藏新版状态栏（胶囊模式隐藏「进行中任务」胶囊） */
+  hasActiveTasks?: boolean;
 }
 
 /**
@@ -70,6 +72,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
   detailOpen: controlledDetailOpen,
   onDetailOpenChange,
   commandBarVariant = "agent-status",
+  hasActiveTasks = false,
 }) => {
   const { toast, showToast } = useToast();
   /** 底栏同一时刻只展开一个面板：推荐指令 / 进行中任务 */
@@ -91,6 +94,13 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
   useEffect(() => {
     setOpenPanel(null);
   }, [commandBarVariant]);
+
+  // 任务结束清空时，若「进行中任务」面板正展开则同步平滑收起
+  useEffect(() => {
+    if (!hasActiveTasks) {
+      setOpenPanel((current) => (current === "tasks" ? null : current));
+    }
+  }, [hasActiveTasks]);
 
   const [scheduledTasks, setScheduledTasks] = useState<AgentScheduledTask[]>(INITIAL_SCHEDULED_TASKS);
   /** 正在看的任务；有值时盖住侧栏显示任务步骤详情 */
@@ -164,6 +174,9 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
     onSubmit ? onSubmit(text, { fromUser }) : chat.ask(text);
 
   const isAgentStatus = commandBarVariant === "agent-status";
+  const activeTasks = hasActiveTasks ? AGENT_TASKS : [];
+  const runningCount = hasActiveTasks ? RUNNING_TASK_COUNT : 0;
+  const showStatusRow = isAgentStatus ? hasActiveTasks : true;
 
   return (
     <div className={styles.panel}>
@@ -201,44 +214,59 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
           />
         </MessageStream>
 
-        <div className={styles.footer} ref={footerRef}>
-          {/* 输入框上方一行：支持「元宝状态栏（Figma 811:38164）」与「推荐与任务胶囊」双形态切换 */}
+        <div
+          className={`${styles.footer} ${showStatusRow ? styles.footerWithStatus : ""}`}
+          ref={footerRef}
+        >
+          {/* 输入框上方一行：有任务时平滑滑入/淡入，无任务时 agent-status 整体收起不留空、capsules 仅保留推荐指令 */}
           <div
-            className={isAgentStatus ? styles.statusRowAgent : styles.statusRow}
+            className={`${styles.statusRowWrap} ${showStatusRow ? styles.statusRowWrapVisible : styles.statusRowWrapCollapsed}`}
             data-command-bar-variant={commandBarVariant}
+            data-status-bar-visible={showStatusRow ? "true" : "false"}
+            aria-hidden={!showStatusRow}
           >
-            {isAgentStatus ? (
-              <TaskEntry
-                variant="agent-status"
-                isThinking={chat.isThinking}
-                tasks={AGENT_TASKS}
-                runningCount={RUNNING_TASK_COUNT}
-                expanded={openPanel === "tasks"}
-                onExpandedChange={(next) => setOpenPanel(next ? "tasks" : null)}
-                onOpenTask={setActiveTask}
-                onOpenAgentDetail={() => setDetailOpen(true)}
-              />
-            ) : (
-              <>
-                <QuickCommandEntry
-                  variant="capsules"
-                  expanded={openPanel === "commands"}
-                  onExpandedChange={(next) => setOpenPanel(next ? "commands" : null)}
-                  hidden={openPanel === "tasks"}
-                  onPick={(prompt) => send(prompt, true)}
-                />
+            <div className={isAgentStatus ? styles.statusRowAgent : styles.statusRow} data-morph-row>
+              {isAgentStatus ? (
                 <TaskEntry
-                  variant="capsules"
-                  tasks={AGENT_TASKS}
-                  runningCount={RUNNING_TASK_COUNT}
+                  variant="agent-status"
+                  isThinking={chat.isThinking}
+                  tasks={activeTasks}
+                  runningCount={runningCount}
                   expanded={openPanel === "tasks"}
                   onExpandedChange={(next) => setOpenPanel(next ? "tasks" : null)}
-                  hidden={openPanel === "commands"}
                   onOpenTask={setActiveTask}
                   onOpenAgentDetail={() => setDetailOpen(true)}
                 />
-              </>
-            )}
+              ) : (
+                <>
+                  <QuickCommandEntry
+                    variant="capsules"
+                    expanded={openPanel === "commands"}
+                    onExpandedChange={(next) => setOpenPanel(next ? "commands" : null)}
+                    hidden={openPanel === "tasks"}
+                    onPick={(prompt) => send(prompt, true)}
+                  />
+                  <div
+                    className={`${styles.taskCapsuleSlot} ${
+                      hasActiveTasks ? styles.taskCapsuleSlotVisible : styles.taskCapsuleSlotCollapsed
+                    }`}
+                    data-task-capsule-visible={hasActiveTasks ? "true" : "false"}
+                    aria-hidden={!hasActiveTasks}
+                  >
+                    <TaskEntry
+                      variant="capsules"
+                      tasks={activeTasks}
+                      runningCount={runningCount}
+                      expanded={openPanel === "tasks"}
+                      onExpandedChange={(next) => setOpenPanel(next ? "tasks" : null)}
+                      hidden={openPanel === "commands"}
+                      onOpenTask={setActiveTask}
+                      onOpenAgentDetail={() => setDetailOpen(true)}
+                    />
+                  </div>
+                </>
+              )}
+            </div>
           </div>
           <ChatInput
             placeholder="和元宝聊聊"

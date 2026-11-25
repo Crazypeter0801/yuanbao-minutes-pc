@@ -170,8 +170,41 @@
   opacity: 1;
 }
 
+/* 模拟任务一键开关按钮与状态圆点 */
+.toggleButton {
+  transition:
+    background-color 120ms ease-in-out,
+    box-shadow 140ms ease-in-out;
+}
+
+.toggleButtonActive {
+  background-color: var(--wm-color-agent-surface);
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 204, 112, 0.36),
+    0 1px 3px rgba(0, 204, 112, 0.08);
+}
+
+.toggleDot {
+  flex: 0 0 8px;
+  width: 8px;
+  height: 8px;
+  margin: 0 2px;
+  border-radius: 50%;
+  background-color: var(--wm-color-text-disabled);
+  transition:
+    background-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.toggleDotActive {
+  background-color: var(--wm-color-brand-yuanbao);
+  box-shadow: 0 0 0 3px rgba(0, 204, 112, 0.22);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .caret {
+  .caret,
+  .toggleButton,
+  .toggleDot {
     transition: none;
   }
 }
