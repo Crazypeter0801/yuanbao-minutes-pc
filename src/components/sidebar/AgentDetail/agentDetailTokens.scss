@@ -1,0 +1,16 @@
+/**
+ * 元宝 Agent 详情页专属设计 Token（Figma 811:40446 / 777:72286 / 777:73914 / 796:85424）
+ * 独立放在组件目录内，避免修改共享 tokens.scss 引发并行分支合并冲突。
+ */
+:root {
+  /* 资料库分组标题色（Figma 777:84828 #7B8190） */
+  --ad811-section-muted: #7b8190;
+  /* 连接器查看详情弹窗蒙层（Figma 796:85424 #00000080） */
+  --ad811-modal-scrim: rgba(0, 0, 0, 0.5);
+  /* 连接器已连接状态绿（Figma 796:85446 wm_color_success_hover_pressed #17C07E） */
+  --ad811-status-connected: #17c07e;
+  /* 连接器弹窗轻卡 hover 底色 */
+  --ad811-card-action-hover: #efefef;
+  /* 详情弹窗轻微投影 */
+  --ad811-modal-shadow: 0 12px 32px rgba(0, 0, 0, 0.14);
+}

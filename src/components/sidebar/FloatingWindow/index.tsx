@@ -95,7 +95,7 @@ export const FloatingWindow: FC<FloatingWindowProps> = ({
           onPointerCancel={handlePointerUp}
           title="按住拖动独立窗口"
         >
-          <div className={styles.title}>
+          <div className={styles.title} data-nodrag={onTitleClick ? '' : undefined}>
             {onTitleClick ? (
               <Pressable
                 className={styles.titleButton}

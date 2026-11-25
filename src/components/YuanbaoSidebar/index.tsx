@@ -101,18 +101,17 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
 
   const toggleScheduledTask = useCallback(
     (id: string) => {
+      const target = scheduledTasks.find((item) => item.id === id);
+      if (!target) {
+        return;
+      }
+      const next = !target.enabled;
       setScheduledTasks((previous) =>
-        previous.map((item) => {
-          if (item.id !== id) {
-            return item;
-          }
-          const next = !item.enabled;
-          showToast(`${item.title}已${next ? "开启" : "暂停"}`);
-          return { ...item, enabled: next };
-        }),
+        previous.map((item) => (item.id === id ? { ...item, enabled: next } : item)),
       );
+      showToast(`${target.title}已${next ? "开启" : "暂停"}`);
     },
-    [showToast],
+    [scheduledTasks, showToast],
   );
 
   const menuItems = useMemo<PopMenuItem[]>(
@@ -160,7 +159,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
           onPip={() => (onPopOut ? onPopOut() : showToast("已在独立窗口打开（演示）"))}
           menuItems={menuItems}
           onClose={onClose}
-          onTitleClick={() => setDetailOpen(true)}
+          onTitleClick={() => setDetailOpen(!detailOpen)}
           titleTooltip="打开元宝 Agent 详情"
         />
       )}
@@ -213,20 +212,20 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
             onToolAction={(label) => showToast(`${label}（演示）`)}
           />
         </div>
-      </div>
 
-      {detailOpen && (
-        <AgentDetail
-          scheduledTasks={scheduledTasks}
-          onToggleTask={toggleScheduledTask}
-          artifacts={artifacts}
-          topicCount={noteTopics?.length ?? 0}
-          onBack={() => setDetailOpen(false)}
-          onOpenTaskDetail={(task) => setActiveTask(task)}
-          onOpenArtifact={openArtifact}
-          onToast={showToast}
-        />
-      )}
+        {detailOpen && (
+          <AgentDetail
+            scheduledTasks={scheduledTasks}
+            onToggleTask={toggleScheduledTask}
+            artifacts={artifacts}
+            topicCount={noteTopics?.length ?? 0}
+            onBack={() => setDetailOpen(false)}
+            onOpenTaskDetail={(task) => setActiveTask(task)}
+            onOpenArtifact={openArtifact}
+            onToast={showToast}
+          />
+        )}
+      </div>
 
       {activeTask && <TaskDetail task={activeTask} onBack={() => setActiveTask(null)} />}
       <Toast toast={toast} placement="window" />
