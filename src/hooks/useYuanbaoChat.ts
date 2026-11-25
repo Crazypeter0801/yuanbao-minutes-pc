@@ -2,8 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { answerQuestion, buildStageSummary, createId, type ReplyTopic } from '@/data/yuanbaoContent';
 import type { AssistantMessage, ChatMessage } from '@/types/chat';
 
-/** 模拟元宝思考耗时（ms） */
-const ANSWER_DELAY = 900;
+/** 模拟元宝思考耗时（ms）：3 秒完整呈现状态条动效与处理过程 */
+const ANSWER_DELAY = 3000;
 
 export interface YuanbaoChat {
   messages: ChatMessage[];
@@ -18,6 +18,10 @@ export interface YuanbaoChat {
    * 给「生成文件」这类不走问答规则、但仍要像一次正常对话的任务用
    */
   runTask: (question: string, respond: () => void) => void;
+  /**
+   * 无需新增用户气泡、但仍由用户操作（如卡片选项提交）触发的 3 秒思考后回复
+   */
+  replyAfterThinking: (respond: () => void) => void;
   /** 立即生成阶段小结 */
   summarizeNow: () => void;
 }
@@ -86,5 +90,14 @@ export function useYuanbaoChat(initial: ChatMessage[]): YuanbaoChat {
     timers.current.push(timer);
   }, []);
 
-  return { messages, isThinking: pending > 0, ask, push, runTask, summarizeNow };
+  const replyAfterThinking = useCallback((respond: () => void) => {
+    setPending((count) => count + 1);
+    const timer = window.setTimeout(() => {
+      respond();
+      setPending((count) => count - 1);
+    }, ANSWER_DELAY);
+    timers.current.push(timer);
+  }, []);
+
+  return { messages, isThinking: pending > 0, ask, push, runTask, replyAfterThinking, summarizeNow };
 }

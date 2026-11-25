@@ -117,7 +117,7 @@ export default function App() {
     active: "yuanbao",
     floating: [],
   });
-  const [commandBarVariant, setCommandBarVariant] = useState<CommandBarVariant>("agent-status");
+  const [commandBarVariant, setCommandBarVariant] = useState<CommandBarVariant>("agent-status-sprite");
   /** 演示态进行中任务开关：默认关闭（无任务隐藏状态栏），由右侧演示栏一键切换 */
   const [hasSimulatedTask, setHasSimulatedTask] = useState(false);
   /** 模拟任务开启时的执行阶段序号：每 3 秒推进一次，停靠侧栏与独立浮窗共用保持完全同步 */

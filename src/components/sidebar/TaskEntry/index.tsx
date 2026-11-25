@@ -1,14 +1,15 @@
 import { useEffect, useState, type FC } from 'react';
 import IconTaskDone from '@/assets/d2c/icons/agentDetail811/icon-task-done';
 import IconTaskRunning from '@/assets/d2c/icons/agentDetail811/icon-task-running';
-import IconYuanbaoWorking from '@/assets/d2c/icons/yuanbao811/icon-yuanbao-working';
 import { Pressable } from '@/components/common/Pressable';
 import { MorphPanel } from '@/components/sidebar/MorphPanel';
 import { TaskDots } from '@/components/sidebar/TaskDots';
 import { getRunningTaskStatus, type AgentTask } from '@/data/agentTasks';
+import { isAgentStatusVariant, type CommandBarVariant } from './types';
+import { YuanbaoWorkingSprite } from './YuanbaoWorkingSprite';
 import styles from './index.module.scss';
 
-export type CommandBarVariant = 'capsules' | 'agent-status';
+export type { CommandBarVariant };
 
 /** 文案纵向翻滚淡入淡出时长（ms），与 SCSS 动效保持一致 */
 const ROLL_EXIT_MS = 300;
@@ -72,6 +73,15 @@ const RollingStatusText: FC<RollingStatusTextProps> = ({ text }) => {
   );
 };
 
+/** 基础三点加载指示器（元宝状态栏 · 基础加载方案）：三颗圆点柔和交替律动，与 14px 文案垂直居中对齐 */
+const StatusLoadingDots: FC = () => (
+  <span className={styles.loadingDots} data-status-loading-dots="true" aria-hidden="true">
+    <span className={styles.loadingDot} />
+    <span className={styles.loadingDot} />
+    <span className={styles.loadingDot} />
+  </span>
+);
+
 interface TaskEntryProps {
   tasks: AgentTask[];
   /** 进行中的任务数，显示在收起态的胶囊或展开态标题里 */
@@ -84,7 +94,12 @@ interface TaskEntryProps {
   onOpenTask: (task: AgentTask) => void;
   /** 打开元宝 Agent 详情页 */
   onOpenAgentDetail?: () => void;
-  /** 上方工具栏形态：capsules 为胶囊版（Figma 489:10632），agent-status 为新版元宝状态栏（Figma 811:38164） */
+  /**
+   * 上方工具栏形态：
+   * - agent-status-sprite：元宝工作形象动态雪碧图 + 简短轮播文案
+   * - agent-status-dots：基础三点加载动画 + 简短轮播文案
+   * - capsules：推荐与任务胶囊（Figma 489:10632）
+   */
   variant?: CommandBarVariant;
   /** 元宝是否正在生成回复（状态栏形态下切换提示文案） */
   isThinking?: boolean;
@@ -94,9 +109,8 @@ interface TaskEntryProps {
 
 /**
  * 进行中任务入口（与 AgentDetail 共用同一份任务数据与状态图标）：
- * - capsules：点阵图标 + 「进行中任务」+ 数字胶囊（Figma 489:10632）
- * - agent-status：32×32 元宝工作形象 + 10px 间距 + 动态翻滚扫光任务阶段文案（Figma 811:38164 / 811:38683）
- * 两种形态点击均展开与 AgentDetail 一致的任务列表，可进入任务详情或元宝 Agent 详情页。
+ * 支持元宝工作形象雪碧图、基础三点加载以及胶囊三种上方工具栏方案，
+ * 点击均可展开与 AgentDetail 一致的任务列表。
  */
 export const TaskEntry: FC<TaskEntryProps> = ({
   tasks,
@@ -110,7 +124,7 @@ export const TaskEntry: FC<TaskEntryProps> = ({
   isThinking = false,
   statusText,
 }) => {
-  const isAgentStatus = variant === 'agent-status';
+  const isAgentStatus = isAgentStatusVariant(variant);
   const capsuleSummary = (
     <>
       <TaskDots running={runningCount > 0} />
@@ -132,10 +146,12 @@ export const TaskEntry: FC<TaskEntryProps> = ({
       fullWidthCollapsed={isAgentStatus}
       summary={
         isAgentStatus ? (
-          <span className={styles.agentStatus}>
-            <span className={styles.agentMascot} aria-hidden="true">
-              <IconYuanbaoWorking width={32} height={32} />
-            </span>
+          <span
+            className={`${styles.agentStatus} ${
+              variant === 'agent-status-dots' ? styles.agentStatusDots : ''
+            }`}
+          >
+            {variant === 'agent-status-dots' ? <StatusLoadingDots /> : <YuanbaoWorkingSprite />}
             <RollingStatusText text={resolvedStatusText} />
           </span>
         ) : (

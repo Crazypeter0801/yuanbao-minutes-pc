@@ -18,6 +18,7 @@ import { QuickCommandEntry } from "@/components/sidebar/QuickCommandEntry";
 import { SidebarHeader } from "@/components/sidebar/SidebarHeader";
 import { TaskDetail } from "@/components/sidebar/TaskDetail";
 import { TaskEntry, type CommandBarVariant } from "@/components/sidebar/TaskEntry";
+import { isAgentStatusVariant } from "@/components/sidebar/TaskEntry/types";
 import { INITIAL_SCHEDULED_TASKS, type AgentScheduledTask } from "@/data/agentDetail";
 import { AGENT_TASKS, getRunningTaskStatus, type AgentTask } from "@/data/agentTasks";
 import { NOTE_ARTIFACT_ID } from "@/data/artifacts";
@@ -73,7 +74,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
   showHeader = true,
   detailOpen: controlledDetailOpen,
   onDetailOpenChange,
-  commandBarVariant = "agent-status",
+  commandBarVariant = "agent-status-sprite",
   hasActiveTasks = false,
   taskStatusText,
 }) => {
@@ -170,7 +171,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
 
   const submitCard = useCallback(
     (cardId: BubbleCard["id"], values: string[]) => {
-      chat.push(buildCardResult(cardId, values));
+      chat.replyAfterThinking(() => chat.push(buildCardResult(cardId, values)));
     },
     [chat],
   );
@@ -178,7 +179,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
   const send = (text: string, fromUser = false) =>
     onSubmit ? onSubmit(text, { fromUser }) : chat.ask(text);
 
-  const isAgentStatus = commandBarVariant === "agent-status";
+  const isAgentStatus = isAgentStatusVariant(commandBarVariant);
   const resolvedTaskStatus = taskStatusText ?? getRunningTaskStatus(AGENT_TASKS, 0);
   // 展开的「进行中任务」列表与底部状态栏共用当前执行阶段文案，保证两处语义一致
   const activeTasks = useMemo<AgentTask[]>(
@@ -259,7 +260,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
             <div className={isAgentStatus ? styles.statusRowAgent : styles.statusRow} data-morph-row>
               {isAgentStatus ? (
                 <TaskEntry
-                  variant="agent-status"
+                  variant={commandBarVariant}
                   isThinking={chat.isThinking}
                   statusText={resolvedTaskStatus}
                   tasks={activeTasks}

@@ -3,7 +3,7 @@ import IconTab585Close from '@/assets/d2c/icons/sidetabs585/icon-tab585-close';
 import IconSide3Book from '@/assets/d2c/icons/v2/icon-side3-book';
 import { Pressable } from '@/components/common/Pressable';
 import { MorphPanel } from '@/components/sidebar/MorphPanel';
-import type { CommandBarVariant } from '@/components/sidebar/TaskEntry';
+import { isAgentStatusVariant, type CommandBarVariant } from '@/components/sidebar/TaskEntry/types';
 import { QUICK_COMMANDS } from '@/data/quickCommands';
 import styles from './index.module.scss';
 
@@ -41,7 +41,7 @@ export const QuickCommandEntry: FC<QuickCommandEntryProps> = ({
   onPick,
   variant = 'capsules',
 }) => {
-  const isAgentStatus = variant === 'agent-status';
+  const isAgentStatus = isAgentStatusVariant(variant);
 
   return (
     <MorphPanel
