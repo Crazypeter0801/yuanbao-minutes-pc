@@ -4,6 +4,22 @@
   padding-left: 48px;
 }
 
+.stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  max-width: 100%;
+}
+
+.fileSlot {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  max-width: 100%;
+}
+
 /* 对齐 Figma 2136:77198 文本气泡：padding 8 10、14/20、letter-spacing 0、单行高 36、四角对称 16 + Apple 60% 平滑曲率 */
 .bubble {
   margin: 0;

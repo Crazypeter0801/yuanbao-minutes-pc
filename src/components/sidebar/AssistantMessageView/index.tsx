@@ -69,6 +69,10 @@ export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
 }) => {
   const isPlain = shape === 'plain';
   const activeCard = message.bubbles.find((bubble) => bubble.card)?.card;
+  const fileCards = [
+    ...(message.artifact ? [message.artifact] : []),
+    ...(message.artifacts ?? []),
+  ];
 
   return (
     <div className={`${styles.group} ${isPlain ? styles.groupPlain : ''}`}>
@@ -126,9 +130,11 @@ export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
         </div>
       )}
 
-      {message.artifact && (
-        <div className={styles.cardSlot}>
-          <ArtifactCard artifact={message.artifact} onOpen={onOpenArtifact} />
+      {fileCards.length > 0 && (
+        <div className={styles.fileSlot}>
+          {fileCards.map((item) => (
+            <ArtifactCard key={item.id} artifact={item} onOpen={onOpenArtifact} />
+          ))}
         </div>
       )}
 

@@ -65,7 +65,7 @@ export const ChatList: FC<ChatListProps> = ({
             )}
             <div className={spacing}>
               {message.role === 'user' ? (
-                <UserMessageView message={message} shape="round" />
+                <UserMessageView message={message} shape="round" onOpenArtifact={onOpenArtifact} />
               ) : (
                 <AssistantMessageView
                   message={message}

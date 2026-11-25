@@ -1,139 +1,193 @@
-/*
- * 对话里的交互卡片（Figma 元宝Agent · Component Gallery 4:351）
- *
- * 位置：独立在气泡外（不再塞进灰气泡里），和追问胶囊共用同一套「白底 + 0.5px 细边框」，
- * 所以在侧栏里看着像一组同源的控件，而不是一块贴在灰色气泡上的白卡。
- *
- * 尺寸：设计稿固定 440 宽、padding 20；侧栏可用 368，改成撑满 + padding 16，
- * 圆角 16、字号层级照设计稿。
- */
+@use './messageCardTokens.scss';
 
+/*
+ * 反问/澄清交互卡片（Figma 811:29935）：
+ * #F7F7F7 浅灰底、圆角 23px、padding 16px、元素间距 12px；
+ * 宽度在侧栏内自适应撑满（上限 396px 对齐设计稿）。
+ */
 .card {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  gap: 12px;
   width: 100%;
+  max-width: 396px;
   padding: 16px;
-  border-radius: var(--wm-radius-yb-card);
-  background-color: var(--wm-color-card-background);
-  /* 描边颜色沿用追问胶囊（#EBEDF2），但卡片面积大，0.5px 在侧栏底上看不出边界，加到 1px */
-  box-shadow: inset 0 0 0 1px var(--wm-color-outline-tertiary);
+  border-radius: 23px;
+  background-color: var(--mc811-card-bg);
 
   @supports (corner-shape: superellipse(1.6)) {
     corner-shape: superellipse(1.6);
   }
+}
 
-  & > * + * {
-    margin-top: 12px;
+.cardLocked {
+  .option {
+    cursor: default;
   }
 }
 
 .head {
   display: flex;
   flex-direction: column;
-
-  & > * + * {
-    margin-top: 4px;
-  }
+  gap: 4px;
 }
 
-/* 16/24 500（Figma style_SVQLS1） */
+/* 问题标题（Figma 811:29936 style_NMICYL）：PingFang SC Regular 14/20 #000000 */
 .title {
-  font-size: 16px;
-  line-height: 24px;
-  font-weight: 500;
-  color: var(--wm-color-card-title);
-}
-
-/* 13/20 400，中灰（Figma style_TQPXE0 / fill_OJZHOP） */
-.description {
-  font-size: 13px;
+  margin: 0;
+  font-size: 14px;
   line-height: 20px;
-  color: var(--wm-color-card-text-secondary);
+  font-weight: 400;
+  color: var(--wm-color-text-primary);
 }
 
+/* 辅助说明：12/18 #7B818F */
+.description {
+  margin: 0;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 400;
+  color: var(--wm-color-text-tertiary);
+}
+
+/* 选项列表（Figma 811:29937）：垂直排列、间距 6px */
 .options {
   display: flex;
   flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
 }
 
-/* 选项行：padding 7 0、控件与文案间距 12（Figma layout_PRHUB1） */
+/*
+ * 单个选项胶囊（Figma 811:29938 / .button/XY_Choice_Button）：
+ * 白底 #FFFFFF、圆角 19.5px、padding 10px 12px 10px 16px、左文案右 20×20 控件
+ */
 .option {
   display: flex;
+  flex-direction: row;
   align-items: center;
-  padding: 7px 0;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  min-height: 40px;
+  padding: 10px 12px 10px 16px;
+  border-radius: 19.5px;
+  background-color: var(--mc811-option-bg);
   cursor: pointer;
   outline: none;
-  border-radius: 6px;
+  text-align: left;
+  transition:
+    background-color 140ms ease,
+    box-shadow 140ms ease,
+    opacity 140ms ease;
+
+  &:not([aria-disabled='true']):hover {
+    box-shadow:
+      inset 0 0 0 1px var(--mc811-option-hover-border),
+      var(--mc811-option-hover-shadow);
+
+    .checkboxBox {
+      box-shadow: inset 0 0 0 1px var(--mc811-control-hover-border);
+    }
+  }
 
   &:focus-visible {
-    box-shadow: 0 0 0 2px var(--wm-color-outline-secondary);
+    box-shadow: 0 0 0 2px var(--wm-color-brand-primary-soft), inset 0 0 0 1px var(--wm-color-brand-primary);
   }
 }
 
-/* 16×16 控件：未选中白底浅灰描边，选中近黑实底（Figma layout_OKNU3G） */
-.control {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 16px;
-  height: 16px;
-  border-radius: 4px;
-  background-color: var(--wm-color-card-background);
-  box-shadow: inset 0 0 0 1px var(--wm-color-card-control-border);
+/* 选中态选项胶囊 */
+.optionActive {
+  background-color: var(--mc811-option-selected-bg);
+  box-shadow: inset 0 0 0 1px var(--wm-color-brand-primary);
+
+  &:not([aria-disabled='true']):hover {
+    box-shadow: inset 0 0 0 1px var(--wm-color-brand-primary);
+  }
 }
 
-.radio {
-  border-radius: 8px;
+/* 提交/取消后的未选项柔化 */
+.optionMuted {
+  opacity: 0.48;
 }
 
-.checkbox {
-  border-radius: 4px;
-}
-
-.controlActive {
-  background-color: var(--wm-color-card-control-active);
-  box-shadow: inset 0 0 0 1px var(--wm-color-card-control-active);
-}
-
-/* 单选选中：中间 6px 白点 */
-.dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 3px;
-  background-color: var(--wm-color-card-text-on-active);
-}
-
-/* 多选选中：白色 ✓ */
-.check {
-  font-size: 11px;
-  line-height: 14px;
-  color: var(--wm-color-card-text-on-active);
-}
-
-/* 14/21，选中加粗（Figma style_QC5UZG / style_O3LWWJ） */
+/* 选项文案（Figma I811:29938;144:17493）：PingFang SC Regular 14/20 #000000 */
 .optionText {
-  margin-left: 12px;
+  flex: 1 1 auto;
+  min-width: 0;
   font-size: 14px;
-  line-height: 21px;
-  color: var(--wm-color-card-title);
+  line-height: 20px;
+  font-weight: 400;
+  color: var(--wm-color-text-primary);
+  word-break: break-word;
 }
 
 .optionTextActive {
   font-weight: 500;
 }
 
-/* 摘要块：#F5F5F5、圆角 10、padding 12、行间 8（Figma layout_8RPS7C） */
+/* 右侧 20×20 选择控件（Figma I811:29938;1268:21011） */
+.control {
+  flex: 0 0 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  color: var(--wm-color-text-primary);
+  transition:
+    background-color 140ms ease,
+    color 140ms ease;
+}
+
+.radio {
+  border-radius: 10px;
+}
+
+.checkbox {
+  border-radius: 6px;
+}
+
+.controlIdle {
+  background-color: transparent;
+}
+
+.controlActive {
+  background-color: var(--wm-color-brand-primary);
+  color: var(--wm-color-text-senary);
+}
+
+.radioRing {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+
+.checkboxBox {
+  display: block;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 1px var(--mc811-control-border);
+  transition: box-shadow 140ms ease;
+}
+
+.checkIcon {
+  display: block;
+  width: 12px;
+  height: 12px;
+}
+
+/* 确认类摘要块：与选项胶囊同源的白底圆角内卡 */
 .summary {
   display: flex;
   flex-direction: column;
-  padding: 12px;
-  border-radius: 10px;
-  background-color: var(--wm-color-card-subtle);
-
-  & > * + * {
-    margin-top: 8px;
-  }
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background-color: var(--mc811-option-bg);
 }
 
 .summaryRow {
@@ -141,14 +195,13 @@
   align-items: flex-start;
 }
 
-/* 标签列固定宽，多行时正文才能对齐（设计稿是两个字的标签 + 空格） */
 .summaryLabel {
   flex: 0 0 auto;
   width: 32px;
   margin-right: 8px;
   font-size: 13px;
   line-height: 20px;
-  color: var(--wm-color-card-title);
+  color: var(--wm-color-text-tertiary);
 }
 
 .summaryValue {
@@ -156,24 +209,24 @@
   min-width: 0;
   font-size: 13px;
   line-height: 20px;
-  color: var(--wm-color-card-text-secondary);
+  color: var(--wm-color-text-primary);
 }
 
+/* 底部操作行 */
 .actions {
   display: flex;
+  align-items: center;
   justify-content: flex-end;
-
-  & > * + * {
-    margin-left: 8px;
-  }
+  gap: 8px;
 }
 
-/* 按钮：padding 7 16、圆角 17、13/20 500（Figma layout_5X0XZR） */
 .button {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 7px 16px;
+  gap: 4px;
+  height: 34px;
+  padding: 0 16px;
   border-radius: 17px;
   font-size: 13px;
   line-height: 20px;
@@ -181,36 +234,59 @@
   cursor: pointer;
   outline: none;
   transition:
-    opacity 120ms ease-in-out,
-    background-color 120ms ease-in-out;
+    background-color 140ms ease,
+    color 140ms ease,
+    opacity 140ms ease;
 
   &:focus-visible {
-    box-shadow: 0 0 0 2px var(--wm-color-outline-secondary);
+    box-shadow: 0 0 0 2px var(--wm-color-brand-primary-soft);
   }
 }
 
 .primary {
-  background-color: var(--wm-color-card-control-active);
-  color: var(--wm-color-card-text-on-active);
+  background-color: var(--wm-color-brand-primary);
+  color: var(--wm-color-text-senary);
 
   &:hover {
-    opacity: 0.88;
+    background-color: var(--wm-color-brand-primary-hover);
   }
 }
 
 .ghost {
-  background-color: var(--wm-color-card-background);
-  box-shadow: inset 0 0 0 0.5px var(--wm-color-outline-tertiary);
-  color: var(--wm-color-card-title);
+  background-color: var(--mc811-option-bg);
+  box-shadow: inset 0 0 0 1px var(--wm-color-outline-tertiary);
+  color: var(--wm-color-text-primary);
 
   &:hover {
-    background-color: var(--wm-color-card-subtle);
+    background-color: var(--mc811-ghost-hover-bg);
   }
 }
 
-/* 未选够 / 已提交：按钮置灰且不可点 */
 .disabled {
-  opacity: 0.4;
+  background-color: var(--mc811-button-disabled-bg);
+  color: var(--mc811-button-disabled-text);
   cursor: default;
   pointer-events: none;
+}
+
+.done {
+  background-color: var(--mc811-button-disabled-bg);
+  color: var(--wm-color-text-tertiary);
+  cursor: default;
+  pointer-events: none;
+}
+
+.doneIcon {
+  display: block;
+  width: 12px;
+  height: 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .option,
+  .control,
+  .checkboxBox,
+  .button {
+    transition: none;
+  }
 }
