@@ -19,7 +19,7 @@ import { SidebarHeader } from "@/components/sidebar/SidebarHeader";
 import { TaskDetail } from "@/components/sidebar/TaskDetail";
 import { TaskEntry, type CommandBarVariant } from "@/components/sidebar/TaskEntry";
 import { INITIAL_SCHEDULED_TASKS, type AgentScheduledTask } from "@/data/agentDetail";
-import { AGENT_TASKS, RUNNING_TASK_COUNT, type AgentTask } from "@/data/agentTasks";
+import { AGENT_TASKS, getRunningTaskStatus, type AgentTask } from "@/data/agentTasks";
 import { NOTE_ARTIFACT_ID } from "@/data/artifacts";
 import { buildCardResult } from "@/data/interactiveCards";
 import { useToast } from "@/hooks/useToast";
@@ -53,6 +53,8 @@ interface YuanbaoSidebarProps {
   commandBarVariant?: CommandBarVariant;
   /** 当前是否存在进行中的任务；false 时隐藏新版状态栏（胶囊模式隐藏「进行中任务」胶囊） */
   hasActiveTasks?: boolean;
+  /** 当前进行中任务的动态阶段文案（由上层共享驱动，确保停靠侧栏与独立浮窗同步） */
+  taskStatusText?: string;
 }
 
 /**
@@ -73,6 +75,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
   onDetailOpenChange,
   commandBarVariant = "agent-status",
   hasActiveTasks = false,
+  taskStatusText,
 }) => {
   const { toast, showToast } = useToast();
   /** 底栏同一时刻只展开一个面板：推荐指令 / 进行中任务 */
@@ -174,9 +177,25 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
     onSubmit ? onSubmit(text, { fromUser }) : chat.ask(text);
 
   const isAgentStatus = commandBarVariant === "agent-status";
-  const activeTasks = hasActiveTasks ? AGENT_TASKS : [];
-  const runningCount = hasActiveTasks ? RUNNING_TASK_COUNT : 0;
-  const showStatusRow = isAgentStatus ? hasActiveTasks : true;
+  const resolvedTaskStatus = taskStatusText ?? getRunningTaskStatus(AGENT_TASKS, 0);
+  // 展开的「进行中任务」列表与底部状态栏共用当前执行阶段文案，保证两处语义一致
+  const activeTasks = useMemo<AgentTask[]>(
+    () =>
+      hasActiveTasks
+        ? AGENT_TASKS.map((task) =>
+            task.state === "running" ? { ...task, summary: resolvedTaskStatus } : task,
+          )
+        : [],
+    [hasActiveTasks, resolvedTaskStatus],
+  );
+  const runningCount = useMemo(
+    () => activeTasks.filter((task) => task.state === "running").length,
+    [activeTasks],
+  );
+  const showStatusRow = isAgentStatus ? runningCount > 0 || chat.isThinking : true;
+  // 输入框上方已通过「元宝状态栏」呈现「正在思考回复...」或任务执行状态时，
+  // 不再在消息流中重复展示灰色「•••」输入气泡；capsules 模式下保留。
+  const showTypingBubble = !isAgentStatus && chat.isThinking;
 
   return (
     <div className={styles.panel}>
@@ -199,12 +218,12 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
           className={styles.stream}
           startAtTop
           withTopFade="scroll"
-          scrollKey={`${chat.messages.length}-${chat.isThinking}`}
+          scrollKey={`${chat.messages.length}-${showTypingBubble}`}
         >
           <ChatList
             messages={chat.messages}
             shape="round"
-            isThinking={chat.isThinking}
+            isThinking={showTypingBubble}
             onFollowUp={send}
             onOpenSource={openSource}
             onOpenArtifact={openArtifact}
@@ -230,6 +249,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
                 <TaskEntry
                   variant="agent-status"
                   isThinking={chat.isThinking}
+                  statusText={resolvedTaskStatus}
                   tasks={activeTasks}
                   runningCount={runningCount}
                   expanded={openPanel === "tasks"}

@@ -1,12 +1,76 @@
-import type { FC } from 'react';
+import { useEffect, useState, type FC } from 'react';
+import IconTaskDone from '@/assets/d2c/icons/agentDetail811/icon-task-done';
+import IconTaskRunning from '@/assets/d2c/icons/agentDetail811/icon-task-running';
 import IconYuanbaoWorking from '@/assets/d2c/icons/yuanbao811/icon-yuanbao-working';
 import { Pressable } from '@/components/common/Pressable';
 import { MorphPanel } from '@/components/sidebar/MorphPanel';
 import { TaskDots } from '@/components/sidebar/TaskDots';
-import type { AgentTask } from '@/data/agentTasks';
+import { getRunningTaskStatus, type AgentTask } from '@/data/agentTasks';
 import styles from './index.module.scss';
 
 export type CommandBarVariant = 'capsules' | 'agent-status';
+
+/** 文案纵向翻滚淡入淡出时长（ms），与 SCSS 动效保持一致 */
+const ROLL_EXIT_MS = 300;
+
+interface RollingStatusTextProps {
+  text: string;
+}
+
+/**
+ * 动态状态文案：文案变化时旧文案向上轻移淡出、新文案自下向上轻移淡入，
+ * 始终保持单行不折行、超长自动省略，并保留扫光微光效果。
+ */
+const RollingStatusText: FC<RollingStatusTextProps> = ({ text }) => {
+  const [state, setState] = useState<{ current: string; previous: string | null; tick: number }>({
+    current: text,
+    previous: null,
+    tick: 0,
+  });
+
+  useEffect(() => {
+    setState((prev) =>
+      prev.current === text
+        ? prev
+        : {
+            current: text,
+            previous: prev.current,
+            tick: prev.tick + 1,
+          },
+    );
+  }, [text]);
+
+  useEffect(() => {
+    if (state.previous === null) {
+      return undefined;
+    }
+    const timer = window.setTimeout(() => {
+      setState((prev) => (prev.previous === null ? prev : { ...prev, previous: null }));
+    }, ROLL_EXIT_MS);
+    return () => window.clearTimeout(timer);
+  }, [state.tick, state.previous]);
+
+  return (
+    <span className={styles.agentTextViewport} data-status-text={state.current}>
+      {state.previous !== null && (
+        <span
+          key={`exit-${state.tick}`}
+          className={`${styles.agentText} ${styles.agentTextExit}`}
+          aria-hidden="true"
+        >
+          {state.previous}
+        </span>
+      )}
+      <span
+        key={`enter-${state.tick}`}
+        className={`${styles.agentText} ${state.previous !== null ? styles.agentTextEnter : ''}`}
+        title={state.current}
+      >
+        {state.current}
+      </span>
+    </span>
+  );
+};
 
 interface TaskEntryProps {
   tasks: AgentTask[];
@@ -24,13 +88,15 @@ interface TaskEntryProps {
   variant?: CommandBarVariant;
   /** 元宝是否正在生成回复（状态栏形态下切换提示文案） */
   isThinking?: boolean;
+  /** 外部动态传入的当前任务阶段文案（未传时从当前进行中任务数据读取） */
+  statusText?: string;
 }
 
 /**
- * 进行中任务入口：
+ * 进行中任务入口（与 AgentDetail 共用同一份任务数据与状态图标）：
  * - capsules：点阵图标 + 「进行中任务」+ 数字胶囊（Figma 489:10632）
- * - agent-status：32×32 元宝工作形象 + 10px 间距 + 扫光「正在整理发言内容」（Figma 811:38164 / 811:38683）
- * 两种形态点击均展开完整的长程任务列表，可进入任务详情或元宝 Agent 详情页。
+ * - agent-status：32×32 元宝工作形象 + 10px 间距 + 动态翻滚扫光任务阶段文案（Figma 811:38164 / 811:38683）
+ * 两种形态点击均展开与 AgentDetail 一致的任务列表，可进入任务详情或元宝 Agent 详情页。
  */
 export const TaskEntry: FC<TaskEntryProps> = ({
   tasks,
@@ -42,6 +108,7 @@ export const TaskEntry: FC<TaskEntryProps> = ({
   onOpenAgentDetail,
   variant = 'capsules',
   isThinking = false,
+  statusText,
 }) => {
   const isAgentStatus = variant === 'agent-status';
   const capsuleSummary = (
@@ -52,7 +119,9 @@ export const TaskEntry: FC<TaskEntryProps> = ({
     </>
   );
 
-  const statusText = isThinking ? '正在思考回复...' : '正在整理发言内容';
+  const resolvedStatusText = isThinking
+    ? '正在思考回复...'
+    : (statusText ?? getRunningTaskStatus(tasks, 0));
 
   return (
     <MorphPanel
@@ -60,13 +129,14 @@ export const TaskEntry: FC<TaskEntryProps> = ({
       onExpandedChange={onExpandedChange}
       hidden={hidden}
       triggerVariant={isAgentStatus ? 'ghost' : 'card'}
+      fullWidthCollapsed={isAgentStatus}
       summary={
         isAgentStatus ? (
           <span className={styles.agentStatus}>
             <span className={styles.agentMascot} aria-hidden="true">
               <IconYuanbaoWorking width={32} height={32} />
             </span>
-            <span className={styles.agentText}>{statusText}</span>
+            <RollingStatusText text={resolvedStatusText} />
           </span>
         ) : (
           capsuleSummary
@@ -76,9 +146,10 @@ export const TaskEntry: FC<TaskEntryProps> = ({
       expandedLabel="个任务"
       collapsedPaddingX={isAgentStatus ? 0 : 12}
       panelWidth="full"
+      maxHeight={340}
       name="进行中的任务"
       contentKey={`${tasks.length}-${runningCount}`}
-      layoutKey={`${variant}-${statusText}`}
+      layoutKey={variant}
       alignHeaderToContent
     >
       <div className={styles.list}>
@@ -92,7 +163,13 @@ export const TaskEntry: FC<TaskEntryProps> = ({
             }}
             ariaLabel={`查看任务：${task.title}`}
           >
-            <span className={styles.dot} aria-hidden="true" />
+            <span className={styles.taskIcon} aria-hidden="true">
+              {task.state === 'running' ? (
+                <IconTaskRunning width={28} height={28} />
+              ) : (
+                <IconTaskDone width={28} height={28} />
+              )}
+            </span>
             <span className={styles.body}>
               <span className={styles.title}>{task.title}</span>
               <span className={styles.summary}>{task.summary}</span>

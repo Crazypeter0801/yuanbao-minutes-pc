@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import { WINDOW_TOAST_ROOT_ID } from "@/components/common/Toast";
 import { DemoToolbar } from "@/components/demo/DemoToolbar";
 import { MeetingTitleBar } from "@/components/meeting/MeetingTitleBar";
@@ -10,6 +10,7 @@ import { MembersSidebar } from "@/components/sidebar/MembersSidebar";
 import { SideDock, type SideAppId } from "@/components/sidebar/SideDock";
 import { SIDE_APP_ORDER } from "@/components/sidebar/SideDock/apps";
 import { YuanbaoSidebar, type CommandBarVariant } from "@/components/YuanbaoSidebar";
+import { AGENT_TASKS, getRunningTaskStatus } from "@/data/agentTasks";
 import {
   buildArtifact,
   buildArtifactCreatedMessage,
@@ -119,6 +120,21 @@ export default function App() {
   const [commandBarVariant, setCommandBarVariant] = useState<CommandBarVariant>("agent-status");
   /** 演示态进行中任务开关：默认关闭（无任务隐藏状态栏），由右侧演示栏一键切换 */
   const [hasSimulatedTask, setHasSimulatedTask] = useState(false);
+  /** 模拟任务开启时的执行阶段序号：每 3 秒推进一次，停靠侧栏与独立浮窗共用保持完全同步 */
+  const [taskStageIndex, setTaskStageIndex] = useState(0);
+
+  useEffect(() => {
+    if (!hasSimulatedTask) {
+      setTaskStageIndex(0);
+      return undefined;
+    }
+    const timer = window.setInterval(() => {
+      setTaskStageIndex((current) => current + 1);
+    }, 3000);
+    return () => window.clearInterval(timer);
+  }, [hasSimulatedTask]);
+
+  const currentTaskStatus = getRunningTaskStatus(AGENT_TASKS, taskStageIndex);
   const [yuanbaoDetailOpen, setYuanbaoDetailOpen] = useState(false);
   /** 主窗口相对初始居中位置的自由拖拽偏移（px） */
   const [windowPos, setWindowPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -332,6 +348,7 @@ export default function App() {
         onDetailOpenChange={setYuanbaoDetailOpen}
         commandBarVariant={commandBarVariant}
         hasActiveTasks={hasSimulatedTask}
+        taskStatusText={currentTaskStatus}
       />
     );
   };

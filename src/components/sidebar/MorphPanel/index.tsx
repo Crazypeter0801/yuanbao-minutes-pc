@@ -29,6 +29,8 @@ interface MorphPanelProps {
   expandedLabel?: string;
   /** 收起态外观：card 为白底描边胶囊；ghost 为无边框透明触发态（展开时仍平滑变形为白底卡片） */
   triggerVariant?: 'card' | 'ghost';
+  /** 收起态撑满整行宽度（用于新版动态文案状态栏：切换长短文案无横向抖动，超长文案单行省略） */
+  fullWidthCollapsed?: boolean;
   /** 收起态左右内边距：纯图标 10（凑成 36 的正圆），图标 + 文字 12，无框态 0/8 */
   collapsedPaddingX: number;
   /** 展开宽度：数字为固定 px，'full' 为撑满底栏这一行 */
@@ -70,6 +72,7 @@ export const MorphPanel: FC<MorphPanelProps> = ({
   expandedSummary,
   expandedLabel,
   triggerVariant = 'card',
+  fullWidthCollapsed = false,
   collapsedPaddingX,
   panelWidth,
   name,
@@ -202,7 +205,12 @@ export const MorphPanel: FC<MorphPanelProps> = ({
 
   return (
     <div
-      className={[styles.slot, expanded ? styles.slotExpanded : '', hidden ? styles.slotHidden : '']
+      className={[
+        styles.slot,
+        fullWidthCollapsed ? styles.slotFullWidth : '',
+        expanded ? styles.slotExpanded : '',
+        hidden ? styles.slotHidden : '',
+      ]
         .filter(Boolean)
         .join(' ')}
       ref={slotRef}
@@ -219,6 +227,7 @@ export const MorphPanel: FC<MorphPanelProps> = ({
         className={[
           styles.card,
           triggerVariant === 'ghost' ? styles.cardGhost : '',
+          fullWidthCollapsed ? styles.cardFullWidthCollapsed : '',
           expanded ? styles.cardExpanded : '',
           alignHeaderToContent ? styles.cardAligned : '',
           alignHeaderToContent && hideSummaryWhenExpanded ? styles.cardAlignedTextOnly : '',

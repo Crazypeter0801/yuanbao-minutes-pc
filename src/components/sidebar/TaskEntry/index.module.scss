@@ -12,11 +12,14 @@
   color: var(--wm-color-text-tertiary);
 }
 
-/* 新版元宝状态栏（Figma 811:38683）：32×32 元宝工作形象 + 10px 间距 + 14/18 扫光渐变状态文案 */
+/* 新版元宝状态栏（Figma 811:38683）：32×32 元宝工作形象 + 10px 间距 + 14/18 动态扫光渐变状态文案 */
 .agentStatus {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 10px;
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
   height: 32px;
   padding-right: 6px;
 }
@@ -36,13 +39,30 @@
   }
 }
 
+/* 动态文案视口：锁定 20px 高裁切翻滚区，min-width: 0 + flex: 1 保证超长文案单行省略不撑破布局 */
+.agentTextViewport {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  height: 20px;
+  overflow: hidden;
+}
+
 /* 对齐 Figma 811:38718：PingFang SC Regular 14px / 18px，rgb(93,97,108) 带柔和扫光 */
 .agentText {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
   font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 14px;
   line-height: 18px;
   font-weight: 400;
-  white-space: nowrap;
   color: transparent;
   background-image: linear-gradient(
     97deg,
@@ -59,6 +79,45 @@
   animation: agent-status-shimmer 3.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
 }
 
+.agentTextEnter {
+  animation:
+    agent-status-roll-in 280ms cubic-bezier(0.22, 1, 0.36, 1) both,
+    agent-status-shimmer 3.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+.agentTextExit {
+  position: absolute;
+  top: 1px;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  animation: agent-status-roll-out 280ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes agent-status-roll-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes agent-status-roll-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
 @keyframes agent-status-shimmer {
   0% {
     background-position: 100% 0;
@@ -71,10 +130,16 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .agentText {
+  .agentText,
+  .agentTextEnter {
     animation: none;
     color: rgb(93, 97, 108);
     background-image: none;
+    transform: none;
+  }
+
+  .agentTextExit {
+    display: none;
   }
 }
 
@@ -87,7 +152,7 @@
 
 .task {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   padding: 8px;
   border-radius: 8px;
   text-align: left;
@@ -108,14 +173,20 @@
   }
 }
 
-/* 任务前的小圆点：进行中绿、已完成灰 */
-.dot {
-  flex: 0 0 auto;
-  width: 6px;
-  height: 6px;
-  margin-top: 7px;
-  border-radius: 3px;
-  background-color: var(--wm-color-success-primary);
+/* 与 AgentDetail 统一的任务状态图标（28×28） */
+.taskIcon {
+  flex: 0 0 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+
+  & > svg {
+    display: block;
+    width: 28px;
+    height: 28px;
+  }
 }
 
 .body {
