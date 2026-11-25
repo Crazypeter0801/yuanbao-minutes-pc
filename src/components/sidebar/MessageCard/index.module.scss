@@ -1,7 +1,7 @@
 @use './messageCardTokens.scss';
 
 /*
- * 反问/澄清交互卡片（Figma 811:29935）：
+ * 反问/澄清交互卡片（Figma 811:29935 未选态 + Figma 1025:12793 选中/禁用态）：
  * #F7F7F7 浅灰底、圆角 23px、padding 16px、元素间距 12px；
  * 宽度在侧栏内自适应撑满（上限 396px 对齐设计稿）。
  */
@@ -52,7 +52,7 @@
   color: var(--wm-color-text-tertiary);
 }
 
-/* 选项列表（Figma 811:29937）：垂直排列、间距 6px */
+/* 选项列表（Figma 811:29937 / 1025:12795）：垂直排列、间距 6px */
 .options {
   display: flex;
   flex-direction: column;
@@ -61,8 +61,8 @@
 }
 
 /*
- * 单个选项胶囊（Figma 811:29938 / .button/XY_Choice_Button）：
- * 白底 #FFFFFF、圆角 19.5px、padding 10px 12px 10px 16px、左文案右 20×20 控件
+ * 单个选项胶囊（Figma 811:29938 & 1025:12796 / .button/XY_Choice_Button）：
+ * 未选白底 #FFFFFF、圆角 20px、padding 10px 12px 10px 16px、左文案右 20×20 控件
  */
 .option {
   display: flex;
@@ -73,7 +73,7 @@
   width: 100%;
   min-height: 40px;
   padding: 10px 12px 10px 16px;
-  border-radius: 19.5px;
+  border-radius: 20px;
   background-color: var(--mc811-option-bg);
   cursor: pointer;
   outline: none;
@@ -81,7 +81,7 @@
   transition:
     background-color 140ms ease,
     box-shadow 140ms ease,
-    opacity 140ms ease;
+    color 140ms ease;
 
   &:not([aria-disabled='true']):hover {
     box-shadow:
@@ -94,26 +94,28 @@
   }
 
   &:focus-visible {
-    box-shadow: 0 0 0 2px var(--wm-color-brand-primary-soft), inset 0 0 0 1px var(--wm-color-brand-primary);
+    box-shadow: 0 0 0 2px var(--wm-color-brand-primary-soft);
   }
 }
 
-/* 选中态选项胶囊 */
+/* 选中态选项胶囊（Figma 1025:12796）：#3A83F71F 浅蓝底、无边框描边 */
 .optionActive {
   background-color: var(--mc811-option-selected-bg);
-  box-shadow: inset 0 0 0 1px var(--wm-color-brand-primary);
+  box-shadow: none;
 
   &:not([aria-disabled='true']):hover {
-    box-shadow: inset 0 0 0 1px var(--wm-color-brand-primary);
+    background-color: var(--mc811-option-selected-hover-bg);
+    box-shadow: none;
   }
 }
 
-/* 提交/取消后的未选项柔化 */
+/* 提交/取消后的未选项禁用态（Figma 1025:12797）：Disable Layer 4% 黑底，无白底、无边框 */
 .optionMuted {
-  opacity: 0.48;
+  background-color: var(--mc811-option-disabled-bg);
+  box-shadow: none;
 }
 
-/* 选项文案（Figma I811:29938;144:17493）：PingFang SC Regular 14/20 #000000 */
+/* 选项文案：PingFang SC Regular 14/20 */
 .optionText {
   flex: 1 1 auto;
   min-width: 0;
@@ -122,13 +124,21 @@
   font-weight: 400;
   color: var(--wm-color-text-primary);
   word-break: break-word;
+  transition: color 140ms ease;
 }
 
+/* 选中态文字（Figma I1025:12796;144:17503）：#3A83F7 Regular */
 .optionTextActive {
-  font-weight: 500;
+  font-weight: 400;
+  color: var(--mc811-selected-color);
 }
 
-/* 右侧 20×20 选择控件（Figma I811:29938;1268:21011） */
+/* 锁定后未选态文字（Figma I1025:12797;144:17511）：#C7C7C7 */
+.optionTextMuted {
+  color: var(--mc811-option-disabled-text);
+}
+
+/* 右侧 20×20 选择控件（Figma I811:29938;1268:21011 / I1025:12796;1268:22172） */
 .control {
   flex: 0 0 20px;
   display: inline-flex;
@@ -137,9 +147,7 @@
   width: 20px;
   height: 20px;
   color: var(--wm-color-text-primary);
-  transition:
-    background-color 140ms ease,
-    color 140ms ease;
+  transition: color 140ms ease;
 }
 
 .radio {
@@ -155,11 +163,13 @@
 }
 
 .controlActive {
-  background-color: var(--wm-color-brand-primary);
-  color: var(--wm-color-text-senary);
+  background-color: transparent;
+  color: var(--mc811-selected-color);
 }
 
-.radioRing {
+.radioRing,
+.selectedIcon,
+.multiCheckSvg {
   display: block;
   width: 20px;
   height: 20px;
@@ -172,12 +182,6 @@
   border-radius: 6px;
   box-shadow: inset 0 0 0 1px var(--mc811-control-border);
   transition: box-shadow 140ms ease;
-}
-
-.checkIcon {
-  display: block;
-  width: 12px;
-  height: 12px;
 }
 
 /* 确认类摘要块：与选项胶囊同源的白底圆角内卡 */
@@ -244,11 +248,11 @@
 }
 
 .primary {
-  background-color: var(--wm-color-brand-primary);
+  background-color: var(--mc811-selected-color);
   color: var(--wm-color-text-senary);
 
   &:hover {
-    background-color: var(--wm-color-brand-primary-hover);
+    background-color: var(--mc811-selected-color-hover);
   }
 }
 
@@ -284,6 +288,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .option,
+  .optionText,
   .control,
   .checkboxBox,
   .button {

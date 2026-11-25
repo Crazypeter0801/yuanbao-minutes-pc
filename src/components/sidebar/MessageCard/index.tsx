@@ -1,5 +1,6 @@
 import { useState, type FC } from 'react';
 import IconOptionCircle from '@/assets/d2c/icons/chatCards811/icon-option-circle';
+import IconOptionSelected from '@/assets/d2c/icons/chatCards811/icon-option-selected';
 import { Pressable } from '@/components/common/Pressable';
 import type { BubbleCard } from '@/types/chat';
 import styles from './index.module.scss';
@@ -13,11 +14,11 @@ interface MessageCardProps {
 type CardState = 'idle' | 'submitted' | 'cancelled';
 
 /**
- * 对话中的反问/澄清交互卡片（Figma 811:29935）
+ * 对话中的反问/澄清交互卡片（Figma 811:29935 未选态 + Figma 1025:12793 选中/已提交态）
  *
- * 浅灰底容器（#F7F7F7、圆角 23px、padding 16px、垂直间距 12px）；
- * 内含问题标题、白底胶囊选项行（圆角 19.5px、左文案右 20×20 选择控件，行距 6px）及底部操作按钮。
- * 一张卡片只收集一次选择，提交或取消后锁定并清晰保留已选态。
+ * - 未选态：白底胶囊（#FFFFFF、圆角 20px、左文案右 20×20 20% 黑圈/复选框）
+ * - 选中态（1025:12796）：#3A83F71F 浅蓝底、无描边、#3A83F7 文字、右侧 20×20 蓝底白勾图标
+ * - 提交锁定后的未选项（1025:12797）：rgba(0,0,0,0.04) 浅灰底、#C7C7C7 置灰文字、隐藏右侧未选圆圈
  */
 export const MessageCard: FC<MessageCardProps> = ({ card, onSubmit }) => {
   const [picked, setPicked] = useState<string[]>([]);
@@ -75,10 +76,11 @@ export const MessageCard: FC<MessageCardProps> = ({ card, onSubmit }) => {
         >
           {card.options.map((option) => {
             const checked = isChecked(option);
+            const muted = locked && !checked;
             const optionClass = [
               styles.option,
               checked ? styles.optionActive : '',
-              locked && !checked ? styles.optionMuted : '',
+              muted ? styles.optionMuted : '',
             ]
               .filter(Boolean)
               .join(' ');
@@ -91,34 +93,49 @@ export const MessageCard: FC<MessageCardProps> = ({ card, onSubmit }) => {
                 disabled={locked}
                 ariaLabel={`${checked ? '取消选择' : '选择'}${option}`}
               >
-                <span className={`${styles.optionText} ${checked ? styles.optionTextActive : ''}`}>{option}</span>
-
                 <span
                   className={[
-                    styles.control,
-                    card.kind === 'multi' ? styles.checkbox : styles.radio,
-                    checked ? styles.controlActive : styles.controlIdle,
+                    styles.optionText,
+                    checked ? styles.optionTextActive : '',
+                    muted ? styles.optionTextMuted : '',
                   ]
                     .filter(Boolean)
                     .join(' ')}
-                  aria-hidden="true"
                 >
-                  {checked ? (
-                    <svg className={styles.checkIcon} width="12" height="12" viewBox="0 0 12 12" fill="none">
-                      <path
-                        d="M2.5 6.2 4.9 8.6 9.5 3.6"
-                        stroke="currentColor"
-                        strokeWidth="1.8"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  ) : card.kind === 'multi' ? (
-                    <span className={styles.checkboxBox} />
-                  ) : (
-                    <IconOptionCircle className={styles.radioRing} width={20} height={20} color="currentColor" />
-                  )}
+                  {option}
                 </span>
+
+                {/* 提交锁定后的未选项按 Figma 1025:12797 隐藏右侧选择控件，仅保留选中项图标 */}
+                {!muted && (
+                  <span
+                    className={[
+                      styles.control,
+                      card.kind === 'multi' ? styles.checkbox : styles.radio,
+                      checked ? styles.controlActive : styles.controlIdle,
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                    aria-hidden="true"
+                  >
+                    {checked ? (
+                      card.kind === 'multi' ? (
+                        <svg className={styles.multiCheckSvg} width="20" height="20" viewBox="0 0 20 20" fill="none">
+                          <rect width="20" height="20" rx="6" fill="currentColor" />
+                          <path
+                            d="M13.4091 6.65918C13.7352 6.33309 14.2647 6.33309 14.5908 6.65918C14.9168 6.98527 14.9168 7.51473 14.5908 7.84082L9.09076 13.3408C8.76467 13.6669 8.2352 13.6669 7.90912 13.3408L5.40912 10.8408C5.08303 10.5147 5.08303 9.98527 5.40912 9.65918C5.7352 9.33309 6.26467 9.33309 6.59076 9.65918L8.49994 11.5684L13.4091 6.65918Z"
+                            fill="white"
+                          />
+                        </svg>
+                      ) : (
+                        <IconOptionSelected className={styles.selectedIcon} width={20} height={20} />
+                      )
+                    ) : card.kind === 'multi' ? (
+                      <span className={styles.checkboxBox} />
+                    ) : (
+                      <IconOptionCircle className={styles.radioRing} width={20} height={20} color="currentColor" />
+                    )}
+                  </span>
+                )}
               </Pressable>
             );
           })}

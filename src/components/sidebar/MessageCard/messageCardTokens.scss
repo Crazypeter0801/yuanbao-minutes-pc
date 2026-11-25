@@ -1,22 +1,28 @@
 /**
- * 反问/澄清卡片专属设计 Token（Figma 811:29935）
+ * 反问/澄清卡片专属设计 Token（Figma 811:29935 未选态 + Figma 1025:12793 选中/禁用态）
  * 独立放在组件目录内，避免修改共享 tokens.scss 引发并行分支合并冲突。
  */
 :root {
-  /* 外层卡片底色（Figma fill_GLV8L0: #F7F7F7） */
+  /* 外层卡片底色（Figma 811:29935: #F7F7F7） */
   --mc811-card-bg: #f7f7f7;
-  /* 选项胶囊底色（Figma fill_HZAPVG: #FFFFFF） */
+  /* 选项胶囊未选态底色（Figma 811:29938: #FFFFFF） */
   --mc811-option-bg: #ffffff;
   /* 选项悬停微描边与轻投影 */
   --mc811-option-hover-border: rgba(0, 0, 0, 0.08);
   --mc811-option-hover-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
-  /* 选项选中态浅蓝底 */
-  --mc811-option-selected-bg: #f5f9ff;
+  /* 选项选中态底色与主色（Figma 1025:12796 fill_FNLWVI: #3A83F71F, fill_Y9H2OZ: #3A83F7） */
+  --mc811-option-selected-bg: #3a83f71f;
+  --mc811-option-selected-hover-bg: rgba(58, 131, 247, 0.16);
+  --mc811-selected-color: #3a83f7;
+  --mc811-selected-color-hover: #2d74e6;
+  /* 已提交/锁定后未选项禁用态（Figma 1025:12797 Disable Layer: #000000 4%, fill_1VJ3BF: #C7C7C7） */
+  --mc811-option-disabled-bg: rgba(0, 0, 0, 0.04);
+  --mc811-option-disabled-text: #c7c7c7;
   /* 选项未选态控件描边（Figma I811:29938;1268:21011: black 20%） */
   --mc811-control-border: rgba(0, 0, 0, 0.2);
   --mc811-control-hover-border: rgba(0, 0, 0, 0.36);
   /* 按钮禁用 / 已提交态底色与字色 */
-  --mc811-button-disabled-bg: rgba(0, 0, 0, 0.06);
+  --mc811-button-disabled-bg: rgba(0, 0, 0, 0.04);
   --mc811-button-disabled-text: rgba(0, 0, 0, 0.32);
   /* 次按钮悬停底色 */
   --mc811-ghost-hover-bg: #f2f3f5;
