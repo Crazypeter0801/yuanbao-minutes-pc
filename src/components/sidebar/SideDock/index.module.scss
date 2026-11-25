@@ -30,18 +30,13 @@
   }
 }
 
-.moreWrap {
-  position: relative;
-  display: flex;
-}
-
-/* 「更多」菜单：白卡片，圆角 14，右对齐弹出 */
+/* 「更多」菜单：白卡片，圆角 14，贴右侧对齐弹出 */
 .menu {
   position: absolute;
-  top: calc(100% + 10px);
-  right: -12px;
+  top: calc(100% + 6px);
+  right: 6px;
   z-index: 4;
-  width: 228px;
+  width: 224px;
   padding: 6px;
   border-radius: 14px;
   background-color: var(--wm-color-background-quaternary);
@@ -49,20 +44,9 @@
   animation: menu-enter 180ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.menuFolder {
-  top: calc(100% + 6px);
-  right: -58px;
-  width: 224px;
-  padding: 6px;
-  border-radius: 14px;
-}
-
-.menuTabList {
+.menuTrailing {
   top: calc(100% + 6px);
   right: 6px;
-  width: 144px;
-  padding: 6px;
-  border-radius: 12px;
 }
 
 /* ---------- Chrome 页签（Figma 585:68637）：#F7F7F7 顶条 + 白底内凹反圆角激活页签 ---------- */
