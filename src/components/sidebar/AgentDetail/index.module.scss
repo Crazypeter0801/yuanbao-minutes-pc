@@ -1,4 +1,4 @@
-/* 覆盖元宝侧栏面板的 Agent 详情页（Muse 极简节奏 + 腾讯会议元宝视觉） */
+/* 元宝 Agent 详情页（Figma 811:40446 / 777:72286 / 777:73914 / 796:85424） */
 .overlay {
   position: absolute;
   inset: 0;
@@ -6,7 +6,7 @@
   display: flex;
   flex-direction: column;
   background-color: var(--wm-color-background-quaternary);
-  animation: detail-enter 200ms cubic-bezier(0.22, 1, 0.36, 1);
+  animation: detail-enter 180ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @keyframes detail-enter {
@@ -14,227 +14,161 @@
     opacity: 0;
     transform: translateY(6px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-.topBar {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 46px;
-  padding: 6px 14px 2px;
-}
-
-.backButton {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  height: 28px;
-  padding: 0 8px 0 4px;
-  border-radius: 8px;
-  font-size: 13px;
-  line-height: 18px;
-  font-weight: 500;
-  color: var(--wm-color-text-secondary);
-  cursor: pointer;
-  outline: none;
-  transition:
-    background-color 120ms ease,
-    color 120ms ease;
-
-  &:hover,
-  &:focus-visible {
-    background-color: var(--wm-color-control-hover);
-    color: var(--wm-color-text-title);
-  }
-}
-
-.closeButton {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  color: var(--wm-color-text-secondary);
-  cursor: pointer;
-  outline: none;
-  transition:
-    background-color 120ms ease,
-    color 120ms ease;
-
-  &:hover,
-  &:focus-visible {
-    background-color: var(--wm-color-control-hover);
-    color: var(--wm-color-text-title);
-  }
-}
-
 .scroll {
   flex: 1 1 auto;
   min-height: 0;
-  padding: 4px 18px 24px;
+  padding: 4px 16px 24px;
 }
 
-/* ---------- Hero ---------- */
+/* ---------- 顶部 Hero + 3 段导航（Figma 811:40934） ---------- */
+
+.headerBlock {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.backButton {
+  position: absolute;
+  left: 0;
+  top: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 16px;
+  cursor: pointer;
+  outline: none;
+  transition:
+    opacity 120ms ease,
+    transform 120ms ease;
+
+  &:hover,
+  &:focus-visible {
+    opacity: 0.82;
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
 
 .hero {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 4px 0 18px;
+  padding: 30px 0 16px;
 }
 
 .avatarWrap {
   position: relative;
-  width: 84px;
-  height: 84px;
-}
-
-.avatarRing {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 84px;
-  height: 84px;
-  border-radius: 50%;
-  background: var(--wm-color-agent-hero-bg);
-  box-shadow:
-    inset 0 0 0 1px var(--wm-color-outline-tertiary),
-    0 4px 14px rgba(0, 204, 112, 0.08);
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
 }
 
-.avatarBadge {
+.avatarEditButton {
   position: absolute;
-  right: 0;
-  bottom: 0;
+  left: 35px;
+  top: 35px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background-color: var(--wm-color-background-quaternary);
-  color: var(--wm-color-text-secondary);
-  box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.1),
-    inset 0 0 0 0.5px var(--wm-color-outline-tertiary);
+  width: 16px;
+  height: 16px;
+  border-radius: 8px;
   cursor: pointer;
   outline: none;
-  transition:
-    transform 120ms ease,
-    background-color 120ms ease;
+  transition: transform 120ms ease;
 
   &:hover,
   &:focus-visible {
-    background-color: var(--wm-color-agent-surface);
-    transform: scale(1.04);
+    transform: scale(1.08);
   }
 }
 
+.avatarEditImg {
+  display: block;
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
 .heroName {
-  margin-top: 10px;
-  font-size: 19px;
-  line-height: 25px;
+  margin-top: 6px;
+  font-size: 16px;
+  line-height: 22px;
   font-weight: 600;
+  letter-spacing: -0.0119em;
   color: var(--wm-color-text-title);
-  letter-spacing: -0.01em;
 }
 
-.heroStatus {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 4px;
-  font-size: 12px;
-  line-height: 17px;
-  color: var(--wm-color-text-tertiary);
-}
-
-.heroDot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: var(--wm-color-brand-yuanbao);
-  box-shadow: 0 0 0 3px var(--wm-color-agent-badge-green-soft);
-}
-
-/* ---------- Muse 3 段胶囊切换 ---------- */
-
-.segmentWrap {
-  margin-bottom: 18px;
-}
-
-.segmentTrack {
-  display: flex;
-  align-items: center;
-  height: 36px;
-  padding: 3px;
-  border-radius: 999px;
-  background-color: var(--wm-color-safari-track);
-  box-shadow: inset 0 0 0 0.5px var(--wm-color-safari-track-line);
-}
-
-.segmentCell {
-  position: relative;
-  flex: 1 1 0;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  height: 100%;
-}
-
-.segmentItem {
-  flex: 1 1 auto;
+/* 3 段胶囊切换：任务 / 资料库 / 连接器（Figma 811:40950） */
+.tabList {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
+  border-radius: 15px;
+
+  & > * + * {
+    margin-left: 8px;
+  }
+}
+
+.tabItem {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 74px;
   height: 30px;
-  border-radius: 999px;
-  font-size: 12.5px;
-  line-height: 16px;
-  font-weight: 500;
-  color: var(--wm-color-text-tertiary);
+  padding: 0 16px;
+  border-radius: 15px;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  color: var(--wm-color-text-primary);
+  background-color: transparent;
   cursor: pointer;
   outline: none;
   transition:
     background-color 140ms ease,
-    color 140ms ease,
-    box-shadow 160ms ease;
+    color 140ms ease;
 
-  &:hover:not(.segmentItemActive) {
-    color: var(--wm-color-text-secondary);
+  &:hover:not(.tabItemActive),
+  &:focus-visible:not(.tabItemActive) {
+    background-color: var(--wm-color-control-hover);
   }
 }
 
-.segmentItemActive {
-  background-color: var(--wm-color-safari-tab-active);
+.tabItemActive {
+  font-weight: 500;
+  line-height: 16px;
   color: var(--wm-color-text-title);
-  box-shadow: var(--wm-shadow-safari-tab-active);
+  background-color: var(--wm-color-background-tertiary);
 }
 
-.segmentDivider {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 1px;
-  height: 14px;
-  background-color: var(--wm-color-safari-divider);
-  pointer-events: none;
-}
+/* ---------- Tab 1：任务（Figma 811:40959） ---------- */
 
-/* ---------- 区块通用 ---------- */
-
-.sections {
+.taskContent {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  padding-top: 16px;
+
+  & > * + * {
+    margin-top: 16px;
+  }
 }
 
 .section {
@@ -246,80 +180,58 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 30px;
-  margin-bottom: 6px;
-  padding: 0 2px;
-  border-radius: 8px;
-  cursor: pointer;
-  outline: none;
-  transition: background-color 120ms ease;
-
-  &:hover {
-    background-color: var(--wm-color-agent-surface);
-  }
+  padding: 0 6px;
+  margin-bottom: 4px;
 }
 
 .sectionTitle {
-  font-size: 14px;
+  font-size: 12px;
   line-height: 20px;
-  font-weight: 600;
-  color: var(--wm-color-text-title);
-}
-
-.sectionChevron {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-weight: 500;
   color: var(--wm-color-text-tertiary);
-  transition: transform 160ms ease;
 }
-
-.sectionChevronCollapsed {
-  transform: rotate(-90deg);
-}
-
-/* ---------- 预定与自动任务 ---------- */
 
 .taskList {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+
+  & > * + * {
+    margin-top: 4px;
+  }
 }
 
 .taskCard {
   border-radius: 12px;
-  transition: background-color 140ms ease;
-}
-
-.taskCardExpanded {
-  background-color: var(--wm-color-agent-surface);
-}
-
-.taskRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 6px;
-  border-radius: 12px;
   transition: background-color 120ms ease;
 
   &:hover {
-    background-color: var(--wm-color-agent-surface);
+    background-color: var(--wm-color-background-tertiary);
   }
 }
 
-.taskMain {
-  flex: 1 1 auto;
-  min-width: 0;
+.taskCardExpanded {
+  background-color: var(--wm-color-background-tertiary);
+}
+
+.autoTaskRow {
   display: flex;
   align-items: center;
-  gap: 11px;
+  padding: 7px 6px;
+  border-radius: 12px;
   cursor: pointer;
   outline: none;
 }
 
-.taskGlyph {
-  position: relative;
+.recentTaskRow {
+  display: flex;
+  align-items: center;
+  padding: 8px 6px;
+  border-radius: 12px;
+  cursor: pointer;
+  outline: none;
+}
+
+.taskIconBox {
   flex: 0 0 36px;
   display: flex;
   align-items: center;
@@ -327,55 +239,42 @@
   width: 36px;
   height: 36px;
   border-radius: 10px;
-  background-color: var(--wm-color-agent-surface);
-  color: var(--wm-color-text-secondary);
-  box-shadow: inset 0 0 0 0.5px var(--wm-color-outline-tertiary);
+  transition: opacity 140ms ease;
 }
 
-.taskGlyphCircle {
-  border-radius: 50%;
-  color: var(--wm-color-agent-badge-rose);
-  background-color: var(--wm-color-agent-badge-rose-soft);
-  box-shadow: none;
+/* 悬停态图标容器与 Figma 811:40968 (#E6E8EB) 保持一致层次 */
+.taskCard:hover .taskIconBoxAuto,
+.taskCardExpanded .taskIconBoxAuto {
+  filter: brightness(0.95);
 }
 
-.glyphMuted {
+.taskIconMuted {
   opacity: 0.45;
 }
 
-.liveDotBadge {
-  position: absolute;
-  right: -1px;
-  bottom: -1px;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background-color: var(--wm-color-brand-yuanbao);
-  box-shadow: 0 0 0 2px var(--wm-color-background-quaternary);
-}
-
-.clockBadge {
-  position: absolute;
-  right: -2px;
-  bottom: -2px;
-  display: flex;
-  color: var(--wm-color-agent-badge-amber);
-  border-radius: 50%;
-  box-shadow: 0 0 0 1.5px var(--wm-color-background-quaternary);
-}
-
-.taskText {
+.taskTextCol {
   flex: 1 1 auto;
   min-width: 0;
   display: flex;
   flex-direction: column;
+  margin-left: 11px;
 }
 
-.taskTitle {
+.autoTaskTitle {
   overflow: hidden;
-  font-size: 13.5px;
+  font-size: 14px;
   line-height: 19px;
-  font-weight: 500;
+  font-weight: 400;
+  color: var(--wm-color-text-title);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.recentTaskTitle {
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
   color: var(--wm-color-text-title);
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -385,22 +284,91 @@
   color: var(--wm-color-text-tertiary);
 }
 
-.taskSchedule {
+.taskSubtitle {
   overflow: hidden;
-  margin-top: 1px;
-  font-size: 12px;
-  line-height: 17px;
+  padding-top: 1px;
+  font-size: 11px;
+  line-height: 16px;
+  font-weight: 300;
   color: var(--wm-color-text-tertiary);
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
-/* macOS 风格拨动开关 */
+.taskExpand {
+  padding: 2px 10px 12px 53px;
+}
+
+.expandDesc {
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 400;
+  color: var(--wm-color-text-secondary);
+}
+
+.expandControlRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.expandMeta {
+  font-size: 11px;
+  line-height: 16px;
+  color: var(--wm-color-text-tertiary);
+}
+
+.expandActions {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+
+  & > * + * {
+    margin-left: 8px;
+  }
+}
+
+.expandActionPrimary,
+.expandActionSecondary {
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 7px;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  transition: opacity 120ms ease, background-color 120ms ease;
+}
+
+.expandActionPrimary {
+  background-color: var(--wm-color-text-title);
+  color: var(--wm-color-text-senary);
+
+  &:hover {
+    opacity: 0.88;
+  }
+}
+
+.expandActionSecondary {
+  background-color: var(--wm-color-background-quaternary);
+  color: var(--wm-color-text-secondary);
+  box-shadow: inset 0 0 0 0.5px var(--wm-color-outline-secondary);
+
+  &:hover {
+    background-color: var(--wm-color-control-hover);
+  }
+}
+
+/* 展开抽屉内的任务启停开关 */
 .switch {
   position: relative;
-  flex: 0 0 34px;
-  width: 34px;
-  height: 20px;
+  flex: 0 0 32px;
+  width: 32px;
+  height: 18px;
   padding: 2px;
   border-radius: 999px;
   background-color: var(--wm-color-agent-toggle-off);
@@ -415,11 +383,10 @@
 
 .switchThumb {
   display: block;
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   background-color: var(--wm-color-background-quaternary);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
   transition: transform 160ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -427,331 +394,483 @@
   transform: translateX(14px);
 }
 
-.taskExpand {
-  padding: 2px 12px 12px 53px;
-}
+/* ---------- Tab 2：资料库（Figma 777:72286） ---------- */
 
-.expandDesc {
-  font-size: 12px;
-  line-height: 18px;
-  color: var(--wm-color-text-secondary);
-}
-
-.expandMeta {
+.libraryContent {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  margin-top: 6px;
-  font-size: 11.5px;
-  line-height: 16px;
-  color: var(--wm-color-text-tertiary);
+  padding-top: 16px;
 }
 
-.expandActions {
+.libraryGroupLabel {
+  padding-left: 8px;
+  margin-bottom: 4px;
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 400;
+  color: var(--ad811-section-muted);
+}
+
+.libraryList {
+  display: flex;
+  flex-direction: column;
+}
+
+.libraryRow {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 10px;
-}
-
-.expandAction,
-.expandActionPrimary {
-  display: inline-flex;
-  align-items: center;
-  height: 26px;
-  padding: 0 10px;
-  border-radius: 7px;
-  font-size: 12px;
-  line-height: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  outline: none;
-  transition: background-color 120ms ease;
-}
-
-.expandActionPrimary {
-  background-color: var(--wm-color-text-title);
-  color: var(--wm-color-text-senary);
-
-  &:hover {
-    opacity: 0.88;
-  }
-}
-
-.expandAction {
-  background-color: var(--wm-color-background-quaternary);
-  color: var(--wm-color-text-secondary);
-  box-shadow: inset 0 0 0 0.5px var(--wm-color-outline-secondary);
-
-  &:hover {
-    background-color: var(--wm-color-agent-surface-hover);
-  }
-}
-
-.viewAllButton {
-  align-self: center;
-  margin-top: 10px;
-  padding: 5px 14px;
+  padding: 8px;
   border-radius: 8px;
-  font-size: 13px;
-  line-height: 18px;
-  font-weight: 500;
-  color: var(--wm-color-text-title);
   cursor: pointer;
   outline: none;
   transition: background-color 120ms ease;
 
   &:hover,
   &:focus-visible {
-    background-color: var(--wm-color-agent-surface);
+    background-color: var(--wm-color-control-hover);
   }
 }
 
-/* ---------- 今日活动时间线 ---------- */
-
-.timeline {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.timelineCard {
-  border-radius: 12px;
-  transition: background-color 140ms ease;
-}
-
-.timelineCardExpanded {
-  background-color: var(--wm-color-agent-surface);
-}
-
-.timelineRow {
-  display: flex;
-  align-items: flex-start;
-  gap: 11px;
-  padding: 8px 6px;
-  border-radius: 12px;
-  cursor: pointer;
-  outline: none;
-  transition: background-color 120ms ease;
-
-  &:hover {
-    background-color: var(--wm-color-agent-surface);
-  }
-}
-
-.timelineGlyph {
-  flex: 0 0 34px;
+.libraryIconWrap {
+  flex: 0 0 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
-  margin-top: 1px;
-  border-radius: 10px;
-  background-color: var(--wm-color-agent-surface);
-  color: var(--wm-color-text-secondary);
+  width: 32px;
+  height: 32px;
 }
 
-.timelineGlyphActive {
-  background-color: var(--wm-color-agent-badge-green-soft);
-  color: var(--wm-color-brand-yuanbao);
+.libraryIconImg {
+  display: block;
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
 }
 
-.timelineBody {
+.libraryThumbImg {
+  display: block;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.libraryTextCol {
   flex: 1 1 auto;
   min-width: 0;
   display: flex;
   flex-direction: column;
+  padding-left: 8px;
 }
 
-.timelineTitle {
-  font-size: 13.5px;
-  line-height: 19px;
-  font-weight: 500;
-  color: var(--wm-color-text-title);
-}
-
-.timelineSummary {
-  margin-top: 2px;
+.libraryTitle {
+  overflow: hidden;
   font-size: 12px;
-  line-height: 17px;
-  color: var(--wm-color-text-tertiary);
+  line-height: 18px;
+  font-weight: 400;
+  color: var(--wm-color-text-primary);
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
-.timelineTime {
-  margin-top: 3px;
-  font-size: 11.5px;
-  line-height: 15px;
+.libraryMetaRow {
+  display: flex;
+  align-items: center;
+  height: 18px;
+  padding-top: 2px;
+}
+
+.libraryMetaText {
+  font-size: 11px;
+  line-height: 16px;
+  font-weight: 400;
   color: var(--wm-color-text-quaternary);
 }
 
-.timelineExpand {
-  padding: 0 12px 12px 51px;
+.libraryMetaDivider {
+  display: inline-block;
+  width: 1px;
+  height: 10px;
+  margin: 0 4px;
+  background-color: var(--wm-color-line);
 }
 
-/* ---------- 资料库 ---------- */
-
-.filterRow {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+.librarySectionDivider {
+  height: 1px;
+  margin: 6px 8px 10px;
+  background-color: var(--wm-color-line);
 }
 
-.filterChip {
-  padding: 4px 12px;
-  border-radius: 999px;
-  font-size: 12px;
-  line-height: 17px;
-  color: var(--wm-color-text-secondary);
-  background-color: var(--wm-color-agent-surface);
-  cursor: pointer;
-  outline: none;
-  transition:
-    background-color 120ms ease,
-    color 120ms ease;
+/* ---------- Tab 3：连接器（Figma 777:73914） ---------- */
 
-  &:hover:not(.filterChipActive) {
-    background-color: var(--wm-color-agent-surface-hover);
-  }
-}
-
-.filterChipActive {
-  background-color: var(--wm-color-text-title);
-  color: var(--wm-color-text-senary);
-}
-
-.libraryList {
+.connectorContent {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  padding-top: 16px;
 }
 
-.libraryItem {
+.connectorRow {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  background-color: var(--wm-color-agent-surface);
+  padding: 8px;
+  border-radius: 8px;
   cursor: pointer;
   outline: none;
   transition: background-color 120ms ease;
 
-  &:hover {
-    background-color: var(--wm-color-agent-surface-hover);
+  &:hover,
+  &:focus-visible {
+    background-color: var(--wm-color-control-hover);
   }
 }
 
-.libraryBadge {
-  flex: 0 0 auto;
-  padding: 3px 7px;
-  border-radius: 6px;
-  font-size: 11px;
-  line-height: 15px;
-  font-weight: 500;
-  color: var(--wm-color-text-secondary);
+.connectorIconWrap {
+  flex: 0 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  overflow: hidden;
+  border: 0.5px solid var(--wm-color-outline-tertiary);
+  border-radius: 10px;
   background-color: var(--wm-color-background-quaternary);
-  box-shadow: inset 0 0 0 0.5px var(--wm-color-outline-tertiary);
 }
 
-.libraryBody {
+.connectorIconImg {
+  display: block;
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+}
+
+.connectorTextCol {
   flex: 1 1 auto;
   min-width: 0;
   display: flex;
   flex-direction: column;
+  padding-left: 8px;
 }
 
-.libraryName {
+.connectorName {
   overflow: hidden;
-  font-size: 13px;
+  font-size: 14px;
   line-height: 19px;
-  font-weight: 500;
+  font-weight: 400;
   color: var(--wm-color-text-title);
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
-.libraryMeta {
-  margin-top: 2px;
-  font-size: 11.5px;
+.connectorDesc {
+  overflow: hidden;
+  padding-top: 2px;
+  font-size: 11px;
   line-height: 16px;
+  font-weight: 300;
   color: var(--wm-color-text-tertiary);
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
-.emptyText {
-  padding: 28px 0;
-  text-align: center;
-  font-size: 12.5px;
-  color: var(--wm-color-text-tertiary);
+.connectorTrailing {
+  flex: 0 0 auto;
+  margin-left: 8px;
 }
 
-/* ---------- 设置 ---------- */
-
-.prefList {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.prefRow {
-  display: flex;
+.connectorConnectedPill {
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 11px 12px;
-  border-radius: 12px;
-  background-color: var(--wm-color-agent-surface);
+  justify-content: center;
+  padding: 4px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 400;
+  color: var(--wm-color-text-tertiary);
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease;
+
+  & > * + * {
+    margin-left: 4px;
+  }
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--wm-color-background-tertiary);
+  }
 }
 
-.prefText {
-  flex: 1 1 auto;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.prefTitle {
-  font-size: 13px;
-  line-height: 19px;
+.connectorConnectButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border: 1px solid var(--wm-color-background-tertiary);
+  border-radius: 10px;
+  background-color: var(--wm-color-background-quaternary);
+  box-shadow: inset 0 0 0 0.5px var(--wm-color-outline-tertiary);
+  font-size: 12px;
+  line-height: 16px;
   font-weight: 500;
-  color: var(--wm-color-text-title);
+  color: var(--wm-color-brand-primary);
+  cursor: pointer;
+  outline: none;
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--wm-color-brand-primary-soft);
+    border-color: var(--wm-color-brand-primary-soft);
+  }
 }
 
-.prefDesc {
-  margin-top: 2px;
-  font-size: 11.5px;
-  line-height: 16px;
-  color: var(--wm-color-text-tertiary);
-}
+/* ---------- 连接器查看详情弹窗（Figma 796:85424） ---------- */
 
-.scopeCard {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 12px;
-  border-radius: 12px;
-  border: 0.5px solid var(--wm-color-outline-tertiary);
-}
-
-.scopeRow {
+.modalBackdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 35;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  padding: 0 28px;
+  background-color: var(--ad811-modal-scrim);
+  animation: modal-fade 150ms ease;
+}
+
+@keyframes modal-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.modalCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 320px;
+  padding: 32px 0;
+  border-radius: 16px;
+  background-color: var(--wm-color-background-quaternary);
+  box-shadow: var(--ad811-modal-shadow);
+  animation: modal-pop 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes modal-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.modalCloseButton {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--wm-color-control-hover);
+  }
+}
+
+.modalHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 24px;
+}
+
+.modalIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.modalIconImg {
+  display: block;
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+
+.modalTitleGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.modalTitle {
+  font-size: 16px;
+  line-height: 22px;
+  font-weight: 500;
+  color: var(--wm-color-text-primary);
+}
+
+.modalSubtitle {
   font-size: 12px;
   line-height: 17px;
+  font-weight: 400;
+  color: var(--wm-color-text-tertiary);
+  text-align: center;
 }
 
-.scopeLabel {
+.modalBody {
+  display: flex;
+  flex-direction: column;
+  width: 260px;
+  max-width: calc(100% - 40px);
+  margin-top: 28px;
+}
+
+.modalInfoCard {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 12px 16px;
+  border: 0.5px solid var(--wm-color-outline-secondary);
+  border-radius: 16px;
+  background-color: var(--wm-color-tab585-strip);
+
+  & > * + * {
+    margin-top: 12px;
+  }
+}
+
+.modalInfoRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.modalInfoLabel {
+  flex: 0 0 auto;
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 400;
+  color: var(--wm-color-text-primary);
+}
+
+.modalInfoValue {
+  overflow: hidden;
+  margin-left: 10px;
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 400;
+  color: var(--wm-color-text-tertiary);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.modalStatusValue {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 400;
+
+  & > * + * {
+    margin-left: 6px;
+  }
+}
+
+.modalStatusConnected {
+  color: var(--ad811-status-connected);
+}
+
+.modalStatusDisconnected {
   color: var(--wm-color-text-tertiary);
 }
 
-.scopeValue {
+.modalStatusDot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+}
+
+.modalStatusDotConnected {
+  background-color: var(--ad811-status-connected);
+}
+
+.modalStatusDotDisconnected {
+  background-color: var(--wm-color-text-tertiary);
+}
+
+.modalDivider {
+  width: 100%;
+  height: 0.5px;
+  background-color: var(--wm-color-outline-secondary);
+}
+
+.modalActionButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 40px;
+  margin-top: 12px;
+  padding: 0 16px;
+  border: 0.5px solid var(--wm-color-outline-secondary);
+  border-radius: 16px;
+  background-color: var(--wm-color-tab585-strip);
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--ad811-card-action-hover);
+  }
+}
+
+.modalActionDangerText {
+  font-size: 12px;
+  line-height: 17px;
+  font-weight: 400;
+  color: var(--wm-color-error-primary);
+}
+
+.modalActionPrimaryText {
+  font-size: 12px;
+  line-height: 17px;
   font-weight: 500;
-  color: var(--wm-color-text-title);
+  color: var(--wm-color-brand-primary);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .overlay,
+  .modalBackdrop,
+  .modalCard,
   .switchThumb {
     animation: none;
     transition: none;
