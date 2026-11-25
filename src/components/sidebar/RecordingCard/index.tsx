@@ -1,7 +1,9 @@
 import { useEffect, useLayoutEffect, useRef, useState, type FC } from 'react';
 import IconNoteChevron from '@/assets/d2c/icons/v2/icon-side3-note-chevron';
 import IconNoteFile from '@/assets/d2c/icons/v2/icon-side3-note-file';
+import IconYuanbaoNoteDoc from '@/assets/d2c/icons/yuanbao811/icon-yuanbao-note-doc';
 import { Pressable } from '@/components/common/Pressable';
+import { meetingSession } from '@/data/meetingSession';
 import { recognizingIdle, recognizingSteps } from '@/data/meetingTopics';
 import styles from './index.module.scss';
 
@@ -13,27 +15,27 @@ const LIST_MAX_HEIGHT = 76;
 const LIST_GROW_MS = 260;
 
 interface RecordingCardProps {
-  /** 卡片标题，默认「元宝笔记」 */
+  /** 卡片标题（compact 新版默认取当前会议主题，展开态默认「元宝笔记」） */
   title?: string;
+  /** 会议摘要（compact 新版单行省略展示，对齐 Figma 811:41211） */
+  summary?: string;
   /** 已识别出的话题，按时间顺序，最后一条是当前正在聊的；为空时显示识别中的过渡态 */
   topics?: string[];
-  /** 只显示标题行（Figma 215:19035 的单行卡片），不带下面的灰条 / 话题区 */
+  /** compact：Figma 811:41211 新版元宝笔记卡片（260×60 左文档徽标 + 右会议主题与单行摘要） */
   compact?: boolean;
   /** 点击整张卡片打开云笔记 */
   onOpen?: () => void;
 }
 
 /**
- * 「正在帮你记」卡片（Figma 元宝Agent 入会 46:7827 / 46:7838）
- *
- * 识别中：灰条 36 高，阶段文案每 4 秒换一句，字上一道亮光扫过；走完一遍停在「识别到话题后会自动更新」。
- * 有话题后（Figma 91:15376）：灰底区展开，「当前正在聊」灰字单独一行，下面一行一条短话题；
- * 新话题追加在最下面，当前话题蓝点、之前的灰点，文字都是黑色，左侧一根竖线串起来。
- * compact：只留标题行（入会稿 215:19035 就是这一种），不渲染下面的灰条与话题区。
- * 话题区最多露出 2.5 条（话题 14/20、行距 12），再多在列表里上下滚动，新话题出现时自动滚到底。
+ * 元宝笔记卡片：
+ * - compact（Figma 811:41211）：260×60 白底 1px #EBEDF2 描边、圆角 16；左 40×40 绿文档+元宝徽标，
+ *   右会议标题（14/20 #000）+ 会议摘要单行省略（12/18 #7B818F）。
+ * - 非 compact：保留「正在帮你记」实时话题过渡卡。
  */
 export const RecordingCard: FC<RecordingCardProps> = ({
-  title = '元宝笔记',
+  title,
+  summary,
   topics = [],
   compact = false,
   onOpen,
@@ -48,12 +50,12 @@ export const RecordingCard: FC<RecordingCardProps> = ({
   const hasTopics = topics.length > 0;
 
   useEffect(() => {
-    if (hasTopics || step >= lastStep) {
+    if (compact || hasTopics || step >= lastStep) {
       return undefined;
     }
     const timer = window.setTimeout(() => setStep((current) => current + 1), STEP_MS);
     return () => window.clearTimeout(timer);
-  }, [hasTopics, step, lastStep]);
+  }, [compact, hasTopics, step, lastStep]);
 
   /*
    * 新话题出现：
@@ -62,6 +64,9 @@ export const RecordingCard: FC<RecordingCardProps> = ({
    * 新条目只做淡入、不做位移，避免「长高 + 上移 + 滚动」三个动作叠在一起产生弹跳。
    */
   useLayoutEffect(() => {
+    if (compact) {
+      return undefined;
+    }
     const node = listRef.current;
     if (!node) {
       return undefined;
@@ -73,34 +78,54 @@ export const RecordingCard: FC<RecordingCardProps> = ({
       return undefined;
     }
     const scrollToEnd = () => node.scrollTo({ top: node.scrollHeight, behavior: 'smooth' });
-    // 正好在这一条撑到上限：先等长高过渡结束再滚，两段动作不叠在一起
     if (growing) {
       const timer = window.setTimeout(scrollToEnd, LIST_GROW_MS);
       return () => window.clearTimeout(timer);
     }
     scrollToEnd();
     return undefined;
-  }, [topics.length]);
+  }, [compact, topics.length]);
 
+  if (compact) {
+    const noteTitle = title ?? meetingSession.topic;
+    const noteSummary = summary ?? meetingSession.summary;
+
+    return (
+      <Pressable
+        className={`${styles.card} ${styles.cardNote811}`}
+        onClick={onOpen}
+        ariaLabel={`打开元宝笔记：${noteTitle}`}
+      >
+        <span className={styles.noteIcon} aria-hidden="true">
+          <IconYuanbaoNoteDoc width={40} height={40} />
+        </span>
+        <span className={styles.noteMeta}>
+          <span className={styles.noteTitle} title={noteTitle}>
+            {noteTitle}
+          </span>
+          <span className={styles.noteSummary} title={noteSummary}>
+            {noteSummary}
+          </span>
+        </span>
+      </Pressable>
+    );
+  }
+
+  const cardTitle = title ?? '元宝笔记';
   const hint = step < lastStep ? recognizingSteps[step] : recognizingIdle;
 
   return (
-    <Pressable
-      className={`${styles.card} ${compact ? styles.cardCompact : ''}`}
-      onClick={onOpen}
-      ariaLabel={`打开${title}`}
-    >
+    <Pressable className={styles.card} onClick={onOpen} ariaLabel={`打开${cardTitle}`}>
       <span className={styles.header}>
         <span className={styles.icon} aria-hidden="true">
           <IconNoteFile />
         </span>
-        <span className={styles.title}>{title}</span>
+        <span className={styles.title}>{cardTitle}</span>
         <span className={styles.chevron} aria-hidden="true">
           <IconNoteChevron />
         </span>
       </span>
 
-      {compact ? null : (
       <span className={`${styles.slot} ${hasTopics ? styles.slotTopics : ''}`}>
         {hasTopics ? (
           <span className={styles.topicPanel}>
@@ -134,7 +159,6 @@ export const RecordingCard: FC<RecordingCardProps> = ({
           </span>
         )}
       </span>
-      )}
     </Pressable>
   );
 };

@@ -7,9 +7,9 @@ import { PollComposer } from "@/components/poll/PollComposer";
 import { ChatSidebar } from "@/components/sidebar/ChatSidebar";
 import { FloatingWindow } from "@/components/sidebar/FloatingWindow";
 import { MembersSidebar } from "@/components/sidebar/MembersSidebar";
-import { SideDock, type SideAppId, type SideTabStyle } from "@/components/sidebar/SideDock";
+import { SideDock, type SideAppId } from "@/components/sidebar/SideDock";
 import { SIDE_APP_ORDER } from "@/components/sidebar/SideDock/apps";
-import { YuanbaoSidebar } from "@/components/YuanbaoSidebar";
+import { YuanbaoSidebar, type CommandBarVariant } from "@/components/YuanbaoSidebar";
 import {
   buildArtifact,
   buildArtifactCreatedMessage,
@@ -116,7 +116,7 @@ export default function App() {
     active: "yuanbao",
     floating: [],
   });
-  const [tabStyle, setTabStyle] = useState<SideTabStyle>("classic");
+  const [commandBarVariant, setCommandBarVariant] = useState<CommandBarVariant>("agent-status");
   const [yuanbaoDetailOpen, setYuanbaoDetailOpen] = useState(false);
   /** 主窗口相对初始居中位置的自由拖拽偏移（px） */
   const [windowPos, setWindowPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -328,6 +328,7 @@ export default function App() {
         showHeader={showHeader}
         detailOpen={yuanbaoDetailOpen}
         onDetailOpenChange={setYuanbaoDetailOpen}
+        commandBarVariant={commandBarVariant}
       />
     );
   };
@@ -419,7 +420,6 @@ export default function App() {
               <SideDock
                 apps={dock.apps}
                 active={dock.active}
-                tabStyle={tabStyle}
                 onSelect={openApp}
                 onCloseApp={closeApp}
                 onPopOutApp={popOutApp}
@@ -452,8 +452,8 @@ export default function App() {
       <div className={styles.demoBar}>
         <DemoToolbar
           onCommand={runCommand}
-          tabStyle={tabStyle}
-          onTabStyleChange={setTabStyle}
+          commandBarVariant={commandBarVariant}
+          onCommandBarVariantChange={setCommandBarVariant}
         />
       </div>
     </div>

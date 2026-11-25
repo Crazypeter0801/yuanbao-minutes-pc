@@ -1,9 +1,9 @@
 import { useState, type FC, type ReactNode } from 'react';
-import IconTab505Yuanbao from '@/assets/d2c/icons/sidetabs505/icon-tab505-yuanbao';
 import IconTab574Chevron from '@/assets/d2c/icons/sidetabs574/icon-tab574-chevron';
 import IconTab585Close from '@/assets/d2c/icons/sidetabs585/icon-tab585-close';
 import IconTab585More from '@/assets/d2c/icons/sidetabs585/icon-tab585-more';
 import IconTab585Pip from '@/assets/d2c/icons/sidetabs585/icon-tab585-pip';
+import IconYuanbao811 from '@/assets/d2c/icons/yuanbao811/icon-yuanbao-811';
 import { PopMenu, type PopMenuItem } from '@/components/common/PopMenu';
 import { Pressable } from '@/components/common/Pressable';
 import styles from './index.module.scss';
@@ -42,7 +42,7 @@ export const SidebarHeader: FC<SidebarHeaderProps> = ({
 
   const titleContent = (
     <>
-      <span className={styles.logo}>{icon ?? <IconTab505Yuanbao width={20} height={20} />}</span>
+      <span className={styles.logo}>{icon ?? <IconYuanbao811 width={20} height={20} />}</span>
       <span className={styles.titleText}>{title}</span>
       {onTitleClick && (
         <span className={styles.chevron} aria-hidden="true">

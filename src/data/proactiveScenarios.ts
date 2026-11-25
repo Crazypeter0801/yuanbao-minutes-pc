@@ -1,4 +1,5 @@
 import { extractCard, summaryModeCard, taskConfirmCard } from '@/data/interactiveCards';
+import { meetingSession } from '@/data/meetingSession';
 import { parseMarkedText } from '@/data/richText';
 import { createId } from '@/data/yuanbaoContent';
 import type { AssistantMessage, ChatMessage, RichBlock } from '@/types/chat';
@@ -76,7 +77,8 @@ export function buildRecordingStartMessage(): AssistantMessage {
       },
     ],
     recordingCard: true,
-    recordingTitle: '元宝笔记：产品方案评审',
+    recordingTitle: meetingSession.topic,
+    recordingSummary: meetingSession.summary,
   };
 }
 

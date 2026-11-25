@@ -89,6 +89,23 @@ $duration: 380ms;
   box-shadow: inset 0 0 0 1px var(--wm-color-outline-secondary), var(--wm-shadow-hover);
 }
 
+/* 无边框透明触发态（Figma 811:38164 元宝状态栏 & 推荐指令轻量入口）：收起时无描边无底色，展开时平滑变形为白底面板 */
+.cardGhost:not(.cardExpanded) {
+  padding: 0 var(--morph-collapsed-padding-x);
+  border-radius: 10px;
+  background-color: transparent;
+  box-shadow: none;
+
+  &:hover {
+    background-color: var(--wm-color-control-hover);
+    box-shadow: none;
+  }
+
+  .header {
+    height: 32px;
+  }
+}
+
 /* 展开：对齐到行首、圆角 12、上左右 padding 12；底部留白交给滚动区 */
 .cardExpanded {
   left: var(--morph-expanded-left);

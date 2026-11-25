@@ -90,6 +90,15 @@
   }
 }
 
+/* 新版元宝状态栏（Figma 811:38164 / 811:38683）：左元宝形象+状态文案，右轻量推荐指令图标 */
+.statusRowAgent {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 32px;
+}
+
 /* 长程任务区：占满左侧剩余宽度，任务之间间距 8，放不下时横向截在这一区里 */
 .tasks {
   flex: 1 1 auto;

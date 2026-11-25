@@ -1,5 +1,6 @@
 import {
   useCallback,
+  useEffect,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -16,7 +17,7 @@ import { MessageStream } from "@/components/sidebar/MessageStream";
 import { QuickCommandEntry } from "@/components/sidebar/QuickCommandEntry";
 import { SidebarHeader } from "@/components/sidebar/SidebarHeader";
 import { TaskDetail } from "@/components/sidebar/TaskDetail";
-import { TaskEntry } from "@/components/sidebar/TaskEntry";
+import { TaskEntry, type CommandBarVariant } from "@/components/sidebar/TaskEntry";
 import { INITIAL_SCHEDULED_TASKS, type AgentScheduledTask } from "@/data/agentDetail";
 import { AGENT_TASKS, RUNNING_TASK_COUNT, type AgentTask } from "@/data/agentTasks";
 import { NOTE_ARTIFACT_ID } from "@/data/artifacts";
@@ -26,6 +27,8 @@ import type { YuanbaoSession } from "@/hooks/useYuanbaoSession";
 import type { ArtifactItem } from "@/types/artifact";
 import type { BubbleCard } from "@/types/chat";
 import styles from "./index.module.scss";
+
+export type { CommandBarVariant } from "@/components/sidebar/TaskEntry";
 
 interface YuanbaoSidebarProps {
   /** 元宝会话（消息流），由 App 持有 */
@@ -46,13 +49,15 @@ interface YuanbaoSidebarProps {
   detailOpen?: boolean;
   /** 切换 Agent Profile 详情页开关 */
   onDetailOpenChange?: (open: boolean) => void;
+  /** 输入框上方形态：agent-status（Figma 811:38164 新版元宝状态栏）或 capsules（推荐与任务胶囊） */
+  commandBarVariant?: CommandBarVariant;
 }
 
 /**
  * 元宝 Agent 对话区
  *
- * 顶部保持清爽（无额外状态条）；输入框上方恢复原「推荐指令」与「进行中任务」TaskEntry 进度条，
- * 点顶部元宝标题/页签或任务列表内入口可打开完整 Agent Profile 详情页。
+ * 顶部保持清爽；输入框上方支持在「元宝状态栏（Figma 811:38164）」与「推荐与任务胶囊」间实时切换，
+ * 两种形态均完整保留「推荐指令」与「进行中任务」交互；点顶部元宝标题/页签或任务列表内入口可打开 Agent Profile 详情页。
  */
 export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
   chat,
@@ -64,6 +69,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
   showHeader = true,
   detailOpen: controlledDetailOpen,
   onDetailOpenChange,
+  commandBarVariant = "agent-status",
 }) => {
   const { toast, showToast } = useToast();
   /** 底栏同一时刻只展开一个面板：推荐指令 / 进行中任务 */
@@ -81,11 +87,16 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
     [onDetailOpenChange],
   );
 
+  // 切换输入框上方形态时先收起展开中的浮层面板，避免旧坐标残留
+  useEffect(() => {
+    setOpenPanel(null);
+  }, [commandBarVariant]);
+
   const [scheduledTasks, setScheduledTasks] = useState<AgentScheduledTask[]>(INITIAL_SCHEDULED_TASKS);
   /** 正在看的任务；有值时盖住侧栏显示任务步骤详情 */
   const [activeTask, setActiveTask] = useState<AgentTask | null>(null);
   const footerRef = useRef<HTMLDivElement>(null);
-  const [footerHeight, setFooterHeight] = useState(122);
+  const [footerHeight, setFooterHeight] = useState(120);
 
   useLayoutEffect(() => {
     const node = footerRef.current;
@@ -153,6 +164,8 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
   const send = (text: string, fromUser = false) =>
     onSubmit ? onSubmit(text, { fromUser }) : chat.ask(text);
 
+  const isAgentStatus = commandBarVariant === "agent-status";
+
   return (
     <div className={styles.panel}>
       {showHeader && (
@@ -189,23 +202,53 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
         </MessageStream>
 
         <div className={styles.footer} ref={footerRef}>
-          {/* 输入框上方一行：左「推荐指令」、右「进行中任务」（按 feat/single-window-base 还原） */}
-          <div className={styles.statusRow}>
-            <QuickCommandEntry
-              expanded={openPanel === "commands"}
-              onExpandedChange={(next) => setOpenPanel(next ? "commands" : null)}
-              hidden={openPanel === "tasks"}
-              onPick={(prompt) => send(prompt, true)}
-            />
-            <TaskEntry
-              tasks={AGENT_TASKS}
-              runningCount={RUNNING_TASK_COUNT}
-              expanded={openPanel === "tasks"}
-              onExpandedChange={(next) => setOpenPanel(next ? "tasks" : null)}
-              hidden={openPanel === "commands"}
-              onOpenTask={setActiveTask}
-              onOpenAgentDetail={() => setDetailOpen(true)}
-            />
+          {/* 输入框上方一行：支持「元宝状态栏（Figma 811:38164）」与「推荐与任务胶囊」双形态切换 */}
+          <div
+            className={isAgentStatus ? styles.statusRowAgent : styles.statusRow}
+            data-command-bar-variant={commandBarVariant}
+          >
+            {isAgentStatus ? (
+              <>
+                <TaskEntry
+                  variant="agent-status"
+                  isThinking={chat.isThinking}
+                  tasks={AGENT_TASKS}
+                  runningCount={RUNNING_TASK_COUNT}
+                  expanded={openPanel === "tasks"}
+                  onExpandedChange={(next) => setOpenPanel(next ? "tasks" : null)}
+                  hidden={openPanel === "commands"}
+                  onOpenTask={setActiveTask}
+                  onOpenAgentDetail={() => setDetailOpen(true)}
+                />
+                <QuickCommandEntry
+                  variant="agent-status"
+                  expanded={openPanel === "commands"}
+                  onExpandedChange={(next) => setOpenPanel(next ? "commands" : null)}
+                  hidden={openPanel === "tasks"}
+                  onPick={(prompt) => send(prompt, true)}
+                />
+              </>
+            ) : (
+              <>
+                <QuickCommandEntry
+                  variant="capsules"
+                  expanded={openPanel === "commands"}
+                  onExpandedChange={(next) => setOpenPanel(next ? "commands" : null)}
+                  hidden={openPanel === "tasks"}
+                  onPick={(prompt) => send(prompt, true)}
+                />
+                <TaskEntry
+                  variant="capsules"
+                  tasks={AGENT_TASKS}
+                  runningCount={RUNNING_TASK_COUNT}
+                  expanded={openPanel === "tasks"}
+                  onExpandedChange={(next) => setOpenPanel(next ? "tasks" : null)}
+                  hidden={openPanel === "commands"}
+                  onOpenTask={setActiveTask}
+                  onOpenAgentDetail={() => setDetailOpen(true)}
+                />
+              </>
+            )}
           </div>
           <ChatInput
             placeholder="和元宝聊聊"

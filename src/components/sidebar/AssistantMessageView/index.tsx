@@ -134,7 +134,12 @@ export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
 
       {message.recordingCard && (
         <div className={styles.cardSlot}>
-          <RecordingCard compact title={message.recordingTitle} onOpen={onOpenNote} />
+          <RecordingCard
+            compact
+            title={message.recordingTitle}
+            summary={message.recordingSummary}
+            onOpen={onOpenNote}
+          />
         </div>
       )}
 

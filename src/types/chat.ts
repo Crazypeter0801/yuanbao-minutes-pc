@@ -90,10 +90,12 @@ export interface AssistantMessage {
   source?: string;
   /** 这条回答生成的文件：在气泡下方显示可点击的产物卡片 */
   artifact?: ArtifactItem;
-  /** 刚入会且开启云笔记：在气泡下方显示「正在帮你记」卡片（话题是会中实时状态，由上层传入） */
+  /** 刚入会且开启云笔记：在气泡下方显示「元宝笔记」卡片（Figma 811:41211） */
   recordingCard?: boolean;
-  /** 笔记卡标题（如「元宝笔记：产品方案评审」），不填用默认「元宝笔记」 */
+  /** 笔记卡主标题（会议主题，如「产品方案评审」），不填用默认会议主题 */
   recordingTitle?: string;
+  /** 笔记卡副标题（会议摘要，超出单行省略），对齐 Figma 811:41233 */
+  recordingSummary?: string;
   /** 追问建议 */
   followUps?: string[];
   /** 元宝主动记下的笔记（实时纪要、阶段小结、截图记录）；回答用户提问的消息不算 */

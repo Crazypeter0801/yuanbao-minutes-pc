@@ -30,224 +30,12 @@
   }
 }
 
-/* ---------- Figma 505:12421 新版顶部胶囊标签栏（Frame 505:12423） ---------- */
-
-/* 整行 padding 16，左侧灰底胶囊轨道（fill）+ 8px + 右侧白色操作胶囊（hug，高 40） */
-.pillBar {
-  position: relative;
-  z-index: 30;
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  padding: 16px;
-}
-
-/* 左侧凹槽胶囊轨道（505:12607 / 563:15854）：#F3F3F4（wm_color_background_tertiary）、圆角 20、高 40、四边 2px 内边距 */
-.pillTrack {
-  flex: 1 1 auto;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  height: 40px;
-  padding: 2px;
-  border-radius: 20px;
-  background-color: var(--wm-color-background-tertiary);
-}
-
-/* 激活页签白胶囊（505:12608）：fill、高 36、圆角 18、padding 4 12 4 8、#FFF、1px #EBEDF2、blur(10px) */
-.pillTab {
-  position: relative;
-  display: flex;
-  align-items: center;
-  height: 36px;
-  border-radius: 18px;
-  outline: none;
-  user-select: none;
-}
-
-.pillTabActive {
-  flex: 1 1 auto;
-  min-width: 0;
-  justify-content: space-between;
-  padding: 4px 12px 4px 8px;
-  background-color: var(--wm-color-background-quaternary);
-  box-shadow: inset 0 0 0 1px var(--wm-color-outline-tertiary);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  animation: classic-tab-expand 200ms cubic-bezier(0.22, 1, 0.36, 1);
-
-  &:hover .pillClose,
-  &:focus-within .pillClose {
-    opacity: 1;
-    pointer-events: auto;
-  }
-}
-
-.pillActiveMain {
-  flex: 1 1 auto;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  outline: none;
-
-  & > * + * {
-    margin-left: 4px;
-  }
-}
-
-.pillIcon {
-  flex: 0 0 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-}
-
-/* Figma style_ZB8QV8：PingFang SC 13px / 18px 400 #000000（wm_color_text_primary） */
-.pillLabel {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  font-size: 13px;
-  line-height: 18px;
-  font-weight: 400;
-  color: var(--wm-color-text-primary);
-}
-
-/* Figma 541:13600：3×8 折线（导出 viewBox 5×10，用负边距抵回外扩） */
-.pillChevron {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  margin: -1px -1px -1px calc(4px - 0.75px);
-}
-
-/* Hover 时浮现在激活白胶囊右端的关闭按钮（静止态完全隐藏，与设计稿 505:12421 一致） */
-.pillClose {
-  flex: 0 0 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  margin-left: 4px;
-  border-radius: 9px;
-  color: var(--wm-color-text-tertiary);
-  opacity: 0;
-  pointer-events: none;
-  cursor: pointer;
-  outline: none;
-  transition:
-    opacity 120ms ease,
-    background-color 120ms ease,
-    color 120ms ease;
-
-  &:hover,
-  &:focus-visible {
-    opacity: 1;
-    pointer-events: auto;
-    background-color: var(--wm-color-control-hover);
-    color: var(--wm-color-text-primary);
-  }
-}
-
-.pillInactiveWrap {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-}
-
-/*
- * 未选中页签（Figma 505:12633 + hover 563:15890 尺寸）：
- * 56×36、圆角 18、居中显示 24px 灰图标；
- * hover 时仅添加柔和浅灰背景色（rgba(0, 0, 0, 0.06)），不改图标色、无额外特效。
- */
-.pillTabInactive {
-  flex: 0 0 56px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 56px;
-  height: 36px;
-  border-radius: 18px;
-  cursor: pointer;
-  outline: none;
-  transition: background-color 120ms ease-in-out;
-
-  &:hover,
-  &:focus-visible {
-    background-color: var(--wm-color-control-hover);
-  }
-}
-
-/* 未选中相邻页签之间的竖分隔线（505:12632）：1×20 #D3D6DB，相邻未选中项 hover 时隐藏 */
-.pillDivider {
-  flex: 0 0 1px;
-  width: 1px;
-  height: 20px;
-  background-color: var(--wm-color-outline-secondary);
-  transition: opacity 120ms ease-in-out;
-}
-
-.pillDividerHidden {
-  opacity: 0;
-}
-
-/* 右侧操作胶囊（505:12590）：高 40、圆角 20、#FFF、1px #EBEDF2、blur(10px) */
-.pillActionsCapsule {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 40px;
-  margin-left: 8px;
-  padding: 6px 8px;
-  border-radius: 20px;
-  background-color: var(--wm-color-background-quaternary);
-  box-shadow: inset 0 0 0 1px var(--wm-color-outline-tertiary);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-
-  & > * + * {
-    margin-left: 2px;
-  }
-}
-
-/* 独立窗口 / 更多：与右侧 ⌄ 下拉按钮统一为 28×28、圆角 6 的 hover 热区 */
-.pillActionBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  cursor: pointer;
-  outline: none;
-  transition: background-color 120ms ease-in-out;
-
-  & > svg {
-    display: block;
-    flex: 0 0 auto;
-  }
-
-  &:hover,
-  &:focus-visible {
-    background-color: var(--wm-color-control-hover);
-  }
-}
-
-.pillActionBtnActive {
-  background-color: var(--wm-color-control-hover);
-}
-
 .moreWrap {
   position: relative;
   display: flex;
 }
 
-/* 「更多」菜单：228 宽白卡片，圆角 14，右对齐弹出 */
+/* 「更多」菜单：白卡片，圆角 14，右对齐弹出 */
 .menu {
   position: absolute;
   top: calc(100% + 10px);
@@ -277,7 +65,7 @@
   border-radius: 12px;
 }
 
-/* ---------- 分段标签页（Figma 585:68637）：#F7F7F7 顶条 + 白底内凹反圆角激活页签 ---------- */
+/* ---------- Chrome 页签（Figma 585:68637）：#F7F7F7 顶条 + 白底内凹反圆角激活页签 ---------- */
 
 .folderBar {
   position: relative;
@@ -356,7 +144,7 @@
   right: -16px;
 }
 
-/* 标题组（Figma 585:68650）：padding 0 6、高 28、图标与文案间距 4 */
+/* 标题组（Figma 585:68650 / 811:38168）：padding 0 6、高 28、图标与文案间距 4 */
 .folderTabTitle {
   display: flex;
   align-items: center;
@@ -564,10 +352,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pillTabActive,
-  .pillClose,
-  .pillTabInactive,
-  .pillDivider,
   .folderTabInactiveInner,
   .folderTabActive,
   .menu,

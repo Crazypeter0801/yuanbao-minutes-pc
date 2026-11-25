@@ -21,11 +21,15 @@ interface MorphPanelProps {
   onExpandedChange: (expanded: boolean) => void;
   /** 别的面板展开时让位：整块淡出、不可点 */
   hidden?: boolean;
-  /** 收起态的内容（图标 / 图标 + 数字），展开后留在标题行左侧 */
+  /** 收起态的内容（图标 / 图标 + 数字 / 元宝状态条），展开后留在标题行左侧 */
   summary: ReactNode;
+  /** 展开态自定义标题行左侧内容（不传时复用 summary） */
+  expandedSummary?: ReactNode;
   /** 只在展开后接在 summary 后面的文字，如「快捷指令」 */
   expandedLabel?: string;
-  /** 收起态左右内边距：纯图标 10（凑成 36 的正圆），图标 + 文字 12 */
+  /** 收起态外观：card 为白底描边胶囊；ghost 为无边框透明触发态（展开时仍平滑变形为白底卡片） */
+  triggerVariant?: 'card' | 'ghost';
+  /** 收起态左右内边距：纯图标 10（凑成 36 的正圆），图标 + 文字 12，无框态 0/8 */
   collapsedPaddingX: number;
   /** 展开宽度：数字为固定 px，'full' 为撑满底栏这一行 */
   panelWidth: number | 'full';
@@ -33,6 +37,8 @@ interface MorphPanelProps {
   name: string;
   /** 内容变化时重新量高度（如产物条数） */
   contentKey?: string | number;
+  /** 布局形态变化时重新量收起态位置与宽度（如切换上方工具栏形态） */
+  layoutKey?: string | number;
   /** 展开后的最大高度，默认 400；超出部分滚动 */
   maxHeight?: number;
   /** 展开后标题行右侧的操作（如「在侧边打开」）；不传就什么都不放 */
@@ -48,24 +54,27 @@ interface MorphPanelProps {
 }
 
 /**
- * 底栏胶囊 ↔ 浮层面板（指令集合、产物列表共用）
+ * 底栏胶囊 ↔ 浮层面板（指令集合、进行中任务共用）
  *
- * 同一张卡片从胶囊长成面板：宽、高、左边距、内边距、圆角一起过渡，内容延后淡入，
+ * 同一张卡片从胶囊/状态条长成面板：宽、高、左边距、内边距、圆角一起过渡，内容延后淡入，
  * 曲线和时长沿用最早的记笔记面板（380ms cubic-bezier(0.32, 0.72, 0, 1)）。
  *
  * 胶囊在底栏里按内容自适应宽度（由一份不可见的 ghost 撑开占位），
- * 展开时卡片向左对齐到这一行的起点再向上长，所以排在第二、第三位的胶囊也能长成整行面板。
+ * 展开时卡片向左对齐到这一行的起点再向上长，所以排在第二、第三位或右对齐的触发器也能长成整行面板。
  */
 export const MorphPanel: FC<MorphPanelProps> = ({
   expanded,
   onExpandedChange,
   hidden = false,
   summary,
+  expandedSummary,
   expandedLabel,
+  triggerVariant = 'card',
   collapsedPaddingX,
   panelWidth,
   name,
   contentKey,
+  layoutKey,
   headerAction,
   alignHeaderToContent = false,
   hideSummaryWhenExpanded = false,
@@ -84,7 +93,7 @@ export const MorphPanel: FC<MorphPanelProps> = ({
   const toggle = useCallback(() => onExpandedChange(!expanded), [expanded, onExpandedChange]);
   const collapse = useCallback(() => onExpandedChange(false), [onExpandedChange]);
 
-  // 收起宽度跟着内容走（数字从 5 变 12 时胶囊也跟着变宽）
+  // 收起宽度跟着内容与形态走（数字从 5 变 12 或切换形态时触发器宽度同步更新）
   useLayoutEffect(() => {
     const ghost = ghostRef.current;
     if (!ghost) {
@@ -95,9 +104,9 @@ export const MorphPanel: FC<MorphPanelProps> = ({
     const observer = new ResizeObserver(measure);
     observer.observe(ghost);
     return () => observer.disconnect();
-  }, []);
+  }, [layoutKey, collapsedPaddingX]);
 
-  // 这一行的宽度、自己在行里的位置：前面多出一个胶囊时位置会变，所以每次展开都重新量
+  // 这一行的宽度、自己在行里的位置：排布或形态变化时重新量
   useLayoutEffect(() => {
     const slot = slotRef.current;
     const row = slot?.parentElement;
@@ -112,7 +121,7 @@ export const MorphPanel: FC<MorphPanelProps> = ({
     const observer = new ResizeObserver(measure);
     observer.observe(row);
     return () => observer.disconnect();
-  }, [expanded]);
+  }, [expanded, layoutKey, collapsedWidth]);
 
   const expandedWidth = panelWidth === 'full' ? rowWidth : Math.min(panelWidth, rowWidth || panelWidth);
 
@@ -185,6 +194,8 @@ export const MorphPanel: FC<MorphPanelProps> = ({
     '--morph-panel-height': `${panelHeight}px`,
   } as CSSProperties;
 
+  const displayedSummary = expanded && expandedSummary ? expandedSummary : summary;
+
   return (
     <div
       className={[styles.slot, expanded ? styles.slotExpanded : '', hidden ? styles.slotHidden : '']
@@ -193,7 +204,7 @@ export const MorphPanel: FC<MorphPanelProps> = ({
       ref={slotRef}
       style={vars}
     >
-      {/* 不可见的占位：按收起态内容撑出胶囊宽度，让底栏这一行自然排布 */}
+      {/* 不可见的占位：按收起态内容撑出触发器宽度，让底栏这一行自然排布 */}
       <div className={styles.ghost} ref={ghostRef} aria-hidden="true">
         {summary}
       </div>
@@ -203,6 +214,7 @@ export const MorphPanel: FC<MorphPanelProps> = ({
       <div
         className={[
           styles.card,
+          triggerVariant === 'ghost' ? styles.cardGhost : '',
           expanded ? styles.cardExpanded : '',
           alignHeaderToContent ? styles.cardAligned : '',
           alignHeaderToContent && hideSummaryWhenExpanded ? styles.cardAlignedTextOnly : '',
@@ -219,7 +231,7 @@ export const MorphPanel: FC<MorphPanelProps> = ({
             ariaLabel={expanded ? `收起${name}` : `展开${name}`}
             title={name}
           >
-            {!(expanded && hideSummaryWhenExpanded) && summary}
+            {!(expanded && hideSummaryWhenExpanded) && displayedSummary}
             {expandedLabel && <span className={styles.label}>{expandedLabel}</span>}
           </Pressable>
           {headerAction && <div className={styles.headerAction}>{headerAction}</div>}

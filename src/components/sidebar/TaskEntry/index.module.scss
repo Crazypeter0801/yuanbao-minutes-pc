@@ -12,6 +12,72 @@
   color: var(--wm-color-text-tertiary);
 }
 
+/* 新版元宝状态栏（Figma 811:38683）：32×32 元宝工作形象 + 10px 间距 + 14/18 扫光渐变状态文案 */
+.agentStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 32px;
+  padding-right: 6px;
+}
+
+.agentMascot {
+  flex: 0 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+
+  & > svg {
+    display: block;
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* 对齐 Figma 811:38718：PingFang SC Regular 14px / 18px，rgb(93,97,108) 带柔和扫光 */
+.agentText {
+  font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 400;
+  white-space: nowrap;
+  color: transparent;
+  background-image: linear-gradient(
+    97deg,
+    rgb(93, 97, 108) 0%,
+    rgb(93, 97, 108) 32%,
+    rgba(93, 97, 108, 0.32) 50%,
+    rgba(93, 97, 108, 0.92) 68%,
+    rgb(93, 97, 108) 100%
+  );
+  background-size: 260% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: agent-status-shimmer 3.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+@keyframes agent-status-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+
+  65%,
+  100% {
+    background-position: 0% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .agentText {
+    animation: none;
+    color: rgb(93, 97, 108);
+    background-image: none;
+  }
+}
+
 /* 任务列表：每条两行（标题 + 一行说明），右侧状态 */
 .list {
   display: flex;

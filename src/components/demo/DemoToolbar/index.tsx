@@ -1,30 +1,34 @@
 import { useEffect, useLayoutEffect, useRef, useState, type FC } from 'react';
 import { Pressable } from '@/components/common/Pressable';
-import type { SideTabStyle } from '@/components/sidebar/SideDock';
+import type { CommandBarVariant } from '@/components/YuanbaoSidebar';
 import { demoMenus, type CommandItem, type DemoMenu } from '@/data/commands';
 import styles from './index.module.scss';
 
-type OpenMenuKey = DemoMenu['key'] | 'tab-style';
+type OpenMenuKey = DemoMenu['key'] | 'command-bar';
 
-const TAB_STYLE_OPTIONS: Array<{ value: SideTabStyle; label: string }> = [
-  { value: 'classic', label: 'Chrome页签' },
-  { value: 'pill505', label: 'Safari胶囊' },
+const COMMAND_BAR_OPTIONS: Array<{ value: CommandBarVariant; label: string }> = [
+  { value: 'agent-status', label: '元宝状态栏（新版）' },
+  { value: 'capsules', label: '推荐与任务胶囊' },
 ];
 
 interface DemoToolbarProps {
   /** 点了某条演示指令 */
   onCommand: (item: CommandItem) => void;
-  /** 当前侧栏标签页方案 */
-  tabStyle: SideTabStyle;
-  /** 切换侧栏标签页方案 */
-  onTabStyleChange: (style: SideTabStyle) => void;
+  /** 当前输入框上方栏形态 */
+  commandBarVariant: CommandBarVariant;
+  /** 切换输入框上方栏形态 */
+  onCommandBarVariantChange: (variant: CommandBarVariant) => void;
 }
 
 /**
- * 视口右侧贴边吸附演示控制台：模拟元宝发言 / 模拟用户发言 / 模拟交互功能 / 侧栏标签页
+ * 视口右侧贴边吸附演示控制台：模拟元宝发言 / 模拟用户发言 / 模拟交互功能 / 上方工具栏
  * 四个按钮竖向吸附在右侧边缘，菜单统一向左侧弹出并自动约束在视口上下安全区内，不被裁切。
  */
-export const DemoToolbar: FC<DemoToolbarProps> = ({ onCommand, tabStyle, onTabStyleChange }) => {
+export const DemoToolbar: FC<DemoToolbarProps> = ({
+  onCommand,
+  commandBarVariant,
+  onCommandBarVariantChange,
+}) => {
   const [openKey, setOpenKey] = useState<OpenMenuKey | null>(null);
   const barRef = useRef<HTMLDivElement>(null);
 
@@ -82,7 +86,7 @@ export const DemoToolbar: FC<DemoToolbarProps> = ({ onCommand, tabStyle, onTabSt
     onCommand(item);
   };
 
-  const tabStyleOpen = openKey === 'tab-style';
+  const commandBarOpen = openKey === 'command-bar';
 
   return (
     <div className={styles.bar} ref={barRef} aria-label="演示控制台">
@@ -128,18 +132,18 @@ export const DemoToolbar: FC<DemoToolbarProps> = ({ onCommand, tabStyle, onTabSt
         );
       })}
 
-      {/* 侧栏标签页切换：Chrome页签（默认，Figma 585:68637） vs Safari胶囊（Figma 505:12421） */}
+      {/* 输入框上方栏切换：元宝状态栏（Figma 811:38164） vs 推荐与任务胶囊 */}
       <div className={styles.slot}>
-        {tabStyleOpen && (
-          <div className={`${styles.menu} ${styles.optionMenu}`} role="menu" aria-label="侧栏标签页" ref={menuRef}>
-            <div className={styles.list} role="radiogroup" aria-label="侧栏标签页">
-              {TAB_STYLE_OPTIONS.map((option) => {
-                const selected = tabStyle === option.value;
+        {commandBarOpen && (
+          <div className={`${styles.menu} ${styles.optionMenu}`} role="menu" aria-label="上方工具栏" ref={menuRef}>
+            <div className={styles.list} role="radiogroup" aria-label="上方工具栏">
+              {COMMAND_BAR_OPTIONS.map((option) => {
+                const selected = commandBarVariant === option.value;
                 return (
                   <Pressable
                     key={option.value}
                     className={`${styles.item} ${styles.optionItem} ${selected ? styles.optionItemActive : ''}`}
-                    onClick={() => onTabStyleChange(option.value)}
+                    onClick={() => onCommandBarVariantChange(option.value)}
                     ariaLabel={option.label}
                     ariaExpanded={selected}
                   >
@@ -162,17 +166,17 @@ export const DemoToolbar: FC<DemoToolbarProps> = ({ onCommand, tabStyle, onTabSt
           </div>
         )}
         <Pressable
-          className={`${styles.button} ${tabStyleOpen ? styles.buttonActive : ''}`}
-          onClick={() => setOpenKey(tabStyleOpen ? null : 'tab-style')}
-          ariaLabel="侧栏标签页"
-          ariaExpanded={tabStyleOpen}
+          className={`${styles.button} ${commandBarOpen ? styles.buttonActive : ''}`}
+          onClick={() => setOpenKey(commandBarOpen ? null : 'command-bar')}
+          ariaLabel="上方工具栏"
+          ariaExpanded={commandBarOpen}
         >
-          <span className={`${styles.caret} ${tabStyleOpen ? styles.caretOpen : ''}`} aria-hidden="true">
+          <span className={`${styles.caret} ${commandBarOpen ? styles.caretOpen : ''}`} aria-hidden="true">
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
               <path d="M7.5 3 4.5 6l3 3" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </span>
-          <span className={styles.buttonText}>侧栏标签页</span>
+          <span className={styles.buttonText}>上方工具栏</span>
         </Pressable>
       </div>
     </div>

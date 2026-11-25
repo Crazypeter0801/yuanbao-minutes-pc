@@ -3,6 +3,7 @@ import IconTab585Close from '@/assets/d2c/icons/sidetabs585/icon-tab585-close';
 import IconSide3Book from '@/assets/d2c/icons/v2/icon-side3-book';
 import { Pressable } from '@/components/common/Pressable';
 import { MorphPanel } from '@/components/sidebar/MorphPanel';
+import type { CommandBarVariant } from '@/components/sidebar/TaskEntry';
 import { QUICK_COMMANDS } from '@/data/quickCommands';
 import styles from './index.module.scss';
 
@@ -13,6 +14,8 @@ interface QuickCommandEntryProps {
   hidden?: boolean;
   /** 点一条推荐指令：等于用户自己把这句话发出去 */
   onPick: (text: string) => void;
+  /** 上方工具栏形态：capsules 为白底描边胶囊；agent-status 为右侧轻量无框图标按钮 */
+  variant?: CommandBarVariant;
 }
 
 /** 圆角方框「/」指令前缀图标 */
@@ -27,56 +30,65 @@ const SlashCommandIcon: FC = () => (
 
 /**
  * 推荐指令入口（Figma 489:10625 + 563:16230）
- * 收起为 Book 图标胶囊；展开沿用原 MorphPanel 卡片，每条指令单行排布：「/」图标 + 主标题 + 同行浅灰副标题。
+ * - capsules：收起为 Book 图标白底胶囊；
+ * - agent-status：收起为右侧轻量无框 Book 图标按钮，不干扰 811:38164 左侧元宝状态栏视觉；
+ * 两种形态展开均为同款 9 条推荐指令浮层面板。
  */
 export const QuickCommandEntry: FC<QuickCommandEntryProps> = ({
   expanded,
   onExpandedChange,
   hidden,
   onPick,
-}) => (
-  <MorphPanel
-    expanded={expanded}
-    onExpandedChange={onExpandedChange}
-    hidden={hidden}
-    summary={<IconSide3Book />}
-    expandedLabel="推荐指令"
-    collapsedPaddingX={12}
-    panelWidth="full"
-    name="推荐指令"
-    contentKey={QUICK_COMMANDS.length}
-    maxHeight={320}
-    alignHeaderToContent
-    hideSummaryWhenExpanded
-    headerAction={
-      <Pressable
-        className={styles.closeBtn}
-        onClick={() => onExpandedChange(false)}
-        ariaLabel="关闭推荐指令"
-        title="关闭"
-        stopPropagation
-      >
-        <IconTab585Close width={28} height={28} />
-      </Pressable>
-    }
-  >
-    <div className={styles.list}>
-      {QUICK_COMMANDS.map((command) => (
+  variant = 'capsules',
+}) => {
+  const isAgentStatus = variant === 'agent-status';
+
+  return (
+    <MorphPanel
+      expanded={expanded}
+      onExpandedChange={onExpandedChange}
+      hidden={hidden}
+      triggerVariant={isAgentStatus ? 'ghost' : 'card'}
+      summary={<IconSide3Book />}
+      expandedLabel="推荐指令"
+      collapsedPaddingX={isAgentStatus ? 8 : 12}
+      panelWidth="full"
+      name="推荐指令"
+      contentKey={QUICK_COMMANDS.length}
+      layoutKey={variant}
+      maxHeight={320}
+      alignHeaderToContent
+      hideSummaryWhenExpanded
+      headerAction={
         <Pressable
-          key={command.id}
-          className={styles.item}
-          onClick={() => {
-            onExpandedChange(false);
-            onPick(command.prompt);
-          }}
-          ariaLabel={`发送指令：${command.title}`}
-          title={`${command.title}：${command.description}`}
+          className={styles.closeBtn}
+          onClick={() => onExpandedChange(false)}
+          ariaLabel="关闭推荐指令"
+          title="关闭"
+          stopPropagation
         >
-          <SlashCommandIcon />
-          <span className={styles.title}>{command.title}</span>
-          <span className={styles.desc}>{command.description}</span>
+          <IconTab585Close width={28} height={28} />
         </Pressable>
-      ))}
-    </div>
-  </MorphPanel>
-);
+      }
+    >
+      <div className={styles.list}>
+        {QUICK_COMMANDS.map((command) => (
+          <Pressable
+            key={command.id}
+            className={styles.item}
+            onClick={() => {
+              onExpandedChange(false);
+              onPick(command.prompt);
+            }}
+            ariaLabel={`发送指令：${command.title}`}
+            title={`${command.title}：${command.description}`}
+          >
+            <SlashCommandIcon />
+            <span className={styles.title}>{command.title}</span>
+            <span className={styles.desc}>{command.description}</span>
+          </Pressable>
+        ))}
+      </div>
+    </MorphPanel>
+  );
+};

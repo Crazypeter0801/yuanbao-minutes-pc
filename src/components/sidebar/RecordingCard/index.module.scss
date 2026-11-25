@@ -260,29 +260,68 @@
 }
 
 /*
- * 单行卡片（Figma 416:20791）：宽度随内容、高 42、圆角 16、1px #EBEDF2 内描边。
- * 标题行 padding 12：图标 18 → 4 → 标题 14/18 500 → 10 → 箭头 18。
+ * 新版元宝笔记卡片（Figma 811:41211）：
+ * 260×60、圆角 16、白底 1px #EBEDF2 内描边；padding 10px 12px 10px 10px、间距 8px。
+ * 左 40×40 文档+元宝徽标，右主标题（14/20 400 #000）+ 会议摘要（12/18 400 #7B818F）双单行省略。
  */
-.cardCompact {
-  width: fit-content;
-  align-self: flex-start;
+.cardNote811 {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  width: 260px;
+  max-width: 100%;
+  height: 60px;
+  padding: 10px 12px 10px 10px;
   border-radius: var(--wm-radius-yb-chip);
+  text-align: left;
 
-  .header {
-    padding: 12px;
+  &:hover,
+  &:focus-visible {
+    box-shadow: inset 0 0 0 1px var(--wm-color-outline-secondary), var(--wm-shadow-hover);
   }
+}
 
-  .title {
-    flex: 0 1 auto;
-    margin-left: 4px;
-    line-height: 18px;
-    font-weight: 500;
-    color: var(--wm-color-text-primary);
-  }
+.noteIcon {
+  flex: 0 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
 
-  .chevron {
-    width: 18px;
-    height: 18px;
-    margin-left: 10px;
+  & > svg {
+    display: block;
+    width: 40px;
+    height: 40px;
   }
+}
+
+.noteMeta {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* Figma 811:41231：PingFang SC Regular 14px / 20px #000000，单行省略 */
+.noteTitle {
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  color: var(--wm-color-text-primary);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Figma 811:41233：PingFang SC Regular 12px / 18px #7B818F，单行省略 */
+.noteSummary {
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 400;
+  color: var(--wm-color-text-tertiary);
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
