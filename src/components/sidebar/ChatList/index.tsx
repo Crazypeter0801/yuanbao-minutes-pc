@@ -31,9 +31,8 @@ interface ChatListProps {
  * 按 IM 习惯排列消息
  *
  * - 不写发言人：左边灰泡就是元宝，右边蓝泡就是自己；
- * - 时间居中单独一行：第一条消息前出一次，之后只有距上一条超过 1 分钟才再出；
- *   同一个人连发、或一问一答紧挨着时都不插时间；
- * - 间距：换人 20、同一人连发 12，时间行上 20 下 12。
+ * - 时间居中单独一行：第一条消息前出一次，之后相邻消息时间差超过 1 分钟（> 60_000ms）自动插入居中 HH:mm 时间戳；
+ * - 间距：同一发送方连续消息（≤ 1 分钟）4px，不同发送方交替（≤ 1 分钟）16px，时间行上 20px 下 16px。
  */
 export const ChatList: FC<ChatListProps> = ({
   messages,
@@ -55,15 +54,19 @@ export const ChatList: FC<ChatListProps> = ({
         const showTime = !previous || message.createdAt - previous.createdAt > TIME_GAP_MS;
         const sameSender = Boolean(previous) && previous.role === message.role;
         const spacing = showTime ? styles.afterTime : sameSender ? styles.sameSender : styles.newSender;
+        const spacingKind = showTime ? 'after-time' : sameSender ? 'same-sender' : 'new-sender';
 
         return (
-          <div className={styles.entry} key={message.id}>
+          <div className={styles.entry} key={message.id} data-chat-entry={message.id} data-message-role={message.role}>
             {showTime && (
-              <p className={`${styles.time} ${index === 0 ? styles.timeFirst : ''}`}>
+              <p
+                className={`${styles.time} ${index === 0 ? styles.timeFirst : ''}`}
+                data-time-divider={index === 0 ? 'first' : 'gap'}
+              >
                 {formatDividerTime(message.createdAt)}
               </p>
             )}
-            <div className={spacing}>
+            <div className={spacing} data-spacing={spacingKind}>
               {message.role === 'user' ? (
                 <UserMessageView message={message} shape="round" onOpenArtifact={onOpenArtifact} />
               ) : (

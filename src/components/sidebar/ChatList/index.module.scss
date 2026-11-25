@@ -9,14 +9,14 @@
   flex-direction: column;
 }
 
-/* 换人：对齐 Figma 2136:77195 消息列表垂直间距 16 */
+/* 不同发送方（≤ 1 分钟）：垂直间距 16px */
 .newSender {
   margin-top: 16px;
 }
 
-/* 同一个人连发：12，读起来是一段话 */
+/* 同一发送方连续发送（≤ 1 分钟）：垂直间距 4px */
 .sameSender {
-  margin-top: 12px;
+  margin-top: 4px;
 }
 
 /* 时间行下方 16（对齐 Figma 2136:77196 → 77197） */

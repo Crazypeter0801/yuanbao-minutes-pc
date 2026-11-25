@@ -96,7 +96,9 @@
 }
 
 .group + .group {
-  margin-top: 8px;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 0.5px solid var(--wm-color-line);
 }
 
 /* 分组标题：11/16 tertiary，与条目文字左对齐 */

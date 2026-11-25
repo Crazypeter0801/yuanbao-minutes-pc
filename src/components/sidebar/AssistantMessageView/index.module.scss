@@ -84,9 +84,9 @@
 }
 
 
-/* 交互卡片独立在气泡外：与气泡间距 8，和追问区的节奏一致 */
+/* 交互卡片 / 元宝笔记卡片独立在气泡外：与连续元宝气泡保持 4px 间距 */
 .cardSlot {
-  margin-top: 8px;
+  margin-top: 4px;
 }
 
 /* 对话中的文件卡片组（Figma 811:30024）：与气泡及卡片之间统一 4px 间距 */
@@ -98,18 +98,16 @@
   margin-top: 4px;
 }
 
-/* 追问建议：白底细描边胶囊（Figma 8:593 / 8:594）
-   气泡下沿到首个胶囊 8，胶囊之间也是 8；宽度跟着文案走，不铺满整行 */
+/* 追问建议：白底细描边圆角胶囊，与上方元宝气泡及胶囊之间统一 4px 连续节奏 */
 .followUps {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   max-width: 100%;
-  /* 覆盖消息组里统一的 4px，设计稿这里要 8 */
-  margin-top: 8px;
+  margin-top: 4px;
 
   & > * + * {
-    margin-top: 8px;
+    margin-top: 4px;
   }
 }
 

@@ -76,53 +76,55 @@ export const AssistantMessageView: FC<AssistantMessageViewProps> = ({
 
   return (
     <div className={`${styles.group} ${isPlain ? styles.groupPlain : ''}`}>
-      <div className={styles.bubbles}>
-        {message.bubbles.map((bubble) => {
-          const shapeClass = isPlain
-            ? styles.plain
-            : [styles.bubble, shape === 'round' ? styles.round : styles.compact].join(' ');
+      {message.bubbles.length > 0 && (
+        <div className={styles.bubbles}>
+          {message.bubbles.map((bubble) => {
+            const shapeClass = isPlain
+              ? styles.plain
+              : [styles.bubble, shape === 'round' ? styles.round : styles.compact].join(' ');
 
-          if (bubble.fold) {
-            return <FoldCard fold={bubble.fold} key={bubble.id} />;
-          }
+            if (bubble.fold) {
+              return <FoldCard fold={bubble.fold} key={bubble.id} />;
+            }
 
-          return (
-            <AssistantBubbleBox
-              key={bubble.id}
-              className={shapeClass}
-              squircleRadius={shape === 'compact' ? 12 : 16}
-              squircleEnabled={!isPlain}
-            >
-              <RichText
-                blocks={bubble.blocks}
-                trailing={
-                  bubble.withLink ? (
-                    <Pressable
-                      as="span"
-                      className={styles.linkBadge}
-                      onClick={onOpenSource}
-                      title="查看原文"
-                      ariaLabel="查看原文"
-                    >
-                      <IconSideLink />
-                    </Pressable>
-                  ) : undefined
-                }
-              />
-              {bubble.image && (
-                <img
-                  className={styles.image}
-                  src={bubble.image.src}
-                  alt={bubble.image.alt}
-                  width={bubble.image.width}
-                  height={bubble.image.height}
-                  draggable={false}
+            return (
+              <AssistantBubbleBox
+                key={bubble.id}
+                className={shapeClass}
+                squircleRadius={shape === 'compact' ? 12 : 16}
+                squircleEnabled={!isPlain}
+              >
+                <RichText
+                  blocks={bubble.blocks}
+                  trailing={
+                    bubble.withLink ? (
+                      <Pressable
+                        as="span"
+                        className={styles.linkBadge}
+                        onClick={onOpenSource}
+                        title="查看原文"
+                        ariaLabel="查看原文"
+                      >
+                        <IconSideLink />
+                      </Pressable>
+                    ) : undefined
+                  }
                 />
-              )}
-            </AssistantBubbleBox>
-          );
-        })}
-      </div>
+                {bubble.image && (
+                  <img
+                    className={styles.image}
+                    src={bubble.image.src}
+                    alt={bubble.image.alt}
+                    width={bubble.image.width}
+                    height={bubble.image.height}
+                    draggable={false}
+                  />
+                )}
+              </AssistantBubbleBox>
+            );
+          })}
+        </div>
+      )}
 
       {activeCard && (
         <div className={styles.cardSlot}>

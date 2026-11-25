@@ -109,7 +109,9 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
   /** 正在看的任务；有值时盖住侧栏显示任务步骤详情 */
   const [activeTask, setActiveTask] = useState<AgentTask | null>(null);
   const footerRef = useRef<HTMLDivElement>(null);
-  const [footerHeight, setFooterHeight] = useState(120);
+  const [footerHeight, setFooterHeight] = useState(80);
+  /** 消息流下方是否仍有未滚动到的历史内容（仅此时显示底栏上方渐隐，处于最底端时隐藏避免遮挡最新气泡） */
+  const [hasBottomOverflow, setHasBottomOverflow] = useState(false);
 
   useLayoutEffect(() => {
     const node = footerRef.current;
@@ -196,6 +198,8 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
   // 输入框上方已通过「元宝状态栏」呈现「正在思考回复...」或任务执行状态时，
   // 不再在消息流中重复展示灰色「•••」输入气泡；capsules 模式下保留。
   const showTypingBubble = !isAgentStatus && chat.isThinking;
+  // 状态栏触发瞬间即预留完整目标高度（120px），避免 240ms 展开过渡期间 padding-bottom 滞后导致最新气泡被挡
+  const reservedFooterHeight = Math.max(footerHeight, showStatusRow ? 120 : 80);
 
   return (
     <div className={styles.panel}>
@@ -209,16 +213,17 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
         />
       )}
 
-      {/* 消息流与底栏叠在一起：对话可以滚到底栏后面，被渐变底一点点盖掉 */}
+      {/* 消息流与底栏叠在一起：对话可以滚到底栏后面，仅在下方仍有内容时淡出渐隐 */}
       <div
         className={styles.body}
-        style={{ "--yb-footer-height": `${footerHeight}px` } as CSSProperties}
+        style={{ "--yb-footer-height": `${reservedFooterHeight}px` } as CSSProperties}
       >
         <MessageStream
           className={styles.stream}
           startAtTop
           withTopFade="scroll"
-          scrollKey={`${chat.messages.length}-${showTypingBubble}`}
+          scrollKey={`${chat.messages.length}-${chat.isThinking}`}
+          onBottomOverflowChange={setHasBottomOverflow}
         >
           <ChatList
             messages={chat.messages}
@@ -234,7 +239,14 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
         </MessageStream>
 
         <div
-          className={`${styles.footer} ${showStatusRow ? styles.footerWithStatus : ""}`}
+          className={[
+            styles.footer,
+            showStatusRow ? styles.footerWithStatus : "",
+            hasBottomOverflow ? styles.footerFadeVisible : "",
+          ]
+            .filter(Boolean)
+            .join(" ")}
+          data-bottom-fade-visible={hasBottomOverflow ? "true" : "false"}
           ref={footerRef}
         >
           {/* 输入框上方一行：有任务时平滑滑入/淡入，无任务时 agent-status 整体收起不留空、capsules 仅保留推荐指令 */}

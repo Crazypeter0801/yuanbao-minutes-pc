@@ -25,6 +25,7 @@ export const MessageCard: FC<MessageCardProps> = ({ card, onSubmit }) => {
   const [state, setState] = useState<CardState>('idle');
 
   const locked = state !== 'idle';
+  const isSingle = card.kind === 'single';
   const isChecked = (option: string) => picked.includes(option);
   const canSubmit = card.kind === 'confirm' || picked.length > 0;
 
@@ -38,7 +39,11 @@ export const MessageCard: FC<MessageCardProps> = ({ card, onSubmit }) => {
       );
       return;
     }
-    setPicked([option]);
+    // 单选卡点击任意选项即刻选中并直接提交锁定（对齐 Figma 811:29935 / 1025:12793 无底部按钮交互）
+    const next = [option];
+    setPicked(next);
+    setState('submitted');
+    onSubmit(next);
   };
 
   const submit = () => {
@@ -153,40 +158,42 @@ export const MessageCard: FC<MessageCardProps> = ({ card, onSubmit }) => {
         </div>
       )}
 
-      <div className={styles.actions}>
-        {card.secondaryLabel && !locked && (
-          <Pressable
-            className={`${styles.button} ${styles.ghost}`}
-            onClick={cancel}
-            disabled={locked}
-            ariaLabel={card.secondaryLabel}
-          >
-            {card.secondaryLabel}
-          </Pressable>
-        )}
-        <Pressable
-          className={[
-            styles.button,
-            locked ? styles.done : canSubmit ? styles.primary : styles.disabled,
-          ].join(' ')}
-          onClick={submit}
-          disabled={!canSubmit || locked}
-          ariaLabel={primaryText}
-        >
-          {state === 'submitted' && (
-            <svg className={styles.doneIcon} width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-              <path
-                d="M2.5 6.2 4.9 8.6 9.5 3.6"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+      {!isSingle && (
+        <div className={styles.actions}>
+          {card.secondaryLabel && !locked && (
+            <Pressable
+              className={`${styles.button} ${styles.ghost}`}
+              onClick={cancel}
+              disabled={locked}
+              ariaLabel={card.secondaryLabel}
+            >
+              {card.secondaryLabel}
+            </Pressable>
           )}
-          <span>{primaryText}</span>
-        </Pressable>
-      </div>
+          <Pressable
+            className={[
+              styles.button,
+              locked ? styles.done : canSubmit ? styles.primary : styles.disabled,
+            ].join(' ')}
+            onClick={submit}
+            disabled={!canSubmit || locked}
+            ariaLabel={primaryText}
+          >
+            {state === 'submitted' && (
+              <svg className={styles.doneIcon} width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                <path
+                  d="M2.5 6.2 4.9 8.6 9.5 3.6"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            )}
+            <span>{primaryText}</span>
+          </Pressable>
+        </div>
+      )}
     </div>
   );
 };

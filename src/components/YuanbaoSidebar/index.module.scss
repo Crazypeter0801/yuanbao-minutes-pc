@@ -26,7 +26,9 @@
 
 /*
  * 底部 padding 16；无任务态紧凑仅展示输入框（总高 80），有任务态平滑滑出 32 高状态栏 + 8 间距（总高 120）。
- * 底部白色渐隐向上外延柔和过渡，确保滚动正文在到达状态栏文案之前已完全淡入纯白，避免正文与「正在整理发言内容」叠字。
+ * - ::before：底栏自身纯白底，始终隔断滚动到底栏背后的内容，不与状态栏/输入框叠字；
+ * - ::after：底栏上方 28px 白色渐隐层，仅在下方仍有未滚动内容（.footerFadeVisible）时淡入，
+ *   处于最底端或刚发送新消息时保持完全透明（opacity: 0），绝不把最新气泡洗白或遮挡。
  */
 .footer {
   position: absolute;
@@ -39,23 +41,32 @@
   padding: 16px;
   pointer-events: none;
 
-  &::after {
+  &::before {
     position: absolute;
-    top: -24px;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     z-index: -1;
     content: '';
     border-radius: 0 0 16px 16px;
+    background-color: var(--wm-color-background-quaternary);
+    pointer-events: none;
+  }
+
+  &::after {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 100%;
+    height: 28px;
+    z-index: -1;
+    content: '';
     background-image: linear-gradient(
       180deg,
       rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.55) 18%,
-      rgba(255, 255, 255, 0.94) 30%,
-      var(--wm-color-background-quaternary) 38%,
+      rgba(255, 255, 255, 0.72) 58%,
       var(--wm-color-background-quaternary) 100%
     );
+    opacity: 0;
+    transition: opacity 160ms ease-out;
     pointer-events: none;
   }
 
@@ -64,17 +75,14 @@
   }
 }
 
-/* 有状态栏时渐隐区向上延伸 32px，在状态栏上方即过渡到纯白，彻底杜绝滚动文字与状态文案重叠 */
+/* 有状态栏且下方仍有滚动内容时，渐隐层略微增高至 32px，确保正文在到达状态栏前柔和淡出 */
 .footerWithStatus::after {
-  top: -32px;
-  background-image: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.52) 12%,
-    rgba(255, 255, 255, 0.92) 22%,
-    var(--wm-color-background-quaternary) 29%,
-    var(--wm-color-background-quaternary) 100%
-  );
+  height: 32px;
+}
+
+/* 仅当消息流下方仍有未滚动内容（向上翻看历史）时显示底部渐隐 */
+.footerFadeVisible::after {
+  opacity: 1;
 }
 
 /* 状态栏可折叠容器：有任务时平滑滑入/淡入，无任务时收起为 0px 不留多余空白 */

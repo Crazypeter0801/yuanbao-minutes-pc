@@ -43,6 +43,13 @@ export const demoMenus: DemoMenu[] = [
     label: '模拟元宝发言',
     groups: [
       {
+        items: [
+          { label: '记下一条会议要点', kind: 'yuanbao', effect: 'auto-note' },
+          { label: '会议快结束，约下次', kind: 'yuanbao', prompt: '会议将结束' },
+          { label: '记录当前会议画面', kind: 'yuanbao', effect: 'screenshot' },
+        ],
+      },
+      {
         title: '会中',
         items: [
           { label: '迟到入会，补错过的内容', kind: 'yuanbao', prompt: '迟到' },
@@ -61,15 +68,6 @@ export const demoMenus: DemoMenu[] = [
         items: [
           { label: '决策记忆，带出旧决策原因', kind: 'yuanbao', prompt: '决策记忆' },
           { label: '个人工作流，今日事项汇总', kind: 'yuanbao', prompt: '个人工作流' },
-        ],
-      },
-      {
-        title: '原有',
-        items: [
-          { label: '记下一条会议要点', kind: 'yuanbao', effect: 'auto-note' },
-          { label: '识别到新话题', kind: 'yuanbao', effect: 'next-topic' },
-          { label: '会议快结束，约下次', kind: 'yuanbao', prompt: '会议将结束' },
-          { label: '记录当前会议画面', kind: 'yuanbao', effect: 'screenshot' },
         ],
       },
     ],
@@ -95,22 +93,18 @@ export const demoMenus: DemoMenu[] = [
     label: '模拟交互功能',
     groups: [
       {
+        title: '交互卡片',
+        items: [{ label: '单选 · 选个总结方式', kind: 'card', prompt: '总结方式' }],
+      },
+      {
         title: '功能',
         items: [
-          { label: '建个投票', kind: 'ask' },
           { label: '生成一份竞品分析的 PDF', kind: 'ask' },
           { label: '生成一份会后汇报 PPT', kind: 'ask' },
           { label: '创建 10 分钟倒计时', kind: 'ask' },
           { label: '写一封会后邮件', kind: 'ask' },
           { label: '约下周三同一时间', kind: 'ask' },
-        ],
-      },
-      {
-        title: '交互卡片',
-        items: [
-          { label: '单选 · 选个总结方式', kind: 'card', prompt: '总结方式' },
-          { label: '多选 · 提取会议内容', kind: 'card', prompt: '提取内容' },
-          { label: '确认 · 创建会后任务', kind: 'card', prompt: '创建任务' },
+          { label: '建个投票', kind: 'ask' },
         ],
       },
     ],

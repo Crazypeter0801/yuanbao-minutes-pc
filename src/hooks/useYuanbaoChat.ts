@@ -60,7 +60,7 @@ export function useYuanbaoChat(initial: ChatMessage[]): YuanbaoChat {
       setMessages((previous) => [...previous, { id: createId('q'), role: 'user', text, createdAt: Date.now() }]);
       setPending((count) => count + 1);
       const timer = window.setTimeout(() => {
-        push(answer.message);
+        push({ ...answer.message, createdAt: Date.now() });
         setPending((count) => count - 1);
       }, ANSWER_DELAY);
       timers.current.push(timer);
