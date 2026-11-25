@@ -164,7 +164,7 @@ export const ChatSidebar: FC<ChatSidebarProps> = ({ chat, showHeader, onClose, o
         />
       )}
 
-      <MessageStream className={styles.stream} scrollKey={chat.sent.length}>
+      <MessageStream className={styles.stream} withTopFade="scroll" scrollKey={chat.sent.length}>
         {CHAT_HISTORY.map((entry) =>
           entry.kind === 'time' ? (
             <div className={styles.time} key={entry.id}>

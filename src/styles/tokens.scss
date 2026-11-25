@@ -71,11 +71,12 @@
   /* 模态遮罩 */
   --wm-color-scrim: rgba(8, 22, 44, 0.32);
 
-  /* 渐隐：消息流顶部 / 底部输入区 */
+  /* 渐隐：消息流顶部（Figma 811:40261：高 35px，#FFFFFF → 99% → 75% → 0%）/ 底部输入区 */
   --wm-gradient-fade-top: linear-gradient(
     180deg,
     #ffffff 0%,
-    #ffffff 25.13%,
+    rgba(255, 255, 255, 0.99) 18.11%,
+    rgba(255, 255, 255, 0.75) 51.86%,
     rgba(255, 255, 255, 0) 100%
   );
   --wm-gradient-fade-bottom: linear-gradient(

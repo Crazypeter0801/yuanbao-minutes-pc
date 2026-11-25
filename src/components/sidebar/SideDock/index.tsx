@@ -74,6 +74,7 @@ export const SideDock: FC<SideDockProps> = ({
   const shown = active ?? lastShown.current;
   const ordered = SIDE_APP_ORDER.filter((id) => apps.includes(id));
   const multiple = ordered.length > 1;
+  const activeIndex = shown ? ordered.indexOf(shown) : -1;
 
   useEffect(() => {
     if (!open && apps.length && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -280,16 +281,28 @@ export const SideDock: FC<SideDockProps> = ({
           </nav>
         )}
 
-        <div className={styles.panes}>
-          {apps.map((id) => (
-            <section
-              key={id}
-              className={`${styles.pane} ${id === shown ? styles.paneActive : ''}`}
-              aria-hidden={id !== shown}
-            >
-              {renderApp(id, { showHeader: !multiple })}
-            </section>
-          ))}
+        {/* Figma 811:40262：多标签页时白底内容区右上角 16px Chrome 圆角衔接 #F7F7F7 顶栏（非首项激活时左上角对称 16px） */}
+        <div className={`${styles.panesStage} ${multiple ? styles.panesStageMultiple : ''}`}>
+          <div
+            className={[
+              styles.panes,
+              multiple ? styles.panesRoundedRight : '',
+              multiple && activeIndex > 0 ? styles.panesRoundedLeft : '',
+            ]
+              .filter(Boolean)
+              .join(' ')}
+            data-chrome-corner={multiple ? '16px' : '0px'}
+          >
+            {apps.map((id) => (
+              <section
+                key={id}
+                className={`${styles.pane} ${id === shown ? styles.paneActive : ''}`}
+                aria-hidden={id !== shown}
+              >
+                {renderApp(id, { showHeader: !multiple })}
+              </section>
+            ))}
+          </div>
         </div>
       </SidebarShell>
     </div>

@@ -90,12 +90,12 @@
   }
 }
 
-/* 新版元宝状态栏（Figma 811:38164 / 811:38683）：左元宝形象+状态文案，右轻量推荐指令图标 */
+/* 新版元宝状态栏（Figma 811:38164 / 811:38683）：仅保留左侧 32×32 元宝工作形象 + 扫光状态文案 */
 .statusRowAgent {
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   height: 32px;
 }
 

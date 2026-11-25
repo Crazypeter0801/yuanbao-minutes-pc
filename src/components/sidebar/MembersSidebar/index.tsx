@@ -33,6 +33,7 @@ export const MembersSidebar: FC<MembersSidebarProps> = ({ showHeader, onClose, o
   const [members, setMembers] = useState<MeetingMember[]>(MEMBERS_IN_MEETING);
   const [searching, setSearching] = useState(false);
   const [keyword, setKeyword] = useState('');
+  const [topFadeOpacity, setTopFadeOpacity] = useState(0);
 
   const menuItems = useMemo<PopMenuItem[]>(
     () => [
@@ -117,52 +118,61 @@ export const MembersSidebar: FC<MembersSidebarProps> = ({ showHeader, onClose, o
         </Pressable>
       </div>
 
-      <div className={`${styles.list} wm-scroll-hidden`}>
-        {tab === 'joined'
-          ? joined.map((member) => (
-              <div className={styles.member} key={member.id}>
-                <div className={styles.person}>
-                  <img className={styles.avatar} src={member.avatar} alt="" draggable={false} />
-                  <div className={styles.personText}>
-                    <strong className={styles.name}>{member.name}</strong>
-                    <small className={styles.department}>{member.department}</small>
+      <div className={styles.listWrap}>
+        <div
+          className={`${styles.list} wm-scroll-hidden`}
+          onScroll={(event) => {
+            const next = Math.min(1, Math.max(0, event.currentTarget.scrollTop / 16));
+            setTopFadeOpacity((prev) => (Math.abs(prev - next) < 0.02 ? prev : next));
+          }}
+        >
+          {tab === 'joined'
+            ? joined.map((member) => (
+                <div className={styles.member} key={member.id}>
+                  <div className={styles.person}>
+                    <img className={styles.avatar} src={member.avatar} alt="" draggable={false} />
+                    <div className={styles.personText}>
+                      <strong className={styles.name}>{member.name}</strong>
+                      <small className={styles.department}>{member.department}</small>
+                    </div>
+                  </div>
+                  <div className={styles.devices}>
+                    <Pressable
+                      as="span"
+                      className={styles.device}
+                      onClick={() => toggleMic(member.id)}
+                      ariaLabel={member.micOn ? `将${member.name}静音` : `请${member.name}解除静音`}
+                      title={member.micOn ? '静音' : '解除静音'}
+                    >
+                      {member.micOn ? <IconMembersMicOn /> : <IconMembersMicOff />}
+                    </Pressable>
+                    <span className={styles.device} aria-label={member.cameraOn ? '摄像头已开启' : '摄像头已关闭'}>
+                      {member.cameraOn ? <IconMembersCameraOn /> : <IconMembersCameraOff />}
+                    </span>
                   </div>
                 </div>
-                <div className={styles.devices}>
+              ))
+            : invited.map((member) => (
+                <div className={styles.member} key={member.id}>
+                  <div className={styles.person}>
+                    <img className={styles.avatar} src={member.avatar} alt="" draggable={false} />
+                    <div className={styles.personText}>
+                      <strong className={styles.name}>{member.name}</strong>
+                      <small className={styles.department}>{member.department}</small>
+                    </div>
+                  </div>
                   <Pressable
                     as="span"
-                    className={styles.device}
-                    onClick={() => toggleMic(member.id)}
-                    ariaLabel={member.micOn ? `将${member.name}静音` : `请${member.name}解除静音`}
-                    title={member.micOn ? '静音' : '解除静音'}
+                    className={styles.callButton}
+                    onClick={() => showToast(`已呼叫${member.name}（演示）`)}
                   >
-                    {member.micOn ? <IconMembersMicOn /> : <IconMembersMicOff />}
+                    呼叫
                   </Pressable>
-                  <span className={styles.device} aria-label={member.cameraOn ? '摄像头已开启' : '摄像头已关闭'}>
-                    {member.cameraOn ? <IconMembersCameraOn /> : <IconMembersCameraOff />}
-                  </span>
                 </div>
-              </div>
-            ))
-          : invited.map((member) => (
-              <div className={styles.member} key={member.id}>
-                <div className={styles.person}>
-                  <img className={styles.avatar} src={member.avatar} alt="" draggable={false} />
-                  <div className={styles.personText}>
-                    <strong className={styles.name}>{member.name}</strong>
-                    <small className={styles.department}>{member.department}</small>
-                  </div>
-                </div>
-                <Pressable
-                  as="span"
-                  className={styles.callButton}
-                  onClick={() => showToast(`已呼叫${member.name}（演示）`)}
-                >
-                  呼叫
-                </Pressable>
-              </div>
-            ))}
-        {(tab === 'joined' ? joined : invited).length === 0 && <div className={styles.empty}>没有找到相关成员</div>}
+              ))}
+          {(tab === 'joined' ? joined : invited).length === 0 && <div className={styles.empty}>没有找到相关成员</div>}
+        </div>
+        <div className={styles.fadeTop} style={{ opacity: topFadeOpacity }} aria-hidden="true" />
       </div>
 
       <div className={styles.footer}>

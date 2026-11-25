@@ -26,13 +26,21 @@
   justify-content: flex-end;
 }
 
-/* Figma 248:14891：400×40，白 → 透明 */
+/* Figma 811:40261：高 35px 白色顶部渐隐，滚动时平滑遮蔽向上滚出的长内容，pointer-events: none 不挡点击 */
 .fadeTop {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 40px;
+  z-index: 3;
+  height: 35px;
   background-image: var(--wm-gradient-fade-top);
   pointer-events: none;
+  transition: opacity 140ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fadeTop {
+    transition: none;
+  }
 }

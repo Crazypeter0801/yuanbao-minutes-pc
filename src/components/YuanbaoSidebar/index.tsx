@@ -185,6 +185,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
         <MessageStream
           className={styles.stream}
           startAtTop
+          withTopFade="scroll"
           scrollKey={`${chat.messages.length}-${chat.isThinking}`}
         >
           <ChatList
@@ -207,26 +208,16 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
             data-command-bar-variant={commandBarVariant}
           >
             {isAgentStatus ? (
-              <>
-                <TaskEntry
-                  variant="agent-status"
-                  isThinking={chat.isThinking}
-                  tasks={AGENT_TASKS}
-                  runningCount={RUNNING_TASK_COUNT}
-                  expanded={openPanel === "tasks"}
-                  onExpandedChange={(next) => setOpenPanel(next ? "tasks" : null)}
-                  hidden={openPanel === "commands"}
-                  onOpenTask={setActiveTask}
-                  onOpenAgentDetail={() => setDetailOpen(true)}
-                />
-                <QuickCommandEntry
-                  variant="agent-status"
-                  expanded={openPanel === "commands"}
-                  onExpandedChange={(next) => setOpenPanel(next ? "commands" : null)}
-                  hidden={openPanel === "tasks"}
-                  onPick={(prompt) => send(prompt, true)}
-                />
-              </>
+              <TaskEntry
+                variant="agent-status"
+                isThinking={chat.isThinking}
+                tasks={AGENT_TASKS}
+                runningCount={RUNNING_TASK_COUNT}
+                expanded={openPanel === "tasks"}
+                onExpandedChange={(next) => setOpenPanel(next ? "tasks" : null)}
+                onOpenTask={setActiveTask}
+                onOpenAgentDetail={() => setDetailOpen(true)}
+              />
             ) : (
               <>
                 <QuickCommandEntry

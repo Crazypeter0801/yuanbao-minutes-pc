@@ -92,6 +92,15 @@
   }
 }
 
+/* 成员列表容器 + 顶部 35px 滚动渐隐（Figma 811:40261） */
+.listWrap {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
 /* 成员列表：左右 20、行距 16，可滚动 */
 .list {
   flex: 1 1 auto;
@@ -104,6 +113,18 @@
   & > * + * {
     margin-top: 16px;
   }
+}
+
+.fadeTop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  height: 35px;
+  background-image: var(--wm-gradient-fade-top);
+  pointer-events: none;
+  transition: opacity 140ms ease-out;
 }
 
 /* 一行：左 头像 + 两行文字（间距 8），右 设备状态（Figma 504:11257） */

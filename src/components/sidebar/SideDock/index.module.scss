@@ -303,10 +303,35 @@
 
 /* ---------- 内容区 ---------- */
 
+/* 多标签页时承托 #F7F7F7 顶条底色，让内部白底内容区顶部 16px 圆角（Figma 811:40262）自然衔接 */
+.panesStage {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.panesStageMultiple {
+  background-color: var(--wm-color-tab585-strip);
+}
+
 .panes {
   position: relative;
   flex: 1 1 auto;
   min-height: 0;
+  overflow: hidden;
+  background-color: var(--wm-color-background-quaternary);
+}
+
+/* Figma 811:40262：内容区右上角 16px Chrome 风格圆角，自然裁切内部滚动内容与顶部 35px 渐隐 */
+.panesRoundedRight {
+  border-top-right-radius: 16px;
+}
+
+/* 非首项标签激活时，左上角同样与左侧 #F7F7F7 未选中标签以 16px 圆角衔接 */
+.panesRoundedLeft {
+  border-top-left-radius: 16px;
 }
 
 .pane {

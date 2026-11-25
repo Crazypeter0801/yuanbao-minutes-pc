@@ -27,6 +27,19 @@
   padding: 4px 16px 24px;
 }
 
+/* Figma 811:40261：滚动后顶部 35px 白色渐隐，pointer-events: none 不挡返回按钮点击 */
+.fadeTop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  height: 35px;
+  background-image: var(--wm-gradient-fade-top);
+  pointer-events: none;
+  transition: opacity 140ms ease-out;
+}
+
 /* ---------- 顶部 Hero + 3 段导航（Figma 811:40934） ---------- */
 
 .headerBlock {

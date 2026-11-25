@@ -107,6 +107,7 @@ export const AgentDetail: FC<AgentDetailProps> = ({
   const [expandedRecentTaskId, setExpandedRecentTaskId] = useState<string | null>(null);
   const [connectors, setConnectors] = useState<AgentConnectorItem[]>(INITIAL_AGENT_CONNECTORS);
   const [activeConnectorId, setActiveConnectorId] = useState<ConnectorIconId | null>(null);
+  const [topFadeOpacity, setTopFadeOpacity] = useState(0);
 
   const activeConnector = useMemo(
     () => connectors.find((item) => item.id === activeConnectorId) ?? null,
@@ -144,7 +145,13 @@ export const AgentDetail: FC<AgentDetailProps> = ({
 
   return (
     <section className={styles.overlay} aria-label="元宝 Agent 详情">
-      <div className={`${styles.scroll} wm-scroll-hidden`}>
+      <div
+        className={`${styles.scroll} wm-scroll-hidden`}
+        onScroll={(event) => {
+          const next = Math.min(1, Math.max(0, event.currentTarget.scrollTop / 16));
+          setTopFadeOpacity((prev) => (Math.abs(prev - next) < 0.02 ? prev : next));
+        }}
+      >
         {/* 顶部区域：左上返回圆钮 + 居中头像与标题 + 3 段导航（Figma 811:40934） */}
         <div className={styles.headerBlock}>
           <Pressable
@@ -467,6 +474,8 @@ export const AgentDetail: FC<AgentDetailProps> = ({
           </div>
         )}
       </div>
+
+      <div className={styles.fadeTop} style={{ opacity: topFadeOpacity }} aria-hidden="true" />
 
       {/* 连接器查看详情弹窗（Figma 796:85424） */}
       {activeConnector && (
