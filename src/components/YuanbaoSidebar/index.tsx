@@ -191,7 +191,7 @@ export const YuanbaoSidebar: FC<YuanbaoSidebarProps> = ({
             topActivityActive ? styles.streamWithTopActivityActive : styles.streamWithTopActivity
           }`}
           startAtTop
-          withTopFade="scroll"
+          withTopFade={false}
           scrollKey={`${chat.messages.length}-${chat.isThinking}`}
           onBottomOverflowChange={setHasBottomOverflow}
           onShowScrollToBottomChange={setShowScrollToBottom}

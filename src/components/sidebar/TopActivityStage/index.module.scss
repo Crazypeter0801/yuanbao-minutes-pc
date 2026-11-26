@@ -1,6 +1,7 @@
 /*
  * 顶部元宝活动状态与 Agent 详情统一入口（Figma 811:25080 / 811:37273 活动态 / 811:39424 空闲态）
- * 悬浮在消息流顶部，背后铺柔和自上而下白色渐隐，滚动内容从磨砂胶囊下方自然穿过。
+ * 单一顶部渐隐承载消息滚出遮罩（与 MessageStream 去重），不产生双层白雾断层；
+ * 胶囊使用真实 backdrop-filter: blur(10px) 磨砂玻璃，禁止在祖先节点使用 isolation: isolate 阻断 backdrop 采样。
  */
 .stage {
   position: absolute;
@@ -11,36 +12,37 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: 12px 0 10px;
   pointer-events: none;
-  transition: background-image 200ms ease;
 }
 
+/* Figma 811:39424 空闲态：90px 高（pt 12 / pb 10），32.313% 中段柔和渐隐 */
 .stageIdle {
+  padding: 12px 0 10px;
   background-image: linear-gradient(
     180deg,
     #ffffff 0%,
-    rgba(255, 255, 255, 0.92) 32.31%,
+    rgba(255, 255, 255, 0.92) 32.313%,
     rgba(255, 255, 255, 0) 100%
   );
 }
 
+/* Figma 811:37273 活动态：98px 高（pt 12 / pb 0），14.454% 中段柔和渐隐，底部投影自然溢出不裁切 */
 .stageActive {
-  padding-bottom: 4px;
+  padding: 12px 0 0;
   background-image: linear-gradient(
     180deg,
     #ffffff 0%,
-    rgba(255, 255, 255, 0.92) 14.45%,
+    rgba(255, 255, 255, 0.92) 14.454%,
     rgba(255, 255, 255, 0) 100%
   );
 }
 
+/* 注意：不设 isolation: isolate，确保子元素 .pill 的 backdrop-filter 能穿透模糊底层滚过的消息 */
 .badge {
   position: relative;
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  isolation: isolate;
   padding: 0;
   border: 0;
   background: none;
@@ -49,7 +51,7 @@
   pointer-events: auto;
 
   &:hover .pill {
-    background-color: rgba(255, 255, 255, 0.96);
+    background-color: rgba(255, 255, 255, 0.92);
     transform: translateY(-1px);
     box-shadow: var(--wm-shadow-top-activity-pill-hover);
   }
@@ -65,7 +67,7 @@
   }
 }
 
-/* 48×48 形象容器，底部压入白色磨砂胶囊（Figma 811:39426 mb-[-8px] / 811:37275 mb-[-10px]） */
+/* 48×48 形象容器，底部压入磨砂胶囊（Figma 811:39426 mb-[-8px] / 811:37275 mb-[-10px]） */
 .character {
   position: relative;
   z-index: 2;
@@ -170,19 +172,22 @@
   user-select: none;
 }
 
-/* 磨砂白底悬浮胶囊（Figma 811:37309 / 811:39442）：blur(10px)、白描边、圆角 16、0 6 20 / 15% 落影 */
+/*
+ * 磨砂白底悬浮胶囊（Figma 811:37309 / 811:39442）：
+ * - 标准 16px 圆角（不套 superellipse，保持空闲态 64×28 全圆胶囊与活动态 48px 高柔和圆角）；
+ * - 内描边 1px #FFFFFF + 外部柔影 0 6 20 #00000026（与 Figma strokeAlign: INSIDE 完全一致，不外扩高度）；
+ * - 真实 backdrop-filter: blur(10px) 透过半透白底柔化滚过的气泡。
+ */
 .pill {
   position: relative;
   z-index: 1;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-width: 64px;
-  padding: 5px 12px;
-  border: 1px solid var(--wm-color-background-quaternary);
+  border: 0;
   border-radius: 16px;
-  background-color: rgba(255, 255, 255, 0.9);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   box-shadow: var(--wm-shadow-top-activity-pill);
@@ -191,18 +196,16 @@
     background-color 150ms ease,
     transform 150ms ease,
     box-shadow 150ms ease;
-
-  @supports (corner-shape: superellipse(1.6)) {
-    corner-shape: superellipse(1.6);
-  }
 }
 
+/* Figma 811:37309：高 48px（6 + 18 + 18 + 6）、min-w 60px、rgba(255,255,255,0.8) */
 .pillActive {
   min-width: 60px;
   padding: 6px 12px;
   background-color: rgba(255, 255, 255, 0.8);
 }
 
+/* Figma 811:39442：高 28px（5 + 18 + 5）、min-w 64px、rgba(255,255,255,0.9) */
 .pillIdle {
   min-width: 64px;
   padding: 5px 12px;
@@ -217,7 +220,7 @@
   white-space: nowrap;
 }
 
-/* 活动态副标题槽位：空闲态宽高同步收起为 0，确保空闲胶囊紧凑还原 64×28；活动态平滑展开 */
+/* 活动态副标题槽位：空闲态宽高同步收起为 0，确保空闲胶囊精确 64×28；活动态平滑展开至 18px */
 .statusWrap {
   display: flex;
   align-items: center;
@@ -247,6 +250,7 @@
   overflow: hidden;
 }
 
+/* Figma 811:37311：12px/18px 400 #5D616C，带克制流光扫过 */
 .statusText {
   grid-area: 1 / 1;
   font-size: 12px;
@@ -256,11 +260,11 @@
   color: var(--wm-color-top-activity-status);
   background-image: linear-gradient(
     94deg,
-    var(--wm-color-top-activity-status) 0%,
-    var(--wm-color-top-activity-status) 36%,
-    #9ca3af 50%,
-    var(--wm-color-top-activity-status) 64%,
-    var(--wm-color-top-activity-status) 100%
+    rgb(93, 97, 108) 0%,
+    rgb(93, 97, 108) 36%,
+    rgba(130, 135, 148, 0.88) 50%,
+    rgba(93, 97, 108, 0.9) 64%,
+    rgb(93, 97, 108) 100%
   );
   background-size: 240% 100%;
   background-position: 100% 0;
@@ -317,7 +321,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .stage,
   .character,
   .characterLayer,
   .pill,
