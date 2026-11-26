@@ -63,8 +63,7 @@
   min-width: 0;
 }
 
-.titleStatic,
-.titleButton {
+.titleStatic {
   display: inline-flex;
   align-items: center;
   height: 28px;
@@ -73,18 +72,6 @@
 
   & > * + * {
     margin-left: 4px;
-  }
-}
-
-.titleButton {
-  color: var(--wm-color-text-tertiary);
-  cursor: pointer;
-  outline: none;
-  transition: background-color 120ms ease;
-
-  &:hover,
-  &:focus-visible {
-    background-color: var(--wm-color-control-hover);
   }
 }
 

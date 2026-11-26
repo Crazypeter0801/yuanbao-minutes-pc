@@ -1,5 +1,4 @@
 import { useRef, useState, type FC, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
-import IconTab574Chevron from '@/assets/d2c/icons/sidetabs574/icon-tab574-chevron';
 import IconTab582DockBack from '@/assets/d2c/icons/sidetabs585/icon-tab582-dock-back';
 import IconTab585Close from '@/assets/d2c/icons/sidetabs585/icon-tab585-close';
 import { Pressable } from '@/components/common/Pressable';
@@ -16,8 +15,6 @@ interface FloatingWindowProps {
   onDockBack: () => void;
   /** 关闭浮窗 */
   onClose: () => void;
-  /** 点击标题（例如元宝浮窗里打开 Agent 详情页） */
-  onTitleClick?: () => void;
   children: ReactNode;
 }
 
@@ -32,7 +29,6 @@ export const FloatingWindow: FC<FloatingWindowProps> = ({
   onFocus,
   onDockBack,
   onClose,
-  onTitleClick,
   children,
 }) => {
   const meta = SIDE_APPS[id];
@@ -95,25 +91,11 @@ export const FloatingWindow: FC<FloatingWindowProps> = ({
           onPointerCancel={handlePointerUp}
           title="按住拖动独立窗口"
         >
-          <div className={styles.title} data-nodrag={onTitleClick ? '' : undefined}>
-            {onTitleClick ? (
-              <Pressable
-                className={styles.titleButton}
-                onClick={onTitleClick}
-                ariaLabel={`查看${meta.title} Agent 详情`}
-                title={`查看${meta.title} Agent 详情`}
-                stopPropagation
-              >
-                <span className={styles.icon}>{meta.icon585On}</span>
-                <span className={styles.label}>{meta.title}</span>
-                <IconTab574Chevron width={5} height={10} aria-hidden="true" />
-              </Pressable>
-            ) : (
-              <div className={styles.titleStatic}>
-                <span className={styles.icon}>{meta.icon585On}</span>
-                <span className={styles.label}>{meta.title}</span>
-              </div>
-            )}
+          <div className={styles.title}>
+            <div className={styles.titleStatic}>
+              <span className={styles.icon}>{meta.icon585On}</span>
+              <span className={styles.label}>{meta.title}</span>
+            </div>
           </div>
           <div className={styles.actions} data-nodrag>
             <Pressable

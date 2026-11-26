@@ -2,26 +2,27 @@ import { useEffect, useState, type FC } from 'react';
 import yuanbaoSleepingBg from '@/assets/d2c/icons/yuanbao811/yuanbao-sleeping-bg.svg';
 import yuanbaoSleepingBody from '@/assets/d2c/icons/yuanbao811/yuanbao-sleeping-body.svg';
 import yuanbaoSleepingFg from '@/assets/d2c/icons/yuanbao811/yuanbao-sleeping-fg.svg';
-import { YuanbaoWorkingSprite } from '@/components/sidebar/TaskEntry/YuanbaoWorkingSprite';
 import styles from './index.module.scss';
+import { YuanbaoWorkingSprite } from './YuanbaoWorkingSprite';
 
 const ROLL_EXIT_MS = 280;
 
 interface TopActivityStageProps {
-  /** 是否处于活动态（进行中任务或 3 秒思考态）；false 时呈现 Figma 811:39347 空闲中状态 */
+  /** 是否处于活动态（进行中任务或 3 秒思考态）；false 时呈现 Figma 811:39347 空闲态 */
   isActive: boolean;
   /** 是否处于用户发言后的思考态 */
   isThinking: boolean;
   /** 当前任务阶段文案（无尾部省略号） */
   statusText: string;
-  /** 点击悬浮元宝徽章打开 Agent 详情（查看任务/资料库/连接器） */
+  /** 点击顶部悬浮元宝徽章打开 Agent 详情（任务 / 资料库 / 连接器） */
   onOpenDetail: () => void;
 }
 
 /**
- * 对话内容上方的元宝活动浮层（对齐 Figma 811:25116 活动态 / 811:39347 空闲中状态）：
- * - 空闲中：60×60 休眠元宝三层矢量图 + 白底圆角胶囊仅展示「元宝」；
- * - 活动态：60×60 36 帧工作形象动态雪碧图 + 白底胶囊平滑展开「正在思考」/ 简短任务阶段轮播文案。
+ * 顶部元宝活动状态与 Agent 详情统一入口（Figma 811:25080 / 811:37273 活动态 / 811:39347 空闲态）：
+ * - 空闲态：48×48 休眠元宝三层矢量图 + 磨砂白底圆角胶囊仅展示「元宝」；
+ * - 活动态：48×48 36 帧工作形象动态雪碧图 + 磨砂白底胶囊平滑展开「正在思考」/ 简短任务阶段轮播文案；
+ * - 点击徽章统一进入元宝 Agent 详情页。
  */
 export const TopActivityStage: FC<TopActivityStageProps> = ({
   isActive,
@@ -78,9 +79,13 @@ export const TopActivityStage: FC<TopActivityStageProps> = ({
         onClick={onOpenDetail}
         aria-label={ariaLabel}
         title="查看元宝 Agent 详情"
+        data-agent-detail-trigger="true"
       >
-        <span className={styles.character} aria-hidden="true">
-          {/* 空闲中休眠元宝（Figma 811:39427，50×53.662 居中于 60×60） */}
+        <span
+          className={`${styles.character} ${isActive ? styles.characterActive : styles.characterIdle}`}
+          aria-hidden="true"
+        >
+          {/* 空闲态休眠元宝（Figma 811:39426 / 811:39427，40×42.929 居中于 48×48） */}
           <span
             className={`${styles.characterLayer} ${
               !isActive ? styles.characterLayerVisible : styles.characterLayerHidden
@@ -109,14 +114,14 @@ export const TopActivityStage: FC<TopActivityStageProps> = ({
             </span>
           </span>
 
-          {/* 活动态工作元宝（Figma 811:37275，接入 36 帧动态雪碧图 60×60） */}
+          {/* 活动态工作元宝（Figma 811:37275，接入 36 帧动态雪碧图 48×48） */}
           <span
             className={`${styles.characterLayer} ${
               isActive ? styles.characterLayerVisible : styles.characterLayerHidden
             }`}
             data-top-activity-mascot="active"
           >
-            <YuanbaoWorkingSprite size={60} active={isActive} />
+            <YuanbaoWorkingSprite size={48} active={isActive} />
           </span>
         </span>
 

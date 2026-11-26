@@ -23,8 +23,6 @@ export interface SideAppMeta {
   icon585On: ReactNode;
   /** Chrome 页签未选中态图标（统一 #4E5461） */
   icon585Off: ReactNode;
-  /** 标题后带一个灰色小箭头（元宝，Figma 574:16890） */
-  chevron?: boolean;
 }
 
 export const SIDE_APPS: Record<SideAppId, SideAppMeta> = {
@@ -35,7 +33,6 @@ export const SIDE_APPS: Record<SideAppId, SideAppMeta> = {
     iconOff: <IconTab574Yuanbao width={16} height={16} color="#7B818F" />,
     icon585On: <IconYuanbao811 width={20} height={20} />,
     icon585Off: <IconTab574Yuanbao width={16} height={16} />,
-    chevron: true,
   },
   members: {
     title: '管理成员',

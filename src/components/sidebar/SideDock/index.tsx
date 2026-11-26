@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState, type FC, type ReactNode, type TransitionEvent } from 'react';
-import IconTab574Chevron from '@/assets/d2c/icons/sidetabs574/icon-tab574-chevron';
 import IconTab585Close from '@/assets/d2c/icons/sidetabs585/icon-tab585-close';
 import IconTab585More from '@/assets/d2c/icons/sidetabs585/icon-tab585-more';
 import IconTab585Pip from '@/assets/d2c/icons/sidetabs585/icon-tab585-pip';
@@ -168,27 +167,11 @@ export const SideDock: FC<SideDockProps> = ({
                       <path d="M0 0V16H16A16 16 0 0 1 0 0Z" fill="currentColor" />
                     </svg>
 
-                    {id === 'yuanbao' && onToggleYuanbaoDetail ? (
-                      <Pressable
-                        className={`${styles.folderTabTitle} ${styles.folderTabTitleClickable}`}
-                        onClick={onToggleYuanbaoDetail}
-                        ariaLabel="查看元宝 Agent 详情"
-                        title="点击查看元宝 Agent 详情"
-                      >
-                        <span className={styles.folderTabIcon}>{meta.icon585On}</span>
-                        <span className={styles.folderTabLabel}>{meta.title}</span>
-                        {meta.chevron && (
-                          <span className={styles.folderTabChevron} aria-hidden="true">
-                            <IconTab574Chevron width={5} height={10} />
-                          </span>
-                        )}
-                      </Pressable>
-                    ) : (
-                      <div className={styles.folderTabTitle}>
-                        <span className={styles.folderTabIcon}>{meta.icon585On}</span>
-                        <span className={styles.folderTabLabel}>{meta.title}</span>
-                      </div>
-                    )}
+                    {/* Figma 811:25083 激活页签标题：仅保留图标与「元宝」，详情入口统一归口到顶部悬浮元宝徽章 */}
+                    <div className={styles.folderTabTitle}>
+                      <span className={styles.folderTabIcon}>{meta.icon585On}</span>
+                      <span className={styles.folderTabLabel}>{meta.title}</span>
+                    </div>
 
                     {/* Figma 811:38186 激活页签操作区：仅保留 独立窗口 / 关闭，两个 28×28 按钮、间距 2 */}
                     <div className={styles.folderTabActions}>

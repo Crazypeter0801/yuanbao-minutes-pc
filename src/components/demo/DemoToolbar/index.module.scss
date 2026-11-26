@@ -145,33 +145,6 @@
   white-space: nowrap;
 }
 
-.optionMenu {
-  width: 224px;
-}
-
-.optionItem {
-  justify-content: space-between;
-  padding: 0 10px 0 12px;
-}
-
-.optionItemActive {
-  background-color: var(--wm-color-agent-surface);
-}
-
-.optionCheck {
-  flex: 0 0 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: 10px;
-  color: var(--wm-color-brand-yuanbao);
-  opacity: 0;
-}
-
-.optionCheckVisible {
-  opacity: 1;
-}
-
 /* 模拟任务一键开关按钮与状态圆点 */
 .toggleButton {
   transition:

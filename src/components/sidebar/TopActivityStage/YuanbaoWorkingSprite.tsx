@@ -13,7 +13,7 @@ const FRAME_INTERVAL_MS = 1000 / 24;
 
 /**
  * 基准视口 32×32px 下的单格缩放与中心补偿参数（36 帧任意一帧均无裁切与抖动）；
- * 外部传入更大尺寸（如对话上方活动态 60×60px）时按 size / BASE_VIEWPORT_SIZE 等比缩放。
+ * 外部传入 48×48px（Figma 811:37275）等尺寸时按 size / BASE_VIEWPORT_SIZE 等比缩放。
  */
 const BASE_VIEWPORT_SIZE = 32;
 const BASE_CELL_RENDER_SIZE = 38;
@@ -21,7 +21,7 @@ const BASE_OFFSET_X = -3.7;
 const BASE_OFFSET_Y = -2.4;
 
 interface YuanbaoWorkingSpriteProps {
-  /** 视口宽高（px），默认 32（底栏状态条）；对话上方活动态传 60 */
+  /** 视口宽高（px），默认 48（对齐 Figma 811:37275） */
   size?: number;
   /** 是否播放动画；false 时暂停在首帧以节省开销 */
   active?: boolean;
@@ -33,7 +33,7 @@ interface YuanbaoWorkingSpriteProps {
  * - prefers-reduced-motion: reduce 或 active=false 时静止停留在首帧。
  */
 export const YuanbaoWorkingSprite: FC<YuanbaoWorkingSpriteProps> = ({
-  size = BASE_VIEWPORT_SIZE,
+  size = 48,
   active = true,
 }) => {
   const [frame, setFrame] = useState(0);
@@ -92,7 +92,7 @@ export const YuanbaoWorkingSprite: FC<YuanbaoWorkingSpriteProps> = ({
   return (
     <span
       className={styles.spriteViewport}
-      style={size === BASE_VIEWPORT_SIZE ? undefined : { width: size, height: size, flexBasis: size }}
+      style={{ width: size, height: size, flexBasis: size }}
       data-sprite-frame={frame}
       data-sprite-total={VALID_FRAMES}
       aria-hidden="true"

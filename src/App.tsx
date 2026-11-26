@@ -9,7 +9,7 @@ import { FloatingWindow } from "@/components/sidebar/FloatingWindow";
 import { MembersSidebar } from "@/components/sidebar/MembersSidebar";
 import { SideDock, type SideAppId } from "@/components/sidebar/SideDock";
 import { SIDE_APP_ORDER } from "@/components/sidebar/SideDock/apps";
-import { YuanbaoSidebar, type CommandBarVariant } from "@/components/YuanbaoSidebar";
+import { YuanbaoSidebar } from "@/components/YuanbaoSidebar";
 import { AGENT_TASKS, getRunningTaskStatus } from "@/data/agentTasks";
 import {
   buildArtifact,
@@ -117,8 +117,7 @@ export default function App() {
     active: "yuanbao",
     floating: [],
   });
-  const [commandBarVariant, setCommandBarVariant] = useState<CommandBarVariant>("agent-status-sprite");
-  /** 演示态进行中任务开关：默认关闭（无任务隐藏状态栏），由右侧演示栏一键切换 */
+  /** 演示态进行中任务开关：默认关闭（顶部展示空闲态），由右侧演示栏一键切换 */
   const [hasSimulatedTask, setHasSimulatedTask] = useState(false);
   /** 模拟任务开启时的执行阶段序号：每 3 秒推进一次，停靠侧栏与独立浮窗共用保持完全同步 */
   const [taskStageIndex, setTaskStageIndex] = useState(0);
@@ -346,7 +345,6 @@ export default function App() {
         showHeader={showHeader}
         detailOpen={yuanbaoDetailOpen}
         onDetailOpenChange={setYuanbaoDetailOpen}
-        commandBarVariant={commandBarVariant}
         hasActiveTasks={hasSimulatedTask}
         taskStatusText={currentTaskStatus}
       />
@@ -460,7 +458,6 @@ export default function App() {
               onFocus={() => focusFloatingApp(id)}
               onDockBack={() => dockBackApp(id)}
               onClose={() => closeFloatingApp(id)}
-              onTitleClick={id === "yuanbao" ? () => setYuanbaoDetailOpen((open) => !open) : undefined}
             >
               {renderAppContent(id, false, true)}
             </FloatingWindow>
@@ -472,8 +469,6 @@ export default function App() {
       <div className={styles.demoBar}>
         <DemoToolbar
           onCommand={runCommand}
-          commandBarVariant={commandBarVariant}
-          onCommandBarVariantChange={setCommandBarVariant}
           taskSimulated={hasSimulatedTask}
           onToggleTaskSimulated={() => setHasSimulatedTask((active) => !active)}
         />
