@@ -1,128 +1,190 @@
-/* 会中底栏：高 64、右侧留 4、左侧贴边；中间 48 高的按钮组上下各留 8（Figma 416:20031） */
+/* 会中底栏（Figma 811:25000）：白底高 66、padding 8 10、左右对齐 */
 .toolbar {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
-  height: 64px;
-  padding: 0 4px 0 0;
-}
-
-/*
- * 左侧一组（Figma 574:19176 / 582:61126）：
- * 左 3 个图标共用一块 r=12 浅灰底板 + 12px 间距 + 第 4 个聊天图标独立一块 36×36 r=12 浅灰底板。
- */
-.side {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  padding-right: 112px;
-
-  & > * + * {
-    margin-left: 12px;
-  }
-}
-
-/* 左侧 3 图标共用浅灰底板（Figma 582:61127）：高 36、圆角 12、#0000000A、图标间距 2 */
-.sidePlate {
-  display: flex;
-  align-items: center;
-  height: 36px;
-  border-radius: 12px;
-  background-color: var(--wm-color-toolbar-plate);
-
-  & > * + * {
-    margin-left: 2px;
-  }
-}
-
-/* 第 4 个图标独立浅灰底板（Figma 582:61143）：36×36、圆角 12、#0000000A */
-.chatPlate {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 12px;
-  background-color: var(--wm-color-toolbar-plate);
-}
-
-/* 图标位：36×36、圆角 12，内容居中 */
-.iconBox {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 12px;
-}
-
-/*
- * 表情切图按设计稿节点 1:1 还原：节点是 36×36，导出为 4 倍图（144×144），
- * 这里就显示 36×36。图里的透明留白与节点一致，可见图形自然落在稿里的位置。
- */
-.emojiHi,
-.emojiSmile {
-  display: block;
-  width: 36px;
-  height: 36px;
-  object-fit: contain;
+  justify-content: space-between;
+  width: 100%;
+  height: 66px;
+  padding: 8px 10px;
+  background-color: var(--wm-color-background-quaternary);
   user-select: none;
 }
 
-/*
- * 1×16 分隔线（Figma 520:13400）：Figma 里是 0 宽的竖线 + 1px 描边，不占布局宽度，
- * 所以用 -1px 右边距抵掉自身宽度，亮度按钮紧跟在 8px 之后（导出图实测亮度框起点 132）。
- */
-.divider {
+/* 左侧互动区（Figma 811:25002） */
+.interactGroup {
   flex: 0 0 auto;
-  width: 1px;
-  height: 16px;
-  margin-right: -1px;
-  background-color: var(--wm-color-line);
+  display: flex;
+  align-items: center;
+
+  & > * + * {
+    margin-left: 8px;
+  }
 }
 
-/* 中间一组按钮：高 48、居中、间距 10（Figma 416:20057） */
+/* 「说点什么...」迷你弹幕输入胶囊（Figma 811:25003）：120×36、圆角 8、#0000000F */
+.sayPill {
+  display: inline-flex;
+  align-items: center;
+  width: 120px;
+  height: 36px;
+  padding: 0 8px;
+  border-radius: 8px;
+  background-color: var(--wm-color-control-fill);
+  cursor: pointer;
+  transition: background-color 120ms ease;
+
+  & > * + * {
+    margin-left: 6px;
+  }
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.09);
+  }
+}
+
+.sayPlaceholder {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 400;
+  color: var(--wm-color-text-quaternary);
+  white-space: nowrap;
+}
+
+/* 举手反应按钮（Figma 811:25006）：36×36、圆角 8、#0000000F */
+.handBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background-color: var(--wm-color-control-fill);
+  transition: background-color 120ms ease;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.09);
+  }
+}
+
+.icon24 {
+  display: block;
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+}
+
+/* 中间功能按钮组（Figma 811:25009）：间距 4 */
 .controls {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 48px;
 
   & > * + * {
-    margin-left: 10px;
+    margin-left: 4px;
   }
 }
 
-/* 单个按钮位：60×40、圆角 20（Figma 416:20058 等，图已含图标与箭头） */
-.slot {
+/* 带右侧上箭头的复合按钮（麦克风 / 摄像头 / 共享屏幕）：64×44 */
+.splitBtn {
   flex: 0 0 auto;
-  display: flex;
-  width: 60px;
-  height: 40px;
-  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 44px;
+  padding: 0 2px;
+  border-radius: 6px;
+  transition: background-color 120ms ease;
 
-  & > svg {
-    display: block;
-  }
-}
-
-/* 可点击的按钮（元宝）：hover 叠一层浅灰，形状与按钮位一致 */
-.slotAction {
-  cursor: pointer;
-  outline: none;
-
-  &:hover,
-  &:focus-visible {
+  &:hover {
     background-color: var(--wm-color-control-hover);
   }
 }
 
-/* 结束会议：占满剩余宽度、靠右（Figma 416:20131，里面是 44×44 的圆） */
-.exit {
-  flex: 1 1 auto;
+.splitMain {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 44px;
+
+  & > * + * {
+    margin-top: 2px;
+  }
+}
+
+.arrow {
+  display: block;
+  flex: 0 0 auto;
+  width: 12px;
+  height: 37px;
+}
+
+/* 常规功能按钮（Figma 811:25027 等）：56×44、圆角 6 */
+.btn {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 44px;
+  border-radius: 6px;
+  transition: background-color 120ms ease;
+
+  & > * + * {
+    margin-top: 2px;
+  }
+
+  &:hover {
+    background-color: var(--wm-color-control-hover);
+  }
+}
+
+.btnInteractive {
+  cursor: pointer;
+  outline: none;
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px var(--wm-color-focus-ring);
+  }
+}
+
+/* 打开态按钮高亮底（Figma 811:25027 成员 / 811:25039 聊天 / 811:25056 元宝：rgba(0,0,0,0.06)） */
+.btnActive {
+  background-color: var(--wm-color-control-fill);
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.09);
+  }
+}
+
+.label {
+  font-size: 10px;
+  line-height: 12px;
+  font-weight: 400;
+  color: var(--wm-color-text-secondary);
+  white-space: nowrap;
+}
+
+/* 右侧离开会议区（Figma 811:25068） */
+.exitWrap {
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  min-width: 0;
-  padding-left: 8px;
+}
+
+.leaveBtn:hover {
+  background-color: rgba(230, 57, 34, 0.08);
+}
+
+.leaveLabel {
+  font-size: 10px;
+  line-height: 12px;
+  font-weight: 400;
+  color: var(--wm-color-leave-danger);
+  white-space: nowrap;
 }

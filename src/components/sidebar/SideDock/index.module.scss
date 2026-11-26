@@ -1,6 +1,6 @@
 /*
- * 侧栏槽位：收起时宽 0，打开时 386（卡片 376 + 左侧与会议区的 10）。
- * 左侧会中区域宽度固定 936，因此槽位开合时由主窗口整体向右展开 / 向左收缩，
+ * 侧栏槽位（Figma 811:25080）：收起时宽 0，打开时 378（左侧 2px #F3F3F4 分隔 + 376 侧栏）。
+ * 左侧会中区域宽度严格锁定 1019，槽位开合时由主窗口整体向右展开 / 向左收缩，
  * 左侧会中画面绝不拉伸变宽。
  */
 .slot {
@@ -20,7 +20,7 @@
 }
 
 .slotOpen {
-  width: 386px;
+  width: 378px;
   opacity: 1;
 }
 
@@ -49,93 +49,80 @@
   right: 6px;
 }
 
-/* ---------- Chrome 页签（Figma 585:68637）：#F7F7F7 顶条 + 白底内凹反圆角激活页签 ---------- */
+/* ---------- 侧栏顶栏页签（Figma 811:25081）：#F3F3F4 高 40、pt 2px、gap 1px ---------- */
 
 .folderBar {
   position: relative;
   z-index: 30;
   flex: 0 0 auto;
   display: flex;
-  align-items: stretch;
+  align-items: center;
   height: 40px;
-  background-color: var(--wm-color-tab585-strip);
+  padding-top: 2px;
+  background-color: var(--wm-color-frame-bg);
 }
 
 .folderTabs {
   flex: 1 1 auto;
   min-width: 0;
-  display: flex;
-  align-items: stretch;
-}
-
-.folderTabInactive {
-  flex: 0 0 40px;
+  height: 100%;
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
+  gap: 1px;
+}
+
+/* 未选中页签（Figma 811:25101 / 811:25108）：84×36，图标 20 + 文案 12px */
+.folderTabInactive {
+  flex: 0 0 84px;
+  display: flex;
+  align-items: center;
+  width: 84px;
+  height: 36px;
+  padding: 6px 12px;
+  border-radius: 4px;
   cursor: pointer;
   outline: none;
+  transition: background-color 120ms ease-in-out;
 
-  &:hover .folderTabInactiveInner,
-  &:focus-visible .folderTabInactiveInner {
+  & > * + * {
+    margin-left: 4px;
+  }
+
+  &:hover,
+  &:focus-visible {
     background-color: var(--wm-color-control-hover);
   }
 }
 
-.folderTabInactiveInner {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  transition: background-color 120ms ease-in-out;
+.folderTabInactiveLabel {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 400;
+  color: var(--wm-color-text-secondary);
 }
 
-/* 激活页签（Figma 585:68649）：白底、顶圆角 12、左右 16×16 内凹反圆角衔接底部白色正文区 */
+/* 激活页签（Figma 811:25082）：纯白满高 38px、padding 6 8 6 12、与正文无缝衔接 */
 .folderTabActive {
   position: relative;
   z-index: 2;
-  flex: 1 1 auto;
+  flex: 1 0 0;
   min-width: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 40px;
-  padding: 6px 8px;
-  border-radius: 12px 12px 0 0;
+  height: 100%;
+  padding: 6px 8px 6px 12px;
   background-color: var(--wm-color-background-quaternary);
-  color: var(--wm-color-background-quaternary);
-  animation: classic-tab-expand 180ms cubic-bezier(0.22, 1, 0.36, 1);
+  animation: classic-tab-expand 160ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.folderConcaveLeft,
-.folderConcaveRight {
-  position: absolute;
-  bottom: 0;
-  width: 16px;
-  height: 16px;
-  pointer-events: none;
-}
-
-.folderConcaveLeft {
-  left: -16px;
-}
-
-.folderConcaveRight {
-  right: -16px;
-}
-
-/* 标题组（Figma 811:25083）：padding 0 6、高 28、图标与文案间距 4 */
 .folderTabTitle {
   display: flex;
   align-items: center;
   min-width: 0;
-  height: 28px;
-  padding: 0 6px;
-  border-radius: 6px;
 
   & > * + * {
     margin-left: 4px;
@@ -149,21 +136,25 @@
   justify-content: center;
   width: 20px;
   height: 20px;
+
+  & > img {
+    display: block;
+    flex: 0 0 auto;
+  }
 }
 
-/* Figma 585:68664：12px / 14px 400 #000000，letter-spacing 0.2px */
+/* Figma 811:25099：12px / 18px Medium #373C48 */
 .folderTabLabel {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
   font-size: 12px;
-  line-height: 14px;
-  font-weight: 400;
-  letter-spacing: 0.2px;
-  color: var(--wm-color-text-primary);
+  line-height: 18px;
+  font-weight: 500;
+  color: var(--wm-color-icon-strong);
 }
 
-/* 操作区（Figma 585:68665）：更多 / 独立窗口 / 关闭，三个 28×28、间距 2 */
+/* 激活页签操作区（Figma 811:25096 / 811:25097）：独立窗口 + 关闭，间距 2 */
 .folderTabActions {
   flex: 0 0 auto;
   display: flex;
@@ -178,14 +169,53 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
   cursor: pointer;
   outline: none;
   transition: background-color 120ms ease-in-out;
 
-  & > svg {
+  & > img {
+    display: block;
+    flex: 0 0 auto;
+  }
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--wm-color-control-hover);
+  }
+}
+
+/* 尾部 1×14 竖线 + 36×28 下拉箭头（Figma 811:25113 / 811:25114） */
+.folderTrailing {
+  position: relative;
+  z-index: 3;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+}
+
+.folderDivider {
+  flex: 0 0 1px;
+  width: 1px;
+  height: 14px;
+  border-radius: 17px;
+  background-color: var(--wm-color-outline-secondary);
+}
+
+.folderDropdownBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 28px;
+  border-radius: 4px;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 120ms ease-in-out;
+
+  & > img {
     display: block;
     flex: 0 0 auto;
   }
@@ -198,24 +228,6 @@
 
 .folderActionBtnActive {
   background-color: var(--wm-color-control-hover);
-}
-
-/* 右侧 1×12 细分隔线 + 28×28 下拉（Figma 585:68697） */
-.folderTrailing {
-  position: relative;
-  z-index: 3;
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  padding-right: 6px;
-}
-
-.folderDivider {
-  flex: 0 0 1px;
-  width: 1px;
-  height: 12px;
-  margin-right: 5px;
-  background-color: var(--wm-color-tab585-divider);
 }
 
 @keyframes classic-tab-expand {
@@ -285,17 +297,13 @@
 
 /* ---------- 内容区 ---------- */
 
-/* 多标签页时承托 #F7F7F7 顶条底色，让内部白底内容区顶部 16px 圆角（Figma 811:40262）自然衔接 */
 .panesStage {
   position: relative;
   flex: 1 1 auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
-}
-
-.panesStageMultiple {
-  background-color: var(--wm-color-tab585-strip);
+  background-color: var(--wm-color-background-quaternary);
 }
 
 .panes {
@@ -304,16 +312,6 @@
   min-height: 0;
   overflow: hidden;
   background-color: var(--wm-color-background-quaternary);
-}
-
-/* Figma 811:40262：内容区右上角 16px Chrome 风格圆角，自然裁切内部滚动内容与顶部 35px 渐隐 */
-.panesRoundedRight {
-  border-top-right-radius: 16px;
-}
-
-/* 非首项标签激活时，左上角同样与左侧 #F7F7F7 未选中标签以 16px 圆角衔接 */
-.panesRoundedLeft {
-  border-top-left-radius: 16px;
 }
 
 .pane {
@@ -343,7 +341,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .folderTabInactiveInner,
+  .folderTabInactive,
   .folderTabActive,
   .menu,
   .paneActive {

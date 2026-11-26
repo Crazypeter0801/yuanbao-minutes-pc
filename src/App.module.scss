@@ -6,7 +6,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 1400px;
+  min-width: 1445px;
   min-height: 100%;
   padding: 64px 24px;
   background-color: var(--wm-color-stage-background);
@@ -24,15 +24,15 @@
 }
 
 /*
- * 1338×795 主窗口舞台锚点：
- * 主窗口紧贴左缘，当所有侧栏标签页关闭或弹出时，主窗口整体向左收缩为 952（936 会中区 + 左右各 8），
+ * 1397×806 主窗口舞台锚点（Figma 811:24867 / 811:24869）：
+ * 主窗口紧贴左缘，当所有侧栏标签页关闭或弹出时，主窗口整体向左收缩为 1019，
  * 左侧会中区宽度与位置完全保持不变；自由拖拽后在当前左缘位置同样保持左缩不变宽。
  */
 .windowStage {
   position: relative;
-  flex: 0 0 1338px;
-  width: 1338px;
-  height: 795px;
+  flex: 0 0 1397px;
+  width: 1397px;
+  height: 806px;
   display: flex;
   justify-content: flex-start;
   align-items: stretch;
@@ -49,22 +49,22 @@
 }
 
 /*
- * 会议区容器：宽度严格锁定 936（原 1338 - 16 内边距 - 386 侧栏槽位）。
+ * 会议区容器：宽度严格锁定 1019（Figma 811:24997）。
  * 绝不因侧栏关闭或独立窗口浮出而向右拉伸变宽。
  */
 .meetingArea {
   position: relative;
-  flex: 0 0 936px;
-  width: 936px;
-  min-width: 936px;
-  max-width: 936px;
+  flex: 0 0 1019px;
+  width: 1019px;
+  min-width: 1019px;
+  max-width: 1019px;
   display: flex;
 }
 
 /*
- * 入会极简主窗口（Figma 574:19176）：高 795、圆角 20、左右各留 8，
- * 顶部 40 通栏操作栏横跨会议区与侧栏上方；下方主体行并排 936 会中区 + SideDock（0 ↔ 386），
- * 随 SideDock 宽度过渡平滑向左收缩 / 向右展开（952 ↔ 1338）。
+ * 会中侧栏主窗口（Figma 811:24869）：高 806（顶栏 40 + 内容区 766）、圆角 10、底色 #F3F3F4，
+ * 下方主体行并排 1019 会中区 + SideDock（0 ↔ 378，含 2px 分隔与 376 侧栏），
+ * 随 SideDock 宽度过渡平滑向左收缩 / 向右展开（1019 ↔ 1397）。
  */
 .window {
   position: relative;
@@ -72,13 +72,12 @@
   flex-direction: column;
   flex: 0 0 auto;
   width: fit-content;
-  height: 795px;
-  padding: 0 8px;
+  height: 806px;
+  padding: 0;
   overflow: hidden;
-  border-radius: 20px;
-  background-color: var(--wm-color-window-translucent);
-  backdrop-filter: blur(20px);
-  box-shadow: var(--wm-shadow-canvas);
+  border-radius: 10px;
+  background-color: var(--wm-color-frame-bg);
+  box-shadow: var(--wm-shadow-frame-811);
   will-change: transform;
 }
 
@@ -87,6 +86,7 @@
   min-height: 0;
   display: flex;
   align-items: stretch;
+  background-color: var(--wm-color-frame-bg);
 }
 
 .windowDragging {

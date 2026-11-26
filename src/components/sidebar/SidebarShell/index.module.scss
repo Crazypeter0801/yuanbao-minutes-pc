@@ -1,6 +1,6 @@
 /*
- * 侧栏外壳（Figma 574:19176 / 574:19434）：位于顶部通栏操作栏下方，376 宽白色卡片，
- * 圆角 12，底部留 8 与窗口下缘对齐。
+ * 侧栏外壳（Figma 811:25080）：位于顶部状态栏下方右侧，376×766 纯白面板，
+ * 与左侧会议区由 2px #F3F3F4 分隔，贴合 10px 圆角主窗口右侧边缘。
  */
 .shell {
   position: relative;
@@ -8,11 +8,8 @@
   display: flex;
   flex-direction: column;
   width: 376px;
-  margin: 0 0 8px;
+  height: 100%;
+  margin: 0;
   overflow: hidden;
-  /* backdrop-filter 的子层在 Chrome 里不吃父级 overflow 的圆角裁切，加 isolation + clip-path 兜底 */
-  isolation: isolate;
-  clip-path: inset(0 round 12px);
-  border-radius: 12px;
   background-color: var(--wm-color-background-quaternary);
 }

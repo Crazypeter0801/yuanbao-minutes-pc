@@ -1,4 +1,4 @@
-/* 通栏操作栏：高 40、横跨整个主窗口宽度（Figma 574:19177） */
+/* 顶部状态栏（Figma 811:24870 win状态栏）：纯白高 40、底边 1px #EBEDF2 */
 .titleBar {
   flex: 0 0 auto;
   display: flex;
@@ -6,7 +6,9 @@
   justify-content: space-between;
   width: 100%;
   height: 40px;
-  padding: 6px 0;
+  padding: 0 8px;
+  border-bottom: 1px solid var(--wm-color-outline-tertiary);
+  background-color: var(--wm-color-background-quaternary);
   user-select: none;
 }
 
@@ -26,13 +28,13 @@
 .left {
   display: flex;
   align-items: center;
+  padding-left: 4px;
 
   & > * + * {
     margin-left: 8px;
   }
 }
 
-/* 窗口控制 + 应用图标 + 标题：三者间距 4（Figma 439:21026） */
 .titleCluster {
   display: flex;
   align-items: center;
@@ -42,76 +44,97 @@
   }
 }
 
-/* 窗口控制外面一圈 2 的上下留白，6 圆角热区（Figma 439:21027） */
-.trafficWrap {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  padding: 2px 0;
-  border-radius: 6px;
-}
-
-/* Mac 窗口控制：64 宽、内边距 5 4、三个圆点间距 8（Figma 439:21028） */
-.traffic {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 64px;
-  padding: 5px 4px;
-}
-
-.dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 6px;
-
-  & + & {
-    margin-left: 8px;
-  }
-}
-
-/* 实色 + 内阴影堆出「果冻」质感，数值取自设计稿 */
-.dotClose {
-  background-color: var(--wm-color-traffic-close);
-  box-shadow: var(--wm-shadow-traffic-close);
-}
-
-.dotMinimize {
-  background-color: var(--wm-color-traffic-minimize);
-  box-shadow: var(--wm-shadow-traffic-minimize);
-}
-
-.dotZoom {
-  background-color: var(--wm-color-traffic-zoom);
-  box-shadow: var(--wm-shadow-traffic-zoom);
-}
-
-/* 图标 + 标题：间距 4（Figma 439:21029 / 439:21031） */
 .appTitle {
   display: flex;
   align-items: center;
+  padding: 2px 4px;
+  border-radius: 6px;
 
   & > * + * {
     margin-left: 4px;
   }
 }
 
-/* 12/17，纯黑（Figma 439:21031 / 439:21032） */
+.icon20 {
+  display: block;
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+}
+
 .text {
   font-size: 12px;
   line-height: 17px;
+  font-weight: 400;
   color: var(--wm-color-text-primary);
   white-space: nowrap;
 }
 
-/* 标题右侧 28 宽的图标位（Figma 439:21089） */
-.statusIcon {
+.duration {
+  font-variant-numeric: tabular-nums;
+}
+
+.statusCluster {
+  display: flex;
+  align-items: center;
+
+  & > * + * {
+    margin-left: 2px;
+  }
+}
+
+.iconBtn {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 28px;
   height: 28px;
+  border-radius: 6px;
+  transition: background-color 120ms ease-in-out;
+
+  &:hover {
+    background-color: var(--wm-color-control-hover);
+  }
+}
+
+/* Figma 811:24883 三格绿色网络信号图标 */
+.signal {
+  position: relative;
+  width: 20px;
+  height: 20px;
+}
+
+.signalBar {
+  position: absolute;
+  width: 2px;
+  border-radius: 0.4px;
+  background-color: var(--wm-color-signal-good);
+}
+
+.signalBar1 {
+  left: 4px;
+  top: 11px;
+  height: 5px;
+}
+
+.signalBar2 {
+  left: 9px;
+  top: 7px;
+  height: 9px;
+}
+
+.signalBar3 {
+  left: 14px;
+  top: 4px;
+  height: 12px;
+}
+
+.divider {
+  flex: 0 0 1px;
+  width: 1px;
+  height: 14px;
+  border-radius: 17px;
+  background-color: var(--wm-color-outline-secondary);
 }
 
 .right {
@@ -123,7 +146,6 @@
   }
 }
 
-/* 宫格 / 安全 / 布局三个按钮：间距 4（Figma 439:21095） */
 .tools {
   display: flex;
   align-items: center;
@@ -133,7 +155,6 @@
   }
 }
 
-/* 图标 + 文字标签 + 可选下拉箭头（Figma 574:19388 / 574:19395 / 574:19407） */
 .tool {
   display: flex;
   align-items: center;
@@ -151,22 +172,40 @@
   }
 }
 
-/* 设置按钮左右留 6px（Figma 574:19407） */
-.toolLoose {
+.toolSettings {
   padding: 4px 6px;
 }
 
-/* 12/16 400 #4E5461（wm_color_text_secondary） */
+.toolGroup {
+  display: flex;
+  align-items: center;
+
+  & > * + * {
+    margin-left: 2px;
+  }
+}
+
 .toolLabel {
   font-size: 12px;
   line-height: 16px;
   font-weight: 400;
-  color: var(--wm-color-text-secondary);
+  color: var(--wm-color-text-primary);
   white-space: nowrap;
 }
 
-/* 右侧侧栏切换按钮（Figma 574:19425）：28×28、圆角 6 */
-.more {
+.chevronDown {
+  display: block;
+  width: 10px;
+  height: 10px;
+  transform: rotate(180deg);
+}
+
+.winControls {
+  display: flex;
+  align-items: center;
+}
+
+.winBtn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -174,14 +213,33 @@
   height: 28px;
   border-radius: 6px;
   transition: background-color 120ms ease-in-out;
-}
 
-.moreInteractive {
-  cursor: pointer;
-  outline: none;
-
-  &:hover,
-  &:focus-visible {
+  &:hover {
     background-color: var(--wm-color-control-hover);
   }
+}
+
+.winBtnClose:hover {
+  background-color: rgba(230, 57, 34, 0.12);
+}
+
+.winIcon16 {
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+
+/* Figma I811:24993;1687:5018：16×16 框内 1.2px 线宽最大化方框 */
+.winMaxBox {
+  display: block;
+  width: 10px;
+  height: 9px;
+  border: 1.2px solid var(--wm-color-icon-strong);
+  border-radius: 1px;
+}
+
+.winCloseIcon {
+  display: block;
+  width: 8.27px;
+  height: 8.27px;
 }

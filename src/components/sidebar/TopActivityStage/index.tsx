@@ -1,14 +1,12 @@
 import { useEffect, useState, type FC } from 'react';
-import yuanbaoSleepingBg from '@/assets/d2c/icons/yuanbao811/yuanbao-sleeping-bg.svg';
-import yuanbaoSleepingBody from '@/assets/d2c/icons/yuanbao811/yuanbao-sleeping-body.svg';
-import yuanbaoSleepingFg from '@/assets/d2c/icons/yuanbao811/yuanbao-sleeping-fg.svg';
+import yuanbaoStateIdle from '@/assets/d2c/icons/yuanbao811/yuanbao-state-idle.svg';
 import styles from './index.module.scss';
 import { YuanbaoWorkingSprite } from './YuanbaoWorkingSprite';
 
 const ROLL_EXIT_MS = 280;
 
 interface TopActivityStageProps {
-  /** 是否处于活动态（进行中任务或 3 秒思考态）；false 时呈现 Figma 811:39347 空闲态 */
+  /** 是否处于活动态（进行中任务或 3 秒思考态）；false 时呈现 Figma 875:28570 空闲态 */
   isActive: boolean;
   /** 是否处于用户发言后的思考态 */
   isThinking: boolean;
@@ -19,9 +17,9 @@ interface TopActivityStageProps {
 }
 
 /**
- * 顶部元宝活动状态与 Agent 详情统一入口（Figma 811:25080 / 811:37273 活动态 / 811:39347 空闲态）：
- * - 空闲态：48×48 休眠元宝三层矢量图 + 磨砂白底圆角胶囊仅展示「元宝」；
- * - 活动态：48×48 36 帧工作形象动态雪碧图 + 磨砂白底胶囊平滑展开「正在思考」/ 简短任务阶段轮播文案；
+ * 顶部元宝活动状态与 Agent 详情统一入口（Figma 811:24867 活动态 / 875:28570 空闲态）：
+ * - 空闲态：48×48 空闲元宝（state-idle 42×39.353）+ #FAFAFA 磨砂胶囊仅展示「元宝」；
+ * - 活动态：48×48 36 帧工作形象动态雪碧图 + #FAFAFA 磨砂胶囊平滑展开「正在思考」/ 简短任务阶段轮播文案；
  * - 点击徽章统一进入元宝 Agent 详情页。
  */
 export const TopActivityStage: FC<TopActivityStageProps> = ({
@@ -85,33 +83,21 @@ export const TopActivityStage: FC<TopActivityStageProps> = ({
           className={`${styles.character} ${isActive ? styles.characterActive : styles.characterIdle}`}
           aria-hidden="true"
         >
-          {/* 空闲态休眠元宝（Figma 811:39426 / 811:39427，40×42.929 居中于 48×48） */}
+          {/* 空闲态元宝（Figma 875:28570 / 898:31284 state-idle，42×39.353 居中于 48×48） */}
           <span
             className={`${styles.characterLayer} ${
               !isActive ? styles.characterLayerVisible : styles.characterLayerHidden
             }`}
             data-top-activity-mascot="idle"
           >
-            <span className={styles.sleepingArt}>
-              <img
-                src={yuanbaoSleepingBg}
-                alt=""
-                className={styles.sleepingBg}
-                draggable={false}
-              />
-              <img
-                src={yuanbaoSleepingBody}
-                alt=""
-                className={styles.sleepingBody}
-                draggable={false}
-              />
-              <img
-                src={yuanbaoSleepingFg}
-                alt=""
-                className={styles.sleepingFg}
-                draggable={false}
-              />
-            </span>
+            <img
+              src={yuanbaoStateIdle}
+              alt=""
+              className={styles.idleArt}
+              width={42}
+              height={39.353}
+              draggable={false}
+            />
           </span>
 
           {/* 活动态工作元宝（Figma 811:37275，接入 36 帧动态雪碧图 48×48） */}
@@ -126,7 +112,7 @@ export const TopActivityStage: FC<TopActivityStageProps> = ({
         </span>
 
         <span className={`${styles.pill} ${isActive ? styles.pillActive : styles.pillIdle}`}>
-          <span className={styles.name}>元宝</span>
+          <span className={`${styles.name} ${isActive ? styles.nameActive : styles.nameIdle}`}>元宝</span>
           <span
             className={`${styles.statusWrap} ${isActive ? styles.statusWrapVisible : ''}`}
             aria-hidden={!isActive}

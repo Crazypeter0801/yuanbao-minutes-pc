@@ -1,27 +1,24 @@
 import type { ReactNode } from 'react';
-import IconTab574Chat from '@/assets/d2c/icons/sidetabs574/icon-tab574-chat';
-import IconTab574Members from '@/assets/d2c/icons/sidetabs574/icon-tab574-members';
-import IconTab574Yuanbao from '@/assets/d2c/icons/sidetabs574/icon-tab574-yuanbao';
-import IconYuanbao811 from '@/assets/d2c/icons/yuanbao811/icon-yuanbao-811';
+import iconTabChat811 from '@/assets/d2c/frame811/icon-tab-chat.svg';
+import iconTabMembers811 from '@/assets/d2c/frame811/icon-tab-members.svg';
+import iconTabYuanbao811 from '@/assets/d2c/frame811/icon-tab-yuanbao.svg';
 
 /** 侧栏里能开的三个应用 */
 export type SideAppId = 'yuanbao' | 'chat' | 'members';
 
-/** 页签固定顺序：元宝 → 管理成员 → 聊天 */
-export const SIDE_APP_ORDER: SideAppId[] = ['yuanbao', 'members', 'chat'];
+/** 页签固定顺序（Figma 811:25081）：元宝 → 聊天 → 成员 */
+export const SIDE_APP_ORDER: SideAppId[] = ['yuanbao', 'chat', 'members'];
 
 export interface SideAppMeta {
-  /** 完整名称（单开标题栏、激活页签、独立窗口、读屏） */
+  /** 完整名称（单开标题栏、独立窗口、读屏） */
   title: string;
-  /** 简洁标签名 */
+  /** 顶栏页签短名称（Figma 811:25081：元宝 / 聊天 / 成员） */
   tabLabel: string;
   /** 单开标题栏里的 20 图标 */
   icon: ReactNode;
-  /** 未选中 20 灰图标 */
-  iconOff: ReactNode;
-  /** Chrome 页签与独立浮窗激活态 20 图标（元宝采用 Figma 811:38167 标准形象） */
+  /** 811:25081 顶栏激活态与独立浮窗图标 */
   icon585On: ReactNode;
-  /** Chrome 页签未选中态图标（统一 #4E5461） */
+  /** 811:25081 顶栏未选中态图标 */
   icon585Off: ReactNode;
 }
 
@@ -29,25 +26,22 @@ export const SIDE_APPS: Record<SideAppId, SideAppMeta> = {
   yuanbao: {
     title: '元宝',
     tabLabel: '元宝',
-    icon: <IconYuanbao811 width={20} height={20} />,
-    iconOff: <IconTab574Yuanbao width={16} height={16} color="#7B818F" />,
-    icon585On: <IconYuanbao811 width={20} height={20} />,
-    icon585Off: <IconTab574Yuanbao width={16} height={16} />,
-  },
-  members: {
-    title: '管理成员',
-    tabLabel: '管理成员',
-    icon: <IconTab574Members width={20} height={20} />,
-    iconOff: <IconTab574Members width={20} height={20} color="#7B818F" />,
-    icon585On: <IconTab574Members width={20} height={20} />,
-    icon585Off: <IconTab574Members width={20} height={20} />,
+    icon: <img src={iconTabYuanbao811} alt="" width={16} height={16} draggable={false} />,
+    icon585On: <img src={iconTabYuanbao811} alt="" width={16} height={16} draggable={false} />,
+    icon585Off: <img src={iconTabYuanbao811} alt="" width={16} height={16} draggable={false} />,
   },
   chat: {
     title: '聊天',
     tabLabel: '聊天',
-    icon: <IconTab574Chat width={20} height={20} />,
-    iconOff: <IconTab574Chat width={20} height={20} color="#7B818F" />,
-    icon585On: <IconTab574Chat width={20} height={20} />,
-    icon585Off: <IconTab574Chat width={20} height={20} />,
+    icon: <img src={iconTabChat811} alt="" width={20} height={20} draggable={false} />,
+    icon585On: <img src={iconTabChat811} alt="" width={20} height={20} draggable={false} />,
+    icon585Off: <img src={iconTabChat811} alt="" width={20} height={20} draggable={false} />,
+  },
+  members: {
+    title: '管理成员',
+    tabLabel: '成员',
+    icon: <img src={iconTabMembers811} alt="" width={20} height={20} draggable={false} />,
+    icon585On: <img src={iconTabMembers811} alt="" width={20} height={20} draggable={false} />,
+    icon585Off: <img src={iconTabMembers811} alt="" width={20} height={20} draggable={false} />,
   },
 };

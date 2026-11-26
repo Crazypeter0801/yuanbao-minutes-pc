@@ -113,7 +113,7 @@ const FILE_KIND_PATTERN = /pdf|ppt|幻灯片|文件|纪要文档/i;
 
 export default function App() {
   const [dock, setDock] = useState<DockState>({
-    apps: ["yuanbao", "members", "chat"],
+    apps: ["yuanbao", "chat", "members"],
     active: "yuanbao",
     floating: [],
   });
@@ -352,6 +352,7 @@ export default function App() {
   };
 
   const dockOpen = dock.active !== null;
+  const openApps: SideAppId[] = Array.from(new Set([...(dockOpen ? dock.apps : []), ...dock.floating]));
 
   /**
    * 计算弹出独立浮窗的初始位置（相对舞台左上角）：
@@ -359,10 +360,10 @@ export default function App() {
    */
   const computeFloatingDefaultOffset = (index: number) => {
     const FLOATING_W = 376;
-    const FLOATING_H = 747;
+    const FLOATING_H = 766;
     const SAFE_MARGIN = 16;
-    const idealX = windowPos.x + (dockOpen ? 1052 : 1032) + index * 24;
-    const idealY = windowPos.y - 52 + index * 24;
+    const idealX = windowPos.x + (dockOpen ? 1096 : 1044) + index * 24;
+    const idealY = windowPos.y - 36 + index * 24;
 
     const stageRect = stageElRef.current?.getBoundingClientRect();
     if (!stageRect || typeof window === "undefined") {
@@ -387,7 +388,7 @@ export default function App() {
   return (
     <div className={styles.page}>
       <div className={styles.frame}>
-        {/* 固定 1338 宽舞台锚点：主窗口靠左停放，侧栏全部关闭或浮出时主窗口向左收缩到 952，左侧会中区 936 原地不动 */}
+        {/* 固定 1397×806 舞台锚点（Figma 811:24867）：主窗口靠左停放，侧栏全部关闭或浮出时向左收缩到 1019，左侧会中区原地不动 */}
         <div ref={stageElRef} className={styles.windowStage}>
           <div
             ref={windowElRef}
@@ -395,7 +396,7 @@ export default function App() {
             id={WINDOW_TOAST_ROOT_ID}
             style={{ transform: `translate3d(${windowPos.x}px, ${windowPos.y}px, 0)` }}
           >
-            {/* 顶部通栏操作栏（Figma 574:19176）：横跨会议区与侧栏上方 */}
+            {/* 顶部状态栏（Figma 811:24870 win状态栏）：横跨会议区与侧栏上方 */}
             <MeetingTitleBar
               dragHandlers={{
                 dragging: windowDragging,
@@ -403,19 +404,12 @@ export default function App() {
                 onPointerMove: handleWindowDragMove,
                 onPointerUp: handleWindowDragUp,
               }}
-              sidebarOpen={dockOpen}
-              onToggleSidebar={() => {
-                if (dockOpen) {
-                  closeAll();
-                } else {
-                  openApp("yuanbao");
-                }
-              }}
             />
             <div className={styles.workspaceRow}>
               <div className={styles.meetingArea}>
                 <MeetingWindow
                   activeApp={dock.active}
+                  openApps={openApps}
                   onToggleApp={toggleApp}
                   barrage={meetingChat.barrage}
                   onSendBarrage={meetingChat.send}
