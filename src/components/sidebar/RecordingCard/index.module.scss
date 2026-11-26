@@ -260,20 +260,26 @@
 }
 
 /*
- * 新版元宝笔记卡片（Figma 811:41211）：
- * 260×60、圆角 16、白底 1px #EBEDF2 内描边；padding 10px 12px 10px 10px、间距 8px。
- * 左 40×40 文档+元宝徽标，右主标题（14/20 400 #000）+ 会议摘要（12/18 400 #7B818F）双单行省略。
+ * 新版元宝笔记卡片（Figma 898:33358 / 898:34050）：
+ * 260×185、圆角 16、白底 1px #EBEDF2 内描边；
+ * 上：12px 顶/左右内边距包 236×133 圆角 10 浅灰渐变预览框（0.5px rgba(0,0,0,0.06) 描边、「总结生成中...」+ 3 条 16px 高圆角 4 骨架条）；
+ * 下：padding 10px 12px 底部附件栏，左 20×20 蓝色图标 + 4px 间距 + 14/20 常规黑字单行省略标题。
  */
-.cardNote811 {
-  flex-direction: row;
-  align-items: center;
-  gap: 8px;
+.cardNote898 {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
   width: 260px;
   max-width: 100%;
-  height: 60px;
-  padding: 10px 12px 10px 10px;
-  border-radius: var(--wm-radius-yb-bubble);
+  overflow: hidden;
+  border-radius: 16px;
+  background-color: var(--wm-color-background-quaternary);
+  box-shadow: inset 0 0 0 1px var(--wm-color-outline-tertiary);
   text-align: left;
+
+  @supports (corner-shape: superellipse(1.6)) {
+    corner-shape: round;
+  }
 
   &:hover,
   &:focus-visible {
@@ -281,31 +287,118 @@
   }
 }
 
-.noteIcon {
-  flex: 0 0 40px;
+.note898Content {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 100%;
+  padding: 12px 12px 0;
+  overflow: hidden;
+}
 
-  & > svg {
-    display: block;
-    width: 40px;
-    height: 40px;
+.note898Preview {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  width: 100%;
+  height: 133px;
+  padding: 12.5px;
+  border: 0.5px solid rgba(0, 0, 0, 0.06);
+  border-radius: 10px;
+  background-image: linear-gradient(
+    40deg,
+    rgba(255, 255, 255, 0.3) 77.4%,
+    rgba(245, 245, 245, 0.3) 97.92%
+  );
+}
+
+.note898Status {
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 400;
+  color: var(--wm-color-text-extra-quinary);
+  white-space: nowrap;
+}
+
+.note898Skeletons {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+}
+
+.note898Bar {
+  display: block;
+  height: 16px;
+  border-radius: 4px;
+  background-image: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.036) 0%,
+    rgba(0, 0, 0, 0.016) 50%,
+    rgba(0, 0, 0, 0.036) 100%
+  );
+  background-size: 220% 100%;
+  background-position: 100% 0;
+  animation: note898-skeleton-sweep 2.8s ease-in-out infinite;
+}
+
+.note898Bar1 {
+  width: 186px;
+  max-width: 100%;
+}
+
+.note898Bar2 {
+  width: 206px;
+  max-width: 100%;
+  animation-delay: 140ms;
+}
+
+.note898Bar3 {
+  width: 154px;
+  max-width: 100%;
+  animation-delay: 280ms;
+}
+
+@keyframes note898-skeleton-sweep {
+  0% {
+    background-position: 100% 0;
+  }
+
+  100% {
+    background-position: -120% 0;
   }
 }
 
-.noteMeta {
-  flex: 1 1 auto;
-  min-width: 0;
+.note898Footer {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  padding: 10px 12px;
 }
 
-/* Figma 811:41231：PingFang SC Regular 14px / 20px #000000，单行省略 */
-.noteTitle {
+.note898IconBox {
+  flex: 0 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+}
+
+.note898Icon {
+  display: block;
+  width: 14px;
+  height: 9.5px;
+}
+
+.note898Title {
+  flex: 1 1 auto;
+  min-width: 0;
   overflow: hidden;
   font-size: 14px;
   line-height: 20px;
@@ -315,33 +408,10 @@
   text-overflow: ellipsis;
 }
 
-/* Figma 811:41233：PingFang SC Regular 12px / 18px #7B818F，单行省略 */
-.noteSummary {
-  overflow: hidden;
-  font-size: 12px;
-  line-height: 18px;
-  font-weight: 400;
-  color: var(--wm-color-text-tertiary);
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-/* Figma 811:38631：类型 + 体积行（gap 4px，12/18 #7B818F） */
-.noteMetaRow {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  min-width: 0;
-  overflow: hidden;
-  font-size: 12px;
-  line-height: 18px;
-  font-weight: 400;
-  color: var(--wm-color-text-tertiary);
-}
-
-.noteMetaItem {
-  flex: 0 1 auto;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+@media (prefers-reduced-motion: reduce) {
+  .note898Bar {
+    animation: none;
+    background-image: none;
+    background-color: rgba(0, 0, 0, 0.03);
+  }
 }

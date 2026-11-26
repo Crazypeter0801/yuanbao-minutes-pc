@@ -11,31 +11,41 @@
   user-select: none;
 }
 
-/* 左侧互动区（Figma 811:25002） */
-.interactGroup {
+/* Figma 811:25001：左侧互动区（248）+ 中间控制组（620） */
+.leftGroup {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
+}
+
+/* 左侧互动区（Figma 811:25002）：宽 248、左内边距 4 */
+.interactGroup {
+  flex: 0 0 248px;
+  display: flex;
+  align-items: center;
+  width: 248px;
+  height: 48px;
+  padding-left: 4px;
 
   & > * + * {
     margin-left: 8px;
   }
 }
 
-/* 「说点什么...」迷你弹幕输入胶囊（Figma 811:25003）：120×36、圆角 8、#0000000F */
+/* 「说点什么...」迷你弹幕输入胶囊（Figma I811:25002;13161:142515）：120×36、圆角 8、gap 4 */
 .sayPill {
   display: inline-flex;
   align-items: center;
   width: 120px;
   height: 36px;
-  padding: 0 8px;
+  padding: 6px 16px 6px 8px;
   border-radius: 8px;
   background-color: var(--wm-color-control-fill);
   cursor: pointer;
   transition: background-color 120ms ease;
 
   & > * + * {
-    margin-left: 6px;
+    margin-left: 4px;
   }
 
   &:hover {
@@ -51,7 +61,7 @@
   white-space: nowrap;
 }
 
-/* 举手反应按钮（Figma 811:25006）：36×36、圆角 8、#0000000F */
+/* 举手反应按钮（Figma I811:25002;13161:142518）：36×36、圆角 8 */
 .handBtn {
   display: flex;
   align-items: center;
@@ -67,11 +77,37 @@
   }
 }
 
+/* 统一 24×24 图标槽位：确保各尺寸原矢量在 24×24 容器内居中、上下基线一致 */
+.iconBox {
+  flex: 0 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
 .icon24 {
   display: block;
   flex: 0 0 auto;
   width: 24px;
   height: 24px;
+}
+
+/* Figma 811:25044（逐字稿）/ 811:25066（应用）：22×22 居中于 24×24 */
+.icon22 {
+  display: block;
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+}
+
+/* Figma 811:25059（元宝）：18×18 居中于 24×24 */
+.icon18 {
+  display: block;
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
 }
 
 /* 中间功能按钮组（Figma 811:25009）：间距 4 */
@@ -85,44 +121,44 @@
   }
 }
 
-/* 带右侧上箭头的复合按钮（麦克风 / 摄像头 / 共享屏幕）：64×44 */
+/*
+ * 带右侧上箭头的复合按钮（Figma 811:25010 / 25015 / 25020）：
+ * 64×44，图标与文案按 64px 水平居中（top 3px + 24px 槽 + 1px 间距 + 12px 文案 + bottom 4px），
+ * 右侧 12×37 上箭头绝对贴右（right: 0, top: 3px），与常规按钮共享完全一致的垂直基线。
+ */
 .splitBtn {
+  position: relative;
   flex: 0 0 auto;
-  display: inline-flex;
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 64px;
   height: 44px;
-  padding: 0 2px;
+  padding: 3px 0 4px;
   border-radius: 6px;
   transition: background-color 120ms ease;
+
+  & > .label {
+    margin-top: 1px;
+  }
 
   &:hover {
     background-color: var(--wm-color-control-hover);
   }
 }
 
-.splitMain {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 44px;
-
-  & > * + * {
-    margin-top: 2px;
-  }
-}
-
 .arrow {
+  position: absolute;
+  top: 3px;
+  right: 0;
   display: block;
-  flex: 0 0 auto;
   width: 12px;
   height: 37px;
+  pointer-events: none;
 }
 
-/* 常规功能按钮（Figma 811:25027 等）：56×44、圆角 6 */
+/* 常规功能按钮（Figma 811:25026 等）：56×44、圆角 6、pt 3 / pb 4 / gap 1 */
 .btn {
   flex: 0 0 auto;
   display: flex;
@@ -131,11 +167,13 @@
   justify-content: center;
   width: 56px;
   height: 44px;
+  padding: 3px 0 4px;
   border-radius: 6px;
   transition: background-color 120ms ease;
 
-  & > * + * {
-    margin-top: 2px;
+  & > .label,
+  & > .leaveLabel {
+    margin-top: 1px;
   }
 
   &:hover {
@@ -152,7 +190,7 @@
   }
 }
 
-/* 打开态按钮高亮底（Figma 811:25027 成员 / 811:25039 聊天 / 811:25056 元宝：rgba(0,0,0,0.06)） */
+/* 打开态按钮高亮底（Figma 811:25026 成员 / 811:25033 聊天 / 811:25057 元宝：rgba(0,0,0,0.06)） */
 .btnActive {
   background-color: var(--wm-color-control-fill);
 

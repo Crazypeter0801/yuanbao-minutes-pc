@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState, type FC } from 'react';
 import IconNoteChevron from '@/assets/d2c/icons/v2/icon-side3-note-chevron';
 import IconNoteFile from '@/assets/d2c/icons/v2/icon-side3-note-file';
-import IconYuanbaoNoteDoc from '@/assets/d2c/icons/yuanbao811/icon-yuanbao-note-doc';
+import iconNote898 from '@/assets/d2c/icons/yuanbao811/icon-note-898.svg';
 import { Pressable } from '@/components/common/Pressable';
 import { meetingSession } from '@/data/meetingSession';
 import { recognizingIdle, recognizingSteps } from '@/data/meetingTopics';
@@ -17,13 +17,13 @@ const LIST_GROW_MS = 260;
 interface RecordingCardProps {
   /** 卡片标题（compact 新版默认取当前会议主题，展开态默认「元宝笔记」） */
   title?: string;
-  /** 次级信息条目（如 ['PDF', '128KB']，对齐 Figma 811:38610） */
+  /** 次级信息条目（保留兼容） */
   metaItems?: string[];
-  /** 会议摘要（compact 新版单行省略展示，未传 metaItems 时兜底） */
+  /** 会议摘要（保留兼容） */
   summary?: string;
   /** 已识别出的话题，按时间顺序，最后一条是当前正在聊的；为空时显示识别中的过渡态 */
   topics?: string[];
-  /** compact：Figma 811:38610 新版元宝笔记卡片（260×60 左文档徽标 + 右标题与元信息） */
+  /** compact：Figma 898:33358 / 898:34050 新版元宝笔记卡片（260×185 预览骨架 + 底部图标标题栏） */
   compact?: boolean;
   /** 点击整张卡片打开云笔记 */
   onOpen?: () => void;
@@ -31,14 +31,12 @@ interface RecordingCardProps {
 
 /**
  * 元宝笔记卡片：
- * - compact（Figma 811:38610 / 582:33088）：260×60 白底 1px #EBEDF2 描边、圆角 16；
- *   左 40×40 元宝笔记图标，右标题（14/20 #000）+ 次级元信息/摘要（12/18 #7B818F）。
+ * - compact（Figma 898:33358 / 898:34050）：260×185 白底 1px #EBEDF2 描边、圆角 16；
+ *   顶部 236×133 圆角 10 预览区（「总结生成中...」+ 三条流光骨架条），底部 20×20 蓝色图标 + 标题（14/20 #000）。
  * - 非 compact：保留「正在帮你记」实时话题过渡卡。
  */
 export const RecordingCard: FC<RecordingCardProps> = ({
   title,
-  metaItems,
-  summary,
   topics = [],
   compact = false,
   onOpen,
@@ -60,12 +58,6 @@ export const RecordingCard: FC<RecordingCardProps> = ({
     return () => window.clearTimeout(timer);
   }, [compact, hasTopics, step, lastStep]);
 
-  /*
-   * 新话题出现：
-   * - 没到上限：列表高度平滑长高（CSS height 过渡），内容不动；
-   * - 到上限：高度不变，列表平滑滚到底，让最新一条露出来。
-   * 新条目只做淡入、不做位移，避免「长高 + 上移 + 滚动」三个动作叠在一起产生弹跳。
-   */
   useLayoutEffect(() => {
     if (compact) {
       return undefined;
@@ -90,36 +82,39 @@ export const RecordingCard: FC<RecordingCardProps> = ({
   }, [compact, topics.length]);
 
   if (compact) {
-    const noteTitle = title ?? meetingSession.topic;
-    const noteSummary = summary ?? meetingSession.summary;
-    const hasMetaItems = Boolean(metaItems && metaItems.length > 0);
+    const noteTitle = title ?? `元宝笔记：${meetingSession.topic}`;
 
     return (
       <Pressable
-        className={`${styles.card} ${styles.cardNote811}`}
+        className={`${styles.card} ${styles.cardNote898}`}
         onClick={onOpen}
-        ariaLabel={`打开元宝笔记：${noteTitle}`}
+        ariaLabel={`打开${noteTitle}`}
       >
-        <span className={styles.noteIcon} aria-hidden="true">
-          <IconYuanbaoNoteDoc width={40} height={40} />
+        <span className={styles.note898Content}>
+          <span className={styles.note898Preview}>
+            <span className={styles.note898Status}>总结生成中...</span>
+            <span className={styles.note898Skeletons} aria-hidden="true">
+              <span className={`${styles.note898Bar} ${styles.note898Bar1}`} />
+              <span className={`${styles.note898Bar} ${styles.note898Bar2}`} />
+              <span className={`${styles.note898Bar} ${styles.note898Bar3}`} />
+            </span>
+          </span>
         </span>
-        <span className={styles.noteMeta}>
-          <span className={styles.noteTitle} title={noteTitle}>
+
+        <span className={styles.note898Footer}>
+          <span className={styles.note898IconBox} aria-hidden="true">
+            <img
+              className={styles.note898Icon}
+              src={iconNote898}
+              alt=""
+              width={14}
+              height={9.5}
+              draggable={false}
+            />
+          </span>
+          <span className={styles.note898Title} title={noteTitle}>
             {noteTitle}
           </span>
-          {hasMetaItems ? (
-            <span className={styles.noteMetaRow}>
-              {metaItems?.map((item, idx) => (
-                <span className={styles.noteMetaItem} key={`${item}-${idx}`}>
-                  {item}
-                </span>
-              ))}
-            </span>
-          ) : (
-            <span className={styles.noteSummary} title={noteSummary}>
-              {noteSummary}
-            </span>
-          )}
         </span>
       </Pressable>
     );
@@ -153,7 +148,6 @@ export const RecordingCard: FC<RecordingCardProps> = ({
               {topics.map((topic, index) => {
                 const current = index === topics.length - 1;
                 return (
-                  // 话题池会轮回，同名话题可能出现两次，用序号做 key
                   <span className={`${styles.topicItem} ${current ? styles.topicCurrent : ''}`} key={index}>
                     <span className={styles.topicDot} aria-hidden="true" />
                     <span className={styles.topicText} title={topic}>
@@ -166,7 +160,6 @@ export const RecordingCard: FC<RecordingCardProps> = ({
           </span>
         ) : (
           <span className={styles.hintBar}>
-            {/* key 跟着文案变：换句时重新挂载，播一次淡入 */}
             <span className={styles.hint} key={hint} role="status">
               {hint}
             </span>

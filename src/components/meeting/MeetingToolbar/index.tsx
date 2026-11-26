@@ -35,10 +35,10 @@ interface MeetingToolbarProps {
 /**
  * 会中底栏（Figma 811:25000 `toolbar-应用细节`）
  *
- * 白底高 66、padding 8 10：
- * - 左：说点什么...（触发弹幕浮层）+ 举手表情按钮；
- * - 中：麦克风 ▴ / 摄像头 ▴ / 共享屏幕 ▴ / 成员(8) / 邀请 / 聊天 / 录制 / 逐字稿 / 元宝 / 应用；
- * - 右：离开会议（#E63922）。
+ * 统一 24×24 图标槽位并严格按各矢量原画布尺寸居中：
+ * - 24×24：麦克风 / 摄像头 / 共享屏幕 / 成员 / 邀请 / 聊天 / 录制 / 离开会议 / 表情 / 举手
+ * - 22×22 居中于 24×24：逐字稿（811:25044）、应用（811:25066）
+ * - 18×18 居中于 24×24：元宝（811:25059）
  */
 export const MeetingToolbar: FC<MeetingToolbarProps> = ({
   activeApp,
@@ -52,99 +52,128 @@ export const MeetingToolbar: FC<MeetingToolbarProps> = ({
   const yuanbaoOpen = openApps.includes('yuanbao');
 
   return (
-    <div className={styles.toolbar}>
-      <div className={styles.interactGroup}>
-        <ChatCompose triggerClassName={styles.sayPill} onSend={onSendBarrage} onOpenChat={onOpenChat}>
-          <img className={styles.icon24} src={iconChatEmoji} alt="" width={24} height={24} draggable={false} />
-          <span className={styles.sayPlaceholder}>说点什么...</span>
-        </ChatCompose>
-        <span className={styles.handBtn} title="互动反应">
-          <img className={styles.icon24} src={iconHandRaise} alt="" width={24} height={24} draggable={false} />
-        </span>
-      </div>
+    <div className={styles.toolbar} aria-label="会中工具栏">
+      <div className={styles.leftGroup}>
+        <div className={styles.interactGroup}>
+          <ChatCompose triggerClassName={styles.sayPill} onSend={onSendBarrage} onOpenChat={onOpenChat}>
+            <span className={styles.iconBox}>
+              <img className={styles.icon24} src={iconChatEmoji} alt="" width={24} height={24} draggable={false} />
+            </span>
+            <span className={styles.sayPlaceholder}>说点什么...</span>
+          </ChatCompose>
+          <span className={styles.handBtn} title="互动反应">
+            <span className={styles.iconBox}>
+              <img className={styles.icon24} src={iconHandRaise} alt="" width={24} height={24} draggable={false} />
+            </span>
+          </span>
+        </div>
 
-      <div className={styles.controls}>
-        <span className={styles.splitBtn}>
-          <span className={styles.splitMain}>
-            <img className={styles.icon24} src={iconBarMic} alt="" width={24} height={24} draggable={false} />
+        <div className={styles.controls}>
+          <span className={styles.splitBtn}>
+            <span className={styles.iconBox}>
+              <img className={styles.icon24} src={iconBarMic} alt="" width={24} height={24} draggable={false} />
+            </span>
             <span className={styles.label}>麦克风</span>
+            <img className={styles.arrow} src={iconBarArrow} alt="" width={12} height={37} draggable={false} />
           </span>
-          <img className={styles.arrow} src={iconBarArrow} alt="" width={12} height={37} draggable={false} />
-        </span>
 
-        <span className={styles.splitBtn}>
-          <span className={styles.splitMain}>
-            <img className={styles.icon24} src={iconBarCamera} alt="" width={24} height={24} draggable={false} />
+          <span className={styles.splitBtn}>
+            <span className={styles.iconBox}>
+              <img className={styles.icon24} src={iconBarCamera} alt="" width={24} height={24} draggable={false} />
+            </span>
             <span className={styles.label}>摄像头</span>
+            <img className={styles.arrow} src={iconBarArrow} alt="" width={12} height={37} draggable={false} />
           </span>
-          <img className={styles.arrow} src={iconBarArrow} alt="" width={12} height={37} draggable={false} />
-        </span>
 
-        <span className={styles.splitBtn}>
-          <span className={styles.splitMain}>
-            <img className={styles.icon24} src={iconBarShare} alt="" width={24} height={24} draggable={false} />
+          <span className={styles.splitBtn}>
+            <span className={styles.iconBox}>
+              <img className={styles.icon24} src={iconBarShare} alt="" width={24} height={24} draggable={false} />
+            </span>
             <span className={styles.label}>共享屏幕</span>
+            <img className={styles.arrow} src={iconBarArrow} alt="" width={12} height={37} draggable={false} />
           </span>
-          <img className={styles.arrow} src={iconBarArrow} alt="" width={12} height={37} draggable={false} />
-        </span>
 
-        <Pressable
-          as="span"
-          className={`${styles.btn} ${styles.btnInteractive} ${membersOpen ? styles.btnActive : ''}`}
-          onClick={() => onToggleApp('members')}
-          ariaLabel={activeApp === 'members' ? '收起管理成员' : '管理成员'}
-          title="管理成员"
-        >
-          <img className={styles.icon24} src={iconBarMembers} alt="" width={24} height={24} draggable={false} />
-          <span className={styles.label}>成员({meetingSession.groupMembers})</span>
-        </Pressable>
+          <Pressable
+            as="span"
+            className={`${styles.btn} ${styles.btnInteractive} ${membersOpen ? styles.btnActive : ''}`}
+            onClick={() => onToggleApp('members')}
+            ariaLabel={activeApp === 'members' ? '收起管理成员' : '管理成员'}
+            title="管理成员"
+          >
+            <span className={styles.iconBox}>
+              <img className={styles.icon24} src={iconBarMembers} alt="" width={24} height={24} draggable={false} />
+            </span>
+            <span className={styles.label}>成员({meetingSession.groupMembers})</span>
+          </Pressable>
 
-        <span className={styles.btn}>
-          <img className={styles.icon24} src={iconBarInvite} alt="" width={24} height={24} draggable={false} />
-          <span className={styles.label}>邀请</span>
-        </span>
+          <span className={styles.btn}>
+            <span className={styles.iconBox}>
+              <img className={styles.icon24} src={iconBarInvite} alt="" width={24} height={24} draggable={false} />
+            </span>
+            <span className={styles.label}>邀请</span>
+          </span>
 
-        <Pressable
-          as="span"
-          className={`${styles.btn} ${styles.btnInteractive} ${chatOpen ? styles.btnActive : ''}`}
-          onClick={() => onToggleApp('chat')}
-          ariaLabel={activeApp === 'chat' ? '收起聊天' : '打开聊天'}
-          title="聊天"
-        >
-          <img className={styles.icon24} src={iconBarChat} alt="" width={24} height={24} draggable={false} />
-          <span className={styles.label}>聊天</span>
-        </Pressable>
+          <Pressable
+            as="span"
+            className={`${styles.btn} ${styles.btnInteractive} ${chatOpen ? styles.btnActive : ''}`}
+            onClick={() => onToggleApp('chat')}
+            ariaLabel={activeApp === 'chat' ? '收起聊天' : '打开聊天'}
+            title="聊天"
+          >
+            <span className={styles.iconBox}>
+              <img className={styles.icon24} src={iconBarChat} alt="" width={24} height={24} draggable={false} />
+            </span>
+            <span className={styles.label}>聊天</span>
+          </Pressable>
 
-        <span className={styles.btn}>
-          <img className={styles.icon24} src={iconBarRecord} alt="" width={24} height={24} draggable={false} />
-          <span className={styles.label}>录制</span>
-        </span>
+          <span className={styles.btn}>
+            <span className={styles.iconBox}>
+              <img className={styles.icon24} src={iconBarRecord} alt="" width={24} height={24} draggable={false} />
+            </span>
+            <span className={styles.label}>录制</span>
+          </span>
 
-        <span className={styles.btn}>
-          <img className={styles.icon24} src={iconBarTranscript} alt="" width={24} height={24} draggable={false} />
-          <span className={styles.label}>逐字稿</span>
-        </span>
+          <span className={styles.btn}>
+            <span className={styles.iconBox}>
+              <img
+                className={styles.icon22}
+                src={iconBarTranscript}
+                alt=""
+                width={22}
+                height={22}
+                draggable={false}
+              />
+            </span>
+            <span className={styles.label}>逐字稿</span>
+          </span>
 
-        <Pressable
-          as="span"
-          className={`${styles.btn} ${styles.btnInteractive} ${yuanbaoOpen ? styles.btnActive : ''}`}
-          onClick={() => onToggleApp('yuanbao')}
-          ariaLabel={activeApp === 'yuanbao' ? '收起元宝' : '打开元宝'}
-          title={activeApp === 'yuanbao' ? '收起元宝' : '打开元宝'}
-        >
-          <img className={styles.icon24} src={iconBarYuanbao} alt="" width={24} height={24} draggable={false} />
-          <span className={styles.label}>元宝</span>
-        </Pressable>
+          <Pressable
+            as="span"
+            className={`${styles.btn} ${styles.btnInteractive} ${yuanbaoOpen ? styles.btnActive : ''}`}
+            onClick={() => onToggleApp('yuanbao')}
+            ariaLabel={activeApp === 'yuanbao' ? '收起元宝' : '打开元宝'}
+            title={activeApp === 'yuanbao' ? '收起元宝' : '打开元宝'}
+          >
+            <span className={styles.iconBox}>
+              <img className={styles.icon18} src={iconBarYuanbao} alt="" width={18} height={18} draggable={false} />
+            </span>
+            <span className={styles.label}>元宝</span>
+          </Pressable>
 
-        <span className={styles.btn}>
-          <img className={styles.icon24} src={iconBarApps} alt="" width={24} height={24} draggable={false} />
-          <span className={styles.label}>应用</span>
-        </span>
+          <span className={styles.btn}>
+            <span className={styles.iconBox}>
+              <img className={styles.icon22} src={iconBarApps} alt="" width={22} height={22} draggable={false} />
+            </span>
+            <span className={styles.label}>应用</span>
+          </span>
+        </div>
       </div>
 
       <div className={styles.exitWrap}>
         <span className={`${styles.btn} ${styles.leaveBtn}`}>
-          <img className={styles.icon24} src={iconBarLeave} alt="" width={24} height={24} draggable={false} />
+          <span className={styles.iconBox}>
+            <img className={styles.icon24} src={iconBarLeave} alt="" width={24} height={24} draggable={false} />
+          </span>
           <span className={styles.leaveLabel}>离开会议</span>
         </span>
       </div>
